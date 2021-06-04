@@ -6,6 +6,8 @@ Authors@R:
            family = "Finkel",
            role = c("cre", "aut"),
            email = "ufinkel@gmail.com")
+URL: https://github.com/uriahf/rtichoke
+BugReports: https://github.com/uriahf/rtichoke/issues
 Description: Interactive visualization for model performance.
 License: MIT + file LICENSE
 Imports: 
