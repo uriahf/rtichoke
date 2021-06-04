@@ -1,0 +1,28 @@
+Package: rtichoke
+Title: rtichoke
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Uriah",
+           family = "Finkel",
+           role = c("cre", "aut"),
+           email = "ufinkel@gmail.com")
+Description: Interactive visualization for model performance.
+License: MIT + file LICENSE
+Imports: 
+    attempt,
+    config (>= 0.3.1),
+    dplyr,
+    glue,
+    golem (>= 0.3.1),
+    htmltools,
+    magrittr,
+    processx,
+    purrr,
+    rlang,
+    shiny (>= 1.6.0),
+    stats
+Suggests: 
+    testthat
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
