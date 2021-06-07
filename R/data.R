@@ -5,9 +5,10 @@
 #'
 #' @format A data frame with 53940 rows and 10 variables:
 #' \describe{
-#'   \item{estimated_probabilities}{a vector of estimated probabilities from some model}
-#'   \item{random_guess}{a vector of random guesses}
-#'   \item{outcome}{a vector of binary outcome}
+#'   \item{estimated_probabilities}{estimated probabilities from some model}
+#'   \item{random_guess}{random guesses generated from unifrom distribution}
+#'   \item{outcome}{binary outcome}
+#'   \item{type_of_set}{the type of the set that the observation belongs to}
 #'   ...
 #' }
 "example_dat"

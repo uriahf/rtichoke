@@ -2,6 +2,7 @@
 
 export("%>%")
 export(create_performance_table)
+export(create_performance_table_multiple_pop)
 export(run_app)
 import(dplyr)
 import(htmltools)

@@ -98,3 +98,52 @@ create_performance_table <- function(probs, real, by = 0.01,
       if (!enforce_percentiles_symmetry) dplyr::mutate(., predicted_positives_percent = (TP + FP) / N) else .
     }
 }
+
+
+
+#' Create Performance Table for Multiple Populations
+#'
+#' # In order to create a performance table for different population with different 
+#' outcomes the user should use a list of lists like in the example below:
+#'
+#'
+#' @param list_of_lists_of_different_pop a list that is mode of lists
+#' @inheritParams create_performance_table
+#'
+#' @examples
+#' 
+#' 
+#' create_performance_table_multiple_pop(list(
+#' "train" = list(
+#'  probs = example_dat %>%
+#'  dplyr::filter(type_of_set == "train") %>%
+#'  dplyr::pull(estimated_probabilities),
+#'  real = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'  dplyr::pull(outcome)),
+#' "test" = list(
+#'  probs = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'  dplyr::pull(estimated_probabilities),
+#'  real = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'  dplyr::pull(outcome))
+#' ))
+#'
+#' 
+#' # Each element in the list represent a single population that one vector of predictions
+#' # and another vector of outcomes. 
+#' 
+#' 
+#' @export
+
+create_performance_table_multiple_pop <- function(list_of_lists_of_different_pop,
+                                                  by = 0.01, 
+                                                  enforce_percentiles_symmetry = F) {
+  
+  list_of_lists_of_different_pop %>%
+    purrr::map_dfr(~create_performance_table(.x[[1]], 
+                                             .x[[2]],
+                                             by = by,
+                                             enforce_percentiles_symmetry = enforce_percentiles_symmetry), 
+                   .id = "population")  
+  
+}
+
