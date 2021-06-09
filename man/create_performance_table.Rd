@@ -15,7 +15,8 @@ create_performance_table(
 \item{probs}{a vector of estimated probabilities or a list of vectors of that 
 kind (one for each model)}
 
-\item{real}{a vector of binary outcomes}
+\item{real}{a vector of binary outcomes or a list of vectors of that 
+kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
@@ -58,5 +59,23 @@ create_performance_table(
 # as the name of the model, if it's unnamed list the Models will count "Model 1", 
 # "Model 2", etc.. according to the order of the estimated-probabilities vector in the
 # list.
+ 
+ 
+ create_performance_table(
+probs = list("train" = example_dat \%>\%
+              dplyr::filter(type_of_set == "train") \%>\%
+              dplyr::pull(estimated_probabilities),
+             "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+              dplyr::pull(estimated_probabilities)),
+real = list("train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+             dplyr::pull(outcome),
+            "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+             dplyr::pull(outcome))
+)
+
+ 
+ 
+ 
+ 
  
 }
