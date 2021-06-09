@@ -1,0 +1,35 @@
+---
+title: "naming_convention"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{naming_convention}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rtichoke)
+```
+
+[**Naming Convention**]{.ul}
+
+Some of the functions in `rtichoke` are built to work with an object that is called "performance_table" - a data frame that includes different performance metrics for different cutoffs.
+
+But other functions are built to work estimated probabilities and outcomes. Each of these function starts with "create" (as create from scratch) - create\_\*():
+
+create_performance_table
+
+create_roc_curve
+
+create_lift_curve
+
+create_calibration_Curve
+
+etc...
