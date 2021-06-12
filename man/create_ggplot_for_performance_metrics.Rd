@@ -8,7 +8,7 @@ create_ggplot_for_performance_metrics(
   performance_table,
   x_perf_metric,
   y_perf_metric,
-  col_values = c("#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#CC79A7")
+  col_values = c("#5E7F9A", "#931B53", "#F7DC2E", "#C6C174", "#75DBCD")
 )
 }
 \arguments{

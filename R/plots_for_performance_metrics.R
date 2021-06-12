@@ -11,15 +11,20 @@
 create_ggplot_for_performance_metrics <- function(performance_table,
                                                   x_perf_metric,
                                                   y_perf_metric,
-                                                  col_values = c(
-                                                    "#E69F00",
-                                                    "#56B4E9",
-                                                    "#F0E442",
-                                                    "#0072B2",
-                                                    "#CC79A7"
-                                                  )) {
+                                                  col_values = c("#5E7F9A", 
+                                                                 "#931B53", 
+                                                                 "#F7DC2E", 
+                                                                 "#C6C174", 
+                                                                 "#75DBCD")) {
+  
+    col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
+  
   if (length(unique(performance_table[, 1])) == 1) {
-    col_values <- "black"
+    col_values_vec <- "black"
+  }
+  
+  if (length(unique(performance_table[, 1])) > 1) {
+    names(col_values_vec) <- unique(performance_table[, 1])
   }
 
   ggplot2::ggplot(
@@ -35,7 +40,7 @@ create_ggplot_for_performance_metrics <- function(performance_table,
     ggplot2::geom_path(size = 0.5) +
     ggplot2::theme_classic() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::scale_color_manual(values = col_values)
+    ggplot2::scale_color_manual(values = col_values_vec)
 }
 
 #' ROC Curve
@@ -187,10 +192,30 @@ plot_gains_curve <- function(performance_table,
 add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
   gains_curve$layers <- c(
     ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
-    ggplot2::geom_segment(x = 0, y = 0, xend = prevalence, yend = 1, color = "grey"),
-    ggplot2::geom_segment(x = prevalence, y = 1, xend = 1, yend = 1, color = "grey"),
+    purrr::map2(prevalence, c("#5E7F9A", 
+                              "#931B53", 
+                              "#F7DC2E", 
+                              "#C6C174", 
+                              "#75DBCD")[1:length(prevalence)] , 
+                add_prevalence_layers_to_gains_curve) %>% unlist(),
     gains_curve$layers
   )
   gains_curve
 }
+
+
+#' Title
+#'
+#' @param prevalence 
+#' @param col_value 
+#'
+add_prevalence_layers_to_gains_curve <- function(prevalence, col_value){
+  c(ggplot2::geom_segment(x = 0, y = 0, xend = prevalence, yend = 1, color = col_value, 
+                          linetype= "dotted"),
+  ggplot2::geom_segment(x = prevalence, y = 1, xend = 1, yend = 1, color = col_value, 
+                        linetype= "dotted"))
+  }
+
+
+
 
