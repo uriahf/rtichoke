@@ -7,7 +7,7 @@
 add_gains_curve_reference_lines(gains_curve, prevalence)
 }
 \arguments{
-\item{gains_curve}{a ggplot object of lift curve}
+\item{gains_curve}{a ggplot object of a Gains Curve}
 
 \item{prevalence}{the prevalence of the outcome}
 }

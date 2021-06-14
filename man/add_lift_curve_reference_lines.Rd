@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots_for_performance_metrics.R
 \name{add_lift_curve_reference_lines}
 \alias{add_lift_curve_reference_lines}
-\title{Add reference lines to ROC CURVE}
+\title{Add reference lines to a Lift Curve}
 \usage{
 add_lift_curve_reference_lines(lift_curve)
 }
@@ -10,5 +10,5 @@ add_lift_curve_reference_lines(lift_curve)
 \item{lift_curve}{a ggplot object of lift curve}
 }
 \description{
-Add reference lines to ROC CURVE
+Add reference lines to a Lift Curve
 }

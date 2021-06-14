@@ -2,15 +2,15 @@
 % Please edit documentation in R/plots_for_performance_metrics.R
 \name{add_prevalence_layers_to_gains_curve}
 \alias{add_prevalence_layers_to_gains_curve}
-\title{Title}
+\title{Add Prevalence Layers go Gains Curve}
 \usage{
 add_prevalence_layers_to_gains_curve(prevalence, col_value)
 }
 \arguments{
-\item{prevalence}{}
+\item{prevalence}{the prevalence in each population}
 
-\item{col_value}{}
+\item{col_value}{color values palette}
 }
 \description{
-Title
+Add Prevalence Layers go Gains Curve
 }

@@ -20,7 +20,7 @@ create_ggplot_for_performance_metrics <- function(performance_table,
     col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
   
   if (length(unique(performance_table[, 1])) == 1) {
-    col_values_vec <- "black"
+    col_values_vec <- "grey"
   }
   
   if (length(unique(performance_table[, 1])) > 1) {
@@ -42,6 +42,10 @@ create_ggplot_for_performance_metrics <- function(performance_table,
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_color_manual(values = col_values_vec)
 }
+
+
+# ROC Curve ---------------------------------------------------------------
+
 
 #' ROC Curve
 #' 
@@ -96,6 +100,11 @@ add_roc_curve_reference_lines <- function(roc_curve) {
 }
 
 
+
+# Lift Curve --------------------------------------------------------------
+
+
+
 #' Lift Curve
 #' 
 #' Create a Lift Curve
@@ -129,12 +138,13 @@ plot_lift_curve <- function(performance_table,
     if (interactive == F) {
         lift_curve <- performance_table %>%
             create_ggplot_for_performance_metrics("predicted_positives_percent","lift") %>%
-            add_lift_curve_reference_lines()
+            add_lift_curve_reference_lines() %>%
+            set_lift_limits()
     }
     return(lift_curve)
 }
 
-#' Add reference lines to ROC CURVE
+#' Add reference lines to a Lift Curve
 #'
 #' @param lift_curve a ggplot object of lift curve
 add_lift_curve_reference_lines <- function(lift_curve) {
@@ -145,7 +155,20 @@ add_lift_curve_reference_lines <- function(lift_curve) {
     lift_curve
 }
 
-## Gains
+#' Set the limits for Lift Curve
+#' 
+#' @param lift_curve a ggplot object of a Lift Curve
+#'
+set_lift_limits <- function(lift_curve){
+  lift_curve  +
+    ggplot2::xlim(0, 1) +
+    ggplot2::ylim(0, NA)
+}
+
+
+
+
+# Gains Curve -------------------------------------------------------------
 
 #' Gains Curve
 #' 
@@ -180,14 +203,15 @@ plot_gains_curve <- function(performance_table,
   if (interactive == F) {
     gains_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
-      add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table))
+      add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>%
+      set_gains_curve_limits()
   }
   return(gains_curve)
 }
 
 #' Add reference lines to Gains Curve
 #'
-#' @param gains_curve a ggplot object of lift curve
+#' @param gains_curve a ggplot object of a Gains Curve
 #' @param prevalence the prevalence of the outcome
 add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
   gains_curve$layers <- c(
@@ -204,10 +228,10 @@ add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
 }
 
 
-#' Title
+#' Add Prevalence Layers go Gains Curve
 #'
-#' @param prevalence 
-#' @param col_value 
+#' @param prevalence the prevalence in each population
+#' @param col_value color values palette
 #'
 add_prevalence_layers_to_gains_curve <- function(prevalence, col_value){
   c(ggplot2::geom_segment(x = 0, y = 0, xend = prevalence, yend = 1, color = col_value, 
@@ -217,5 +241,170 @@ add_prevalence_layers_to_gains_curve <- function(prevalence, col_value){
   }
 
 
+#' Set the limits for Gains Curve
+#' 
+#' @param gains_curve a ggplot object of a Gains Curve
+#'
+set_gains_curve_limits <- function(gains_curve){
+  gains_curve  +
+    ggplot2::xlim(0, 1) +
+    ggplot2::ylim(0, 1)
+}
+
+# Precision Recall Curve --------------------------------------------------
 
 
+#' Precision Recall Curve
+#' 
+#' Create a Precision Recall Curve
+#'
+#' @inheritParams create_roc_curve
+#'
+#' @export
+#'
+create_precision_recall_curve <- function(probs, real, by = 0.01, 
+                               enforce_percentiles_symmetry = F){
+  create_performance_table(probs = probs, 
+                           real = real,
+                           by = by, 
+                           enforce_percentiles_symmetry = enforce_percentiles_symmetry) %>%
+    plot_precision_recall_curve()
+}
+
+
+
+#' Precision Recall Curve from Performance Table
+#'
+#' Plot a Precision Recall Curve
+#'
+#' @inheritParams plot_roc_curve
+#'
+#' @export
+
+plot_precision_recall_curve <- function(performance_table,
+                             chosen_threshold = NA,
+                             interactive = F,
+                             main_slider = "threshold") {
+  if (interactive == F) {
+    precision_recall_curve <- performance_table %>%
+      create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
+      add_precision_recall_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>% 
+      set_precision_recall_curve_limits()
+  }
+  return(precision_recall_curve)
+}
+
+
+
+#' Add reference lines to Precision Recall Curve
+#'
+#' @param precision_recall_curve a ggplot object of precision recall curve
+#' @param prevalence the prevalence of the outcome
+add_precision_recall_curve_reference_lines <- function(precision_recall_curve, prevalence) {
+  
+  col_values <- NA
+  
+  if(length(prevalence) == 1) { col_values <- "grey" }
+  if(length(prevalence) > 1) {col_values <- c("#5E7F9A", 
+                                "#931B53", 
+                                "#F7DC2E", 
+                                "#C6C174", 
+                                "#75DBCD")[1:length(prevalence)]}
+  
+  precision_recall_curve$layers <- c(
+    purrr::map2(prevalence, col_values , 
+                add_prevalence_layers_to_precision_recall_curve) %>% unlist(),
+    precision_recall_curve$layers
+  )
+  precision_recall_curve
+}
+
+
+#' Add Prevalence Layers to Precision Recall Curve
+#' 
+#' @param prevalence the prevalence in each population
+#' @param col_value color values palette
+#'
+add_prevalence_layers_to_precision_recall_curve <- function(prevalence, col_value){
+    c(ggplot2::geom_segment(x = 0, y = prevalence, xend = 1, yend = prevalence, color = col_value, 
+                          linetype= "dotted"))
+}
+
+
+#' Set the limits for percision recall curve
+#' 
+#' @param precision_recall_curve a ggplot object of precision recall curve
+#'
+set_precision_recall_curve_limits <- function(precision_recall_curve){
+  precision_recall_curve  +
+    ggplot2::xlim(0, 1) +
+    ggplot2::ylim(0, 1)
+}
+
+
+# Decision Curve ----------------------------------------------------------
+
+
+
+#' Decision Curve
+#' 
+#' Create a Decision Curve
+#'
+#' @inheritParams create_roc_curve
+#'
+#' @export
+#'
+create_decision_curve <- function(probs, real, by = 0.01, 
+                                          enforce_percentiles_symmetry = F){
+  create_performance_table(probs = probs, 
+                           real = real,
+                           by = by, 
+                           enforce_percentiles_symmetry = enforce_percentiles_symmetry) %>%
+    plot_decision_curve()
+}
+
+
+
+#' Precision Recall Curve from Performance Table
+#'
+#' Plot a Precision Recall Curve
+#'
+#' @inheritParams plot_roc_curve
+#'
+#' @export
+
+plot_decision_curve <- function(performance_table,
+                                        chosen_threshold = NA,
+                                        interactive = F,
+                                        main_slider = "threshold") {
+  if (interactive == F) {
+    decision_curve <- performance_table %>%
+      create_ggplot_for_performance_metrics("predicted_positives_percent", "NB") %>%
+      add_decision_curve_reference_lines() %>% 
+      set_decision_curve_limits()
+  }
+  return(decision_curve)
+}
+
+
+
+#' Add reference lines to Precision Recall Curve
+#'
+#' @param decision_curve a ggplot object of precision recall curve
+add_decision_curve_reference_lines <- function(decision_curve) {
+  decision_curve$layers <- c(
+    ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 0, color = "grey"),
+    decision_curve$layers
+  )
+  decision_curve
+}
+
+
+#' Set the limits for Decision Curve
+#' 
+#' @param decision_curve a ggplot object of Decision Curve
+#'
+set_decision_curve_limits <- function(decision_curve){
+  decision_curve  +
+    ggplot2::xlim(0, 1) 
+}
