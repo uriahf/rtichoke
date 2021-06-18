@@ -23,3 +23,15 @@ plot_roc_curve(
 \description{
 Plot a ROC Curve
 }
+\examples{
+
+performance_table_one_model \%>\%
+  plot_roc_curve()
+
+performance_table_for_two_models \%>\%
+  plot_roc_curve()
+  
+performance_table_for_two_models \%>\%
+  plot_roc_curve()
+  
+}

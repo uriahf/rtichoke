@@ -8,6 +8,7 @@
 #' @param col_values color palette
 #'
 
+
 create_ggplot_for_performance_metrics <- function(performance_table,
                                                   x_perf_metric,
                                                   y_perf_metric,
@@ -17,25 +18,42 @@ create_ggplot_for_performance_metrics <- function(performance_table,
                                                                  "#C6C174", 
                                                                  "#75DBCD")) {
   
+  if (!(names(performance_table)[1] %in% c("population", "model"))) {
+    col_values_vec <- "black"
+    
+    ggplot_for_performance_metrics <- ggplot2::ggplot(
+      performance_table,
+      ggplot2::aes_string(
+        x = x_perf_metric,
+        y = y_perf_metric
+      )
+    )
+    
+  } else {
+    
     col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
-  
-  if (length(unique(performance_table[, 1])) == 1) {
-    col_values_vec <- "grey"
-  }
-  
-  if (length(unique(performance_table[, 1])) > 1) {
-    names(col_values_vec) <- unique(performance_table[, 1])
+
+    if (length(unique(performance_table[, 1])) == 1) {
+      col_values_vec <- "black"
+    }
+    
+    if (length(unique(performance_table[, 1])) > 1) {
+      names(col_values_vec) <- unique(performance_table[, 1])
+    }
+    
+    ggplot_for_performance_metrics <- ggplot2::ggplot(
+      performance_table,
+      ggplot2::aes_string(
+        x = x_perf_metric,
+        y = y_perf_metric,
+        group = names(performance_table)[1],
+        color = names(performance_table)[1]
+      )
+    )
+    
   }
 
-  ggplot2::ggplot(
-    performance_table,
-    ggplot2::aes_string(
-      x = x_perf_metric,
-      y = y_perf_metric,
-      group = names(performance_table)[1],
-      color = names(performance_table)[1]
-    )
-  ) +
+  ggplot_for_performance_metrics +
     ggplot2::geom_point(size = 1) +
     ggplot2::geom_path(size = 0.5) +
     ggplot2::theme_classic() +
@@ -54,6 +72,7 @@ create_ggplot_for_performance_metrics <- function(performance_table,
 #' @inheritParams create_performance_table
 #'
 #' @export
+#' 
 #'
 create_roc_curve <- function(probs, real, by = 0.01, 
                              enforce_percentiles_symmetry = F){
@@ -74,7 +93,21 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @param interactive whether the plot should be interactive
 #' @param main_slider what is the main slider - threshold, percent positives or positives
 #'
+#' 
+#' 
+#' @examples 
+#' 
+#' performance_table_one_model %>%
+#'   plot_roc_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_roc_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_roc_curve()
+#'   
 #' @export
+  
 
 plot_roc_curve <- function(performance_table,
                            chosen_threshold = NA,
@@ -128,7 +161,18 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #' Plot a Lift Curve
 #'
 #' @inheritParams plot_roc_curve
-#'
+#' 
+#' @examples 
+#' 
+#' performance_table_one_model %>%
+#'   plot_lift_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_lift_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_lift_curve()
+#'   
 #' @export
 
 plot_lift_curve <- function(performance_table,
@@ -193,7 +237,17 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #' Plot a Gains Curve
 #'
 #' @inheritParams plot_roc_curve
-#'
+#' 
+#' @examples 
+#' 
+#' performance_table_one_model %>%
+#'   plot_gains_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_gains_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_gains_curve()
 #' @export
 
 plot_gains_curve <- function(performance_table,
@@ -278,7 +332,18 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 #' Plot a Precision Recall Curve
 #'
 #' @inheritParams plot_roc_curve
-#'
+#' 
+#' @examples
+#' 
+#' performance_table_one_model %>%
+#'   plot_precision_recall_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_precision_recall_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_precision_recall_curve()
+#'   
 #' @export
 
 plot_precision_recall_curve <- function(performance_table,
@@ -370,7 +435,18 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #' Plot a Precision Recall Curve
 #'
 #' @inheritParams plot_roc_curve
-#'
+#' 
+#' @examples
+#' 
+#' performance_table_one_model %>%
+#'   plot_decision_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_decision_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_decision_curve()
+#'   
 #' @export
 
 plot_decision_curve <- function(performance_table,

@@ -23,3 +23,14 @@ plot_gains_curve(
 \description{
 Plot a Gains Curve
 }
+\examples{
+
+performance_table_one_model \%>\%
+  plot_gains_curve()
+
+performance_table_for_two_models \%>\%
+  plot_gains_curve()
+  
+performance_table_for_two_models \%>\%
+  plot_gains_curve()
+}

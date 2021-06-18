@@ -23,3 +23,15 @@ plot_lift_curve(
 \description{
 Plot a Lift Curve
 }
+\examples{
+
+performance_table_one_model \%>\%
+  plot_lift_curve()
+
+performance_table_for_two_models \%>\%
+  plot_lift_curve()
+  
+performance_table_for_two_models \%>\%
+  plot_lift_curve()
+  
+}

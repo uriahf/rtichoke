@@ -23,3 +23,15 @@ plot_precision_recall_curve(
 \description{
 Plot a Precision Recall Curve
 }
+\examples{
+
+performance_table_one_model \%>\%
+  plot_precision_recall_curve()
+
+performance_table_for_two_models \%>\%
+  plot_precision_recall_curve()
+  
+performance_table_for_two_models \%>\%
+  plot_precision_recall_curve()
+  
+}
