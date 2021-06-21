@@ -5,12 +5,36 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
+  
+  rtichoke_theme <- bslib::bs_theme(
+    bg = "#fdf9f1", fg = "#141516", primary = "#7f687c", 
+    base_font = bslib::font_google("Roboto"), heading_font =  bslib::font_google("Alegreya"),
+    "font-size-base" = "1.0rem"
+  )
+  
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic 
-    fluidPage(
-      h1("rtichoke")
+    # fluidPage(
+    #   h1("rtichoke")
+    # )
+    navbarPage(
+      theme = rtichoke_theme,
+      "rtichoke",
+      tabPanel(
+        "Performance by Cutoff",
+        fillPage(
+          fluidRow(
+            # setBackgroundColor("#fdf9f1"),
+            # conf_ui_1("hist1"),
+            mod_inputs_ui("inputs_ui_1")
+            # conf_ui_2("roc"),
+            # conf_ui_3("probs")
+          )
+        )
+      ),
+      tabPanel("Calibration")
     )
   )
 }

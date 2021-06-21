@@ -18,18 +18,93 @@ knitr::opts_chunk$set(
 library(rtichoke)
 ```
 
-[**Naming Convention**]{.ul}
+## [**Types of Inputs**]{.ul}
+
+There are two types of inputs for each function in rtichoke:
+
+1.  **Predictions and Outcomes:\
+    **This type of input is similar to inputs from similar packages such as pROC etc.\
+    You can do so in three different ways:
+
+    -   A vector of predictions and a vector of outcome:\
+        When you have one model and one population
+    -   A list of predictions and a vector of outcomes:\
+        When you have several models and one population.
+    -   A list of predictions and a list of outcomes:\
+        When you have several models and several populations, one model for each population.\
+        Like in Train-Test comparison in order to asses if the model is underfitted or overfitted, or analysis of Fairness in order to check subgroups in a bigger population.\
+
+    Each function in `rtichoke` has a variation that supports this kind of input.\
+
+2.  **Performance Table:**
+
+    Performance table is a dataframe that contations perfomance metrics for different cutoffs.
+
+    Similar packages to \`rtichoke\` display curves that are based on performance metrics that looks perfectly smooth, the purpose of rtichoke
+
+    is slightly different: The aim is to help the user to better identify the relationship between the cutoffs and to give him the freedom to
+
+    manipulate in order to understand better the connection between the cutoffs and the curve.
+
+    Another reason for using performance table is that building plots that based on small datasets is much less memory consuming than reusing
+
+    smoothing algorithms over and over.\\
+
+    Each performance Table is built from the metrics in the confusion matrix:
+
+    TP, FP, TN, FN.
+
+    sensitivity = TP / (TP + FN)
+
+    specificity = TN / (TN + FP)
+
+    \\
+
+    In order to create performance table you need to call \`create_performance_table()\`This function obviously must take \*\*Predictions and Outcomes\*\* as input.
+
+    Only some functions in \`rtichoke\` has variations that supports this kind of input
+
+## [**Naming Convention**]{.ul}
 
 Some of the functions in `rtichoke` are built to work with an object that is called "performance_table" - a data frame that includes different performance metrics for different cutoffs.
 
 But other functions are built to work estimated probabilities and outcomes. Each of these function starts with "create" (as create from scratch) - create\_\*():
 
-create_performance_table
+|                        | Predictions and Outcomes          | Performance Table               |
+|------------------------|-----------------------------------|---------------------------------|
+| **Performance Table**  | `create_performance_table()`      | X                               |
+| **ROC**                | `create_roc_curve()`              | `plot_roc_curve()`              |
+| **Lift**               | `create_lift_curve()`             | `plot_lift_curve()`             |
+| **Gains**              | `create_gains_curve()`            | `plot_gains_curve()`            |
+| **Precision Recall**   | `create_precision_recall_curve()` | `plot_precision_recall_curve()` |
+| **Decision**           | `create_decision_curve()`         | `plot_decision_curve()`         |
+| **Calibration**        | `create_calibration_curve()`      | X                               |
+| **Interactive Table**  | `create_interactive_table()`      | `make_interactive()`            |
+| **Interactive Report** | `create_interactive_report()`     | X                               |
+| **rtichoke**           | `rtichoke()`                      | X                               |
 
-create_roc_curve
+## [**Plots of Performance Metrics across different Thresholds**]{.ul}
 
-create_lift_curve
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
+|                      | Sensitivity | Specificity | FPR | PPV | Positive Rate | LIFT | Net     | Threshold |
+|                      |             |             |     |     |               |      |         |           |
+|                      |             |             |     |     |               |      | Benifit |           |
++======================+=============+=============+=====+=====+===============+======+=========+===========+
+| **ROC**              | V           |             | V   |     |               |      |         |           |
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
+| **Lift**             |             |             |     |     | V             | V    |         |           |
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
+| **Gains**            | V           |             |     |     | V             |      |         |           |
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
+| **Precision Recall** | V           |             |     | V   |               |      |         |           |
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
+| **Decision**         |             |             |     |     |               |      | V       | V         |
++----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
 
-create_calibration_Curve
+## [**Interactive Tables**]{.ul}
 
-etc...
+## [**Interactive Report**]{.ul}
+
+## [**Calibration**]{.ul}
+
+## [**rtichoke**]{.ul}
