@@ -22,5 +22,10 @@ create_plotly_for_performance_metrics(
 \item{col_values}{color palette}
 }
 \description{
-Makes a ggplot for the metrices
+Makes a plotly for the Performance Metrics
+}
+\examples{
+
+
+
 }

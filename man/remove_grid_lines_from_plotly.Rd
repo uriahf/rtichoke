@@ -2,13 +2,13 @@
 % Please edit documentation in R/plots_for_performance_metrics.R
 \name{remove_grid_lines_from_plotly}
 \alias{remove_grid_lines_from_plotly}
-\title{Title}
+\title{remove_grid_lines_from_plotly}
 \usage{
-remove_grid_lines_from_plotly(plot_tichoke_ly_ob)
+remove_grid_lines_from_plotly(plotly_object)
 }
 \arguments{
-\item{plot_tichoke_ly_ob}{}
+\item{plotly_object}{}
 }
 \description{
-Title
+remove_grid_lines_from_plotly
 }

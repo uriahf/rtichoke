@@ -63,10 +63,13 @@ create_ggplot_for_performance_metrics <- function(performance_table,
 
 #' Create plotly for Performance Metrics
 #' 
-#' Makes a ggplot for the metrices
+#' Makes a plotly for the Performance Metrics
+#' 
+#' @examples 
+#' 
+#' 
 #'
 #' @inheritParams create_ggplot_for_performance_metrics
-#'
 create_plotly_for_performance_metrics <- function(performance_table,
                                                   x_perf_metric,
                                                   y_perf_metric,
@@ -80,154 +83,47 @@ create_plotly_for_performance_metrics <- function(performance_table,
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
   
-  if (!(names(performance_table)[1] %in% c("population", "model"))) {
+  
+  performance_table_type <- check_performance_table_type_for_plotly(performance_table)
+  
+  if(performance_table_type %in% c("one model", "one model with model column")){
     col_values_vec <- "black"
-    multiple_models <- FALSE
-    
   } else {
-    
-    multiple_models <- length(unique(performance_table[,1])) != 1
     col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
-    
-    if (!multiple_models) {
-      col_values_vec <- "black"
-    }
-    
-    if (multiple_models) {
-      names(col_values_vec) <- unique(performance_table[, 1])
-    }
-    
+    names(col_values_vec) <- unique(performance_table[, 1])
   }
+  
+  print(performance_table_type)
+  print(col_values_vec)
   
   performance_table %>%
     create_plotly_base(x_perf_metric,
                        y_perf_metric,
-                       multiple_models = multiple_models,
+                       performance_table_type = performance_table_type,
                        col_values = col_values_vec) %>%
-    add_lines_to_plotly() %>%
-    add_interactive_marker_to_plotly()
+    add_markers_and_lines_to_plotly(performance_table_type = performance_table_type) %>%
+    add_interactive_marker_to_plotly(performance_table_type = performance_table_type)
 }
 
 
-#' Add Interactive Marker to Plotly
+
+
+
+
+
+
+
+
+
+
+
+
+#' remove_grid_lines_from_plotly
 #'
-#' @param plot_tichoke_ly_ob 
-#' @param multiple_models 
-#' @param main_slider 
-
-add_interactive_marker_to_plotly <- function(plot_tichoke_ly_ob, multiple_models = F, main_slider = 'threshold'){
-  theme_color <- c("#FFBF49", "#FF4989", "#30a28e")[main_slider == c("threshold", "percentpositives", "positives")]
-  
-  plot_tichoke_ly_ob  %>%
-    add_markers(
-      frame = as.formula(paste0("~", main_slider)),
-      marker = interactive_marker_list(multiple_models = multiple_models, theme_color = theme_color),
-      hoverinfo = "text",
-      text = ~ paste(
-        "Model:", model,
-        "TPR (Sensitivity):", round(TPR, digits = 3), "<br>",
-        "FPR:", round(FPR, digits = 3), "<br>",
-        "Specificity", round(specificity, digits = 3), "<br>",
-        "LIFT", round(lift, digits = 3), "<br>",
-        "PPV", round(ppv, digits = 3), "<br>",
-        "NPV", round(npv, digits = 3), "<br>",
-        "TP:", TP, "<br>",
-        "TN:", TN, "<br>",
-        "FP:", FP, "<br>",
-        "FN:", FN
-      )
-    )
-}
-
-
-#' Create basic plotly for Performance Metrics
-#' 
-#' Makes a basic plotly for the metrices
-#'
-#' @inheritParams create_ggplot_for_performance_metrics
-#'
-
-create_plotly_base <- function(performance_table, 
-                                 x_perf_metric, 
-                                 y_perf_metric, 
-                                 multiple_models = F, 
-                                 stratified_by = "model",
-                                 col_values = c("#5E7F9A", 
-                                                "#931B53", 
-                                                "#F7DC2E", 
-                                                "#C6C174", 
-                                                "#75DBCD")) {
-  x_perf_metric <- enquo(x_perf_metric)
-  y_perf_metric <- enquo(y_perf_metric)
-  
-  
-  if(!multiple_models){
-    performance_table %>%
-      plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric
-      )
-  } else {
-    performance_table %>%
-      plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        color = as.formula(paste0("~", stratified_by)),
-        colors = col_values
-      )
-  }
-}
-
-
-#' Add lines to Plotly
-#'
-#' @param plot_tichoke_ly_ob 
-#' @param multiple_models 
-#'
-add_lines_to_plotly <- function(plot_tichoke_ly_ob, multiple_models = F){
-  if(multiple_models == T){
-    plot_tichoke_ly_ob %>%
-      add_lines()
-  } else {
-    plot_tichoke_ly_ob %>%
-      add_lines(
-        color = I("black")
-      )
-  }
-}
-
-
-#' Title
-#'
-#' @param multiple_models 
-#' @param theme_color 
-
-interactive_marker_list <- function(multiple_models = F, theme_color = NA) {
-  if (multiple_models ==T) { list(
-    # color = ~model,
-    size = 16,
-    line = list(
-      width = 4,
-      color = I("black")
-    )
-  ) } else {
-    list(
-      color = theme_color,
-      size = 16,
-      line = list(
-        width = 4,
-        color = I("black")
-      )
-    )
-  }
-}
-
-#' Title
-#'
-#' @param plot_tichoke_ly_ob 
-remove_grid_lines_from_plotly <- function(plot_tichoke_ly_ob){
-  plot_tichoke_ly_ob %>%
-    layout(xaxis = list(showgrid = F),
+#' @param plotly_object 
+remove_grid_lines_from_plotly <- function(plotly_object){
+  plotly_object %>%
+    plotly::layout(xaxis = list(showgrid = F),
            yaxis = list(showgrid = F))
 }
 
