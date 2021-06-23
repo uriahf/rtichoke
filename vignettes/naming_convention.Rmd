@@ -70,20 +70,33 @@ Some of the functions in `rtichoke` are built to work with an object that is cal
 
 But other functions are built to work estimated probabilities and outcomes. Each of these function starts with "create" (as create from scratch) - create\_\*():
 
++------------------------+-----------------------------------+---------------------------------+
 |                        | Predictions and Outcomes          | Performance Table               |
-|------------------------|-----------------------------------|---------------------------------|
++========================+===================================+=================================+
 | **Performance Table**  | `create_performance_table()`      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **ROC**                | `create_roc_curve()`              | `plot_roc_curve()`              |
++------------------------+-----------------------------------+---------------------------------+
 | **Lift**               | `create_lift_curve()`             | `plot_lift_curve()`             |
++------------------------+-----------------------------------+---------------------------------+
 | **Gains**              | `create_gains_curve()`            | `plot_gains_curve()`            |
++------------------------+-----------------------------------+---------------------------------+
 | **Precision Recall**   | `create_precision_recall_curve()` | `plot_precision_recall_curve()` |
++------------------------+-----------------------------------+---------------------------------+
 | **Decision**           | `create_decision_curve()`         | `plot_decision_curve()`         |
++------------------------+-----------------------------------+---------------------------------+
 | **Calibration**        | `create_calibration_curve()`      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **Interactive Table**  | `create_interactive_table()`      | `make_interactive()`            |
++------------------------+-----------------------------------+---------------------------------+
 | **Interactive Report** | `create_interactive_report()`     | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **rtichoke**           | `rtichoke()`                      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 
 ## [**Plots of Performance Metrics across different Thresholds**]{.ul}
+
+Curves that are generated from performance metrics can be called by `plot_*_curve()` or `create_*_curve` from performance table.
 
 +----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
 |                      | Sensitivity | Specificity | FPR | PPV | Positive Rate | LIFT | Net     | Threshold |
@@ -101,10 +114,50 @@ But other functions are built to work estimated probabilities and outcomes. Each
 | **Decision**         |             |             |     |     |               |      | V       | V         |
 +----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
 
+[**Interactive or Non-Interactive**]{.ul}
+
+Each plot of performance metrics in `rtichoke` has two versions:
+
+1.  Interactive: a plotly object that displays a dynamic point that corresponds to a slider:
+2.  Non Interactive: a ggplot2 object.
+
+[**Why the curves aren't smooth?**]{.ul}
+
+Unlike other packages rtichoke doesn't use a smoothed curve but a collection of connected dots, the justification for this type of ... is that most of the time 100 cutoff are enough.
+
+Smoothing algorithms are expensive computationally, and specifically for this type of curves it might not give the user some useful insights. In fact smoothing can hide some useful information, such as the distribution of the cutoffs on the curves given a symmetry of threshold cutoffs or symmetry of probabilities percentiles {rephrase in a better way}.
+
+Take a look at these two versions of the same ROC curve:
+
+[**`by` argument:**]{.ul}
+
+If the user wants to have a moother curve he can do so by change the `by` argument from the default 0.01 (like in the `seq` function):
+
+```{r}
+create_roc_curve(
+ probs = example_dat$estimated_probabilities,
+ real = example_dat$outcome, 
+ by = 0.0001)
+
+```
+
+[**`enforce_percentiles_symmetry`argument:**]{.ul}
+
+If the use wants to observe cutoffs according to probabilities percentiles he can do so by setting the `enforce_percentiles_symmetry` to `TRUE`.
+
 ## [**Interactive Tables**]{.ul}
+
+Interactive performance table is just a `reactable` object that wraps a performance table and returns an HTML object..
+
+There are two advantages that are built in interactive tables:
+
+1.  Conditional Styling - Each performance metric will be displayed with a light green in the background in case that more is better (Sensitivity, Specificity etc), or a light red if less is better (FPR). The color of the Net Benefit will be displayed in light green for positive values and in light red for negative values.
+2.  Filter options with crosstalk - if `TRUE` returns a crosstalk object that let the user filter by model / population and main slider.
 
 ## [**Interactive Report**]{.ul}
 
 ## [**Calibration**]{.ul}
+
+Plots a calibration curve
 
 ## [**rtichoke**]{.ul}

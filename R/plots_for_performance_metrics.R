@@ -1,4 +1,4 @@
-#' Create ggplot for performance metrics
+#' Create ggplot for Performance Metrics
 #'
 #' Makes a ggplot for the metrices
 #'
@@ -61,6 +61,175 @@ create_ggplot_for_performance_metrics <- function(performance_table,
     ggplot2::scale_color_manual(values = col_values_vec)
 }
 
+#' Create plotly for Performance Metrics
+#' 
+#' Makes a ggplot for the metrices
+#'
+#' @inheritParams create_ggplot_for_performance_metrics
+#'
+create_plotly_for_performance_metrics <- function(performance_table,
+                                                  x_perf_metric,
+                                                  y_perf_metric,
+                                                  col_values = c("#5E7F9A", 
+                                                                 "#931B53", 
+                                                                 "#F7DC2E", 
+                                                                 "#C6C174", 
+                                                                 "#75DBCD"),
+                                                  main_slider = "threshold") {
+    
+  x_perf_metric <- enquo(x_perf_metric)
+  y_perf_metric <- enquo(y_perf_metric)
+  
+  if (!(names(performance_table)[1] %in% c("population", "model"))) {
+    col_values_vec <- "black"
+    multiple_models <- FALSE
+    
+  } else {
+    
+    multiple_models <- length(unique(performance_table[,1])) != 1
+    col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
+    
+    if (!multiple_models) {
+      col_values_vec <- "black"
+    }
+    
+    if (multiple_models) {
+      names(col_values_vec) <- unique(performance_table[, 1])
+    }
+    
+  }
+  
+  performance_table %>%
+    create_plotly_base(x_perf_metric,
+                       y_perf_metric,
+                       multiple_models = multiple_models,
+                       col_values = col_values_vec) %>%
+    add_lines_to_plotly() %>%
+    add_interactive_marker_to_plotly()
+}
+
+
+#' Add Interactive Marker to Plotly
+#'
+#' @param plot_tichoke_ly_ob 
+#' @param multiple_models 
+#' @param main_slider 
+
+add_interactive_marker_to_plotly <- function(plot_tichoke_ly_ob, multiple_models = F, main_slider = 'threshold'){
+  theme_color <- c("#FFBF49", "#FF4989", "#30a28e")[main_slider == c("threshold", "percentpositives", "positives")]
+  
+  plot_tichoke_ly_ob  %>%
+    add_markers(
+      frame = as.formula(paste0("~", main_slider)),
+      marker = interactive_marker_list(multiple_models = multiple_models, theme_color = theme_color),
+      hoverinfo = "text",
+      text = ~ paste(
+        "Model:", model,
+        "TPR (Sensitivity):", round(TPR, digits = 3), "<br>",
+        "FPR:", round(FPR, digits = 3), "<br>",
+        "Specificity", round(specificity, digits = 3), "<br>",
+        "LIFT", round(lift, digits = 3), "<br>",
+        "PPV", round(ppv, digits = 3), "<br>",
+        "NPV", round(npv, digits = 3), "<br>",
+        "TP:", TP, "<br>",
+        "TN:", TN, "<br>",
+        "FP:", FP, "<br>",
+        "FN:", FN
+      )
+    )
+}
+
+
+#' Create basic plotly for Performance Metrics
+#' 
+#' Makes a basic plotly for the metrices
+#'
+#' @inheritParams create_ggplot_for_performance_metrics
+#'
+
+create_plotly_base <- function(performance_table, 
+                                 x_perf_metric, 
+                                 y_perf_metric, 
+                                 multiple_models = F, 
+                                 stratified_by = "model",
+                                 col_values = c("#5E7F9A", 
+                                                "#931B53", 
+                                                "#F7DC2E", 
+                                                "#C6C174", 
+                                                "#75DBCD")) {
+  x_perf_metric <- enquo(x_perf_metric)
+  y_perf_metric <- enquo(y_perf_metric)
+  
+  
+  if(!multiple_models){
+    performance_table %>%
+      plot_ly(
+        x = x_perf_metric,
+        y = y_perf_metric
+      )
+  } else {
+    performance_table %>%
+      plot_ly(
+        x = x_perf_metric,
+        y = y_perf_metric,
+        color = as.formula(paste0("~", stratified_by)),
+        colors = col_values
+      )
+  }
+}
+
+
+#' Add lines to Plotly
+#'
+#' @param plot_tichoke_ly_ob 
+#' @param multiple_models 
+#'
+add_lines_to_plotly <- function(plot_tichoke_ly_ob, multiple_models = F){
+  if(multiple_models == T){
+    plot_tichoke_ly_ob %>%
+      add_lines()
+  } else {
+    plot_tichoke_ly_ob %>%
+      add_lines(
+        color = I("black")
+      )
+  }
+}
+
+
+#' Title
+#'
+#' @param multiple_models 
+#' @param theme_color 
+
+interactive_marker_list <- function(multiple_models = F, theme_color = NA) {
+  if (multiple_models ==T) { list(
+    # color = ~model,
+    size = 16,
+    line = list(
+      width = 4,
+      color = I("black")
+    )
+  ) } else {
+    list(
+      color = theme_color,
+      size = 16,
+      line = list(
+        width = 4,
+        color = I("black")
+      )
+    )
+  }
+}
+
+#' Title
+#'
+#' @param plot_tichoke_ly_ob 
+remove_grid_lines_from_plotly <- function(plot_tichoke_ly_ob){
+  plot_tichoke_ly_ob %>%
+    layout(xaxis = list(showgrid = F),
+           yaxis = list(showgrid = F))
+}
 
 # ROC Curve ---------------------------------------------------------------
 
@@ -212,99 +381,6 @@ set_lift_limits <- function(lift_curve){
 
 
 
-# Gains Curve -------------------------------------------------------------
-
-#' Gains Curve
-#' 
-#' Create a Gains Curve
-#'
-#' @inheritParams create_roc_curve
-#'
-#' @export
-#'
-create_gains_curve <- function(probs, real, by = 0.01, 
-                              enforce_percentiles_symmetry = F){
-  create_performance_table(probs = probs, 
-                           real = real,
-                           by = by, 
-                           enforce_percentiles_symmetry = enforce_percentiles_symmetry) %>%
-    plot_gains_curve()
-}
-
-
-#' Gains Curve from Performance Table
-#'
-#' Plot a Gains Curve
-#'
-#' @inheritParams plot_roc_curve
-#' 
-#' @examples 
-#' 
-#' performance_table_one_model %>%
-#'   plot_gains_curve()
-#' 
-#' performance_table_for_two_models %>%
-#'   plot_gains_curve()
-#'   
-#' performance_table_for_two_models %>%
-#'   plot_gains_curve()
-#' @export
-
-plot_gains_curve <- function(performance_table,
-                            chosen_threshold = NA,
-                            interactive = F,
-                            main_slider = "threshold") {
-  if (interactive == F) {
-    gains_curve <- performance_table %>%
-      create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
-      add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>%
-      set_gains_curve_limits()
-  }
-  return(gains_curve)
-}
-
-#' Add reference lines to Gains Curve
-#'
-#' @param gains_curve a ggplot object of a Gains Curve
-#' @param prevalence the prevalence of the outcome
-add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
-  gains_curve$layers <- c(
-    ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
-    purrr::map2(prevalence, c("#5E7F9A", 
-                              "#931B53", 
-                              "#F7DC2E", 
-                              "#C6C174", 
-                              "#75DBCD")[1:length(prevalence)] , 
-                add_prevalence_layers_to_gains_curve) %>% unlist(),
-    gains_curve$layers
-  )
-  gains_curve
-}
-
-
-#' Add Prevalence Layers go Gains Curve
-#'
-#' @param prevalence the prevalence in each population
-#' @param col_value color values palette
-#'
-add_prevalence_layers_to_gains_curve <- function(prevalence, col_value){
-  c(ggplot2::geom_segment(x = 0, y = 0, xend = prevalence, yend = 1, color = col_value, 
-                          linetype= "dotted"),
-  ggplot2::geom_segment(x = prevalence, y = 1, xend = 1, yend = 1, color = col_value, 
-                        linetype= "dotted"))
-  }
-
-
-#' Set the limits for Gains Curve
-#' 
-#' @param gains_curve a ggplot object of a Gains Curve
-#'
-set_gains_curve_limits <- function(gains_curve){
-  gains_curve  +
-    ggplot2::xlim(0, 1) +
-    ggplot2::ylim(0, 1)
-}
-
 # Precision Recall Curve --------------------------------------------------
 
 
@@ -406,6 +482,99 @@ set_precision_recall_curve_limits <- function(precision_recall_curve){
     ggplot2::ylim(0, 1)
 }
 
+
+# Gains Curve -------------------------------------------------------------
+
+#' Gains Curve
+#' 
+#' Create a Gains Curve
+#'
+#' @inheritParams create_roc_curve
+#'
+#' @export
+#'
+create_gains_curve <- function(probs, real, by = 0.01, 
+                              enforce_percentiles_symmetry = F){
+  create_performance_table(probs = probs, 
+                           real = real,
+                           by = by, 
+                           enforce_percentiles_symmetry = enforce_percentiles_symmetry) %>%
+    plot_gains_curve()
+}
+
+
+#' Gains Curve from Performance Table
+#'
+#' Plot a Gains Curve
+#'
+#' @inheritParams plot_roc_curve
+#' 
+#' @examples 
+#' 
+#' performance_table_one_model %>%
+#'   plot_gains_curve()
+#' 
+#' performance_table_for_two_models %>%
+#'   plot_gains_curve()
+#'   
+#' performance_table_for_two_models %>%
+#'   plot_gains_curve()
+#' @export
+
+plot_gains_curve <- function(performance_table,
+                            chosen_threshold = NA,
+                            interactive = F,
+                            main_slider = "threshold") {
+  if (interactive == F) {
+    gains_curve <- performance_table %>%
+      create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
+      add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>%
+      set_gains_curve_limits()
+  }
+  return(gains_curve)
+}
+
+#' Add reference lines to Gains Curve
+#'
+#' @param gains_curve a ggplot object of a Gains Curve
+#' @param prevalence the prevalence of the outcome
+add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
+  gains_curve$layers <- c(
+    ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
+    purrr::map2(prevalence, c("#5E7F9A", 
+                              "#931B53", 
+                              "#F7DC2E", 
+                              "#C6C174", 
+                              "#75DBCD")[1:length(prevalence)] , 
+                add_prevalence_layers_to_gains_curve) %>% unlist(),
+    gains_curve$layers
+  )
+  gains_curve
+}
+
+
+#' Add Prevalence Layers go Gains Curve
+#'
+#' @param prevalence the prevalence in each population
+#' @param col_value color values palette
+#'
+add_prevalence_layers_to_gains_curve <- function(prevalence, col_value){
+  c(ggplot2::geom_segment(x = 0, y = 0, xend = prevalence, yend = 1, color = col_value, 
+                          linetype= "dotted"),
+  ggplot2::geom_segment(x = prevalence, y = 1, xend = 1, yend = 1, color = col_value, 
+                        linetype= "dotted"))
+  }
+
+
+#' Set the limits for Gains Curve
+#' 
+#' @param gains_curve a ggplot object of a Gains Curve
+#'
+set_gains_curve_limits <- function(gains_curve){
+  gains_curve  +
+    ggplot2::xlim(0, 1) +
+    ggplot2::ylim(0, 1)
+}
 
 # Decision Curve ----------------------------------------------------------
 
