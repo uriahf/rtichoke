@@ -65,11 +65,12 @@ create_ggplot_for_performance_metrics <- function(performance_table,
 #' 
 #' Makes a plotly for the Performance Metrics
 #' 
-#' @examples 
-#' 
 #' 
 #'
 #' @inheritParams create_ggplot_for_performance_metrics
+#' @param main_slider what is the main slider - threshold, percent positives or positives
+#' @param reference_lines a list of reference lines
+
 create_plotly_for_performance_metrics <- function(performance_table,
                                                   x_perf_metric,
                                                   y_perf_metric,
@@ -78,7 +79,8 @@ create_plotly_for_performance_metrics <- function(performance_table,
                                                                  "#F7DC2E", 
                                                                  "#C6C174", 
                                                                  "#75DBCD"),
-                                                  main_slider = "threshold") {
+                                                  main_slider = "threshold",
+                                                  reference_lines = NA) {
     
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -96,13 +98,22 @@ create_plotly_for_performance_metrics <- function(performance_table,
   print(performance_table_type)
   print(col_values_vec)
   
-  performance_table %>%
+  plotly_for_performance_metrics <- performance_table %>%
     create_plotly_base(x_perf_metric,
                        y_perf_metric,
                        performance_table_type = performance_table_type,
-                       col_values = col_values_vec) %>%
+                       col_values = col_values_vec) 
+  
+  if(is.list(reference_lines) ){
+    plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
+      add_reference_lines_to_plotly(reference_lines$x_ref_line, reference_lines$y_ref_line)
+  }
+  
+  
+  plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
     add_markers_and_lines_to_plotly(performance_table_type = performance_table_type) %>%
-    add_interactive_marker_to_plotly(performance_table_type = performance_table_type)
+    add_interactive_marker_to_plotly() %>%
+    remove_grid_lines_from_plotly()
 }
 
 
@@ -120,7 +131,7 @@ create_plotly_for_performance_metrics <- function(performance_table,
 
 #' remove_grid_lines_from_plotly
 #'
-#' @param plotly_object 
+#' @param plotly_object a plotly plot for performance metrics 
 remove_grid_lines_from_plotly <- function(plotly_object){
   plotly_object %>%
     plotly::layout(xaxis = list(showgrid = F),
@@ -183,6 +194,24 @@ plot_roc_curve <- function(performance_table,
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
       add_roc_curve_reference_lines()
   }
+  
+  if (interactive == T) {
+    roc_curve <- performance_table %>%
+      create_plotly_for_performance_metrics(FPR, sensitivity,
+                                            reference_lines = list(x_ref_line = c(0, 1),
+                                                                   y_ref_line = c(0, 1))) %>%
+      plotly::layout(
+        xaxis = list(
+          title = "1 - Specificity"
+        ),
+        yaxis = list(
+          title = "Sensitivity"
+        ),
+        showlegend = F
+      ) %>%
+      plotly::config(displayModeBar = F)
+  }
+    
   return(roc_curve)
 }
 
@@ -250,6 +279,46 @@ plot_lift_curve <- function(performance_table,
             add_lift_curve_reference_lines() %>%
             set_lift_limits()
     }
+  
+  if (interactive == T) {
+    lift_curve <- performance_table %>%
+      mutate(fake_dot = 0) %>%
+      create_plotly_for_performance_metrics(predicted_positives_percent, lift,
+                                            reference_lines = list(x_ref_line = c(0, 1),
+                                                                   y_ref_line = c(1, 1))) %>%
+      plotly::add_markers(
+        x = ~predicted_positives_percent,
+        y = ~fake_dot,
+        frame = as.formula(paste0("~", main_slider)),
+        marker = list(
+          color = "rgba(0,0,0,0)",
+          size = 16,
+          line = list(
+            width = 4,
+            color = "rgba(0,0,0,0)"
+          )
+        )
+      ) %>%
+      plotly::add_lines(
+        x = ~ c(0, 1),
+        y = ~ c(1, 1),
+        mode = "lines",
+        color = I("grey")
+      ) %>%
+      plotly::layout(
+        xaxis = list(
+          title = "Predicted Positives Percent",
+          showgrid = F
+        ),
+        yaxis = list(
+          title = "LIFT",
+          showgrid = F
+        ),
+        showlegend = FALSE
+      ) %>%
+      plotly::config(displayModeBar = F)
+  }
+  
     return(lift_curve)
 }
 

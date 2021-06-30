@@ -9,7 +9,8 @@ create_plotly_for_performance_metrics(
   x_perf_metric,
   y_perf_metric,
   col_values = c("#5E7F9A", "#931B53", "#F7DC2E", "#C6C174", "#75DBCD"),
-  main_slider = "threshold"
+  main_slider = "threshold",
+  reference_lines = NA
 )
 }
 \arguments{
@@ -20,12 +21,11 @@ create_plotly_for_performance_metrics(
 \item{y_perf_metric}{a performance metrice for the y axis}
 
 \item{col_values}{color palette}
+
+\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+
+\item{reference_lines}{a list of reference lines}
 }
 \description{
 Makes a plotly for the Performance Metrics
-}
-\examples{
-
-
-
 }

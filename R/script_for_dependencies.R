@@ -2,6 +2,6 @@
 #' @import htmltools
 #' @import processx
 #' @import dplyr
-#' @importFrom stats quantile
+#' @importFrom stats quantile as.formula
 #' @import rlang
 NULL
