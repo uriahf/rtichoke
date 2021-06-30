@@ -7,7 +7,7 @@
 remove_grid_lines_from_plotly(plotly_object)
 }
 \arguments{
-\item{plotly_object}{}
+\item{plotly_object}{a plotly plot for performance metrics}
 }
 \description{
 remove_grid_lines_from_plotly
