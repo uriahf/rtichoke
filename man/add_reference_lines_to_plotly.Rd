@@ -4,14 +4,12 @@
 \alias{add_reference_lines_to_plotly}
 \title{Add Reference Lines to Plotly Object}
 \usage{
-add_reference_lines_to_plotly(plotly_object, x_ref_line, y_ref_line)
+add_reference_lines_to_plotly(plotly_object, reference_lines)
 }
 \arguments{
-\item{plotly_object}{}
+\item{plotly_object}{a plotly plot for performance metrics}
 
-\item{x_ref_line}{}
-
-\item{y_ref_line}{}
+\item{reference_lines}{dataframe of reference lines}
 }
 \description{
 Add Reference Lines to Plotly Object

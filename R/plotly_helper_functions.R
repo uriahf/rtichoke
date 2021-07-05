@@ -45,8 +45,7 @@ create_plotly_base <- function(performance_table,
         x = x_perf_metric,
         y = y_perf_metric,
         color =~  model,
-        colors = col_values,
-        legendgroup = ~model
+        colors = col_values
       )
   }
   
@@ -173,17 +172,18 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 #' Add Reference Lines to Plotly Object
 #'
 #' @param plotly_object a plotly plot for performance metrics
-#' @param x_ref_line 
-#' @param y_ref_line 
+#' @param reference_lines dataframe of reference lines
 
 add_reference_lines_to_plotly <- function(plotly_object, 
-                                          x_ref_line, 
-                                          y_ref_line){
+                                          reference_lines){
+  print(c(reference_lines$x, reference_lines$xend))
+  print(c(reference_lines$y, reference_lines$yend))
+  
   plotly_object %>%
     plotly::add_lines(
-      x = ~ x_ref_line,
-      y = ~ y_ref_line,
+      x = ~ c(reference_lines$x, reference_lines$xend),
+      y = ~ c(reference_lines$y, reference_lines$yend),
       mode = "lines",
-      color = I("grey")
+      color = I(reference_lines$col)
     )
 }

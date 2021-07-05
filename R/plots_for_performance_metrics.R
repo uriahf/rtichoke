@@ -104,9 +104,9 @@ create_plotly_for_performance_metrics <- function(performance_table,
                        performance_table_type = performance_table_type,
                        col_values = col_values_vec) 
   
-  if(is.list(reference_lines) ){
+  if(is.data.frame(reference_lines) ){
     plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
-      add_reference_lines_to_plotly(reference_lines$x_ref_line, reference_lines$y_ref_line)
+      add_reference_lines_to_plotly(reference_lines)
   }
   
   
@@ -114,6 +114,8 @@ create_plotly_for_performance_metrics <- function(performance_table,
     add_markers_and_lines_to_plotly(performance_table_type = performance_table_type) %>%
     add_interactive_marker_to_plotly() %>%
     remove_grid_lines_from_plotly()
+  
+  plotly_for_performance_metrics
 }
 
 
@@ -192,14 +194,13 @@ plot_roc_curve <- function(performance_table,
   if (interactive == F) {
     roc_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
-      add_roc_curve_reference_lines()
+      add_reference_lines_to_ggplot(create_reference_lines_data_frame("roc"))
   }
   
   if (interactive == T) {
     roc_curve <- performance_table %>%
       create_plotly_for_performance_metrics(FPR, sensitivity,
-                                            reference_lines = list(x_ref_line = c(0, 1),
-                                                                   y_ref_line = c(0, 1))) %>%
+                                            reference_lines = create_reference_lines_data_frame("roc")) %>%
       plotly::layout(
         xaxis = list(
           title = "1 - Specificity"
@@ -276,7 +277,8 @@ plot_lift_curve <- function(performance_table,
     if (interactive == F) {
         lift_curve <- performance_table %>%
             create_ggplot_for_performance_metrics("predicted_positives_percent","lift") %>%
-            add_lift_curve_reference_lines() %>%
+            # add_lift_curve_reference_lines() %>%
+            add_reference_lines_to_ggplot(create_reference_lines_data_frame("lift")) %>%
             set_lift_limits()
     }
   
@@ -284,8 +286,7 @@ plot_lift_curve <- function(performance_table,
     lift_curve <- performance_table %>%
       mutate(fake_dot = 0) %>%
       create_plotly_for_performance_metrics(predicted_positives_percent, lift,
-                                            reference_lines = list(x_ref_line = c(0, 1),
-                                                                   y_ref_line = c(1, 1))) %>%
+                                            reference_lines = create_reference_lines_data_frame("lift")) %>%
       plotly::add_markers(
         x = ~predicted_positives_percent,
         y = ~fake_dot,
@@ -298,12 +299,6 @@ plot_lift_curve <- function(performance_table,
             color = "rgba(0,0,0,0)"
           )
         )
-      ) %>%
-      plotly::add_lines(
-        x = ~ c(0, 1),
-        y = ~ c(1, 1),
-        mode = "lines",
-        color = I("grey")
       ) %>%
       plotly::layout(
         xaxis = list(
@@ -391,12 +386,35 @@ plot_precision_recall_curve <- function(performance_table,
                              chosen_threshold = NA,
                              interactive = F,
                              main_slider = "threshold") {
+  
+  prevalence <- get_prevalence_from_performance_table(performance_table)
+  
   if (interactive == F) {
     precision_recall_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
-      add_precision_recall_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>% 
+      add_reference_lines_to_ggplot(create_reference_lines_data_frame("precision recall", prevalence)) %>%
       set_precision_recall_curve_limits()
   }
+
+  if (interactive == T) {
+    precision_recall_curve <- performance_table %>%
+      create_plotly_for_performance_metrics(sensitivity, PPV,
+                                            reference_lines = list(x_ref_line = c(0, 1),
+                                                                   y_ref_line = c(prevalence, prevalence))) %>%
+      plotly::layout(
+        xaxis = list(
+          title = "Sensitivity",
+          showgrid = F
+        ),
+        yaxis = list(
+          title = "PPV",
+          showgrid = F
+        ),
+        showlegend = FALSE
+      ) %>%
+      plotly::config(displayModeBar = F)
+  }
+  
   return(precision_recall_curve)
 }
 
@@ -490,10 +508,14 @@ plot_gains_curve <- function(performance_table,
                             chosen_threshold = NA,
                             interactive = F,
                             main_slider = "threshold") {
+  
+  prevalence <- get_prevalence_from_performance_table(performance_table)
+  
   if (interactive == F) {
     gains_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
-      add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>%
+      # add_gains_curve_reference_lines(get_prevalence_from_performance_table(performance_table)) %>%
+      add_reference_lines_to_ggplot(create_reference_lines_data_frame("gains", prevalence)) %>%
       set_gains_curve_limits()
   }
   return(gains_curve)
