@@ -83,14 +83,14 @@ create_reference_lines_data_frame <- function(curve,
     
   }
   
-  if (curve == "decision curve") {
-    rbind(
-      create_reference_lines_data_frame("decision curve treat all", prevalence),
-      create_reference_lines_data_frame("decision curve treat none"),
+  if (curve == "decision") {
+    reference_lines_data_frame <- rbind(
+      create_reference_lines_data_frame("decision treat all", prevalence),
+      create_reference_lines_data_frame("decision treat none")
     )
   }
 
-  if (curve == "decision curve treat all") {
+  if (curve == "decision treat all") {
     
     if(length(prevalence) == 1) {col_values <- "grey" }
     if(length(prevalence) > 1) {col_values <- c("#5E7F9A", 
@@ -105,7 +105,7 @@ create_reference_lines_data_frame <- function(curve,
     )
   }
 
-  if (curve == "decision curve treat none") {
+  if (curve == "decision treat none") {
     reference_lines_data_frame <- data.frame(
       x = 0, xend = 1, y = 0, yend = 0, col = "grey",
       linetype = "solid"
