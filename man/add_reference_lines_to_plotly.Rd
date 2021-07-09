@@ -4,7 +4,11 @@
 \alias{add_reference_lines_to_plotly}
 \title{Add Reference Lines to Plotly Object}
 \usage{
-add_reference_lines_to_plotly(plotly_object, reference_lines)
+add_reference_lines_to_plotly(
+  plotly_object,
+  reference_lines,
+  performance_table_type = "one model"
+)
 }
 \arguments{
 \item{plotly_object}{a plotly plot for performance metrics}

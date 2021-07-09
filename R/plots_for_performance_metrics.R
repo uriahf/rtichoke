@@ -106,7 +106,7 @@ create_plotly_for_performance_metrics <- function(performance_table,
   
   if(is.data.frame(reference_lines) ){
     plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
-      add_reference_lines_to_plotly(reference_lines)
+      add_reference_lines_to_plotly(reference_lines, performance_table_type)
   }
   
   
@@ -181,16 +181,20 @@ plot_roc_curve <- function(performance_table,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold") {
+  
+  reference_lines <- create_reference_lines_data_frame("roc", prevalence)
+  
   if (interactive == F) {
     roc_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
-      add_reference_lines_to_ggplot(create_reference_lines_data_frame("roc"))
+      add_reference_lines_to_ggplot(reference_lines)
   }
   
   if (interactive == T) {
     roc_curve <- performance_table %>%
-      create_plotly_for_performance_metrics(FPR, sensitivity,
-                                            reference_lines = create_reference_lines_data_frame("roc")) %>%
+      create_plotly_for_performance_metrics(FPR, 
+                                            sensitivity,
+                                            reference_lines = reference_lines) %>%
       plotly::layout(
         xaxis = list(
           title = "1 - Specificity"
@@ -253,11 +257,15 @@ plot_lift_curve <- function(performance_table,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold") {
+  
+  reference_lines <- create_reference_lines_data_frame("lift", prevalence)
+
+  
     if (interactive == F) {
         lift_curve <- performance_table %>%
             create_ggplot_for_performance_metrics("predicted_positives_percent","lift") %>%
             # add_lift_curve_reference_lines() %>%
-            add_reference_lines_to_ggplot(create_reference_lines_data_frame("lift")) %>%
+            add_reference_lines_to_ggplot(reference_lines) %>%
             set_lift_limits()
     }
   
@@ -265,7 +273,7 @@ plot_lift_curve <- function(performance_table,
     lift_curve <- performance_table %>%
       mutate(fake_dot = 0) %>%
       create_plotly_for_performance_metrics(predicted_positives_percent, lift,
-                                            reference_lines = create_reference_lines_data_frame("lift")) %>%
+                                            reference_lines = reference_lines) %>%
       plotly::add_markers(
         x = ~predicted_positives_percent,
         y = ~fake_dot,
@@ -357,19 +365,19 @@ plot_precision_recall_curve <- function(performance_table,
                              main_slider = "threshold") {
   
   prevalence <- get_prevalence_from_performance_table(performance_table)
+  reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
   
   if (interactive == F) {
     precision_recall_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
-      add_reference_lines_to_ggplot(create_reference_lines_data_frame("precision recall", prevalence)) %>%
+      add_reference_lines_to_ggplot(reference_lines) %>%
       set_precision_recall_curve_limits()
   }
 
   if (interactive == T) {
     precision_recall_curve <- performance_table %>%
       create_plotly_for_performance_metrics(sensitivity, PPV,
-                                            reference_lines = list(x_ref_line = c(0, 1),
-                                                                   y_ref_line = c(prevalence, prevalence))) %>%
+                                            reference_lines = reference_lines) %>%
       plotly::layout(
         xaxis = list(
           title = "Sensitivity",
@@ -443,11 +451,12 @@ plot_gains_curve <- function(performance_table,
                             main_slider = "threshold") {
   
   prevalence <- get_prevalence_from_performance_table(performance_table)
+  reference_lines <- create_reference_lines_data_frame("gains", prevalence)
   
   if (interactive == F) {
     gains_curve <- performance_table %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
-      add_reference_lines_to_ggplot(create_reference_lines_data_frame("gains", prevalence)) %>%
+      add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits()
   }
   return(gains_curve)

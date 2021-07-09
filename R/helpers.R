@@ -59,14 +59,7 @@ create_reference_lines_data_frame <- function(curve,
                                                 "#F7DC2E", 
                                                 "#C6C174", 
                                                 "#75DBCD")[1:length(prevalence)]}
-    
-    # reference_lines_data_frame <- data.frame(
-    #   x = c(0, prevalence),
-    #   xend = c(prevalence, 1),
-    #   y = c(0, 1),
-    #   yend = c(1, 1),
-    #   col = c(color, color)
-    # )
+  
     
     reference_lines_data_frame <- purrr::map2_df(
       prevalence,

@@ -175,15 +175,59 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 #' @param reference_lines dataframe of reference lines
 
 add_reference_lines_to_plotly <- function(plotly_object, 
-                                          reference_lines){
+                                          reference_lines, 
+                                          performance_table_type = "one model"){
+  print(reference_lines)
   print(c(reference_lines$x, reference_lines$xend))
   print(c(reference_lines$y, reference_lines$yend))
+  
+  if (performance_table_type == "several populations") {
+    # plotly_object %>%
+    #   add_lines(
+    #     data = reference_lines %>% 
+    #       mutate(population = unique(performance_table_for_train_and_test_sets$population)) %>%
+    #       tidyr::pivot_longer(cols = c(x, xend), values_to = "x") %>%
+    #       select(-name) %>%
+    #       tidyr::pivot_longer(cols = c(y, yend), values_to = "y") %>%
+    #       select(-name) %>%
+    #       distinct(),
+    #     x =~ x,
+    #     y =~ y
+    #   )
+    # 
+    # fake_base_plotly <- fake_plotly_base(perf_table, sensitivity, PPV, performance_table_type = "several populations")
+    # reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
+    # 
+    # # works!
+    # 
+    # fake_base_plotly %>%
+    #   add_reference_lines_to_plotly(reference_lines[1,]) %>%
+    #   add_reference_lines_to_plotly(reference_lines[2,]) %>%
+    #   add_reference_lines_to_plotly(reference_lines[3,]) %>%
+    #   add_reference_lines_to_plotly(reference_lines[4,]) %>%
+    #   add_reference_lines_to_plotly(reference_lines[5,]) %>%
+    #   add_markers() %>%
+    #   add_lines()
+    # 
+    # # doesn't work!
+    # 
+    # reference_lines  %>%
+    #   split(1:nrow(.)) %>%
+    #   purrr::reduce(add_reference_lines_to_plotly,
+    #                 .init = fake_base_plotly) %>%
+    #   add_markers() %>%
+    #   add_lines()
+    
+    
+  } else {
   
   plotly_object %>%
     plotly::add_lines(
       x = ~ c(reference_lines$x, reference_lines$xend),
       y = ~ c(reference_lines$y, reference_lines$yend),
       mode = "lines",
-      color = I(reference_lines$col)
-    )
+      color = I(reference_lines$col))
+    }
 }
+
+

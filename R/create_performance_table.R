@@ -109,7 +109,7 @@ create_performance_table <- function(probs, real, by = 0.01,
     dplyr::mutate(
       TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
         unlist(),
-      TN = lapply(threshold, function(x) sum(probs[real == 0] < x)) %>%
+      TN = lapply(threshold, function(x) sum(probs[real == 0] <= x)) %>%
         unlist()
     ) %>%
     dplyr::mutate(
