@@ -4,7 +4,13 @@
 \alias{create_reference_lines_data_frame}
 \title{Title}
 \usage{
-create_reference_lines_data_frame(curve, prevalence = NA, color = NA)
+create_reference_lines_data_frame(
+  curve,
+  prevalence = NA,
+  color = NA,
+  plotly = F,
+  multiple_pop = F
+)
 }
 \arguments{
 \item{curve}{the specified curve for the reference lines}

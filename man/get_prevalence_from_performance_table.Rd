@@ -4,10 +4,15 @@
 \alias{get_prevalence_from_performance_table}
 \title{prevalence}
 \usage{
-get_prevalence_from_performance_table(performance_table)
+get_prevalence_from_performance_table(
+  performance_table,
+  performance_table_type
+)
 }
 \arguments{
 \item{performance_table}{an rtichoke performance table}
+
+\item{performance_table_type}{}
 }
 \description{
 Get the prevalence out of performance table

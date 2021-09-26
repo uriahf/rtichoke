@@ -211,12 +211,12 @@ add_reference_lines_to_plotly <- function(plotly_object,
     # 
     # # doesn't work!
     # 
-    # reference_lines  %>%
-    #   split(1:nrow(.)) %>%
-    #   purrr::reduce(add_reference_lines_to_plotly,
-    #                 .init = fake_base_plotly) %>%
-    #   add_markers() %>%
-    #   add_lines()
+    reference_lines  %>%
+      split(1:nrow(.)) %>%
+      purrr::reduce(add_reference_lines_to_plotly,
+                    .init = plotly_object) %>%
+      add_markers() %>%
+      add_lines()
     
     
   } else {

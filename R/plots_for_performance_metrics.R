@@ -182,7 +182,7 @@ plot_roc_curve <- function(performance_table,
                            interactive = F,
                            main_slider = "threshold") {
   
-  reference_lines <- create_reference_lines_data_frame("roc", prevalence)
+  reference_lines <- create_reference_lines_data_frame("roc")
   
   if (interactive == F) {
     roc_curve <- performance_table %>%
@@ -364,7 +364,8 @@ plot_precision_recall_curve <- function(performance_table,
                              interactive = F,
                              main_slider = "threshold") {
   
-  prevalence <- get_prevalence_from_performance_table(performance_table)
+  performance_table_type <- check_performance_table_type_for_plotly(performance_table)
+  prevalence <- get_prevalence_from_performance_table(performance_table, performance_table_type)
   reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
   
   if (interactive == F) {
@@ -375,23 +376,26 @@ plot_precision_recall_curve <- function(performance_table,
   }
 
   if (interactive == T) {
-    precision_recall_curve <- performance_table %>%
-      create_plotly_for_performance_metrics(sensitivity, PPV,
-                                            reference_lines = reference_lines) %>%
-      plotly::layout(
-        xaxis = list(
-          title = "Sensitivity",
-          showgrid = F
-        ),
-        yaxis = list(
-          title = "PPV",
-          showgrid = F
-        ),
-        showlegend = FALSE
-      ) %>%
-      plotly::config(displayModeBar = F)
+    # precision_recall_curve <- performance_table %>%
+    #   create_plotly_for_performance_metrics(sensitivity, PPV,
+    #                                         reference_lines = reference_lines) %>%
+    #   plotly::layout(
+    #     xaxis = list(
+    #       title = "Sensitivity",
+    #       showgrid = F
+    #     ),
+    #     yaxis = list(
+    #       title = "PPV",
+    #       showgrid = F
+    #     ),
+    #     showlegend = FALSE
+    #   ) %>%
+    #   plotly::config(displayModeBar = F)
+    
+    
+    
+    
   }
-  
   return(precision_recall_curve)
 }
 

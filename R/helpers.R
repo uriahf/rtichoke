@@ -3,18 +3,18 @@
 #' Get the prevalence out of performance table
 #'
 #' @param performance_table an rtichoke performance table
+#' @param performance_table_type 
 #'
 #' @export
 
 
 
-get_prevalence_from_performance_table <- function(performance_table) {
+get_prevalence_from_performance_table <- function(performance_table, performance_table_type) {
   PPV <- predicted_positives_percent <- NULL
 
   performance_table %>%
     dplyr::filter(predicted_positives_percent == 1) %>%
-    dplyr::pull(PPV) %>%
-    unique()
+    dplyr::pull(PPV, name = 1) 
 }
 
 
@@ -26,16 +26,26 @@ get_prevalence_from_performance_table <- function(performance_table) {
 
 create_reference_lines_data_frame <- function(curve,
                                               prevalence = NA,
-                                              color = NA) {
+                                              color = NA, 
+                                              plotly = F,
+                                              multiple_pop = F) {
   
 
   
   if (curve == "roc") {
+    if(plotly == F) {
     reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "solid")
+    } else {
+    reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(0, 1))  
+    }
   }
 
   if (curve == "lift") {
+    if(plotly == F) {
     reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 1, yend = 1, col = "grey", linetype = "solid")
+    } else {
+    reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(1, 1))  
+    }
   }
 
   if (curve == "precision recall") {
@@ -46,9 +56,15 @@ create_reference_lines_data_frame <- function(curve,
                                                 "#F7DC2E", 
                                                 "#C6C174", 
                                                 "#75DBCD")[1:length(prevalence)]}
-    
-    reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = prevalence, yend = prevalence, col = col_values, 
-                                             linetype = "dotted" )
+    if(plotly == F) {
+     reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = prevalence, yend = prevalence, col = col_values, 
+                                              linetype = "dotted" )
+    } else {
+      
+    reference_lines_data_frame <- data.frame(population = rep(names(prevalence), each = 2), 
+                                             x = c(0, 1), 
+                                             y = rep(prevalence, each = 2))
+    }
   }
 
   if (curve == "gains") {
@@ -60,7 +76,7 @@ create_reference_lines_data_frame <- function(curve,
                                                 "#C6C174", 
                                                 "#75DBCD")[1:length(prevalence)]}
   
-    
+    if(plotly == F) {
     reference_lines_data_frame <- purrr::map2_df(
       prevalence,
       col_values,
@@ -73,14 +89,36 @@ create_reference_lines_data_frame <- function(curve,
           col = c(y, y),
           linetype = "dotted") 
     )
+    } else {
     
+    reference_lines_data_frame <- data.frame(population = names(prevalence), x = prevalence, y = 1, row.names = NULL) %>%
+      bind_rows(
+        data.frame(population = rep(names(prevalence), each = 2),
+                   x = c(0, 1),
+                   y = c(0, 1)
+        )
+      ) %>%
+      arrange(population, x, y) %>%
+      bind_rows(
+        data.frame(population = "random", x = c(0, 1), y = c(0, 1))
+      )
+    }
   }
   
   if (curve == "decision") {
+    
+    if(plotly == F){
     reference_lines_data_frame <- rbind(
       create_reference_lines_data_frame("decision treat all", prevalence),
       create_reference_lines_data_frame("decision treat none")
     )
+    } else {
+      reference_lines_data_frame <- bind_rows(
+        data.frame(population = names(prevalence), x = prevalence, y = 0, row.names = NULL),
+        data.frame(population = names(prevalence), x = 0, y = prevalence, row.names = NULL),
+        data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
+      )
+    }
   }
 
   if (curve == "decision treat all") {
