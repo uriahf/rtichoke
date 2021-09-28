@@ -25,13 +25,52 @@ Plot a Lift Curve
 }
 \examples{
 
-performance_table_one_model \%>\%
+one_pop_one_model_as_a_vector \%>\%
   plot_lift_curve()
 
-performance_table_for_two_models \%>\%
+one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
   plot_lift_curve()
-  
-performance_table_for_two_models \%>\%
+
+one_pop_one_model_as_a_list \%>\%
   plot_lift_curve()
+
+one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve()
+
+one_pop_three_models \%>\%
+  plot_lift_curve()
+
+one_pop_three_models_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve()
+
+train_and_test_sets \%>\%
+  plot_lift_curve()
+
+train_and_test_sets_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve()
+
+one_pop_one_model_as_a_vector \%>\%
+  plot_lift_curve(interactive = T)
+
+one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+one_pop_one_model_as_a_list \%>\%
+  plot_lift_curve(interactive = T)
+
+one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+one_pop_three_models \%>\%
+  plot_lift_curve(interactive = T)
+
+one_pop_three_models_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+train_and_test_sets \%>\%
+  plot_lift_curve(interactive = T)
+
+train_and_test_sets_enforced_percentiles_symmetry \%>\%
+  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
   
 }

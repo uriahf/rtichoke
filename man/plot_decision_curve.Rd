@@ -23,15 +23,3 @@ plot_decision_curve(
 \description{
 Plot a Precision Recall Curve
 }
-\examples{
-
-performance_table_one_model \%>\%
-  plot_decision_curve()
-
-performance_table_for_two_models \%>\%
-  plot_decision_curve()
-  
-performance_table_for_two_models \%>\%
-  plot_decision_curve()
-  
-}

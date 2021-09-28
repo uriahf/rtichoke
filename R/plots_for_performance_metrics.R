@@ -163,16 +163,55 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #'
 #' 
 #' 
-#' @examples 
-#' 
-#' performance_table_one_model %>%
+#' @examples
+#'
+#' one_pop_one_model_as_a_vector %>%
 #'   plot_roc_curve()
-#' 
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
 #'   plot_roc_curve()
-#'   
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_list %>%
 #'   plot_roc_curve()
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve()
+#'
+#' one_pop_three_models %>%
+#'   plot_roc_curve()
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve()
+#'
+#' train_and_test_sets %>%
+#'   plot_roc_curve()
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve()
+#'
+#' one_pop_one_model_as_a_vector %>%
+#'   plot_roc_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_one_model_as_a_list %>%
+#'   plot_roc_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_three_models %>%
+#'   plot_roc_curve(interactive = T)
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' train_and_test_sets %>%
+#'   plot_roc_curve(interactive = T)
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'   
 #' @export
   
@@ -240,16 +279,55 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #'
 #' @inheritParams plot_roc_curve
 #' 
-#' @examples 
-#' 
-#' performance_table_one_model %>%
+#' @examples
+#'
+#' one_pop_one_model_as_a_vector %>%
 #'   plot_lift_curve()
-#' 
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
 #'   plot_lift_curve()
-#'   
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_list %>%
 #'   plot_lift_curve()
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve()
+#'
+#' one_pop_three_models %>%
+#'   plot_lift_curve()
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve()
+#'
+#' train_and_test_sets %>%
+#'   plot_lift_curve()
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve()
+#'
+#' one_pop_one_model_as_a_vector %>%
+#'   plot_lift_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_one_model_as_a_list %>%
+#'   plot_lift_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_three_models %>%
+#'   plot_lift_curve(interactive = T)
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' train_and_test_sets %>%
+#'   plot_lift_curve(interactive = T)
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'   
 #' @export
 
@@ -347,15 +425,54 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 #' @inheritParams plot_roc_curve
 #' 
 #' @examples
-#' 
-#' performance_table_one_model %>%
+#'
+#' one_pop_one_model_as_a_vector %>%
 #'   plot_precision_recall_curve()
-#' 
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
 #'   plot_precision_recall_curve()
-#'   
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_list %>%
 #'   plot_precision_recall_curve()
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve()
+#'
+#' one_pop_three_models %>%
+#'   plot_precision_recall_curve()
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve()
+#'
+#' train_and_test_sets %>%
+#'   plot_precision_recall_curve()
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve()
+#'
+#' one_pop_one_model_as_a_vector %>%
+#'   plot_precision_recall_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_one_model_as_a_list %>%
+#'   plot_precision_recall_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_three_models %>%
+#'   plot_precision_recall_curve(interactive = T)
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' train_and_test_sets %>%
+#'   plot_precision_recall_curve(interactive = T)
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_precision_recall_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'   
 #' @export
 
@@ -437,16 +554,55 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #'
 #' @inheritParams plot_roc_curve
 #' 
-#' @examples 
-#' 
-#' performance_table_one_model %>%
+#' @examples
+#'
+#' one_pop_one_model_as_a_vector %>%
 #'   plot_gains_curve()
-#' 
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
 #'   plot_gains_curve()
-#'   
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_list %>%
 #'   plot_gains_curve()
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve()
+#'
+#' one_pop_three_models %>%
+#'   plot_gains_curve()
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve()
+#'
+#' train_and_test_sets %>%
+#'   plot_gains_curve()
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve()
+#'
+#' one_pop_one_model_as_a_vector %>%
+#'   plot_gains_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_one_model_as_a_list %>%
+#'   plot_gains_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_three_models %>%
+#'   plot_gains_curve(interactive = T)
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' train_and_test_sets %>%
+#'   plot_gains_curve(interactive = T)
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
 #' @export
 
 plot_gains_curve <- function(performance_table,
@@ -525,15 +681,54 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #' @inheritParams plot_roc_curve
 #' 
 #' @examples
-#' 
-#' performance_table_one_model %>%
+#'
+#' one_pop_one_model_as_a_vector %>%
 #'   plot_decision_curve()
-#' 
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
 #'   plot_decision_curve()
-#'   
-#' performance_table_for_two_models %>%
+#'
+#' one_pop_one_model_as_a_list %>%
 #'   plot_decision_curve()
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve()
+#'
+#' one_pop_three_models %>%
+#'   plot_decision_curve()
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve()
+#'
+#' train_and_test_sets %>%
+#'   plot_decision_curve()
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve()
+#'
+#' one_pop_one_model_as_a_vector %>%
+#'   plot_decision_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_one_model_as_a_list %>%
+#'   plot_decision_curve(interactive = T)
+#'
+#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' one_pop_three_models %>%
+#'   plot_decision_curve(interactive = T)
+#'
+#' one_pop_three_models_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'
+#' train_and_test_sets %>%
+#'   plot_decision_curve(interactive = T)
+#'
+#' train_and_test_sets_enforced_percentiles_symmetry %>%
+#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'   
 #' @export
 

@@ -8,6 +8,7 @@
 A data frame with 53940 rows and 10 variables:
 \describe{
   \item{estimated_probabilities}{estimated probabilities from some model}
+  \item{bad_model}{estimated probabilities from some bad model}
   \item{random_guess}{random guesses generated from unifrom distribution}
   \item{outcome}{binary outcome}
   \item{type_of_set}{the type of the set that the observation belongs to}
