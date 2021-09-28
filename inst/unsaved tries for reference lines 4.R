@@ -117,4 +117,7 @@ linetype_solid[1:6] <- "solid"
 
 
 
-
+performance_table_for_train_and_test_sets %>%
+  rtichoke::create_plotly_for_performance_metrics(FPR, sensitivity) %>%
+  plotly::layout(paper_bgcolor='#fdf9f1',
+                 plot_bgcolor='#fdf9f1')
