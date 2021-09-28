@@ -1,49 +1,6 @@
 library(magrittr)
 library(dplyr)
 
-perf_table <-  rtichoke::create_performance_table(
-    probs = list("train" = example_dat %>%
-              dplyr::filter(type_of_set == "train") %>%
-              dplyr::pull(estimated_probabilities) %>%
-                .[1:40],
-              "else" = example_dat %>%
-                dplyr::filter(type_of_set == "train") %>%
-                dplyr::pull(estimated_probabilities) %>%
-                sample(replace = T) %>%
-                .[1:50],
-             "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-              dplyr::pull(estimated_probabilities) %>%
-               .[1:35],
-             "different" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-               dplyr::pull(estimated_probabilities) %>%
-               sample(replace =  T) %>%
-               .[1:25],
-             "last" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-               dplyr::pull(estimated_probabilities) %>%
-               sample(replace =  T) %>%
-               .[1:45]),
-    real = list("train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-             dplyr::pull(outcome) %>%
-               .[1:40],
-             "else" = example_dat %>%
-               dplyr::filter(type_of_set == "train") %>%
-               dplyr::pull(outcome) %>%
-               sample(replace = T) %>%
-               .[1:50],
-            "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-             dplyr::pull(outcome) %>%
-              .[1:35],
-            "different" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-              dplyr::pull(outcome) %>%
-              sample(replace = T) %>%
-              .[1:25],
-            "last" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-              dplyr::pull(outcome) %>%
-              sample(replace = T) %>%
-              .[1:45])
-  )
-
-
 
 
 
@@ -53,20 +10,11 @@ col_values = c("#5E7F9A",
                "#C6C174", 
                "#75DBCD")
   
-performance_table_type <- check_performance_table_type_for_plotly(perf_table)
-
-if(performance_table_type %in% c("one model", "one model with model column")){
-  col_values_vec <- "black"
-} else {
-  col_values_vec <- col_values[1:length(unique(perf_table[, 1]))]
-  names(col_values_vec) <- unique(perf_table[, 1])
-}
-
 
 print(performance_table_type)
 print(col_values_vec)
 
-prevalence <- get_prevalence_from_performance_table(perf_table)
+prevalence <- get_prevalence_from_performance_table(rtichoke::train_and_test_sets)
 reference_lines_roc <- create_reference_lines_data_frame("roc", plotly = T)
 reference_lines_lift <- create_reference_lines_data_frame("lift", plotly = T)
 reference_lines_precision_recall <- create_reference_lines_data_frame("precision recall", prevalence, plotly = T)
@@ -210,8 +158,8 @@ make_reference_lines_proper_to_multiple_populations <- function(reference_lines)
 
 
 
-# reference_lines_multiple_pop <- reference_lines %>%
-#   make_reference_lines_proper_to_multiple_populations() 
+reference_lines_multiple_pop <- reference_lines %>%
+  make_reference_lines_proper_to_multiple_populations()
 
 library(plotly)
 
@@ -219,7 +167,7 @@ reference_lines_multiple_pop %>%
   plot_ly(x =~ x ,y =~y, color =~ population, colors =~ col) %>%
   add_lines() %>%
   plotly::add_trace(
-    data = perf_table,
+    data = train_and_test_sets,
     x =~ sensitivity, 
     y =~ PPV,
     hoverinfo = "text",

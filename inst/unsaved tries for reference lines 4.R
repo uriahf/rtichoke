@@ -89,14 +89,14 @@ create_reference_lines_for_plotly("several populations",
                                   prevalence, 
                                   population_color_vector = population_color_vector) %>%
   plotly::add_trace(
-    data = perf_table, 
+    data = train_and_test_sets, 
     x =~ threshold,
     y =~ NB,
     type = "scatter",
     mode = "markers+lines" 
   )  %>%
   plotly::add_markers(
-    data = perf_table, 
+    data = train_and_test_sets, 
     x =~ threshold,
     y =~ NB,
     frame = ~ threshold,
@@ -117,7 +117,7 @@ linetype_solid[1:6] <- "solid"
 
 
 
-performance_table_for_train_and_test_sets %>%
+train_and_test_sets %>%
   rtichoke::create_plotly_for_performance_metrics(FPR, sensitivity) %>%
   plotly::layout(paper_bgcolor='#fdf9f1',
                  plot_bgcolor='#fdf9f1')
