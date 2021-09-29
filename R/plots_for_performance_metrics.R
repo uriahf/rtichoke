@@ -189,6 +189,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_roc_curve()
 #'
+#'\dontrun{
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_roc_curve(interactive = T)
 #'
@@ -212,7 +213,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
-#'   
+#'  } 
 #' @export
   
 
@@ -305,6 +306,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_lift_curve()
 #'
+#'\dontrun{
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_lift_curve(interactive = T)
 #'
@@ -328,7 +330,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
-#'   
+#'   }
 #' @export
 
 plot_lift_curve <- function(performance_table,
@@ -450,6 +452,7 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_precision_recall_curve()
 #'
+#'\dontrun{
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_precision_recall_curve(interactive = T)
 #'
@@ -473,7 +476,7 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_precision_recall_curve(interactive = T, main_slider = "predicted_positives_percent")
-#'   
+#' }  
 #' @export
 
 plot_precision_recall_curve <- function(performance_table,
@@ -579,7 +582,7 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_gains_curve()
-#'
+#'\dontrun{
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_gains_curve(interactive = T)
 #'
@@ -603,6 +606,7 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#' }
 #' @export
 
 plot_gains_curve <- function(performance_table,
@@ -705,7 +709,7 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_decision_curve()
-#'
+#'\dontrun{
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_decision_curve(interactive = T)
 #'
@@ -729,7 +733,7 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
-#'   
+#'   }
 #' @export
 
 plot_decision_curve <- function(performance_table,

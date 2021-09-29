@@ -23,3 +23,54 @@ plot_decision_curve(
 \description{
 Plot a Precision Recall Curve
 }
+\examples{
+
+one_pop_one_model_as_a_vector \%>\%
+  plot_decision_curve()
+
+one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve()
+
+one_pop_one_model_as_a_list \%>\%
+  plot_decision_curve()
+
+one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve()
+
+one_pop_three_models \%>\%
+  plot_decision_curve()
+
+one_pop_three_models_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve()
+
+train_and_test_sets \%>\%
+  plot_decision_curve()
+
+train_and_test_sets_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve()
+\dontrun{
+one_pop_one_model_as_a_vector \%>\%
+  plot_decision_curve(interactive = T)
+
+one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+one_pop_one_model_as_a_list \%>\%
+  plot_decision_curve(interactive = T)
+
+one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+one_pop_three_models \%>\%
+  plot_decision_curve(interactive = T)
+
+one_pop_three_models_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+
+train_and_test_sets \%>\%
+  plot_decision_curve(interactive = T)
+
+train_and_test_sets_enforced_percentiles_symmetry \%>\%
+  plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+  }
+}
