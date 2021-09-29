@@ -1,0 +1,125 @@
+[33mcommit e7ea231b88884ec2b3f7eeb42e91f5e34a57f4f0[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Uriah Finkel <ufinkel@gmail.com>
+Date:   Thu Sep 30 02:24:35 2021 +0300
+
+    added github actions for ci branch
+
+[1mdiff --git a/.Rbuildignore b/.Rbuildignore[m
+[1mindex 7592054..d10d1ee 100644[m
+[1m--- a/.Rbuildignore[m
+[1m+++ b/.Rbuildignore[m
+[36m@@ -12,3 +12,4 @@[m [m$run_dev.*[m
+ ^pkgdown$[m
+ ^doc$[m
+ ^Meta$[m
+[32m+[m[32m^\.github$[m
+[1mdiff --git a/.github/.gitignore b/.github/.gitignore[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2d19fc7[m
+[1m--- /dev/null[m
+[1m+++ b/.github/.gitignore[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32m*.html[m
+[1mdiff --git a/.github/workflows/check-standard.yaml b/.github/workflows/check-standard.yaml[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0528262[m
+[1m--- /dev/null[m
+[1m+++ b/.github/workflows/check-standard.yaml[m
+[36m@@ -0,0 +1,58 @@[m
+[32m+[m[32m# Workflow derived from https://github.com/r-lib/actions/tree/master/examples[m
+[32m+[m[32m# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help[m
+[32m+[m[32mon:[m
+[32m+[m[32m  push:[m
+[32m+[m[32m    branches: [main, master][m
+[32m+[m[32m  pull_request:[m
+[32m+[m[32m    branches: [main, master][m
+[32m+[m
+[32m+[m[32mname: R-CMD-check[m
+[32m+[m
+[32m+[m[32mjobs:[m
+[32m+[m[32m  R-CMD-check:[m
+[32m+[m[32m    runs-on: ${{ matrix.config.os }}[m
+[32m+[m
+[32m+[m[32m    name: ${{ matrix.config.os }} (${{ matrix.config.r }})[m
+[32m+[m
+[32m+[m[32m    strategy:[m
+[32m+[m[32m      fail-fast: false[m
+[32m+[m[32m      matrix:[m
+[32m+[m[32m        config:[m
+[32m+[m[32m          - {os: macOS-latest,   r: 'release'}[m
+[32m+[m[32m          - {os: windows-latest, r: 'release'}[m
+[32m+[m[32m          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}[m
+[32m+[m[32m          - {os: ubuntu-latest,   r: 'release'}[m
+[32m+[m[32m          - {os: ubuntu-latest,   r: 'oldrel-1'}[m
+[32m+[m
+[32m+[m[32m    env:[m
+[32m+[m[32m      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}[m
+[32m+[m[32m      R_KEEP_PKG_SOURCE: yes[m
+[32m+[m
+[32m+[m[32m    steps:[m
+[32m+[m[32m      - uses: actions/checkout@v2[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-pandoc@v1[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-r@v1[m
+[32m+[m[32m        with:[m
+[32m+[m[32m          r-version: ${{ matrix.config.r }}[m
+[32m+[m[32m          http-user-agent: ${{ matrix.config.http-user-agent }}[m
+[32m+[m[32m          use-public-rspm: true[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-r-dependencies@v1[m
+[32m+[m[32m        with:[m
+[32m+[m[32m          extra-packages: rcmdcheck[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/check-r-package@v1[m
+[32m+[m
+[32m+[m[32m      - name: Show testthat output[m
+[32m+[m[32m        if: always()[m
+[32m+[m[32m        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true[m
+[32m+[m[32m        shell: bash[m
+[32m+[m
+[32m+[m[32m      - name: Upload check results[m
+[32m+[m[32m        if: failure()[m
+[32m+[m[32m        uses: actions/upload-artifact@main[m
+[32m+[m[32m        with:[m
+[32m+[m[32m          name: ${{ runner.os }}-r${{ matrix.config.r }}-results[m
+[32m+[m[32m          path: check[m
+[1mdiff --git a/.github/workflows/pkgdown.yaml b/.github/workflows/pkgdown.yaml[m
+[1mnew file mode 100644[m
+[1mindex 0000000..59ae308[m
+[1m--- /dev/null[m
+[1m+++ b/.github/workflows/pkgdown.yaml[m
+[36m@@ -0,0 +1,33 @@[m
+[32m+[m[32m# Workflow derived from https://github.com/r-lib/actions/tree/master/examples[m
+[32m+[m[32m# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help[m
+[32m+[m[32mon:[m
+[32m+[m[32m  push:[m
+[32m+[m[32m    branches: [main, master][m
+[32m+[m[32m    tags: ['*'][m
+[32m+[m
+[32m+[m[32mname: pkgdown[m
+[32m+[m
+[32m+[m[32mjobs:[m
+[32m+[m[32m  pkgdown:[m
+[32m+[m[32m    runs-on: ubuntu-latest[m
+[32m+[m[32m    env:[m
+[32m+[m[32m      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}[m
+[32m+[m[32m    steps:[m
+[32m+[m[32m      - uses: actions/checkout@v2[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-pandoc@v1[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-r@v1[m
+[32m+[m[32m        with:[m
+[32m+[m[32m          use-public-rspm: true[m
+[32m+[m
+[32m+[m[32m      - uses: r-lib/actions/setup-r-dependencies@v1[m
+[32m+[m[32m        with:[m
+[32m+[m[32m          extra-packages: pkgdown[m
+[32m+[m[32m          needs: website[m
+[32m+[m
+[32m+[m[32m      - name: Deploy package[m
+[32m+[m[32m        run: |[m
+[32m+[m[32m          git config --local user.name "$GITHUB_ACTOR"[m
+[32m+[m[32m          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"[m
+[32m+[m[32m          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'[m
