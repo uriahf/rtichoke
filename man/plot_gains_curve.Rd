@@ -49,6 +49,8 @@ train_and_test_sets \%>\%
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   plot_gains_curve()
 
+\dontrun{
+
 one_pop_one_model_as_a_vector \%>\%
   plot_gains_curve(interactive = T)
 
@@ -72,4 +74,6 @@ train_and_test_sets \%>\%
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+}
+
 }
