@@ -139,6 +139,7 @@ tagRemoveAttributes <- function(tag, ...) {
 
 #' Hide or display a tag
 #' 
+#' 
 #' @param tag the tag
 #' 
 #' @return a tag
