@@ -1,8 +1,8 @@
 ---
-title: "naming_convention"
+title: "Naming Convention"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{naming_convention}
+  %\VignetteIndexEntry{Naming Convention}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -70,18 +70,29 @@ Some of the functions in `rtichoke` are built to work with an object that is cal
 
 But other functions are built to work estimated probabilities and outcomes. Each of these function starts with "create" (as create from scratch) - create\_\*():
 
++------------------------+-----------------------------------+---------------------------------+
 |                        | Predictions and Outcomes          | Performance Data                |
-|------------------------|-----------------------------------|---------------------------------|
++========================+===================================+=================================+
 | **Performance Data**   | `prepare_performance_data()`      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **ROC**                | `create_roc_curve()`              | `plot_roc_curve()`              |
++------------------------+-----------------------------------+---------------------------------+
 | **Lift**               | `create_lift_curve()`             | `plot_lift_curve()`             |
++------------------------+-----------------------------------+---------------------------------+
 | **Gains**              | `create_gains_curve()`            | `plot_gains_curve()`            |
++------------------------+-----------------------------------+---------------------------------+
 | **Precision Recall**   | `create_precision_recall_curve()` | `plot_precision_recall_curve()` |
++------------------------+-----------------------------------+---------------------------------+
 | **Decision**           | `create_decision_curve()`         | `plot_decision_curve()`         |
++------------------------+-----------------------------------+---------------------------------+
 | **Calibration**        | `create_calibration_curve()`      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **Interactive Table**  | `create_interactive_table()`      | `make_interactive()`            |
++------------------------+-----------------------------------+---------------------------------+
 | **Interactive Report** | `create_interactive_report()`     | X                               |
++------------------------+-----------------------------------+---------------------------------+
 | **rtichoke**           | `rtichoke()`                      | X                               |
++------------------------+-----------------------------------+---------------------------------+
 
 ## [**Plots of Performance Metrics across different Thresholds**]{.ul}
 
