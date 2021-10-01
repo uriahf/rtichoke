@@ -7,7 +7,7 @@
 add_reference_lines_to_plotly(
   plotly_object,
   reference_lines,
-  performance_table_type = "one model"
+  performance_data_type = "one model"
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ add_reference_lines_to_plotly(
 
 \item{reference_lines}{dataframe of reference lines}
 
-\item{performance_table_type}{the type of the performance table}
+\item{performance_data_type}{the type of the Performance Data}
 }
 \description{
 Add Reference Lines to Plotly Object

@@ -5,21 +5,21 @@
 \title{Create basic plotly for Performance Metrics}
 \usage{
 create_plotly_base(
-  performance_table,
+  performance_data,
   x_perf_metric,
   y_perf_metric,
-  performance_table_type = "one model",
+  performance_data_type = "one model",
   col_values = c("#5E7F9A", "#931B53", "#F7DC2E", "#C6C174", "#75DBCD")
 )
 }
 \arguments{
-\item{performance_table}{an rtichoke performance table}
+\item{performance_data}{an rtichoke Performance Data}
 
 \item{x_perf_metric}{a performance metrice for the x axis}
 
 \item{y_perf_metric}{a performance metrice for the y axis}
 
-\item{performance_table_type}{the type of the performance table}
+\item{performance_data_type}{the type of the Performance Data}
 
 \item{col_values}{palette}
 }

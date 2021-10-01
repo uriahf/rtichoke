@@ -3,7 +3,7 @@
 \docType{data}
 \name{one_pop_one_model_as_a_vector_enforced_percentiles_symmetry}
 \alias{one_pop_one_model_as_a_vector_enforced_percentiles_symmetry}
-\title{Example performance table}
+\title{Example Performance Data}
 \format{
 A data frame with 101 rows and 14 variables:
 }
@@ -11,6 +11,6 @@ A data frame with 101 rows and 14 variables:
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry
 }
 \description{
-An example performance table that contains one model
+An example Performance Data that contains one model
 }
 \keyword{datasets}

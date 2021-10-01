@@ -15,64 +15,64 @@
 "example_dat"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains one model
+#' An example Performance Data that contains one model
 #'
 #' @format A data frame with 101 rows and 14 variables:
 "one_pop_one_model_as_a_vector"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains one model
+#' An example Performance Data that contains one model
 #'
 #' @format A data frame with 101 rows and 14 variables:
 "one_pop_one_model_as_a_vector_enforced_percentiles_symmetry"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains one model
+#' An example Performance Data that contains one model
 #'
 #' @format A data frame with 101 rows and 15 variables:
 "one_pop_one_model_as_a_list"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains one model
+#' An example Performance Data that contains one model
 #'
 #' @format A data frame with 101 rows and 15 variables:
 "one_pop_one_model_as_a_list_enforced_percentiles_symmetry"
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains three models
+#' An example Performance Data that contains three models
 #'
 #' @format A data frame with 303 rows and 15 variables:
 "one_pop_three_models"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains three models
+#' An example Performance Data that contains three models
 #'
 #' @format A data frame with 303 rows and 15 variables:
 "one_pop_three_models_enforced_percentiles_symmetry"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains test and train sets
+#' An example Performance Data that contains test and train sets
 #'
 #' @format A data frame with 202 rows and 15 variables:
 "train_and_test_sets"
 
 
-#' Example performance table
+#' Example Performance Data
 #'
-#' An example performance table that contains test and train sets
+#' An example Performance Data that contains test and train sets
 #'
 #' @format A data frame with 202 rows and 15 variables:
 "train_and_test_sets_enforced_percentiles_symmetry"

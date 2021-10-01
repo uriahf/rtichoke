@@ -2,14 +2,14 @@
 #'
 #' Makes a ggplot for the metrices
 #'
-#' @param performance_table an rtichoke performance table
+#' @param performance_data an rtichoke Performance Data
 #' @param x_perf_metric a performance metrice for the x axis
 #' @param y_perf_metric a performance metrice for the y axis
 #' @param col_values color palette
 #'
 
 
-create_ggplot_for_performance_metrics <- function(performance_table,
+create_ggplot_for_performance_metrics <- function(performance_data,
                                                   x_perf_metric,
                                                   y_perf_metric,
                                                   col_values = c(
@@ -19,34 +19,34 @@ create_ggplot_for_performance_metrics <- function(performance_table,
                                                     "#C6C174",
                                                     "#75DBCD"
                                                   )) {
-  if (!(names(performance_table)[1] %in% c("population", "model"))) {
+  if (!(names(performance_data)[1] %in% c("population", "model"))) {
     col_values_vec <- "black"
 
     ggplot_for_performance_metrics <- ggplot2::ggplot(
-      performance_table,
+      performance_data,
       ggplot2::aes_string(
         x = x_perf_metric,
         y = y_perf_metric
       )
     )
   } else {
-    col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
+    col_values_vec <- col_values[1:length(unique(performance_data[, 1]))]
 
-    if (length(unique(performance_table[, 1])) == 1) {
+    if (length(unique(performance_data[, 1])) == 1) {
       col_values_vec <- "black"
     }
 
-    if (length(unique(performance_table[, 1])) > 1) {
-      names(col_values_vec) <- unique(performance_table[, 1])
+    if (length(unique(performance_data[, 1])) > 1) {
+      names(col_values_vec) <- unique(performance_data[, 1])
     }
 
     ggplot_for_performance_metrics <- ggplot2::ggplot(
-      performance_table,
+      performance_data,
       ggplot2::aes_string(
         x = x_perf_metric,
         y = y_perf_metric,
-        group = names(performance_table)[1],
-        color = names(performance_table)[1]
+        group = names(performance_data)[1],
+        color = names(performance_data)[1]
       )
     )
   }
@@ -69,7 +69,7 @@ create_ggplot_for_performance_metrics <- function(performance_table,
 #' @param main_slider what is the main slider - threshold, percent positives or positives
 #' @param reference_lines a list of reference lines
 
-create_plotly_for_performance_metrics <- function(performance_table,
+create_plotly_for_performance_metrics <- function(performance_data,
                                                   x_perf_metric,
                                                   y_perf_metric,
                                                   col_values = c(
@@ -85,33 +85,33 @@ create_plotly_for_performance_metrics <- function(performance_table,
   y_perf_metric <- enquo(y_perf_metric)
 
 
-  performance_table_type <- check_performance_table_type_for_plotly(performance_table)
+  performance_data_type <- check_performance_data_type_for_plotly(performance_data)
 
-  if (performance_table_type %in% c("one model", "one model with model column")) {
+  if (performance_data_type %in% c("one model", "one model with model column")) {
     col_values_vec <- "black"
   } else {
-    col_values_vec <- col_values[1:length(unique(performance_table[, 1]))]
-    names(col_values_vec) <- unique(performance_table[, 1])
+    col_values_vec <- col_values[1:length(unique(performance_data[, 1]))]
+    names(col_values_vec) <- unique(performance_data[, 1])
   }
 
-  print(performance_table_type)
+  print(performance_data_type)
   print(col_values_vec)
 
-  plotly_for_performance_metrics <- performance_table %>%
+  plotly_for_performance_metrics <- performance_data %>%
     create_plotly_base(x_perf_metric,
       y_perf_metric,
-      performance_table_type = performance_table_type,
+      performance_data_type = performance_data_type,
       col_values = col_values_vec
     )
 
   if (is.data.frame(reference_lines)) {
     plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
-      add_reference_lines_to_plotly(reference_lines, performance_table_type)
+      add_reference_lines_to_plotly(reference_lines, performance_data_type)
   }
 
 
   plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
-    add_markers_and_lines_to_plotly(performance_table_type = performance_table_type) %>%
+    add_markers_and_lines_to_plotly(performance_data_type = performance_data_type) %>%
     add_interactive_marker_to_plotly() %>%
     remove_grid_lines_from_plotly()
 
@@ -139,14 +139,14 @@ remove_grid_lines_from_plotly <- function(plotly_object) {
 #'
 #' Create a ROC Curve
 #'
-#' @inheritParams create_performance_table
+#' @inheritParams prepare_performance_data
 #'
 #' @export
 #'
 #'
 create_roc_curve <- function(probs, real, by = 0.01,
                              enforce_percentiles_symmetry = F) {
-  create_performance_table(
+  prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
@@ -156,11 +156,11 @@ create_roc_curve <- function(probs, real, by = 0.01,
 }
 
 
-#' ROC Curve from Performance Table
+#' ROC Curve from Performance Data
 #'
 #' Plot a ROC Curve
 #'
-#' @param performance_table an rtichoke performance table
+#' @param performance_data an rtichoke Performance Data
 #' @param chosen_threshold a chosen threshold to display
 #' @param interactive whether the plot should be interactive
 #' @param main_slider what is the main slider - threshold, percent positives or positives
@@ -222,20 +222,20 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @export
 
 
-plot_roc_curve <- function(performance_table,
+plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold") {
   reference_lines <- create_reference_lines_data_frame("roc")
 
   if (interactive == F) {
-    roc_curve <- performance_table %>%
+    roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
       add_reference_lines_to_ggplot(reference_lines)
   }
 
   if (interactive == T) {
-    roc_curve <- performance_table %>%
+    roc_curve <- performance_data %>%
       create_plotly_for_performance_metrics(FPR,
         sensitivity,
         reference_lines = reference_lines
@@ -271,7 +271,7 @@ plot_roc_curve <- function(performance_table,
 #'
 create_lift_curve <- function(probs, real, by = 0.01,
                               enforce_percentiles_symmetry = F) {
-  create_performance_table(
+  prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
@@ -281,7 +281,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 }
 
 
-#' Lift Curve from Performance Table
+#' Lift Curve from Performance Data
 #'
 #' Plot a Lift Curve
 #'
@@ -339,7 +339,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #' }
 #' @export
 
-plot_lift_curve <- function(performance_table,
+plot_lift_curve <- function(performance_data,
                             chosen_threshold = NA,
                             interactive = F,
                             main_slider = "threshold") {
@@ -347,7 +347,7 @@ plot_lift_curve <- function(performance_table,
 
 
   if (interactive == F) {
-    lift_curve <- performance_table %>%
+    lift_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "lift") %>%
       # add_lift_curve_reference_lines() %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
@@ -355,7 +355,7 @@ plot_lift_curve <- function(performance_table,
   }
 
   if (interactive == T) {
-    lift_curve <- performance_table %>%
+    lift_curve <- performance_data %>%
       mutate(fake_dot = 0) %>%
       create_plotly_for_performance_metrics(predicted_positives_percent, lift,
         reference_lines = reference_lines
@@ -417,7 +417,7 @@ set_lift_limits <- function(lift_curve) {
 #'
 create_precision_recall_curve <- function(probs, real, by = 0.01,
                                           enforce_percentiles_symmetry = F) {
-  create_performance_table(
+  prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
@@ -428,7 +428,7 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 
 
 
-#' Precision Recall Curve from Performance Table
+#' Precision Recall Curve from Performance Data
 #'
 #' Plot a Precision Recall Curve
 #'
@@ -488,23 +488,23 @@ create_precision_recall_curve <- function(probs, real, by = 0.01,
 #'
 #' @export
 
-plot_precision_recall_curve <- function(performance_table,
+plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
                                         interactive = F,
                                         main_slider = "threshold") {
-  performance_table_type <- check_performance_table_type_for_plotly(performance_table)
-  prevalence <- get_prevalence_from_performance_table(performance_table, performance_table_type)
+  performance_data_type <- check_performance_data_type_for_plotly(performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, performance_data_type)
   reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
 
   if (interactive == F) {
-    precision_recall_curve <- performance_table %>%
+    precision_recall_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_precision_recall_curve_limits()
   }
 
   if (interactive == T) {
-    # precision_recall_curve <- performance_table %>%
+    # precision_recall_curve <- performance_data %>%
     #   create_plotly_for_performance_metrics(sensitivity, PPV,
     #                                         reference_lines = reference_lines) %>%
     #   plotly::layout(
@@ -547,7 +547,7 @@ set_precision_recall_curve_limits <- function(precision_recall_curve) {
 #'
 create_gains_curve <- function(probs, real, by = 0.01,
                                enforce_percentiles_symmetry = F) {
-  create_performance_table(
+  prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
@@ -557,7 +557,7 @@ create_gains_curve <- function(probs, real, by = 0.01,
 }
 
 
-#' Gains Curve from Performance Table
+#' Gains Curve from Performance Data
 #'
 #' Plot a Gains Curve
 #'
@@ -617,15 +617,15 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #'
 #' @export
 
-plot_gains_curve <- function(performance_table,
+plot_gains_curve <- function(performance_data,
                              chosen_threshold = NA,
                              interactive = F,
                              main_slider = "threshold") {
-  prevalence <- get_prevalence_from_performance_table(performance_table)
+  prevalence <- get_prevalence_from_performance_data(performance_data)
   reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
   if (interactive == F) {
-    gains_curve <- performance_table %>%
+    gains_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits()
@@ -680,7 +680,7 @@ set_gains_curve_limits <- function(gains_curve) {
 #'
 create_decision_curve <- function(probs, real, by = 0.01,
                                   enforce_percentiles_symmetry = F) {
-  create_performance_table(
+  prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
@@ -691,7 +691,7 @@ create_decision_curve <- function(probs, real, by = 0.01,
 
 
 
-#' Precision Recall Curve from Performance Table
+#' Precision Recall Curve from Performance Data
 #'
 #' Plot a Precision Recall Curve
 #'
@@ -750,14 +750,14 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #' }
 #' @export
 
-plot_decision_curve <- function(performance_table,
+plot_decision_curve <- function(performance_data,
                                 chosen_threshold = NA,
                                 interactive = F,
                                 main_slider = "threshold") {
-  prevalence <- get_prevalence_from_performance_table(performance_table)
+  prevalence <- get_prevalence_from_performance_data(performance_data)
 
   if (interactive == F) {
-    decision_curve <- performance_table %>%
+    decision_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("threshold", "NB") %>%
       add_reference_lines_to_ggplot(create_reference_lines_data_frame("decision", prevalence)) %>%
       set_decision_curve_limits()

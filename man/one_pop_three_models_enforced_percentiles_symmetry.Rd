@@ -3,7 +3,7 @@
 \docType{data}
 \name{one_pop_three_models_enforced_percentiles_symmetry}
 \alias{one_pop_three_models_enforced_percentiles_symmetry}
-\title{Example performance table}
+\title{Example Performance Data}
 \format{
 A data frame with 303 rows and 15 variables:
 }
@@ -11,6 +11,6 @@ A data frame with 303 rows and 15 variables:
 one_pop_three_models_enforced_percentiles_symmetry
 }
 \description{
-An example performance table that contains three models
+An example Performance Data that contains three models
 }
 \keyword{datasets}

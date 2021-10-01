@@ -36,9 +36,9 @@ There are two types of inputs for each function in rtichoke:
 
     Each function in `rtichoke` has a variation that supports this kind of input.\
 
-2.  **Performance Table:**
+2.  **Performance Data:**
 
-    Performance table is a dataframe that contations perfomance metrics for different cutoffs.
+    Performance Data is a dataframe that contations perfomance metrics for different cutoffs.
 
     Similar packages to \`rtichoke\` display curves that are based on performance metrics that looks perfectly smooth, the purpose of rtichoke
 
@@ -46,11 +46,11 @@ There are two types of inputs for each function in rtichoke:
 
     manipulate in order to understand better the connection between the cutoffs and the curve.
 
-    Another reason for using performance table is that building plots that based on small datasets is much less memory consuming than reusing
+    Another reason for using Performance Data is that building plots that based on small datasets is much less memory consuming than reusing
 
     smoothing algorithms over and over.\\
 
-    Each performance Table is built from the metrics in the confusion matrix:
+    Each Performance Data is built from the metrics in the confusion matrix:
 
     TP, FP, TN, FN.
 
@@ -60,20 +60,20 @@ There are two types of inputs for each function in rtichoke:
 
     \\
 
-    In order to create performance table you need to call \`create_performance_table()\`This function obviously must take \*\*Predictions and Outcomes\*\* as input.
+    In order to prepare Performance Data you need to call \`prepare_performance_data()\`This function obviously must take \*\*Predictions and Outcomes\*\* as input.
 
     Only some functions in \`rtichoke\` has variations that supports this kind of input
 
 ## [**Naming Convention**]{.ul}
 
-Some of the functions in `rtichoke` are built to work with an object that is called "performance_table" - a data frame that includes different performance metrics for different cutoffs.
+Some of the functions in `rtichoke` are built to work with an object that is called "performance_data" - a data frame that includes different performance metrics for different cutoffs.
 
 But other functions are built to work estimated probabilities and outcomes. Each of these function starts with "create" (as create from scratch) - create\_\*():
 
 +------------------------+-----------------------------------+---------------------------------+
-|                        | Predictions and Outcomes          | Performance Table               |
+|                        | Predictions and Outcomes          | Performance Data                |
 +========================+===================================+=================================+
-| **Performance Table**  | `create_performance_table()`      | X                               |
+| **Performance Data**   | `prepare_performance_data()`      | X                               |
 +------------------------+-----------------------------------+---------------------------------+
 | **ROC**                | `create_roc_curve()`              | `plot_roc_curve()`              |
 +------------------------+-----------------------------------+---------------------------------+
@@ -96,7 +96,7 @@ But other functions are built to work estimated probabilities and outcomes. Each
 
 ## [**Plots of Performance Metrics across different Thresholds**]{.ul}
 
-Curves that are generated from performance metrics can be called by `plot_*_curve()` or `create_*_curve` from performance table.
+Curves that are generated from performance metrics can be called by `plot_*_curve()` or `create_*_curve` from Performance Data.
 
 +----------------------+-------------+-------------+-----+-----+---------------+------+---------+-----------+
 |                      | Sensitivity | Specificity | FPR | PPV | Positive Rate | LIFT | Net     | Threshold |
@@ -147,7 +147,7 @@ If the use wants to observe cutoffs according to probabilities percentiles he ca
 
 ## [**Interactive Tables**]{.ul}
 
-Interactive performance table is just a `reactable` object that wraps a performance table and returns an HTML object..
+Interactive Performance Data is just a `reactable` object that wraps a Performance Data and returns an HTML object..
 
 There are two advantages that are built in interactive tables:
 

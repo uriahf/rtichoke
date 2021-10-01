@@ -5,7 +5,7 @@
 \title{Create plotly for Performance Metrics}
 \usage{
 create_plotly_for_performance_metrics(
-  performance_table,
+  performance_data,
   x_perf_metric,
   y_perf_metric,
   col_values = c("#5E7F9A", "#931B53", "#F7DC2E", "#C6C174", "#75DBCD"),
@@ -14,7 +14,7 @@ create_plotly_for_performance_metrics(
 )
 }
 \arguments{
-\item{performance_table}{an rtichoke performance table}
+\item{performance_data}{an rtichoke Performance Data}
 
 \item{x_perf_metric}{a performance metrice for the x axis}
 

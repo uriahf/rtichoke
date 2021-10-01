@@ -2,17 +2,17 @@
 % Please edit documentation in R/plots_for_performance_metrics.R
 \name{plot_precision_recall_curve}
 \alias{plot_precision_recall_curve}
-\title{Precision Recall Curve from Performance Table}
+\title{Precision Recall Curve from Performance Data}
 \usage{
 plot_precision_recall_curve(
-  performance_table,
+  performance_data,
   chosen_threshold = NA,
   interactive = F,
   main_slider = "threshold"
 )
 }
 \arguments{
-\item{performance_table}{an rtichoke performance table}
+\item{performance_data}{an rtichoke Performance Data}
 
 \item{chosen_threshold}{a chosen threshold to display}
 

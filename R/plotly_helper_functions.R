@@ -1,21 +1,21 @@
 #' Check Performance type for plotly
 #'
-#' @param performance_table an rtichoke performance table
+#' @param performance_data an rtichoke Performance Data
 
-check_performance_table_type_for_plotly <- function(performance_table) {
-  if (!(names(performance_table)[1] %in% c("population", "model"))) {
-    performance_table_type <- "one model"
+check_performance_data_type_for_plotly <- function(performance_data) {
+  if (!(names(performance_data)[1] %in% c("population", "model"))) {
+    performance_data_type <- "one model"
   }
-  if ((names(performance_table)[1] == "model") & (length(unique(performance_table[, 1])) == 1)) {
-    performance_table_type <- "one model with model column"
+  if ((names(performance_data)[1] == "model") & (length(unique(performance_data[, 1])) == 1)) {
+    performance_data_type <- "one model with model column"
   }
-  if ((names(performance_table)[1] == "model") & (length(unique(performance_table[, 1])) > 1)) {
-    performance_table_type <- "several models"
+  if ((names(performance_data)[1] == "model") & (length(unique(performance_data[, 1])) > 1)) {
+    performance_data_type <- "several models"
   }
-  if (names(performance_table)[1] == "population") {
-    performance_table_type <- "several populations"
+  if (names(performance_data)[1] == "population") {
+    performance_data_type <- "several populations"
   }
-  performance_table_type
+  performance_data_type
 }
 
 
@@ -24,13 +24,13 @@ check_performance_table_type_for_plotly <- function(performance_table) {
 #' Makes a basic plotly for the metrices
 #'
 #' @inheritParams create_ggplot_for_performance_metrics
-#' @param performance_table_type the type of the performance table
+#' @param performance_data_type the type of the Performance Data
 #' @param col_values palette
 
-create_plotly_base <- function(performance_table,
+create_plotly_base <- function(performance_data,
                                x_perf_metric,
                                y_perf_metric,
-                               performance_table_type = "one model",
+                               performance_data_type = "one model",
                                col_values = c(
                                  "#5E7F9A",
                                  "#931B53",
@@ -38,16 +38,16 @@ create_plotly_base <- function(performance_table,
                                  "#C6C174",
                                  "#75DBCD"
                                )) {
-  if (performance_table_type %in% c("one model", "one model with model column")) {
-    plotly_base <- performance_table %>%
+  if (performance_data_type %in% c("one model", "one model with model column")) {
+    plotly_base <- performance_data %>%
       plotly::plot_ly(
         x = x_perf_metric,
         y = y_perf_metric
       )
   }
 
-  if (performance_table_type == "several models") {
-    plotly_base <- performance_table %>%
+  if (performance_data_type == "several models") {
+    plotly_base <- performance_data %>%
       plotly::plot_ly(
         x = x_perf_metric,
         y = y_perf_metric,
@@ -56,8 +56,8 @@ create_plotly_base <- function(performance_table,
       )
   }
 
-  if (performance_table_type == "several populations") {
-    plotly_base <- performance_table %>%
+  if (performance_data_type == "several populations") {
+    plotly_base <- performance_data %>%
       plotly::plot_ly(
         x = x_perf_metric,
         y = y_perf_metric,
@@ -70,8 +70,8 @@ create_plotly_base <- function(performance_table,
 }
 
 
-add_markers_and_lines_to_plotly <- function(plotly_object, performance_table_type) {
-  if (performance_table_type %in% c("one model", "one model with model column")) {
+add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type) {
+  if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_with_markers_and_lines <- plotly_object %>%
       plotly::add_trace(
         hoverinfo = "text",
@@ -93,7 +93,7 @@ add_markers_and_lines_to_plotly <- function(plotly_object, performance_table_typ
       )
   }
 
-  if (performance_table_type == "several models") {
+  if (performance_data_type == "several models") {
     plotly_with_markers_and_lines <- plotly_object %>%
       plotly::add_trace(
         hoverinfo = "text",
@@ -115,7 +115,7 @@ add_markers_and_lines_to_plotly <- function(plotly_object, performance_table_typ
       )
   }
 
-  if (performance_table_type == "several populations") {
+  if (performance_data_type == "several populations") {
     plotly_with_markers_and_lines <- plotly_object %>%
       plotly::add_trace(
         hoverinfo = "text",
@@ -178,21 +178,21 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 #' Add Reference Lines to Plotly Object
 #'
 #' @param plotly_object a plotly plot for performance metrics
-#' @param performance_table_type the type of the performance table
+#' @param performance_data_type the type of the Performance Data
 #' @param reference_lines dataframe of reference lines
 
 add_reference_lines_to_plotly <- function(plotly_object,
                                           reference_lines,
-                                          performance_table_type = "one model") {
+                                          performance_data_type = "one model") {
   print(reference_lines)
   print(c(reference_lines$x, reference_lines$xend))
   print(c(reference_lines$y, reference_lines$yend))
 
-  if (performance_table_type == "several populations") {
+  if (performance_data_type == "several populations") {
     # plotly_object %>%
     #   add_lines(
     #     data = reference_lines %>%
-    #       mutate(population = unique(performance_table_for_train_and_test_sets$population)) %>%
+    #       mutate(population = unique(performance_data_for_train_and_test_sets$population)) %>%
     #       tidyr::pivot_longer(cols = c(x, xend), values_to = "x") %>%
     #       select(-name) %>%
     #       tidyr::pivot_longer(cols = c(y, yend), values_to = "y") %>%
@@ -202,7 +202,7 @@ add_reference_lines_to_plotly <- function(plotly_object,
     #     y =~ y
     #   )
     #
-    # fake_base_plotly <- fake_plotly_base(perf_table, sensitivity, PPV, performance_table_type = "several populations")
+    # fake_base_plotly <- fake_plotly_base(perf_table, sensitivity, PPV, performance_data_type = "several populations")
     # reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
     #
     # # works!

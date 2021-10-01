@@ -1,8 +1,8 @@
 ---
-title: "Performance Table Examples"
+title: "Performance Data Examples"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{performance_table_examples}
+  %\VignetteIndexEntry{performance_data_examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
 library(rtichoke)
 ```
 
-It is useful to work with performance tables for most functions in {rtichoke}.
+It is useful to work with Performance Datas for most functions in {rtichoke}.
 
-There are several different cases for different performance tables:
+There are several different cases for different Performance Datas:
 
 ## 1. One model for one population
 
@@ -30,13 +30,13 @@ One can use a single vector as an input for the `probs` argument:
 
 ```{r}
 
-one_pop_one_model_as_a_vector <- create_performance_table(
+one_pop_one_model_as_a_vector <- prepare_performance_data(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome)
 
 head(one_pop_one_model_as_a_vector)
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry <- create_performance_table(
+one_pop_one_model_as_a_vector_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome,
   enforce_percentiles_symmetry = T)
@@ -50,17 +50,17 @@ usethis::use_data(one_pop_one_model_as_a_vector, one_pop_one_model_as_a_vector_e
 ```
 
 
-Or alternatively a list with a single vector. In that case a column named "model" will be added to the performance table, it is recommended to name the vectors:
+Or alternatively a list with a single vector. In that case a column named "model" will be added to the Performance Data, it is recommended to name the vectors:
 
 ```{r}
 
-one_pop_one_model_as_a_list <- create_performance_table(
+one_pop_one_model_as_a_list <- prepare_performance_data(
   probs = list("Logistic Regression" = example_dat$estimated_probabilities),
   real = example_dat$outcome)
 
 head(one_pop_one_model_as_a_list)
 
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry <- create_performance_table(
+one_pop_one_model_as_a_list_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = list("Logistic Regression" = example_dat$estimated_probabilities),
   real = example_dat$outcome,
   enforce_percentiles_symmetry = T)
@@ -82,13 +82,13 @@ One needs to use a list with a vector for each population as an input for the `p
 
 ```{r}
 
-one_pop_three_models <- create_performance_table(
+one_pop_three_models <- prepare_performance_data(
   probs = list("Good Model" = example_dat$estimated_probabilities,
                "Bad Model" = example_dat$bad_model,
                "Random Guess" = example_dat$random_guess),
   real = example_dat$outcome)
 
-one_pop_three_models_enforced_percentiles_symmetry <- create_performance_table(
+one_pop_three_models_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = list("Good Model" = example_dat$estimated_probabilities,
                "Bad Model" = example_dat$bad_model,
                "Random Guess" = example_dat$random_guess),
@@ -108,11 +108,11 @@ usethis::use_data(one_pop_three_models, one_pop_three_models_enforced_percentile
 When the user wants to compare model performance on different populations. 
 Might be usefull when the user wants to check the consistensy of the model among different populations, a test-train split or fairness analysis might be good use cases.
 
-One needs to use a list with a vector for each model as an input for the `probs` argument and for the `real` argument. A column named "population" will be added to the performance table, it is recommended to name the vectors:
+One needs to use a list with a vector for each model as an input for the `probs` argument and for the `real` argument. A column named "population" will be added to the Performance Data, it is recommended to name the vectors:
 
 ```{r}
 
-train_and_test_sets <- create_performance_table(
+train_and_test_sets <- prepare_performance_data(
   probs = list("train" = example_dat %>%
                  dplyr::filter(type_of_set == "train") %>%
                  dplyr::pull(estimated_probabilities),
@@ -127,7 +127,7 @@ train_and_test_sets <- create_performance_table(
 
 head(train_and_test_sets)
 
-train_and_test_sets_enforced_percentiles_symmetry <- create_performance_table(
+train_and_test_sets_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = list("train" = example_dat %>%
                  dplyr::filter(type_of_set == "train") %>%
                  dplyr::pull(estimated_probabilities),

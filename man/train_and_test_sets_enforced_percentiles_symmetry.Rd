@@ -3,7 +3,7 @@
 \docType{data}
 \name{train_and_test_sets_enforced_percentiles_symmetry}
 \alias{train_and_test_sets_enforced_percentiles_symmetry}
-\title{Example performance table}
+\title{Example Performance Data}
 \format{
 A data frame with 202 rows and 15 variables:
 }
@@ -11,6 +11,6 @@ A data frame with 202 rows and 15 variables:
 train_and_test_sets_enforced_percentiles_symmetry
 }
 \description{
-An example performance table that contains test and train sets
+An example Performance Data that contains test and train sets
 }
 \keyword{datasets}

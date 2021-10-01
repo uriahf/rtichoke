@@ -2,17 +2,17 @@
 % Please edit documentation in R/plots_for_performance_metrics.R
 \name{plot_roc_curve}
 \alias{plot_roc_curve}
-\title{ROC Curve from Performance Table}
+\title{ROC Curve from Performance Data}
 \usage{
 plot_roc_curve(
-  performance_table,
+  performance_data,
   chosen_threshold = NA,
   interactive = F,
   main_slider = "threshold"
 )
 }
 \arguments{
-\item{performance_table}{an rtichoke performance table}
+\item{performance_data}{an rtichoke Performance Data}
 
 \item{chosen_threshold}{a chosen threshold to display}
 
