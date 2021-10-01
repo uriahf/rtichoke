@@ -1,8 +1,8 @@
 ---
-title: "performance_data_examples"
+title: "Performance Data Examples"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{performance_data_examples}
+  %\VignetteIndexEntry{Performance Data Examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

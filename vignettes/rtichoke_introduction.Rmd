@@ -1,8 +1,8 @@
 ---
-title: "rtichoke_introduction"
+title: "rtichoke Introduction"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rtichoke_introduction}
+  %\VignetteIndexEntry{rtichoke Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
