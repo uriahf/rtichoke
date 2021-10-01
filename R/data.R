@@ -15,7 +15,7 @@
 "example_dat"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains one model
 #'
@@ -23,7 +23,7 @@
 "one_pop_one_model_as_a_vector"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains one model
 #'
@@ -31,7 +31,7 @@
 "one_pop_one_model_as_a_vector_enforced_percentiles_symmetry"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains one model
 #'
@@ -39,14 +39,14 @@
 "one_pop_one_model_as_a_list"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains one model
 #'
 #' @format A data frame with 101 rows and 15 variables:
 "one_pop_one_model_as_a_list_enforced_percentiles_symmetry"
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains three models
 #'
@@ -54,7 +54,7 @@
 "one_pop_three_models"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains three models
 #'
@@ -62,7 +62,7 @@
 "one_pop_three_models_enforced_percentiles_symmetry"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains test and train sets
 #'
@@ -70,7 +70,7 @@
 "train_and_test_sets"
 
 
-#' Example performance table 
+#' Example performance table
 #'
 #' An example performance table that contains test and train sets
 #'
