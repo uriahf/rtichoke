@@ -1,5 +1,5 @@
 ---
-title: "Performance Data Examples"
+title: "performance_data_examples"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{performance_data_examples}
