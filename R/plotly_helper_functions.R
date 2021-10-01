@@ -172,6 +172,7 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 #' Add Reference Lines to Plotly Object
 #'
 #' @param plotly_object a plotly plot for performance metrics
+#' @param performance_table_type the type of the performance table
 #' @param reference_lines dataframe of reference lines
 
 add_reference_lines_to_plotly <- function(plotly_object, 

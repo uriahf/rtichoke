@@ -18,6 +18,10 @@ create_reference_lines_data_frame(
 \item{prevalence}{the prevalence of the outcome}
 
 \item{color}{the required color}
+
+\item{plotly}{should the reference lines data frame be competible with plotly}
+
+\item{multiple_pop}{should the reference lines data frame should be adjusted to multiple populations}
 }
 \description{
 Title

@@ -12,7 +12,7 @@ get_prevalence_from_performance_table(
 \arguments{
 \item{performance_table}{an rtichoke performance table}
 
-\item{performance_table_type}{}
+\item{performance_table_type}{the type of the performance table}
 }
 \description{
 Get the prevalence out of performance table

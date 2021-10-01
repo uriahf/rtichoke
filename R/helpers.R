@@ -3,12 +3,9 @@
 #' Get the prevalence out of performance table
 #'
 #' @param performance_table an rtichoke performance table
-#' @param performance_table_type 
+#' @param performance_table_type the type of the performance table 
 #'
 #' @export
-
-
-
 get_prevalence_from_performance_table <- function(performance_table, performance_table_type) {
   PPV <- predicted_positives_percent <- NULL
 
@@ -22,6 +19,8 @@ get_prevalence_from_performance_table <- function(performance_table, performance
 #'
 #' @param curve the specified curve for the reference lines
 #' @param prevalence the prevalence of the outcome
+#' @param plotly should the reference lines data frame be competible with plotly
+#' @param multiple_pop should the reference lines data frame should be adjusted to multiple populations
 #' @param color the required color
 
 create_reference_lines_data_frame <- function(curve,

@@ -14,6 +14,8 @@ add_reference_lines_to_plotly(
 \item{plotly_object}{a plotly plot for performance metrics}
 
 \item{reference_lines}{dataframe of reference lines}
+
+\item{performance_table_type}{the type of the performance table}
 }
 \description{
 Add Reference Lines to Plotly Object
