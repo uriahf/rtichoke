@@ -12,10 +12,10 @@ create_performance_table(
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that 
+\item{probs}{a vector of estimated probabilities or a list of vectors of that
 kind (one for each model)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that 
+\item{real}{a vector of binary outcomes or a list of vectors of that
 kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
@@ -23,20 +23,20 @@ kind (one for each population)}
 \item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
 }
 \description{
-The create_performance_table function makes a performance table that is made 
+The create_performance_table function makes a performance table that is made
 of different cutoffs.
 Each row represents a cutoff and each column stands for a performance metric.
-It is possible to use this function for more than one model in order to compare 
+It is possible to use this function for more than one model in order to compare
 different models performance for the same population. In this case the user should
 use a list that is made of vectors of estimated probabilities, one for each model.
 }
 \details{
-Sometime instead of using a cutoff for the estimated probability it is required 
-to enforce a symmetry between the percentiles of the probabilities, in medicine 
+Sometime instead of using a cutoff for the estimated probability it is required
+to enforce a symmetry between the percentiles of the probabilities, in medicine
 it is referred as "Risk Percentile" when the outcome stands for something negative
 in essence such as a severe disease or death: Let's say that we want to see the
 model performance for the top 5% patients at risk for some well defined population,
-in this case the user should change the parameter enforce_percentiles_symmetry 
+in this case the user should change the parameter enforce_percentiles_symmetry
 from the default FALSE to TRUE and the results will be similar performance table,
 only this time each row will represent some rounded percentile.
 }
@@ -44,38 +44,40 @@ only this time each row will represent some rounded percentile.
 # You can create performance table for one model
 
 create_performance_table(
- probs = example_dat$estimated_probabilities,
- real = example_dat$outcome)
- 
-# And you can create performance table for more than one model
-create_performance_table(
- probs = list("First Model" = example_dat$estimated_probabilities,
-              "Second Model" = example_dat$random_guess),
- real = example_dat$outcome)
-
-# Notice that once you've put a list in the probs parameter you'll receive a new 
-# column in the performance table named "Model". If it's a named list (like in our
-# example) the Model column will mention the names of each element in the probs-list
-# as the name of the model, if it's unnamed list the Models will count "Model 1", 
-# "Model 2", etc.. according to the order of the estimated-probabilities vector in the
-# list.
- 
- 
- create_performance_table(
-probs = list("train" = example_dat \%>\%
-              dplyr::filter(type_of_set == "train") \%>\%
-              dplyr::pull(estimated_probabilities),
-             "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-              dplyr::pull(estimated_probabilities)),
-real = list("train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
-             dplyr::pull(outcome),
-            "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-             dplyr::pull(outcome))
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome
 )
 
- 
- 
- 
- 
- 
+# And you can create performance table for more than one model
+create_performance_table(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome
+)
+
+# Notice that once you've put a list in the probs parameter you'll receive a new
+# column in the performance table named "Model". If it's a named list (like in our
+# example) the Model column will mention the names of each element in the probs-list
+# as the name of the model, if it's unnamed list the Models will count "Model 1",
+# "Model 2", etc.. according to the order of the estimated-probabilities vector in the
+# list.
+
+
+create_performance_table(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  )
+)
 }

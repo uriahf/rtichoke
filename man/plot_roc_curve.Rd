@@ -48,7 +48,6 @@ train_and_test_sets \%>\%
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   plot_roc_curve()
-
 \dontrun{
 
 one_pop_one_model_as_a_vector \%>\%
@@ -74,6 +73,6 @@ train_and_test_sets \%>\%
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
-  }
-  
+}
+
 }

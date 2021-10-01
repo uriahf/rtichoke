@@ -7,10 +7,10 @@
 create_gains_curve(probs, real, by = 0.01, enforce_percentiles_symmetry = F)
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that 
+\item{probs}{a vector of estimated probabilities or a list of vectors of that
 kind (one for each model)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that 
+\item{real}{a vector of binary outcomes or a list of vectors of that
 kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
