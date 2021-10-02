@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # rtichoke
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/uriahf/rtichoke/workflows/R-CMD-check/badge.svg)](https://github.com/uriahf/rtichoke/actions)
 <!-- badges: end -->
 
 The goal of rtichoke is to ...
