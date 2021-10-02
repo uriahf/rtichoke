@@ -35,7 +35,7 @@ Sometime instead of using a cutoff for the estimated probability it is required
 to enforce a symmetry between the percentiles of the probabilities, in medicine
 it is referred as "Risk Percentile" when the outcome stands for something negative
 in essence such as a severe disease or death: Let's say that we want to see the
-model performance for the top 5% patients at risk for some well defined population,
+model performance for the top 5\% patients at risk for some well defined population,
 in this case the user should change the parameter enforce_percentiles_symmetry
 from the default FALSE to TRUE and the results will be similar Performance Data,
 only this time each row will represent some rounded percentile.
