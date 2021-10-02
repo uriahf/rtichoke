@@ -11,10 +11,10 @@ col_values = c("#5E7F9A",
                "#75DBCD")
   
 
-print(performance_table_type)
+print(performance_data_type)
 print(col_values_vec)
 
-prevalence <- get_prevalence_from_performance_table(rtichoke::train_and_test_sets)
+prevalence <- get_prevalence_from_performance_data(rtichoke::train_and_test_sets)
 reference_lines_roc <- create_reference_lines_data_frame("roc", plotly = T)
 reference_lines_lift <- create_reference_lines_data_frame("lift", plotly = T)
 reference_lines_precision_recall <- create_reference_lines_data_frame("precision recall", prevalence, plotly = T)
@@ -26,14 +26,18 @@ library(plotly)
 # roc
 
 reference_lines_roc %>%
-  plot_ly(x =~ x ,y =~y) %>%
-  add_lines(color = I("grey"), line = list(dash = 'dash', width = 1.75))
+  plotly::plot_ly(x =~ x ,y =~y) %>%
+  plotly::add_lines(color = I("grey"), line = list(dash = 'dash', width = 1.75)) %>%
+  create_plotly_for_performance_metrics(FPR,
+                                        sensitivity,
+                                        reference_lines = reference_lines
+  )
 
 # lift
 
 reference_lines_lift %>%
-  plot_ly(x =~ x ,y =~y) %>%
-  add_lines(color = I("grey"), line = list(dash = 'dash', width = 1.75))
+  plotly::plot_ly(x =~ x ,y =~y) %>%
+  plotly::add_lines(color = I("grey"), line = list(dash = 'dash', width = 1.75))
 
 
 # precision recall not multiple pop
@@ -54,8 +58,8 @@ create_color_models_vector <- function(models, col_values = c("#5E7F9A",
                                                               "#F7DC2E", 
                                                               "#C6C174", 
                                                               "#75DBCD")){
-  col_models_vec <- col_values[1:length(unique(performance_table$model))]
-  names(col_models_vec) <- names(unique(performance_table$model))
+  col_models_vec <- col_values[1:length(unique(performance_data$model))]
+  names(col_models_vec) <- names(unique(performance_data$model))
   col_models_vec
 }
 

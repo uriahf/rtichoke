@@ -226,15 +226,22 @@ plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold") {
-  reference_lines <- create_reference_lines_data_frame("roc")
 
   if (interactive == F) {
+  
+    reference_lines <- create_reference_lines_data_frame("roc")
+  
     roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
       add_reference_lines_to_ggplot(reference_lines)
   }
 
   if (interactive == T) {
+    
+    reference_lines <- create_reference_lines_for_plotly(curve = "roc")
+    
+    reference_lines
+    
     roc_curve <- performance_data %>%
       create_plotly_for_performance_metrics(FPR,
         sensitivity,

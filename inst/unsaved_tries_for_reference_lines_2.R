@@ -2,7 +2,7 @@
 
 
 
-prevalence_one_model <- rtichoke:::get_prevalence_from_performance_table(rtichoke::one_pop_one_model_as_a_list)
+prevalence_one_model <- rtichoke:::get_prevalence_from_performance_data(rtichoke::one_pop_one_model_as_a_list)
 
 data.frame(population = rep(names(prevalence_one_model), each = 2), 
            x = c(0, 1), 
