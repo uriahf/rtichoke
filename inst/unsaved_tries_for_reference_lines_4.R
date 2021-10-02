@@ -1,17 +1,24 @@
 
 
 
-performance_table_type <- check_performance_table_type_for_plotly(perf_table)
-prevalence <- get_prevalence_from_performance_table(perf_table)
+performance_table_type <- check_performance_data_type_for_plotly(rtichoke::train_and_test_sets)
+prevalence <- get_prevalence_from_performance_data(rtichoke::train_and_test_sets)
+population_color_vector <- create_color_populations_vector(prevalence) 
+
+performance_table_type <- check_performance_data_type_for_plotly(rtichoke::one_pop_three_models)
+prevalence <- get_prevalence_from_performance_data(rtichoke::one_pop_three_models)
 population_color_vector <- create_color_populations_vector(prevalence) 
 
 
-create_reference_lines_for_plotly <- function(performance_table_type, curve, prevalence = NA, population_color_vector = NA){
+create_reference_lines_for_plotly <- function(performance_table_type, 
+                                              curve, 
+                                              prevalence = NA, 
+                                              population_color_vector = NA){
   if (curve %in% c("roc", "lift") || performance_table_type != "several populations" ) {
     
     reference_lines_for_plotly <- create_reference_lines_data_frame(curve, plotly = T, prevalence) %>%
       plot_ly(x =~ x ,y =~y)  %>%
-      add_lines(color = I("grey"), line = list(width = 1.75))
+      add_lines(color = I("grey"),colors = population_color_vector, line = list(width = 1.75))
     
   } else {
     
@@ -93,12 +100,66 @@ create_reference_lines_for_plotly("several populations",
     x =~ threshold,
     y =~ NB,
     type = "scatter",
+    mode = "markers+lines"
+  )  %>%
+  plotly::add_markers(
+    data = train_and_test_sets, 
+    x =~ threshold,
+    y =~ NB,
+    frame = ~ threshold,
+    marker =     list(
+      size = 12,
+      line = list(
+        width = 3,
+        color = I("black")
+      )
+    )
+  )
+
+
+create_reference_lines_for_plotly("several populations", 
+                                  "decision", 
+                                  prevalence, 
+                                  population_color_vector = population_color_vector) %>%
+  plotly::add_trace(
+    data = train_and_test_sets, 
+    x =~ threshold,
+    y =~ NB,
+    type = "scatter",
     mode = "markers+lines" 
   )  %>%
   plotly::add_markers(
     data = train_and_test_sets, 
     x =~ threshold,
     y =~ NB,
+    frame = ~ threshold,
+    marker =     list(
+      size = 12,
+      line = list(
+        width = 3,
+        color = I("black")
+      )
+    )
+  )
+
+
+
+
+create_reference_lines_for_plotly("several populations", 
+                                  "roc", 
+                                  population_color_vector = population_color_vector) %>%
+  plotly::add_trace(
+    data = train_and_test_sets, 
+    x =~ FPR,
+    y =~ sensitivity,
+    type = "scatter",
+    mode = "markers+lines" ,
+    color =~ population
+  )  %>%
+  plotly::add_markers(
+    data = train_and_test_sets, 
+    x =~ FPR,
+    y =~ sensitivity,
     frame = ~ threshold,
     marker =     list(
       size = 12,
