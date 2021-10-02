@@ -20,7 +20,7 @@ library(rtichoke)
 
 ## [**Types of Inputs**]{.ul}
 
-There are two types of inputs for each function in rtichoke:
+There are two types of inputs for each function in {rtichoke}:
 
 1.  **Predictions and Outcomes:\
     **This type of input is similar to inputs from similar packages such as pROC etc.\
