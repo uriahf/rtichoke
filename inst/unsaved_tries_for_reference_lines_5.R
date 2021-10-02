@@ -331,7 +331,7 @@ create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector 
   plotly::config(displayModeBar = F)
 
 
-
+# does it run ci?
 # roc several populations
 
 perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(rtichoke::train_and_test_sets)
