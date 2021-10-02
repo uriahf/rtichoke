@@ -19,6 +19,7 @@ Imports:
     glue,
     golem (>= 0.3.1),
     htmltools,
+    lifecycle,
     magrittr,
     plotly,
     processx,
@@ -37,3 +38,4 @@ RoxygenNote: 7.1.2
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
