@@ -435,9 +435,6 @@ create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector 
   plotly::config(displayModeBar = F)
 
 
-
-
-# does it run ci?
 # roc several populations
 
 perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(rtichoke::train_and_test_sets)
@@ -474,7 +471,37 @@ create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector 
   plotly::config(displayModeBar = F)
 
 
-
+create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector = c(
+  "#21DACD",
+  "#B6C174",
+  "#A7DA2E",
+  "#C2C172",
+  "#FFD700"
+)) %>% 
+  add_lines_and_markers_from_performance_data(
+    performance_data = train_and_test_sets_enforced_percentiles_symmetry,
+    performance_data_type = perf_dat_type,
+    FPR,
+    sensitivity
+  )  %>%
+  add_interactive_marker_from_performance_data(
+    performance_data = train_and_test_sets_enforced_percentiles_symmetry,
+    performance_data_type = perf_dat_type,
+    FPR,
+    sensitivity, 
+    main_slider = "predicted_positives_percent"
+  )  %>%
+  remove_grid_lines_from_plotly() %>%
+  plotly::layout(
+    xaxis = list(
+      title = "1 - Specificity"
+    ),
+    yaxis = list(
+      title = "Sensitivity"
+    ),
+    showlegend = F
+  ) %>%
+  plotly::config(displayModeBar = F)
 
 
 
