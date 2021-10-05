@@ -138,7 +138,8 @@ train_and_test_sets_enforced_percentiles_symmetry <- prepare_performance_data(
                 dplyr::pull(outcome),
               "test" = example_dat %>% 
                 dplyr::filter(type_of_set == "test") %>%
-                dplyr::pull(outcome)))
+                dplyr::pull(outcome)), 
+  enforce_percentiles_symmetry = T)
 
 head(train_and_test_sets_enforced_percentiles_symmetry)
 
