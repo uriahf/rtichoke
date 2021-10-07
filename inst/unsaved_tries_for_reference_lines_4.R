@@ -17,17 +17,17 @@ create_reference_lines_for_plotly <- function(performance_table_type,
   if (curve %in% c("roc", "lift") || performance_table_type != "several populations" ) {
     
     reference_lines_for_plotly <- create_reference_lines_data_frame(curve, plotly = T, prevalence) %>%
-      plot_ly(x =~ x ,y =~y)  %>%
-      add_lines(color = I("grey"),colors = population_color_vector, line = list(width = 1.75))
+      plotly::plot_ly(x =~ x ,y =~y)  %>%
+      plotly::add_lines(color = I("grey"),colors = population_color_vector, line = list(width = 1.75))
     
   } else {
     
   if (curve == "precision recall") {
 
     reference_lines_for_plotly <- create_reference_lines_data_frame("precision recall", plotly = T, prevalence) %>%
-      plot_ly(x =~ x ,y =~y, color =~ population,
+      plotly::plot_ly(x =~ x ,y =~y, color =~ population,
               colors =  population_color_vector) %>%
-      add_lines(line = list(dash = 'dash',  width = 1.75))
+      plotly::add_lines(line = list(dash = 'dash',  width = 1.75))
 
   }
     
@@ -45,11 +45,11 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       
       
       reference_lines_for_plotly <- create_reference_lines_data_frame("gains", plotly = T, prevalence) %>%
-        plot_ly(x =~ x,
+        plotly::plot_ly(x =~ x,
                 y =~y, 
                 color =~ population,
                 colors =  population_color_reference_vector) %>%
-        add_lines(line = list(width = 1.75),
+        plotly::add_lines(line = list(width = 1.75),
                   linetype =~ population,
                   linetypes = population_linetype_reference_vector)
 
@@ -64,11 +64,11 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         create_linetype_reference_vector("decision")
 
       reference_lines_for_plotly <- create_reference_lines_data_frame("decision", plotly = T, prevalence) %>%
-        plot_ly(x =~ x,
+        plotly::plot_ly(x =~ x,
                 y =~y,
                 color =~ population,
                 colors =  population_color_reference_vector) %>%
-        add_lines(line = list(width = 1.75),
+        plotly::add_lines(line = list(width = 1.75),
                   linetype =~ population,
                   linetypes = population_linetype_reference_vector)
 

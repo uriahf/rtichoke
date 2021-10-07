@@ -30,8 +30,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @param chosen_threshold a chosen threshold to display
 #' @param interactive whether the plot should be interactive
 #' @param main_slider what is the main slider - threshold, percent positives or positives
-#'
-#'
+#' @param color_palette color palette for the curves
 #'
 #' @examples
 #'
@@ -86,12 +85,17 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' }
 #'
 #' @export
-
-
 plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
-                           main_slider = "threshold") {
+                           main_slider = "threshold",
+                           color_palette = c(
+                             "#21DACD",
+                             "#B6C174",
+                             "#A7DA2E",
+                             "#C2C172",
+                             "#FFD700"
+                           )) {
   
   if (interactive == F) {
     
@@ -104,25 +108,74 @@ plot_roc_curve <- function(performance_data,
   
   if (interactive == T) {
     
-    reference_lines <- create_reference_lines_for_plotly(curve = "roc")
+    perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
     
-    reference_lines
+    if (perf_dat_type %in% c("one model with model column", "one model")) {
     
-    roc_curve <- performance_data %>%
-      create_plotly_for_performance_metrics(FPR,
-                                            sensitivity,
-                                            reference_lines = reference_lines
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
+      add_lines_and_markers_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        FPR,
+        sensitivity, 
+        main_slider
       ) %>%
-      plotly::layout(
-        xaxis = list(
-          title = "1 - Specificity"
-        ),
-        yaxis = list(
-          title = "Sensitivity"
-        ),
-        showlegend = F
+      add_interactive_marker_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        FPR,
+        sensitivity,
+        main_slider
       ) %>%
-      plotly::config(displayModeBar = F)
+      set_styling_for_rtichoke("roc")
+    }
+    
+    if (perf_dat_type == "several models") {
+      
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                        "roc", 
+                                        population_color_vector = color_palette) %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          col_values = color_palette, 
+          main_slider = main_slider
+        )  %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          main_slider = main_slider
+        )  %>%
+        set_styling_for_rtichoke("roc")
+      
+    }
+    
+    if (perf_dat_type == "several populations") {
+      
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                        "roc", 
+                                        population_color_vector = color_palette) %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          main_slider = main_slider
+        )  %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          main_slider = main_slider
+        )  %>%
+        set_styling_for_rtichoke("roc")
+      
+    }
   }
   
   return(roc_curve)

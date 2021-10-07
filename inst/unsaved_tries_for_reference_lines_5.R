@@ -250,190 +250,28 @@ plot_metrics_curve <- function(reference_lines_plotly,
 }
 
 
+set_styling_for_rtichoke <- function(plotly_object, curve) {
+  plotly_object %>% 
+    remove_grid_lines_from_plotly() %>% 
+    set_axis_titles(curve) %>% 
+    plotly::config(displayModeBar = F)
+}
 
 
-
-
-
-  
-
-
-# roc one model one pop
-
-perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(one_pop_one_model_as_a_list)
-
-create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-  
-  
-create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_one_model_as_a_vector_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_one_model_as_a_vector_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity, 
-    main_slider = "predicted_positives_percent"
-  ) %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-
-
-create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-
-create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  ) %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_one_model_as_a_list_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity,
-    main_slider = "predicted_positives_percent"
-  ) %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-
-
-# roc several models
-
-perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(rtichoke::one_pop_three_models)
-
-create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector = c(
-  "#21DACD",
-  "#B6C174",
-  "#A7DA2E",
-  "#C2C172",
-  "#FFD700"
-)) %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_three_models,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  )  %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_three_models,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  )  %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-
-
-create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector = c(
-  "#21DACD",
-  "#B6C174",
-  "#A7DA2E",
-  "#C2C172",
-  "#FFD700"
-)) %>% 
-  add_lines_and_markers_from_performance_data(
-    performance_data = one_pop_three_models_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  )  %>%
-  add_interactive_marker_from_performance_data(
-    performance_data = one_pop_three_models_enforced_percentiles_symmetry,
-    performance_data_type = perf_dat_type,
-    FPR,
-    sensitivity
-  )  %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
-
+set_axis_titles <- function(plotly_object, curve){
+  if ( curve == "roc" ) {
+    plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "1 - Specificity"
+        ),
+        yaxis = list(
+          title = "Sensitivity"
+        ),
+        showlegend = F
+      )
+  }
+}
 
 # roc several populations
 
@@ -458,17 +296,7 @@ create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector 
     FPR,
     sensitivity
   )  %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
+  set_styling_for_rtichoke("roc")
 
 
 create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector = c(
@@ -491,17 +319,7 @@ create_reference_lines_for_plotly(perf_dat_type, "roc", population_color_vector 
     sensitivity, 
     main_slider = "predicted_positives_percent"
   )  %>%
-  remove_grid_lines_from_plotly() %>%
-  plotly::layout(
-    xaxis = list(
-      title = "1 - Specificity"
-    ),
-    yaxis = list(
-      title = "Sensitivity"
-    ),
-    showlegend = F
-  ) %>%
-  plotly::config(displayModeBar = F)
+  set_styling_for_rtichoke("roc")
 
 
 

@@ -8,7 +8,8 @@ plot_roc_curve(
   performance_data,
   chosen_threshold = NA,
   interactive = F,
-  main_slider = "threshold"
+  main_slider = "threshold",
+  color_palette = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ plot_roc_curve(
 \item{interactive}{whether the plot should be interactive}
 
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
+
+\item{color_palette}{color palette for the curves}
 }
 \description{
 Plot a ROC Curve

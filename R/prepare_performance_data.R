@@ -97,7 +97,9 @@ prepare_performance_data <- function(probs, real, by = 0.01,
     }
     return(purrr::map2_dfr(probs,
       real,
-      ~ prepare_performance_data(.x, .y),
+      ~ prepare_performance_data(.x, .y,
+                                 by = by,
+                                 enforce_percentiles_symmetry = enforce_percentiles_symmetry),
       .id = "population"
     ))
   }
