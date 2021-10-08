@@ -271,6 +271,20 @@ set_axis_titles <- function(plotly_object, curve){
         showlegend = F
       )
   }
+  
+  if ( curve == "lift" ) {
+    plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "Predicted Positives Percent"
+        ),
+        yaxis = list(
+          title = "Lift"
+        ),
+        showlegend = F
+      )
+  }
+  
 }
 
 # roc several populations

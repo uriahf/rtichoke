@@ -1,16 +1,16 @@
-# ROC Curve ---------------------------------------------------------------
+# LIFT Curve ---------------------------------------------------------------
 
 
-#' ROC Curve
+#' LIFT Curve
 #'
-#' Create a ROC Curve
+#' Create a LIFT Curve
 #'
 #' @inheritParams prepare_performance_data
 #'
 #' @export
 #'
 #'
-create_roc_curve <- function(probs, real, by = 0.01,
+create_lift_curve <- function(probs, real, by = 0.01,
                              enforce_percentiles_symmetry = F,
                              color_palette = c(
                                "#21DACD",
@@ -25,13 +25,13 @@ create_roc_curve <- function(probs, real, by = 0.01,
     by = by,
     enforce_percentiles_symmetry = enforce_percentiles_symmetry
   ) %>%
-    plot_roc_curve()
+    plot_lift_curve()
 }
 
 
-#' ROC Curve from Performance Data
+#' LIFT Curve from Performance Data
 #'
-#' Plot a ROC Curve
+#' Plot a LIFT Curve
 #'
 #' @param performance_data an rtichoke Performance Data
 #' @param chosen_threshold a chosen threshold to display
@@ -42,57 +42,57 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @examples
 #'
 #' one_pop_one_model_as_a_vector %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' one_pop_one_model_as_a_list %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' one_pop_three_models %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' train_and_test_sets %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve()
+#'   plot_lift_curve()
 #' \dontrun{
 #'
 #' one_pop_one_model_as_a_vector %>%
-#'   plot_roc_curve(interactive = T)
+#'   plot_lift_curve(interactive = T)
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_one_model_as_a_list %>%
-#'   plot_roc_curve(interactive = T)
+#'   plot_lift_curve(interactive = T)
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_three_models %>%
-#'   plot_roc_curve(interactive = T)
+#'   plot_lift_curve(interactive = T)
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
 #'
 #' train_and_test_sets %>%
-#'   plot_roc_curve(interactive = T)
+#'   plot_lift_curve(interactive = T)
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
 #' }
 #'
 #' @export
-plot_roc_curve <- function(performance_data,
+plot_lift_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold",
@@ -106,9 +106,9 @@ plot_roc_curve <- function(performance_data,
   
   if (interactive == F) {
     
-    reference_lines <- create_reference_lines_data_frame("roc")
+    reference_lines <- create_reference_lines_data_frame("lift")
     
-    roc_curve <- performance_data %>%
+    lift_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
       add_reference_lines_to_ggplot(reference_lines)
   }
@@ -118,74 +118,74 @@ plot_roc_curve <- function(performance_data,
     perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
-    
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
-      add_lines_and_markers_from_performance_data(
-        performance_data = performance_data,
-        performance_data_type = perf_dat_type,
-        FPR,
-        sensitivity, 
-        main_slider
-      ) %>%
-      add_interactive_marker_from_performance_data(
-        performance_data = performance_data,
-        performance_data_type = perf_dat_type,
-        FPR,
-        sensitivity,
-        main_slider
-      ) %>%
-      set_styling_for_rtichoke("roc")
+      
+      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift") %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          lift, 
+          main_slider
+        ) %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          lift,
+          main_slider
+        ) %>%
+         set_styling_for_rtichoke("lift")
     }
     
     if (perf_dat_type == "several models") {
       
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                        "roc", 
-                                        population_color_vector = color_palette) %>% 
+      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                                     "lift", 
+                                                     population_color_vector = color_palette) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
+          predicted_positives_percent,
+          lift, 
           col_values = color_palette, 
           main_slider = main_slider
         )  %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
+          predicted_positives_percent,
+          lift, 
           main_slider = main_slider
         )  %>%
-        set_styling_for_rtichoke("roc")
+        set_styling_for_rtichoke("lift")
       
     }
     
     if (perf_dat_type == "several populations") {
       
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                        "roc", 
-                                        population_color_vector = color_palette) %>% 
+      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                                     "lift", 
+                                                     population_color_vector = color_palette) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
+          predicted_positives_percent,
+          lift, 
           main_slider = main_slider
         )  %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
+          predicted_positives_percent,
+          lift, 
           main_slider = main_slider
         )  %>%
-        set_styling_for_rtichoke("roc")
+        set_styling_for_rtichoke("lift")
       
     }
   }
   
-  return(roc_curve)
+  return(lift_curve)
 }
 
 
