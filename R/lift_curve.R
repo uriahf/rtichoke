@@ -117,6 +117,9 @@ plot_lift_curve <- function(performance_data,
     
     perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
     
+    performance_data <- performance_data %>% 
+      mutate(fake_dot = 0) 
+    
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift") %>% 

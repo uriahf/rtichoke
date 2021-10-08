@@ -115,7 +115,7 @@ plot_roc_curve <- function(performance_data,
   
   if (interactive == T) {
     
-    perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
+    perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
     
