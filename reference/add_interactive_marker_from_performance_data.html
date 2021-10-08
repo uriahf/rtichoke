@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Precision Recall Curve — create_precision_recall_curve • rtichoke</title>
+<title>Add interactive marker based on performance data — add_interactive_marker_from_performance_data • rtichoke</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Precision Recall Curve — create_precision_recall_curve" />
-<meta property="og:description" content="Create a Precision Recall Curve" />
+<meta property="og:title" content="Add interactive marker based on performance data — add_interactive_marker_from_performance_data" />
+<meta property="og:description" content="Add interactive marker based on performance data" />
 
 
 
@@ -129,44 +129,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Precision Recall Curve</h1>
-    <small class="dont-index">Source: <a href='https://github.com/uriahf/rtichoke/blob/master/R/precision_recall.R'><code>R/precision_recall.R</code></a></small>
-    <div class="hidden name"><code>create_precision_recall_curve.Rd</code></div>
+    <h1>Add interactive marker based on performance data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/uriahf/rtichoke/blob/master/R/plotly_helper_functions.R'><code>R/plotly_helper_functions.R</code></a></small>
+    <div class="hidden name"><code>add_interactive_marker_from_performance_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a Precision Recall Curve</p>
+    <p>Add interactive marker based on performance data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_precision_recall_curve</span><span class='op'>(</span>
-  <span class='va'>probs</span>,
-  <span class='va'>real</span>,
-  by <span class='op'>=</span> <span class='fl'>0.01</span>,
-  enforce_percentiles_symmetry <span class='op'>=</span> <span class='cn'>F</span>
+    <pre class="usage"><span class='fu'>add_interactive_marker_from_performance_data</span><span class='op'>(</span>
+  <span class='va'>plotly_object</span>,
+  <span class='va'>performance_data</span>,
+  <span class='va'>performance_data_type</span>,
+  <span class='va'>x_perf_metric</span>,
+  <span class='va'>y_perf_metric</span>,
+  main_slider <span class='op'>=</span> <span class='st'>"threshold"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>probs</th>
-      <td><p>a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)</p></td>
+      <th>plotly_object</th>
+      <td></td>
     </tr>
     <tr>
-      <th>real</th>
-      <td><p>a vector of binary outcomes or a list of vectors of that
-kind (one for each population)</p></td>
+      <th>performance_data</th>
+      <td></td>
     </tr>
     <tr>
-      <th>by</th>
-      <td><p>number: increment of the sequence.</p></td>
+      <th>performance_data_type</th>
+      <td></td>
     </tr>
     <tr>
-      <th>enforce_percentiles_symmetry</th>
-      <td><p>in case a symmetry between the probabilities percentiles is desired</p></td>
+      <th>x_perf_metric</th>
+      <td></td>
+    </tr>
+    <tr>
+      <th>y_perf_metric</th>
+      <td></td>
+    </tr>
+    <tr>
+      <th>main_slider</th>
+      <td></td>
     </tr>
     </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    
+
 
 
   </div>
