@@ -113,80 +113,80 @@ plot_lift_curve <- function(performance_data,
       add_reference_lines_to_ggplot(reference_lines)
   }
   
-  if (interactive == T) {
-    
-    perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
-    
-    performance_data <- performance_data %>% 
-      mutate(fake_dot = 0) 
-    
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift") %>% 
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift, 
-          main_slider
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift,
-          main_slider
-        ) %>%
-         set_styling_for_rtichoke("lift")
-    }
-    
-    if (perf_dat_type == "several models") {
-      
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                     "lift", 
-                                                     population_color_vector = color_palette) %>% 
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift, 
-          col_values = color_palette, 
-          main_slider = main_slider
-        )  %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift, 
-          main_slider = main_slider
-        )  %>%
-        set_styling_for_rtichoke("lift")
-      
-    }
-    
-    if (perf_dat_type == "several populations") {
-      
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                     "lift", 
-                                                     population_color_vector = color_palette) %>% 
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift, 
-          main_slider = main_slider
-        )  %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          predicted_positives_percent,
-          lift, 
-          main_slider = main_slider
-        )  %>%
-        set_styling_for_rtichoke("lift")
-      
-    }
-  }
+  # if (interactive == T) {
+  #   
+  #   perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
+  #   
+  #   performance_data <- performance_data %>% 
+  #     mutate(fake_dot = 0) 
+  #   
+  #   if (perf_dat_type %in% c("one model with model column", "one model")) {
+  #     
+  #     lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift") %>% 
+  #       add_lines_and_markers_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift, 
+  #         main_slider
+  #       ) %>%
+  #       add_interactive_marker_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift,
+  #         main_slider
+  #       ) %>%
+  #        set_styling_for_rtichoke("lift")
+  #   }
+  #   
+  #   if (perf_dat_type == "several models") {
+  #     
+  #     lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+  #                                                    "lift", 
+  #                                                    population_color_vector = color_palette) %>% 
+  #       add_lines_and_markers_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift, 
+  #         col_values = color_palette, 
+  #         main_slider = main_slider
+  #       )  %>%
+  #       add_interactive_marker_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift, 
+  #         main_slider = main_slider
+  #       )  %>%
+  #       set_styling_for_rtichoke("lift")
+  #     
+  #   }
+  #   
+  #   if (perf_dat_type == "several populations") {
+  #     
+  #     lift_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+  #                                                    "lift", 
+  #                                                    population_color_vector = color_palette) %>% 
+  #       add_lines_and_markers_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift, 
+  #         main_slider = main_slider
+  #       )  %>%
+  #       add_interactive_marker_from_performance_data(
+  #         performance_data = performance_data,
+  #         performance_data_type = perf_dat_type,
+  #         predicted_positives_percent,
+  #         lift, 
+  #         main_slider = main_slider
+  #       )  %>%
+  #       set_styling_for_rtichoke("lift")
+  #     
+  #   }
+  # }
   
   return(lift_curve)
 }

@@ -235,3 +235,411 @@ add_reference_lines_to_plotly <- function(plotly_object,
       )
   }
 }
+
+
+
+
+#' Set styling for rtichoke plotly
+#'
+#' @param plotly_object 
+#' @param curve 
+#'
+#' @return
+set_styling_for_rtichoke <- function(plotly_object, curve) {
+  plotly_object %>% 
+    remove_grid_lines_from_plotly() %>% 
+    set_axis_titles(curve) %>% 
+    plotly::config(displayModeBar = F)
+}
+
+
+
+#' Set Titles for x and y axis in plotly objects
+#'
+#' @param plotly_object 
+#' @param curve 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+set_axis_titles <- function(plotly_object, curve){
+  if ( curve == "roc" ) {
+    plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "1 - Specificity"
+        ),
+        yaxis = list(
+          title = "Sensitivity"
+        ),
+        showlegend = F
+      )
+  }
+  
+  if ( curve == "lift" ) {
+    plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "Predicted Positives Percent"
+        ),
+        yaxis = list(
+          title = "Lift"
+        ),
+        showlegend = F
+      )
+  }
+  
+  if ( curve == "precision recall" ) {
+    plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "Sensitivity"
+        ),
+        yaxis = list(
+          title = "PPV"
+        ),
+        showlegend = F
+      )
+  }
+  
+}
+
+
+
+
+
+#' Add interactive marker based on performance data
+#'
+#' @param plotly_object 
+#' @param performance_data 
+#' @param performance_data_type 
+#' @param x_perf_metric 
+#' @param y_perf_metric 
+#' @param main_slider 
+#'
+#' @return
+add_interactive_marker_from_performance_data <- function(plotly_object,
+                                                         performance_data,
+                                                         performance_data_type,
+                                                         x_perf_metric,
+                                                         y_perf_metric,
+                                                         main_slider = "threshold"){
+  x_perf_metric <- enquo(x_perf_metric)
+  y_perf_metric <- enquo(y_perf_metric)
+  
+  if (performance_data_type %in% c("one model", "one model with model column")) {
+    
+    plotly_plot <- plotly_object %>%
+      plotly::add_markers(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        frame = as.formula(paste0("~", main_slider)),
+        marker = list(
+          size = 12,
+          line = list(
+            width = 3,
+            color = I("black")
+          ),
+          color = "#f6e3be"
+        ),
+        hoverinfo = "text",
+        text = ~ paste(
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  if (performance_data_type == "several models") {
+    plotly_plot <- plotly_object %>%
+      plotly::add_markers(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        frame = as.formula(paste0("~", main_slider)),
+        color =~ model,
+        marker = list(
+          size = 12,
+          line = list(
+            width = 3,
+            color = I("black")
+          )
+        ),
+        hoverinfo = "text",
+        text = ~ paste(
+          "Model:", model, "<br>",
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  if (performance_data_type == "several populations") {
+    plotly_plot <- plotly_object %>%
+      plotly::add_markers(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        frame = as.formula(paste0("~", main_slider)),
+        color =~ population,
+        marker = list(
+          size = 12,
+          line = list(
+            width = 3,
+            color = I("black")
+          )
+        ),
+        hoverinfo = "text",
+        text = ~ paste(
+          "Population:", population, "<br>",
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  plotly_plot 
+}
+
+
+
+
+
+#' Add lines and markers based on performance data
+#'
+#' @param plotly_reference_lines 
+#' @param performance_data 
+#' @param performance_data_type 
+#' @param x_perf_metric 
+#' @param y_perf_metric 
+#' @param col_values 
+#' @param main_slider 
+#' @param reference_lines 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
+                                                        performance_data,
+                                                        performance_data_type,
+                                                        x_perf_metric,
+                                                        y_perf_metric,
+                                                        col_values = c(
+                                                          "#5E7F9A",
+                                                          "#931B53",
+                                                          "#F7DC2E",
+                                                          "#C6C174",
+                                                          "#75DBCD"
+                                                        ),
+                                                        main_slider = "threshold",
+                                                        reference_lines = NA) {
+  
+  x_perf_metric <- enquo(x_perf_metric)
+  y_perf_metric <- enquo(y_perf_metric)
+  
+  # print(x_perf_metric)
+  # print(typeof(x_perf_metric))  
+  
+  if (performance_data_type %in% c("one model", "one model with model column")) {
+    col_values_vec <- "black"
+  } else {
+    col_values_vec <- col_values[1:length(unique(performance_data[, 1]))]
+    names(col_values_vec) <- unique(performance_data[, 1])
+  }
+  
+  if (performance_data_type %in% c("one model", "one model with model column")) {
+    plotly_base <- plotly_reference_lines %>%
+      plotly::add_trace(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        type = "scatter",
+        mode = "markers+lines",
+        color = I("black"),
+        hoverinfo = "text",
+        text = ~ paste(
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  
+  if (performance_data_type == "several models") {
+    plotly_base <- plotly_reference_lines %>%
+      plotly::add_trace(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        type = "scatter",
+        mode = "markers+lines",
+        color = ~model,
+        colors = col_values_vec,
+        hoverinfo = "text",
+        text = ~ paste(
+          "Model:", model, "<br>",
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  
+  if (performance_data_type == "several populations") {
+    
+    plotly_base <- plotly_reference_lines %>%
+      plotly::add_trace(
+        data = performance_data,
+        x = x_perf_metric,
+        y = y_perf_metric,
+        type = "scatter",
+        mode = "markers+lines",
+        color = ~population,
+        colors = col_values_vec,
+        hoverinfo = "text",
+        text = ~ paste(
+          "Population:", population, "<br>",
+          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+          "FPR:", round(FPR, digits = 3), "<br>",
+          "Specificity", round(specificity, digits = 3), "<br>",
+          "LIFT", round(lift, digits = 3), "<br>",
+          "PPV", round(PPV, digits = 3), "<br>",
+          "NPV", round(NPV, digits = 3), "<br>",
+          "TP:", TP, "<br>",
+          "TN:", TN, "<br>",
+          "FP:", FP, "<br>",
+          "FN:", FN
+        )
+      )
+  }
+  
+  plotly_base
+}
+
+
+
+
+
+#' Create reference lines plotly as the first stage of interactive plot
+#'
+#' @param performance_table_type 
+#' @param curve 
+#' @param prevalence 
+#' @param population_color_vector 
+#'
+#' @return
+create_reference_lines_for_plotly <- function(performance_table_type, 
+                                              curve, 
+                                              prevalence = NA, 
+                                              population_color_vector = NA){
+  if (curve %in% c("roc", "lift") || performance_table_type != "several populations" ) {
+    
+    reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
+                                                                    plotly = T, 
+                                                                    prevalence) %>%
+      plotly::plot_ly(x =~ x ,y =~y)  %>%
+      plotly::add_lines(color = I("grey"),colors = population_color_vector, line = list(width = 1.75))
+    
+  } else {
+    
+    if (curve == "precision recall") {
+      
+      reference_lines_for_plotly <- create_reference_lines_data_frame("precision recall", 
+                                                                      plotly = T, 
+                                                                      prevalence) %>%
+        plotly::plot_ly(x =~ x ,y =~y, color =~ population,
+                        colors =  population_color_vector) %>%
+        plotly::add_lines(line = list(dash = 'dash',  width = 1.75))
+      
+    }
+    
+    if (curve == "gains") {
+      print("ok")
+      
+      population_color_reference_vector <- population_color_vector %>%
+        create_color_reference_lines_vector("gains")
+      print(population_color_reference_vector)
+      
+      
+      population_linetype_reference_vector <- population_color_vector %>%
+        create_linetype_reference_vector("gains")
+      print(population_linetype_reference_vector)
+      
+      
+      reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
+                                                                      plotly = T, 
+                                                                      prevalence) %>%
+        plotly::plot_ly(x =~ x,
+                        y =~y, 
+                        color =~ population,
+                        colors =  population_color_reference_vector) %>%
+        plotly::add_lines(line = list(width = 1.75),
+                          linetype =~ population,
+                          linetypes = population_linetype_reference_vector)
+      
+    }
+    
+    if (curve == "decision") {
+      
+      population_color_reference_vector <- population_color_vector %>%
+        create_color_reference_lines_vector("decision")
+      
+      population_linetype_reference_vector <- population_color_vector %>%
+        create_linetype_reference_vector("decision")
+      
+      reference_lines_for_plotly <- create_reference_lines_data_frame("decision", 
+                                                                      plotly = T, 
+                                                                      prevalence) %>%
+        plotly::plot_ly(x =~ x,
+                        y =~y,
+                        color =~ population,
+                        colors =  population_color_reference_vector) %>%
+        plotly::add_lines(line = list(width = 1.75),
+                          linetype =~ population,
+                          linetypes = population_linetype_reference_vector)
+      
+    }
+    
+  }
+  
+  reference_lines_for_plotly
+  
+}

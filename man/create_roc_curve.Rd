@@ -4,7 +4,13 @@
 \alias{create_roc_curve}
 \title{ROC Curve}
 \usage{
-create_roc_curve(probs, real, by = 0.01, enforce_percentiles_symmetry = F)
+create_roc_curve(
+  probs,
+  real,
+  by = 0.01,
+  enforce_percentiles_symmetry = F,
+  color_palette = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
+)
 }
 \arguments{
 \item{probs}{a vector of estimated probabilities or a list of vectors of that
