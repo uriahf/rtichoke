@@ -12,13 +12,13 @@ create_reference_lines_for_plotly(
 )
 }
 \arguments{
-\item{performance_table_type}{}
+\item{performance_table_type}{the type of the performance table}
 
-\item{curve}{}
+\item{curve}{the required curve}
 
-\item{prevalence}{}
+\item{prevalence}{the prevalence of the population}
 
-\item{population_color_vector}{}
+\item{population_color_vector}{color values}
 }
 \value{
 

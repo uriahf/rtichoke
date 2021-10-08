@@ -14,17 +14,17 @@ add_interactive_marker_from_performance_data(
 )
 }
 \arguments{
-\item{plotly_object}{}
+\item{plotly_object}{a previous plotly object}
 
-\item{performance_data}{}
+\item{performance_data}{the performance data for the plot}
 
-\item{performance_data_type}{}
+\item{performance_data_type}{the type of the performance data}
 
-\item{x_perf_metric}{}
+\item{x_perf_metric}{performance metric for the x axis}
 
-\item{y_perf_metric}{}
+\item{y_perf_metric}{performance metric for the y axis}
 
-\item{main_slider}{}
+\item{main_slider}{the main slider for interactivity}
 }
 \value{
 

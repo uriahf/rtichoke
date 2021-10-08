@@ -241,8 +241,8 @@ add_reference_lines_to_plotly <- function(plotly_object,
 
 #' Set styling for rtichoke plotly
 #'
-#' @param plotly_object 
-#' @param curve 
+#' @param plotly_object a plotly object
+#' @param curve the required curve
 #'
 #' @return
 set_styling_for_rtichoke <- function(plotly_object, curve) {
@@ -256,8 +256,8 @@ set_styling_for_rtichoke <- function(plotly_object, curve) {
 
 #' Set Titles for x and y axis in plotly objects
 #'
-#' @param plotly_object 
-#' @param curve 
+#' @param plotly_object a plotly object 
+#' @param curve the required curve
 #'
 #' @return
 set_axis_titles <- function(plotly_object, curve){
@@ -308,12 +308,7 @@ set_axis_titles <- function(plotly_object, curve){
 
 #' Add interactive marker based on performance data
 #'
-#' @param plotly_object 
-#' @param performance_data 
-#' @param performance_data_type 
-#' @param x_perf_metric 
-#' @param y_perf_metric 
-#' @param main_slider 
+#' @inheritParams add_lines_and_markers_from_performance_data
 #'
 #' @return
 add_interactive_marker_from_performance_data <- function(plotly_object,
@@ -427,17 +422,16 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 
 #' Add lines and markers based on performance data
 #'
-#' @param plotly_reference_lines 
-#' @param performance_data 
-#' @param performance_data_type 
-#' @param x_perf_metric 
-#' @param y_perf_metric 
-#' @param col_values 
-#' @param main_slider 
-#' @param reference_lines 
+#' @param plotly_object a previous plotly object
+#' @param performance_data the performance data for the plot
+#' @param performance_data_type the type of the performance data
+#' @param x_perf_metric performance metric for the x axis
+#' @param y_perf_metric performance metric for the y axis
+#' @param col_values color palette
+#' @param main_slider the main slider for interactivity
 #'
 #' @return
-add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
+add_lines_and_markers_from_performance_data <- function(plotly_object,
                                                         performance_data,
                                                         performance_data_type,
                                                         x_perf_metric,
@@ -449,8 +443,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
                                                           "#C6C174",
                                                           "#75DBCD"
                                                         ),
-                                                        main_slider = "threshold",
-                                                        reference_lines = NA) {
+                                                        main_slider = "threshold") {
   
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -466,7 +459,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
   }
   
   if (performance_data_type %in% c("one model", "one model with model column")) {
-    plotly_base <- plotly_reference_lines %>%
+    plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
         x = x_perf_metric,
@@ -491,7 +484,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
   }
   
   if (performance_data_type == "several models") {
-    plotly_base <- plotly_reference_lines %>%
+    plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
         x = x_perf_metric,
@@ -519,7 +512,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
   
   if (performance_data_type == "several populations") {
     
-    plotly_base <- plotly_reference_lines %>%
+    plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
         x = x_perf_metric,
@@ -554,10 +547,10 @@ add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
 
 #' Create reference lines plotly as the first stage of interactive plot
 #'
-#' @param performance_table_type 
-#' @param curve 
-#' @param prevalence 
-#' @param population_color_vector 
+#' @param performance_table_type the type of the performance table
+#' @param curve the required curve
+#' @param prevalence the prevalence of the population
+#' @param population_color_vector color values
 #'
 #' @return
 create_reference_lines_for_plotly <- function(performance_table_type, 

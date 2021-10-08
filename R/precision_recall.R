@@ -86,7 +86,7 @@ plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
                                         interactive = F,
                                         main_slider = "threshold",
-                                        color_palette = c(
+                                        col_values = c(
                                           "#21DACD",
                                           "#B6C174",
                                           "#A7DA2E",
@@ -156,13 +156,13 @@ plot_precision_recall_curve <- function(performance_data,
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "precision recall",
                                                                   prevalence = prevalence,
-                                                     population_color_vector = color_palette) %>% 
+                                                     population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
           PPV, 
-          col_values = color_palette, 
+          col_values = col_values, 
           main_slider = main_slider
         )  %>%
         add_interactive_marker_from_performance_data(
@@ -181,7 +181,7 @@ plot_precision_recall_curve <- function(performance_data,
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "precision recall",
                                                                   prevalence = prevalence,
-                                                     population_color_vector = color_palette) %>% 
+                                                     population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

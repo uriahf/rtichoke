@@ -6,13 +6,14 @@
 #' Create a LIFT Curve
 #'
 #' @inheritParams prepare_performance_data
+#' @param col_values color palette
 #'
 #' @export
 #'
 #'
 create_lift_curve <- function(probs, real, by = 0.01,
                              enforce_percentiles_symmetry = F,
-                             color_palette = c(
+                             col_values = c(
                                "#21DACD",
                                "#B6C174",
                                "#A7DA2E",
@@ -37,7 +38,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #' @param chosen_threshold a chosen threshold to display
 #' @param interactive whether the plot should be interactive
 #' @param main_slider what is the main slider - threshold, percent positives or positives
-#' @param color_palette color palette for the curves
+#' @param col_values color palette
 #'
 #' @examples
 #'
@@ -96,7 +97,7 @@ plot_lift_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold",
-                           color_palette = c(
+                           col_values = c(
                              "#21DACD",
                              "#B6C174",
                              "#A7DA2E",

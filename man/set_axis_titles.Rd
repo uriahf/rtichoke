@@ -7,9 +7,9 @@
 set_axis_titles(plotly_object, curve)
 }
 \arguments{
-\item{plotly_object}{}
+\item{plotly_object}{a plotly object}
 
-\item{curve}{}
+\item{curve}{the required curve}
 }
 \value{
 

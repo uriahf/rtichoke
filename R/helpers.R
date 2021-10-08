@@ -6,7 +6,7 @@
 #' @param performance_data_type the type of the Performance Data
 #'
 #' @export
-get_prevalence_from_performance_data <- function(performance_data, performance_data_type) {
+get_prevalence_from_performance_data <- function(performance_data, performance_data_type = "not important") {
   PPV <- predicted_positives_percent <- NULL
 
   prevalence <- performance_data %>%

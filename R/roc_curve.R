@@ -6,13 +6,14 @@
 #' Create a ROC Curve
 #'
 #' @inheritParams prepare_performance_data
+#' @param col_values color palette
 #'
 #' @export
 #'
 #'
 create_roc_curve <- function(probs, real, by = 0.01,
                              enforce_percentiles_symmetry = F,
-                             color_palette = c(
+                             col_values = c(
                                "#21DACD",
                                "#B6C174",
                                "#A7DA2E",
@@ -37,7 +38,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @param chosen_threshold a chosen threshold to display
 #' @param interactive whether the plot should be interactive
 #' @param main_slider what is the main slider - threshold, percent positives or positives
-#' @param color_palette color palette for the curves
+#' @param col_values color palette
 #'
 #' @examples
 #'
@@ -96,7 +97,7 @@ plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = F,
                            main_slider = "threshold",
-                           color_palette = c(
+                           col_values = c(
                              "#21DACD",
                              "#B6C174",
                              "#A7DA2E",
@@ -141,13 +142,13 @@ plot_roc_curve <- function(performance_data,
       
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
-                                        population_color_vector = color_palette) %>% 
+                                        population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           FPR,
           sensitivity,
-          col_values = color_palette, 
+          col_values = col_values, 
           main_slider = main_slider
         )  %>%
         add_interactive_marker_from_performance_data(
@@ -165,7 +166,7 @@ plot_roc_curve <- function(performance_data,
       
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
-                                        population_color_vector = color_palette) %>% 
+                                        population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

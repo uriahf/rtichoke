@@ -9,7 +9,7 @@ create_lift_curve(
   real,
   by = 0.01,
   enforce_percentiles_symmetry = F,
-  color_palette = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
+  col_values = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
 )
 }
 \arguments{
@@ -22,6 +22,8 @@ kind (one for each population)}
 \item{by}{number: increment of the sequence.}
 
 \item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
+
+\item{col_values}{color palette}
 }
 \description{
 Create a LIFT Curve
