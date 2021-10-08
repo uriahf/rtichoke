@@ -260,9 +260,6 @@ set_styling_for_rtichoke <- function(plotly_object, curve) {
 #' @param curve 
 #'
 #' @return
-#' @export
-#'
-#' @examples
 set_axis_titles <- function(plotly_object, curve){
   if ( curve == "roc" ) {
     plotly_object %>% 
@@ -440,9 +437,6 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param reference_lines 
 #'
 #' @return
-#' @export
-#'
-#' @examples
 add_lines_and_markers_from_performance_data <- function(plotly_reference_lines,
                                                         performance_data,
                                                         performance_data_type,
