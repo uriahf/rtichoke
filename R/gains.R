@@ -83,7 +83,14 @@ create_gains_curve <- function(probs, real, by = 0.01,
 plot_gains_curve <- function(performance_data,
                              chosen_threshold = NA,
                              interactive = F,
-                             main_slider = "threshold") {
+                             main_slider = "threshold",
+                             col_values = c(
+                               "#21DACD",
+                               "#B6C174",
+                               "#A7DA2E",
+                               "#C2C172",
+                               "#FFD700"
+                             )) {
   prevalence <- get_prevalence_from_performance_data(performance_data)
   reference_lines <- create_reference_lines_data_frame("gains", prevalence)
   
@@ -127,7 +134,7 @@ plot_gains_curve <- function(performance_data,
     if (perf_dat_type == "several models") {
       
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                                  "precision recall",
+                                                                  "gains",
                                                                   prevalence = prevalence,
                                                                   population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
@@ -145,16 +152,16 @@ plot_gains_curve <- function(performance_data,
           sensitivity, 
           main_slider = main_slider
         )  %>%
-        set_styling_for_rtichoke("precision recall")
+        set_styling_for_rtichoke("gains")
       
     }
     
     if (perf_dat_type == "several populations") {
       
-      gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                                  "precision recall",
-                                                                  prevalence = prevalence,
-                                                                  population_color_vector = col_values) %>% 
+      gains_curve <- create_reference_lines_for_plotly(perf_dat_type,
+                                                       "gains",
+                                                       prevalence = prevalence,
+                                                       population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -169,7 +176,7 @@ plot_gains_curve <- function(performance_data,
           sensitivity, 
           main_slider = main_slider
         )  %>%
-        set_styling_for_rtichoke("precision recall")
+        set_styling_for_rtichoke("gains")
       
     }
     

@@ -308,16 +308,16 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
       )
   }
   
-  if ( curve == "precision recall" ) {
+  if ( curve == "gains" ) {
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Sensitivity",
+          title = "predicted_positives_percent",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),
         yaxis = list(
-          title = "PPV",
+          title = "Sensitivity",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),
@@ -583,7 +583,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               prevalence = NA, 
                                               population_color_vector = NA){
   if (curve %in% c("roc", "lift") || performance_table_type != "several populations" ) {
-    
+
     reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
                                                                     plotly = T, 
                                                                     prevalence) %>%
@@ -594,37 +594,52 @@ create_reference_lines_for_plotly <- function(performance_table_type,
     
     if (curve == "precision recall") {
       
+      
       reference_lines_for_plotly <- create_reference_lines_data_frame("precision recall", 
                                                                       plotly = T, 
                                                                       prevalence) %>%
-        plotly::plot_ly(x =~ x ,y =~y, color =~ population,
+        plotly::plot_ly(x =~ x ,
+                        y =~y, 
+                        color =~ population,
                         colors =  population_color_vector) %>%
         plotly::add_lines(line = list(dash = 'dash',  width = 1.75))
       
     }
     
     if (curve == "gains") {
+      
+      
 
-      population_color_reference_vector <- population_color_vector %>%
-        create_color_reference_lines_vector("gains")
-      print(population_color_reference_vector)
+      # population_color_reference_vector <- population_color_vector %>%
+      #   create_color_reference_lines_vector("gains")
+      # print(population_color_reference_vector)
+      # 
+      # 
+      # population_linetype_reference_vector <- population_color_vector %>%
+      #   create_linetype_reference_vector("gains")
+      # print(population_linetype_reference_vector)
+      # 
       
-      
-      population_linetype_reference_vector <- population_color_vector %>%
-        create_linetype_reference_vector("gains")
-      print(population_linetype_reference_vector)
-      
+      # reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
+      #                                                                 plotly = T, 
+      #                                                                 prevalence) %>%
+      #   plotly::plot_ly(x =~ x,
+      #                   y =~y, 
+      #                   color =~ population,
+      #                   colors =  population_color_vector) %>%
+      #   plotly::add_lines(line = list(width = 1.75),
+      #                     linetype =~ population,
+      #                     linetypes = population_color_vector)
+      # 
       
       reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
                                                                       plotly = T, 
                                                                       prevalence) %>%
-        plotly::plot_ly(x =~ x,
+        plotly::plot_ly(x =~ x ,
                         y =~y, 
                         color =~ population,
-                        colors =  population_color_reference_vector) %>%
-        plotly::add_lines(line = list(width = 1.75),
-                          linetype =~ population,
-                          linetypes = population_linetype_reference_vector)
+                        colors =  population_color_vector) %>%
+        plotly::add_lines(line = list(dash = 'dash',  width = 1.75))
       
     }
     

@@ -8,7 +8,8 @@ plot_gains_curve(
   performance_data,
   chosen_threshold = NA,
   interactive = F,
-  main_slider = "threshold"
+  main_slider = "threshold",
+  col_values = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ plot_gains_curve(
 \item{interactive}{whether the plot should be interactive}
 
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
+
+\item{col_values}{color palette}
 }
 \description{
 Plot a Gains Curve

@@ -106,7 +106,10 @@ create_reference_lines_data_frame <- function(curve,
         }
       )
     } else {
-      reference_lines_data_frame <- data.frame(population = names(prevalence), x = prevalence, y = 1, row.names = NULL) %>%
+      reference_lines_data_frame <- data.frame(population = names(prevalence), 
+                                               x = prevalence, 
+                                               y = 1, 
+                                               row.names = NULL) %>%
         bind_rows(
           data.frame(
             population = rep(names(prevalence), each = 2),
