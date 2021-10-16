@@ -4,7 +4,7 @@
 \alias{set_lift_curve_limits}
 \title{Set the limits for lift curve}
 \usage{
-set_lift_curve_limits(precision_recall_curve)
+set_lift_curve_limits(lift_curve)
 }
 \arguments{
 \item{lift_curve}{a ggplot object of lift curve}

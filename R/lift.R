@@ -200,8 +200,8 @@ plot_lift_curve <- function(performance_data,
 #'
 #' @param lift_curve a ggplot object of lift curve
 #'
-set_lift_curve_limits <- function(precision_recall_curve) {
-  precision_recall_curve +
+set_lift_curve_limits <- function(lift_curve) {
+  lift_curve +
     ggplot2::xlim(0, 1) +
     ggplot2::ylim(0, NA)
 }
