@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add reference lines to Gains Curve — add_gains_curve_reference_lines • rtichoke</title>
+<title>Set the limits for lift curve — set_lift_curve_limits • rtichoke</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Add reference lines to Gains Curve — add_gains_curve_reference_lines" />
-<meta property="og:description" content="Add reference lines to Gains Curve" />
+<meta property="og:title" content="Set the limits for lift curve — set_lift_curve_limits" />
+<meta property="og:description" content="Set the limits for lift curve" />
 
 
 
@@ -129,27 +129,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add reference lines to Gains Curve</h1>
-    <small class="dont-index">Source: <a href='https://github.com/uriahf/rtichoke/blob/master/R/gains.R'><code>R/gains.R</code></a></small>
-    <div class="hidden name"><code>add_gains_curve_reference_lines.Rd</code></div>
+    <h1>Set the limits for lift curve</h1>
+    <small class="dont-index">Source: <a href='https://github.com/uriahf/rtichoke/blob/master/R/lift.R'><code>R/lift.R</code></a></small>
+    <div class="hidden name"><code>set_lift_curve_limits.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Add reference lines to Gains Curve</p>
+    <p>Set the limits for lift curve</p>
     </div>
 
-    <pre class="usage"><span class='fu'>add_gains_curve_reference_lines</span><span class='op'>(</span><span class='va'>gains_curve</span>, <span class='va'>prevalence</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>set_lift_curve_limits</span><span class='op'>(</span><span class='va'>precision_recall_curve</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>gains_curve</th>
-      <td><p>a ggplot object of a Gains Curve</p></td>
-    </tr>
-    <tr>
-      <th>prevalence</th>
-      <td><p>the prevalence of the outcome</p></td>
+      <th>lift_curve</th>
+      <td><p>a ggplot object of lift curve</p></td>
     </tr>
     </table>
 
