@@ -307,6 +307,23 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
         showlegend = F
       )
   }
+  
+  if ( curve == "precision recall" ) {
+    plotly_obj <- plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "Sensitivity",
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
+        ),
+        yaxis = list(
+          title = "PPV",
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
+        ),
+        showlegend = F
+      )
+  }
   plotly_obj 
 }
 
@@ -587,8 +604,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
     }
     
     if (curve == "gains") {
-      print("ok")
-      
+
       population_color_reference_vector <- population_color_vector %>%
         create_color_reference_lines_vector("gains")
       print(population_color_reference_vector)

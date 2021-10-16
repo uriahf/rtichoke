@@ -120,7 +120,7 @@ plot_lift_curve <- function(performance_data,
     performance_data$fake_lift <- performance_data$lift
     performance_data$fake_lift[is.nan(performance_data$lift)] <- -1  
     
-    perf_dat_type <- rtichoke::check_performance_data_type_for_plotly(performance_data)
+    perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
     
     print(perf_dat_type)
 

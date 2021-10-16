@@ -93,7 +93,90 @@ plot_gains_curve <- function(performance_data,
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits()
   }
+
+  if (interactive == T) {
+
+    perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+    prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+    
+    print(perf_dat_type)
+    print(prevalence)
+    
+    if (perf_dat_type %in% c("one model with model column", "one model")) {
+      
+      gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                                                  "gains",
+                                                                  prevalence = prevalence) %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          main_slider
+        ) %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          main_slider
+        ) %>%
+        set_styling_for_rtichoke("gains")
+    }
+    
+    if (perf_dat_type == "several models") {
+      
+      gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                                                  "precision recall",
+                                                                  prevalence = prevalence,
+                                                                  population_color_vector = col_values) %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          col_values = col_values, 
+          main_slider = main_slider
+        )  %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          main_slider = main_slider
+        )  %>%
+        set_styling_for_rtichoke("precision recall")
+      
+    }
+    
+    if (perf_dat_type == "several populations") {
+      
+      gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
+                                                                  "precision recall",
+                                                                  prevalence = prevalence,
+                                                                  population_color_vector = col_values) %>% 
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          main_slider = main_slider
+        )  %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          predicted_positives_percent,
+          sensitivity, 
+          main_slider = main_slider
+        )  %>%
+        set_styling_for_rtichoke("precision recall")
+      
+    }
+    
+  }
+  
   return(gains_curve)
+  
 }
 
 #' Add reference lines to Gains Curve
