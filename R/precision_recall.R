@@ -1,4 +1,4 @@
-# Precision Recall Curve --------------------------------------------------
+# Precision Recall --------------------------------------------------
 
 
 #' Precision Recall Curve
@@ -107,22 +107,10 @@ plot_precision_recall_curve <- function(performance_data,
   }
   
   if (interactive == T) {
-    # precision_recall_curve <- performance_data %>%
-    #   create_plotly_for_performance_metrics(sensitivity, PPV,
-    #                                         reference_lines = reference_lines) %>%
-    #   plotly::layout(
-    #     xaxis = list(
-    #       title = "Sensitivity",
-    #       showgrid = F
-    #     ),
-    #     yaxis = list(
-    #       title = "PPV",
-    #       showgrid = F
-    #     ),
-    #     showlegend = FALSE
-    #   ) %>%
-    #   plotly::config(displayModeBar = F)
     
+    performance_data$fake_PPV <- performance_data$PPV
+    performance_data$fake_PPV[is.nan(performance_data$PPV)] <- -1  
+
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
     prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
     
@@ -145,7 +133,7 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
-          PPV, 
+          fake_PPV, 
           main_slider
         ) %>%
         set_styling_for_rtichoke("precision recall")
@@ -169,7 +157,7 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
-          PPV, 
+          fake_PPV, 
           main_slider = main_slider
         )  %>%
         set_styling_for_rtichoke("precision recall")
@@ -193,7 +181,7 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
-          PPV, 
+          fake_PPV, 
           main_slider = main_slider
         )  %>%
         set_styling_for_rtichoke("precision recall")

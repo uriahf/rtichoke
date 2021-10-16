@@ -243,13 +243,14 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #'
 #' @param plotly_object a plotly object
 #' @param curve the required curve
+#' @param max_y_range the maximum value of y range (for lift curve)
 #'
 #' @return
-set_styling_for_rtichoke <- function(plotly_object, curve) {
+set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
   plotly_object %>% 
     remove_grid_lines_from_plotly() %>% 
-    set_axis_titles(curve) %>% 
-    plotly::config(displayModeBar = F)
+    set_axis_titles(curve, max_y_range = max_y_range) %>% 
+    plotly::config(displayModeBar = F) 
 }
 
 
@@ -258,11 +259,12 @@ set_styling_for_rtichoke <- function(plotly_object, curve) {
 #'
 #' @param plotly_object a plotly object 
 #' @param curve the required curve
+#' @param max_y_range the maximum value for y range
 #'
 #' @return
-set_axis_titles <- function(plotly_object, curve){
+set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
   if ( curve == "roc" ) {
-    plotly_object %>% 
+    plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
           title = "1 - Specificity"
@@ -275,31 +277,37 @@ set_axis_titles <- function(plotly_object, curve){
   }
   
   if ( curve == "lift" ) {
-    plotly_object %>% 
+    plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Predicted Positives Percent"
+          title = "Predicted Positives Percent",
+          range = c(-0.1,1.1)
         ),
         yaxis = list(
-          title = "Lift"
+          title = "Lift",
+          range = c(-0.1,max_y_range)
         ),
         showlegend = F
       )
   }
   
   if ( curve == "precision recall" ) {
-    plotly_object %>% 
+    plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Sensitivity"
+          title = "Sensitivity",
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
         ),
         yaxis = list(
-          title = "PPV"
+          title = "PPV",
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
         ),
         showlegend = F
       )
   }
-  
+  plotly_obj 
 }
 
 

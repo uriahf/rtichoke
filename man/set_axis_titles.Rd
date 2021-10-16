@@ -4,12 +4,14 @@
 \alias{set_axis_titles}
 \title{Set Titles for x and y axis in plotly objects}
 \usage{
-set_axis_titles(plotly_object, curve)
+set_axis_titles(plotly_object, curve, max_y_range = NA)
 }
 \arguments{
 \item{plotly_object}{a plotly object}
 
 \item{curve}{the required curve}
+
+\item{max_y_range}{the maximum value for y range}
 }
 \value{
 

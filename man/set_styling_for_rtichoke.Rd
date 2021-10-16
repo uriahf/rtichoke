@@ -4,12 +4,14 @@
 \alias{set_styling_for_rtichoke}
 \title{Set styling for rtichoke plotly}
 \usage{
-set_styling_for_rtichoke(plotly_object, curve)
+set_styling_for_rtichoke(plotly_object, curve, max_y_range = NA)
 }
 \arguments{
 \item{plotly_object}{a plotly object}
 
 \item{curve}{the required curve}
+
+\item{max_y_range}{the maximum value of y range (for lift curve)}
 }
 \value{
 
