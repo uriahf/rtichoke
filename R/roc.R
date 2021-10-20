@@ -118,6 +118,10 @@ plot_roc_curve <- function(performance_data,
     
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
     
+    performance_data <- performance_data %>% 
+      add_hover_text_to_performance_data(perf_dat_type, curve = "roc")
+    
+    
     if (perf_dat_type %in% c("one model with model column", "one model")) {
     
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 

@@ -13,6 +13,7 @@ Imports:
     bslib,
     config (>= 0.3.1),
     dplyr,
+    glue,
     ggplot2,
     golem (>= 0.3.1),
     htmltools,
@@ -23,7 +24,8 @@ Imports:
     rlang,
     shiny (>= 1.6.0),
     shinyWidgets,
-    stats
+    stats,
+    stringr
 Suggests: 
     covr,
     knitr,

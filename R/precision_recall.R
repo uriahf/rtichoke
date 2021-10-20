@@ -114,6 +114,9 @@ plot_precision_recall_curve <- function(performance_data,
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
     prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
     
+    performance_data <- performance_data %>% 
+      add_hover_text_to_performance_data(perf_dat_type, curve = "precision recall")
+    
     print(perf_dat_type)
     print(prevalence)
     

@@ -76,7 +76,7 @@ add_models_for_text_for_hover <- function(text_for_hover) {
 
 #' Title
 #'
-#' @param text_for_hover 
+#' @param text_for_hover text
 #'
 #' @return
 add_population_for_text_for_hover <- function(text_for_hover) {
@@ -129,7 +129,7 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
 #'
 #' @param performance_data perf dat
 #' @param performance_data_type perf dat type
-#' @param curve 
+#' @param curve curve
 #'
 #' @return
 add_hover_text_to_performance_data <- function(performance_data,

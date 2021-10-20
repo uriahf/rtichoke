@@ -108,6 +108,9 @@ plot_decision_curve <- function(performance_data,
     print(perf_dat_type)
     print(prevalence)
     
+    performance_data <- performance_data %>% 
+      add_hover_text_to_performance_data(perf_dat_type, curve = "decision")
+    
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
       decision_curve <- create_reference_lines_for_plotly(perf_dat_type,

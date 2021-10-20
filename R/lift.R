@@ -122,6 +122,9 @@ plot_lift_curve <- function(performance_data,
     
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
     
+    performance_data <- performance_data %>% 
+      add_hover_text_to_performance_data(perf_dat_type, curve = "lift")
+    
     print(perf_dat_type)
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
