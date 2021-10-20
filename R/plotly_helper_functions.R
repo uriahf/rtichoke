@@ -324,6 +324,23 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
         showlegend = F
       )
   }
+  
+  if ( curve == "decision" ) {
+    plotly_obj <- plotly_object %>% 
+      plotly::layout(
+        xaxis = list(
+          title = "Threshold",
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
+        ),
+        yaxis = list(
+          title = "Net Benefit",
+          fixedrange = TRUE
+        ),
+        showlegend = F
+      )
+  }
+  
   plotly_obj 
 }
 
@@ -584,7 +601,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               population_color_vector = NA){
   if ((curve %in% c("roc", "lift")) || ((performance_table_type != "several populations" ))) {
     
-    if (curve == "gains") {
+    if (curve %in% c("gains", "decision")) {
       
       reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
                                                                       plotly = T, 
@@ -626,21 +643,8 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         col_values <- "grey"
       }
       if (length(prevalence) > 1) {
-        col_values <- c(
-          "#5E7F9A",
-          "#931B53",
-          "#F7DC2E",
-          "#C6C174",
-          "#75DBCD"
-        )[1:length(prevalence)]
+        col_values <- population_color_vector[1:length(prevalence)]
       }
-      
-      # col_values_dat <- data.frame(
-      #     population = c(names(prevalence), "random"),
-      #     population_color = c(col_values, "grey"),
-      #     linetype = c(rep("solid", length(prevalence)), "dashed")
-      # )
-      
       
       names(col_values) <- names(prevalence)
 
@@ -654,17 +658,6 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       print(population_linetype_reference_vector)
 
       
-      # reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
-      #                                                                 plotly = T, 
-      #                                                                 prevalence) %>%
-      #   plotly::plot_ly(x =~ x,
-      #                   y =~y, 
-      #                   color =~ population,
-      #                   colors =  population_color_vector) %>%
-
-      # 
-      
-
       reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
                                                                       plotly = T, 
                                                                       prevalence)  %>% 
@@ -681,17 +674,26 @@ create_reference_lines_for_plotly <- function(performance_table_type,
     
     if (curve == "decision") {
       
-      population_color_reference_vector <- population_color_vector %>%
+      if (length(prevalence) == 1) {
+        col_values <- "grey"
+      }
+      if (length(prevalence) > 1) {
+        col_values <- population_color_vector[1:length(prevalence)]
+      }
+      
+      names(col_values) <- names(prevalence)
+      
+      population_color_reference_vector <- col_values %>%
         create_color_reference_lines_vector("decision")
       
-      population_linetype_reference_vector <- population_color_vector %>%
+      population_linetype_reference_vector <- col_values %>%
         create_linetype_reference_vector("decision")
       
       reference_lines_for_plotly <- create_reference_lines_data_frame("decision", 
                                                                       plotly = T, 
                                                                       prevalence) %>%
         plotly::plot_ly(x =~ x,
-                        y =~y,
+                        y =~ y,
                         color =~ population,
                         colors =  population_color_reference_vector) %>%
         plotly::add_lines(line = list(width = 1.75),
