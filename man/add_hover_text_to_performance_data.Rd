@@ -15,7 +15,7 @@ add_hover_text_to_performance_data(
 
 \item{performance_data_type}{perf dat type}
 
-\item{curve}{}
+\item{curve}{curve}
 }
 \value{
 

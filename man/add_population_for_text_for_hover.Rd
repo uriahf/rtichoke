@@ -7,7 +7,7 @@
 add_population_for_text_for_hover(text_for_hover)
 }
 \arguments{
-\item{text_for_hover}{}
+\item{text_for_hover}{text}
 }
 \value{
 
