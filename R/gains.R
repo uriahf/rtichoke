@@ -91,10 +91,13 @@ plot_gains_curve <- function(performance_data,
                                "#C2C172",
                                "#FFD700"
                              )) {
-  prevalence <- get_prevalence_from_performance_data(performance_data)
-  reference_lines <- create_reference_lines_data_frame("gains", prevalence)
+  
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
   
   if (interactive == F) {
+  reference_lines <- create_reference_lines_data_frame("gains", prevalence)
+
     gains_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
@@ -103,9 +106,7 @@ plot_gains_curve <- function(performance_data,
 
   if (interactive == T) {
 
-    perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
-    prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
-    
+
     print(perf_dat_type)
     print(prevalence)
     
