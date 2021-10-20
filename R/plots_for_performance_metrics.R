@@ -53,7 +53,7 @@ create_ggplot_for_performance_metrics <- function(performance_data,
 
   ggplot_for_performance_metrics +
     ggplot2::geom_point(size = 1) +
-    ggplot2::geom_path(size = 0.5) +
+    ggplot2::geom_path(size = 1) +
     ggplot2::theme_classic() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_color_manual(values = col_values_vec)

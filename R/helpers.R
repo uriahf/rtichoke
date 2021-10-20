@@ -6,7 +6,8 @@
 #' @param performance_data_type the type of the Performance Data
 #'
 #' @export
-get_prevalence_from_performance_data <- function(performance_data, performance_data_type = "not important") {
+get_prevalence_from_performance_data <- function(performance_data, 
+                                                 performance_data_type = "not important") {
   PPV <- predicted_positives_percent <- NULL
 
   prevalence <- performance_data %>%
@@ -104,7 +105,10 @@ create_reference_lines_data_frame <- function(curve,
             linetype = "dotted"
           )
         }
-      )
+      ) %>% 
+        bind_rows(
+          data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "dotted")
+        )
     } else {
       reference_lines_data_frame <- data.frame(population = names(prevalence), 
                                                x = prevalence, 
@@ -177,6 +181,7 @@ create_segment_for_reference_line <- function(reference_line) {
     xend = reference_line$xend,
     yend = reference_line$yend,
     color = reference_line$col,
+    size = 1,
     linetype = reference_line$linetype
   )
 }
