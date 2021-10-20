@@ -503,25 +503,27 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
   if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_base <- plotly_object %>%
       plotly::add_trace(
-        data = performance_data,
+        data = performance_data %>% 
+          add_hover_text_to_performance_data(performance_data_type, curve = "roc"),
         x = x_perf_metric,
         y = y_perf_metric,
         type = "scatter",
         mode = "markers+lines",
         color = I("black"),
         hoverinfo = "text",
-        text = ~ paste(
-          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-          "FPR:", round(FPR, digits = 3), "<br>",
-          "Specificity", round(specificity, digits = 3), "<br>",
-          "LIFT", round(lift, digits = 3), "<br>",
-          "PPV", round(PPV, digits = 3), "<br>",
-          "NPV", round(NPV, digits = 3), "<br>",
-          "TP:", TP, "<br>",
-          "TN:", TN, "<br>",
-          "FP:", FP, "<br>",
-          "FN:", FN
-        )
+        # text = ~ paste(
+        #   "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+        #   "FPR:", round(FPR, digits = 3), "<br>",
+        #   "Specificity", round(specificity, digits = 3), "<br>",
+        #   "LIFT", round(lift, digits = 3), "<br>",
+        #   "PPV", round(PPV, digits = 3), "<br>",
+        #   "NPV", round(NPV, digits = 3), "<br>",
+        #   "TP:", TP, "<br>",
+        #   "TN:", TN, "<br>",
+        #   "FP:", FP, "<br>",
+        #   "FN:", FN
+        # )
+        text = ~text
       )
   }
   
@@ -556,7 +558,8 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
     
     plotly_base <- plotly_object %>%
       plotly::add_trace(
-        data = performance_data,
+        data = performance_data %>% 
+          add_hover_text_to_performance_data(performance_data_type, curve = "roc"),        
         x = x_perf_metric,
         y = y_perf_metric,
         type = "scatter",
@@ -564,19 +567,20 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
         color = ~population,
         colors = col_values_vec,
         hoverinfo = "text",
-        text = ~ paste(
-          "Population:", population, "<br>",
-          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-          "FPR:", round(FPR, digits = 3), "<br>",
-          "Specificity", round(specificity, digits = 3), "<br>",
-          "LIFT", round(lift, digits = 3), "<br>",
-          "PPV", round(PPV, digits = 3), "<br>",
-          "NPV", round(NPV, digits = 3), "<br>",
-          "TP:", TP, "<br>",
-          "TN:", TN, "<br>",
-          "FP:", FP, "<br>",
-          "FN:", FN
-        )
+        text =~ text
+        # text = ~ paste(
+        #   "Population:", population, "<br>",
+        #   "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
+        #   "FPR:", round(FPR, digits = 3), "<br>",
+        #   "Specificity", round(specificity, digits = 3), "<br>",
+        #   "LIFT", round(lift, digits = 3), "<br>",
+        #   "PPV", round(PPV, digits = 3), "<br>",
+        #   "NPV", round(NPV, digits = 3), "<br>",
+        #   "TP:", TP, "<br>",
+        #   "TN:", TN, "<br>",
+        #   "FP:", FP, "<br>",
+        #   "FN:", FN
+        # )
       )
   }
   
