@@ -582,14 +582,28 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               curve, 
                                               prevalence = NA, 
                                               population_color_vector = NA){
-  if (curve %in% c("roc", "lift") || performance_table_type != "several populations" ) {
-
+  if ((curve %in% c("roc", "lift")) || ((performance_table_type != "several populations" ))) {
+    
+    if (curve == "gains") {
+      
+      reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
+                                                                      plotly = T, 
+                                                                      prevalence) %>%
+      plotly::plot_ly(x =~ x ,y =~y)  %>%
+        plotly::add_lines(color = I("grey"), 
+                          colors = population_color_vector, 
+                          line = list(width = 1.75),
+                          linetype =~ population)      
+    } else {
+    
     reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
                                                                     plotly = T, 
                                                                     prevalence) %>%
       plotly::plot_ly(x =~ x ,y =~y)  %>%
-      plotly::add_lines(color = I("grey"), colors = population_color_vector, line = list(width = 1.75))
-    
+      plotly::add_lines(color = I("grey"), 
+                        colors = population_color_vector, 
+                        line = list(width = 1.75))
+    }
   } else {
     
     if (curve == "precision recall") {
@@ -654,7 +668,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 
                                                                       plotly = T, 
                                                                       prevalence)  %>% 
-        dplyr::left_join(col_values_dat) %>% 
+        # dplyr::left_join(col_values_dat) %>% 
         plotly::plot_ly(x =~ x,
                         y =~ y, 
                         color =~ population,
@@ -690,4 +704,49 @@ create_reference_lines_for_plotly <- function(performance_table_type,
   
   reference_lines_for_plotly
   
+}
+
+
+
+
+
+
+
+#' Creating color reference lines vector
+#'
+#' @param color_populations_vector color population vector 
+#' @param curve a curve
+#'
+#' @return
+create_color_reference_lines_vector <- function(color_populations_vector, curve){
+  if (curve == "gains") {
+    color_populations_vector <- c(color_populations_vector, random = "grey")
+  }
+  if (curve == "precision recall") {
+    color_populations_vector <- color_populations_vector
+  }
+  if (curve == "decision") {
+    color_populations_vector <- c(color_populations_vector, treat_none = "grey")
+  }
+  color_populations_vector
+}
+
+
+
+#' Creating linetype reference lines vector
+#'
+#' @param color_populations_vector color population vector
+#' @param curve a curve
+#'
+#' @return
+create_linetype_reference_vector <- function(color_populations_vector, curve){
+  col_populations_vec <- rep("dash", length(color_populations_vector))
+  names(col_populations_vec) <- names(color_populations_vector)
+  if (curve == "gains") {
+    col_populations_vec <- c(col_populations_vec, random = "solid")
+  }
+  if (curve == "decision") {
+    col_populations_vec <- c(col_populations_vec, treat_none = "solid")
+  }
+  col_populations_vec
 }
