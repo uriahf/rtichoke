@@ -9,7 +9,7 @@ plot_precision_recall_curve(
   chosen_threshold = NA,
   interactive = F,
   main_slider = "threshold",
-  col_values = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{

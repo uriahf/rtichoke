@@ -25,7 +25,9 @@ Imports:
     shiny (>= 1.6.0),
     shinyWidgets,
     stats,
-    stringr
+    stringr,
+    gt,
+    reactable
 Suggests: 
     covr,
     knitr,

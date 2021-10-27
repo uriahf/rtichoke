@@ -106,7 +106,7 @@ make_two_performance_metrics_bold <- function(text_for_hover, performance_metric
 #'
 #' @return
 make_performance_metric_bold <- function(hover_text, performance_metric) {
-  performance_metrics_text_hover <- unlist(str_split(hover_text, "\n"))
+  performance_metrics_text_hover <- unlist(stringr::str_split(hover_text, "\n"))
 
   performance_metrics_text_hover[performance_metrics_text_hover %>%
     stringr::str_detect(performance_metric)] <- paste0(
@@ -116,7 +116,7 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
     "</b>"
   )
 
-  updated_text_hover <- paste(unlist(str_split(performance_metrics_text_hover, "\n")), collapse = "\n")
+  updated_text_hover <- paste(unlist(stringr::str_split(performance_metrics_text_hover, "\n")), collapse = "\n")
 
 
 

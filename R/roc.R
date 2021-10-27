@@ -14,11 +14,11 @@
 create_roc_curve <- function(probs, real, by = 0.01,
                              enforce_percentiles_symmetry = F,
                              col_values = c(
-                               "#21DACD",
-                               "#B6C174",
-                               "#A7DA2E",
-                               "#C2C172",
-                               "#FFD700"
+                               "#5BC0BE",
+                               "#FC8D62",
+                               "#8DA0CB",
+                               "#E78AC3",
+                               "#A4243B"
                              )) {
   prepare_performance_data(
     probs = probs,
@@ -98,11 +98,11 @@ plot_roc_curve <- function(performance_data,
                            interactive = F,
                            main_slider = "threshold",
                            col_values = c(
-                             "#21DACD",
-                             "#B6C174",
-                             "#A7DA2E",
-                             "#C2C172",
-                             "#FFD700"
+                             "#5BC0BE",
+                             "#FC8D62",
+                             "#8DA0CB",
+                             "#E78AC3",
+                             "#A4243B"
                            )) {
   
   if (interactive == F) {
