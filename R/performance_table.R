@@ -102,7 +102,7 @@ render_performance_table <- function(performance_data,
   } else {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%  
-      render_and_format_gt(main_slider, perf_dat_type, prevalence)
+      render_and_format_gt(main_slider, perf_dat_type, prevalence, col_values)
       
   }
 }
@@ -156,12 +156,13 @@ prepare_performance_data_for_gt <- function(performance_data,
 render_and_format_gt <- function(performance_data, 
                                  main_slider, 
                                  perf_dat_type,
-                                 prevalence){
+                                 prevalence,
+                                 col_values){
   performance_data %>% 
   gt::gt() %>%
     gt::fmt_missing(
-      columns = everything(),
-      rows = everything(),
+      columns = dplyr::everything(),
+      rows = dplyr::everything(),
       missing_text = ""
     ) %>%
     gt::cols_align(
@@ -203,7 +204,8 @@ render_and_format_gt <- function(performance_data,
     gt::tab_header(
       title = gt::md(creating_title_for_gt(main_slider)),
       subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
-                                          prevalence = prevalence))
+                                          prevalence = prevalence, 
+                                          col_values = col_values))
     )
 }
 
@@ -234,27 +236,29 @@ creating_title_for_gt <- function(main_slider){
 creating_subtitle_for_gt <- function(
   perf_dat_type,
   col_values = NA,
-  prevalence = NA,
-  models_names = NA){
+  prevalence = NA){
   
   if (perf_dat_type == "one model"){
-    subtitle_for_gt <- glue::glue("prevalence: {round(prevalence, digits = 2)}")
+    subtitle_for_gt <- glue::glue("Prevalence: {round(prevalence, digits = 2)}")
   }
   
   if (perf_dat_type == "one model with model column"){
-    subtitle_for_gt <- glue::glue("**{names(prevalence)}** model (prevalence: {round(prevalence, digits = 2)})")
+    subtitle_for_gt <- glue::glue("**{names(prevalence)}** model (Prevalence: {round(prevalence, digits = 2)})")
   }
   
-  # if (perf_dat_type == "several models"){
-  #   
-  #   names(col_values) <- names(prevalence)
-  #   
-  #   
-  #   subtitle_for_gt <- glue::glue("**{names(prevalence)}** model (prevalence: {round(prevalence, digits = 2)})")
-  # }
+  if (perf_dat_type == "several models"){
+    col_values <- col_values[1:length(prevalence)]
+    
+    subtitle_for_gt <-prevalence %>% 
+      names() %>% 
+      purrr::map2(col_values, add_html_color_to_model_for_subtitle) %>% 
+      glue::glue_collapse(", ", last = " and ") %>% 
+      glue::glue(": Prevalnce: {round(prevalence[1], digits = 2)}")
+  }
 
   if (perf_dat_type == "several populations"){
-    
+    col_values <- col_values[1:length(prevalence)]
+
     subtitle_for_gt <- purrr::pmap(
       list(names(prevalence),
            col_values,
@@ -283,5 +287,18 @@ creating_subtitle_for_gt <- function(
 create_subtitle_for_one_population <- function(pop_name, 
                                                pop_color, 
                                                pop_prevalence) {
-  glue::glue("<b><span style=\"color: {pop_color};\">{pop_name}</span></b> population (prevalence: {round(pop_prevalence, digits = 2)})")
+  glue::glue("<b><span style=\"color: {pop_color};\">{pop_name}</span></b> population (Prevalence: {round(pop_prevalence, digits = 2)})")
+}
+
+
+#' Add html color to model for subtitle
+#'
+#' @param model_name the name of the model
+#' @param model_color the color of the model
+#'
+#' @return
+#' @keywords internal
+add_html_color_to_model_for_subtitle <- function(model_name, 
+                                                 model_color) {
+  glue::glue("<b><span style=\"color: {model_color};\">{model_name}</span></b>")
 }
