@@ -105,7 +105,7 @@ plot_lift_curve <- function(performance_data,
                              "#A4243B"
                            )) {
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
     
     reference_lines <- create_reference_lines_data_frame("lift")
     
@@ -115,7 +115,7 @@ plot_lift_curve <- function(performance_data,
       set_lift_curve_limits()
   }
   
-  if (interactive == T) {
+  if (interactive == TRUE) {
 
     performance_data$fake_lift <- performance_data$lift
     performance_data$fake_lift[is.nan(performance_data$lift)] <- -1  

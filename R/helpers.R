@@ -35,7 +35,7 @@ create_reference_lines_data_frame <- function(curve,
                                               plotly = F,
                                               multiple_pop = F) {
   if (curve == "roc") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(0, 1))
@@ -43,7 +43,7 @@ create_reference_lines_data_frame <- function(curve,
   }
 
   if (curve == "lift") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 1, yend = 1, col = "grey", linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(1, 1))
@@ -63,7 +63,7 @@ create_reference_lines_data_frame <- function(curve,
         "#75DBCD"
       )[1:length(prevalence)]
     }
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(
         x = 0, xend = 1, y = prevalence, yend = prevalence, col = col_values,
         linetype = "dotted"
@@ -91,7 +91,7 @@ create_reference_lines_data_frame <- function(curve,
       )[1:length(prevalence)]
     }
 
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- purrr::map2_df(
         prevalence,
         col_values,
@@ -129,7 +129,7 @@ create_reference_lines_data_frame <- function(curve,
   }
 
   if (curve == "decision") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- rbind(
         create_reference_lines_data_frame("decision treat all", prevalence),
         create_reference_lines_data_frame("decision treat none")

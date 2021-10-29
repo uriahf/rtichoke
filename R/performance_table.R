@@ -96,7 +96,7 @@ render_performance_table <- function(performance_data,
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
 
-  if (interactive == T) {
+  if (interactive == TRUE) {
     performance_data %>%
       reactable::reactable()
   } else {

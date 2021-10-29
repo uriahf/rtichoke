@@ -96,7 +96,7 @@ plot_precision_recall_curve <- function(performance_data,
   performance_data_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, performance_data_type)
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
   
     reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
   
@@ -106,7 +106,7 @@ plot_precision_recall_curve <- function(performance_data,
       set_precision_recall_curve_limits()
   }
   
-  if (interactive == T) {
+  if (interactive == TRUE) {
     
     performance_data$fake_PPV <- performance_data$PPV
     performance_data$fake_PPV[is.nan(performance_data$PPV)] <- -1  

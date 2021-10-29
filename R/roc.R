@@ -105,7 +105,7 @@ plot_roc_curve <- function(performance_data,
                              "#A4243B"
                            )) {
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
     
     reference_lines <- create_reference_lines_data_frame("roc")
     
@@ -114,7 +114,7 @@ plot_roc_curve <- function(performance_data,
       add_reference_lines_to_ggplot(reference_lines)
   }
   
-  if (interactive == T) {
+  if (interactive == TRUE) {
     
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
     

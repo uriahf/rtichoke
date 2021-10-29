@@ -97,13 +97,13 @@ plot_decision_curve <- function(performance_data,
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
     decision_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("threshold", "NB") %>%
       add_reference_lines_to_ggplot(create_reference_lines_data_frame("decision", prevalence)) %>%
       set_decision_curve_limits()
   }
-  if (interactive == T) {
+  if (interactive == TRUE) {
     
     print(perf_dat_type)
     print(prevalence)
