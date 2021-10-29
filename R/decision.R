@@ -137,7 +137,7 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "decision",
-                                                                  prevalence = prevalence,
+                                                                  prevalence = prevalence[1],
                                                                   population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,

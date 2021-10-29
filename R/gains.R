@@ -139,7 +139,7 @@ plot_gains_curve <- function(performance_data,
       
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "gains",
-                                                                  prevalence = prevalence,
+                                                                  prevalence = prevalence[1],
                                                                   population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,

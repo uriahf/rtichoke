@@ -13,10 +13,7 @@ get_prevalence_from_performance_data <- function(performance_data,
   prevalence <- performance_data %>%
     dplyr::filter(predicted_positives_percent == 1) %>%
     dplyr::pull(PPV, name = 1)
-  
-  if(performance_data_type == "several models") {
-    prevalence <- prevalence[1] 
-  }
+
   prevalence
 }
 

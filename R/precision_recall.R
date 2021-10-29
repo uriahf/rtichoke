@@ -146,7 +146,7 @@ plot_precision_recall_curve <- function(performance_data,
       
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "precision recall",
-                                                                  prevalence = prevalence,
+                                                                  prevalence = prevalence[1],
                                                      population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
