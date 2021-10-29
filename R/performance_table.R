@@ -120,6 +120,9 @@ prepare_performance_data_for_gt <- function(performance_data,
   
   performance_data_ready_for_gt <- performance_data %>%
     replace_nan_with_na() %>%
+    dplyr::rename(any_of(c("Model" = "model", 
+                    "Population" = "population", 
+                    "Threshold" = "threshold"))) %>% 
     add_colors_to_performance_dat() 
 
   
@@ -127,13 +130,13 @@ prepare_performance_data_for_gt <- function(performance_data,
   if (main_slider != "threshold") {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
       dplyr::relocate(plot_predicted_positives,
-        .after = threshold
+        .after = Threshold
       ) %>%
       dplyr::arrange(predicted_positives_percent) %>% 
-      dplyr::select(-threshold)
+      dplyr::select(-Threshold)
   } else {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
-      dplyr::arrange(threshold)
+      dplyr::arrange(Threshold)
   }
 
   performance_data_ready_for_gt %>%
@@ -167,11 +170,7 @@ render_and_format_gt <- function(performance_data,
     ) %>%
     gt::cols_align(
       align = "left",
-      columns = c(
-        TP, FP, TN, FN,
-        sensitivity, lift, specificity, PPV, NPV, NB,
-        plot_predicted_positives
-      )
+      columns = dplyr::everything()
     ) %>%
     gt::cols_width(
       c(TP, TN, FP, FN, 
@@ -196,7 +195,7 @@ render_and_format_gt <- function(performance_data,
       sensitivity = "Sens",
       lift = "Lift",
       specificity = "Spec",
-      plot_predicted_positives = "Predicted Positives" # ,
+      plot_predicted_positives = "Predicted Positives"
     ) %>%
     gt::tab_options(
       table.background.color = "#FFFBF3"
@@ -253,7 +252,7 @@ creating_subtitle_for_gt <- function(
       names() %>% 
       purrr::map2(col_values, add_html_color_to_model_for_subtitle) %>% 
       glue::glue_collapse(", ", last = " and ") %>% 
-      glue::glue(": Prevalnce: {round(prevalence[1], digits = 2)}")
+      glue::glue(" (Prevalnce: {round(prevalence[1], digits = 2)})")
   }
 
   if (perf_dat_type == "several populations"){
