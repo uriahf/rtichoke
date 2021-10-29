@@ -28,6 +28,8 @@ Create a Performance Table
 }
 \examples{
 
+\dontrun{
+
 one_pop_one_model_as_a_vector \%>\%
   render_performance_table()
 
@@ -51,7 +53,6 @@ train_and_test_sets \%>\%
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   render_performance_table()
-\dontrun{
 
 one_pop_one_model_as_a_vector \%>\%
   render_performance_table(interactive = T)

@@ -102,7 +102,7 @@ render_performance_table <- function(performance_data,
   } else {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%  
-      render_and_format_gt(main_slider)
+      render_and_format_gt(main_slider, perf_dat_type, prevalence)
       
   }
 }
@@ -151,8 +151,12 @@ prepare_performance_data_for_gt <- function(performance_data,
 #' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
+#' @param prevalence the prevalence of the populations
 
-render_and_format_gt <- function(performance_data, main_slider){
+render_and_format_gt <- function(performance_data, 
+                                 main_slider, 
+                                 perf_dat_type,
+                                 prevalence){
   performance_data %>% 
   gt::gt() %>%
     gt::fmt_missing(
@@ -197,7 +201,9 @@ render_and_format_gt <- function(performance_data, main_slider){
       table.background.color = "#FFFBF3"
     ) %>%
     gt::tab_header(
-      title = creating_title_for_gt(main_slider)
+      title = gt::md(creating_title_for_gt(main_slider)),
+      subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
+                                          prevalence = prevalence))
     )
 }
 
@@ -217,3 +223,65 @@ creating_title_for_gt <- function(main_slider){
   }
 }
 
+
+
+#' Creating Subtitle for gt performance table
+#'
+#' @return
+#' @keywords internal
+#' @inheritParams plot_roc_curve
+#' @param models_names the names of the different models
+creating_subtitle_for_gt <- function(
+  perf_dat_type,
+  col_values = NA,
+  prevalence = NA,
+  models_names = NA){
+  
+  if (perf_dat_type == "one model"){
+    subtitle_for_gt <- glue::glue("prevalence: {round(prevalence, digits = 2)}")
+  }
+  
+  if (perf_dat_type == "one model with model column"){
+    subtitle_for_gt <- glue::glue("**{names(prevalence)}** model (prevalence: {round(prevalence, digits = 2)})")
+  }
+  
+  # if (perf_dat_type == "several models"){
+  #   
+  #   names(col_values) <- names(prevalence)
+  #   
+  #   
+  #   subtitle_for_gt <- glue::glue("**{names(prevalence)}** model (prevalence: {round(prevalence, digits = 2)})")
+  # }
+
+  if (perf_dat_type == "several populations"){
+    
+    subtitle_for_gt <- purrr::pmap(
+      list(names(prevalence),
+           col_values,
+           prevalence),
+      create_subtitle_for_one_population
+    ) %>% 
+      glue::glue_collapse(", ", last = " and ")
+  }
+  
+  
+  subtitle_for_gt
+}
+
+
+
+
+
+#' Creating Subtitle for One Population
+#'
+#' @param pop_name the name of the population
+#' @param pop_color the color of the population
+#' @param pop_prevalence the prevalence of the population
+#'
+#' @return
+#' @keywords internal
+create_subtitle_for_one_population <- function(pop_name, 
+                                               pop_color, 
+                                               pop_prevalence) {
+  glue::glue("<b><span style=\"color: {pop_color};\">{pop_name}</span></b> population (prevalence: {round(pop_prevalence, digits = 2)})")
+}
