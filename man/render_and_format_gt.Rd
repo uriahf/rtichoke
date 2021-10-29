@@ -4,7 +4,13 @@
 \alias{render_and_format_gt}
 \title{Rendering and Formatting gt}
 \usage{
-render_and_format_gt(performance_data, main_slider, perf_dat_type, prevalence)
+render_and_format_gt(
+  performance_data,
+  main_slider,
+  perf_dat_type,
+  prevalence,
+  col_values
+)
 }
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
@@ -12,6 +18,8 @@ render_and_format_gt(performance_data, main_slider, perf_dat_type, prevalence)
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
 
 \item{prevalence}{the prevalence of the populations}
+
+\item{col_values}{color palette}
 }
 \value{
 

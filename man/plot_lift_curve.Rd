@@ -54,28 +54,28 @@ train_and_test_sets_enforced_percentiles_symmetry \%>\%
 \dontrun{
 
 one_pop_one_model_as_a_vector \%>\%
-  plot_lift_curve(interactive = T)
+  plot_lift_curve(interactive = TRUE)
 
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+  plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 
 one_pop_one_model_as_a_list \%>\%
-  plot_lift_curve(interactive = T)
+  plot_lift_curve(interactive = TRUE)
 
 one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+  plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 
 one_pop_three_models \%>\%
-  plot_lift_curve(interactive = T)
+  plot_lift_curve(interactive = TRUE)
 
 one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+  plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 
 train_and_test_sets \%>\%
-  plot_lift_curve(interactive = T)
+  plot_lift_curve(interactive = TRUE)
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve(interactive = T, main_slider = "predicted_positives_percent")
+  plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 }
 
 }
