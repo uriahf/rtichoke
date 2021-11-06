@@ -172,6 +172,10 @@ render_and_format_gt <- function(performance_data,
       align = "left",
       columns = dplyr::everything()
     ) %>%
+    gt::cols_align(
+      align = "center",
+      columns = NB
+    ) %>%
     gt::cols_width(
       c(TP, TN, FP, FN, 
         sensitivity, lift, specificity, PPV, NPV, NB,

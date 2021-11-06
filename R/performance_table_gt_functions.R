@@ -32,7 +32,36 @@ bar_chart <- function(value,
   }
 }
 
+bar_style_nb <- function(width, display){
+  if (is.na(width) | is.nan(width)) {
+    NA
+  } else {
 
+    position <- paste0((0.5 + width / 2) * 100, "%")
+
+    display_rounded <- round(display, digits = 2) %>% 
+      format(nsmall = 2)
+    
+    if (width <= 0) {
+      fill <- "pink"
+      html_code <- glue::glue("<span style=\"display: inline-block; background: linear-gradient(90deg, 
+             transparent {position}, {fill} {position}, {fill} 50%, 
+             transparent 50%) center center / 98% 88% no-repeat; border-radius: 4px;
+             flex: 100 0 auto; width: 100px;\">{display_rounded}</span>")
+    } else {
+      fill <- "lightgreen"
+      html_code <- glue::glue("<span style=\"display: inline-block;background: linear-gradient(90deg, 
+             transparent 50%, {fill} 50%, {fill} {position}, transparent {position}) center center / 98% 88% no-repeat;
+             border-radius: 4px; flex: 100 0 auto; width: 100px;\">{display_rounded}</span>")
+      
+    }
+    
+    html_code %>% 
+      as.character() %>% 
+      gt::html()
+    
+  }
+}
 
 #' Adding color to the confusion metric
 #'
@@ -123,6 +152,25 @@ add_color_to_predicted_positives <- function(performance_dat) {
 }
 
 
+#' Adding Color to Net Benifit metric
+#'
+#' @return
+#' @keywords internal
+#' @inheritParams plot_roc_curve
+add_color_to_net_benifit <- function(performance_data) {
+  performance_data  %>% 
+    dplyr::mutate(
+      NB_plot = NB,
+      NB_plot = purrr::map2(
+        NB_plot, NB, 
+        .f = ~bar_style_nb(width = .x, display = .y))
+    ) %>% 
+    dplyr::mutate( NB = NB_plot ) %>% 
+    dplyr::select(-NB_plot) 
+}
+
+
+
 #' Replancing NaN with NA
 #'
 #' @param performance_dat the original performance data 
@@ -159,5 +207,5 @@ performance_dat %>%
   add_color_to_performance_metric(specificity, "lightgreen") %>% 
   add_color_to_performance_metric(PPV, "lightgreen") %>% 
   add_color_to_performance_metric(NPV, "pink") %>% 
-  add_color_to_performance_metric(NB, "lightgreen")
+  add_color_to_net_benifit()
 }
