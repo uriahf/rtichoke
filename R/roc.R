@@ -3,7 +3,7 @@
 
 #' ROC Curve
 #'
-#' Create a ROC Curve
+#' Create a ROC Curve b
 #'
 #' @inheritParams prepare_performance_data
 #' @param col_values color palette
