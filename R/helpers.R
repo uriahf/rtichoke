@@ -10,8 +10,10 @@ get_prevalence_from_performance_data <- function(performance_data,
                                                  performance_data_type = "not important") {
   PPV <- predicted_positives_percent <- NULL
 
-  prevalence <- performance_data %>%
-    dplyr::filter(predicted_positives_percent == 1) %>%
+  prevalence <- performance_data  %>% 
+    dplyr::filter(predicted_positives_percent == 1) %>% 
+    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) %>% 
+    distinct() %>% 
     dplyr::pull(PPV, name = 1)
 
   prevalence
