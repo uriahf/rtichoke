@@ -5,7 +5,7 @@
 #' @param performance_data an rtichoke Performance Data
 #' @param performance_data_type the type of the Performance Data
 #'
-#' @export
+#' @keywords internal
 get_prevalence_from_performance_data <- function(performance_data, 
                                                  performance_data_type = "not important") {
   PPV <- predicted_positives_percent <- NULL
@@ -19,6 +19,33 @@ get_prevalence_from_performance_data <- function(performance_data,
   prevalence
 }
 
+#' prevalence
+#'
+#' Get the prevalence out of Performance Data
+#'
+#' @param performance_data an rtichoke Performance Data
+#' @param performance_data_type the type of the Performance Data
+#'
+#' @keywords internal
+get_n_from_performance_data <- function(performance_data,
+                                        performance_data_type = "not important") {
+  positives <- predicted_positives_percent <- NULL
+  
+  # print(performance_data)
+  
+  real_positives <- performance_data %>% 
+    dplyr::filter(predicted_positives_percent == 1) %>% 
+    dplyr::select(dplyr::any_of(c("Model", "Population", "positives"))) %>% 
+    distinct()  %>% 
+    rename("n_obs" = positives) %>% 
+    select(1, "n_obs")
+    # dplyr::pull(positives, name = 1)
+  
+  print(real_positives)
+  
+  real_positives
+}
+
 
 #' Title
 #'
@@ -27,6 +54,7 @@ get_prevalence_from_performance_data <- function(performance_data,
 #' @param plotly should the reference lines data frame be competible with plotly
 #' @param multiple_pop should the reference lines data frame should be adjusted to multiple populations
 #' @param color the required color
+#' @keywords internal
 
 create_reference_lines_data_frame <- function(curve,
                                               prevalence = NA,
@@ -190,6 +218,7 @@ create_segment_for_reference_line <- function(reference_line) {
 #'
 #' @param ggplot_curve a non interactive ggplot curve
 #' @param reference_lines dataframe of reference lines
+#' @keywords internal
 
 add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
   ggplot_curve$layers <- c(

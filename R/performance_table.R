@@ -118,6 +118,8 @@ render_performance_table <- function(performance_data,
 prepare_performance_data_for_gt <- function(performance_data, 
                                             main_slider) {
   
+  # print(performance_data)
+  
   performance_data_ready_for_gt <- performance_data %>%
     replace_nan_with_na() %>%
     dplyr::rename(any_of(c("Model" = "model", 
