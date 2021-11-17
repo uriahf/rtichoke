@@ -1,8 +1,9 @@
-#' Title
+#' Making performance metrics bold
 #'
 #' @param text_for_hover text
 #' @param curve curve type
 #'
+#' @keywords internal
 #' @return
 make_performance_metrics_bold <- function(text_for_hover, curve) {
   if (curve == "roc") {
@@ -33,11 +34,12 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
   text_for_hover
 }
 
-#' Title
+#' Creating text to hover
 #'
 #' @param performance_data_type performance data type
 #' @param curve curve type
 #'
+#' @keywords internal
 #' @return
 create_text_for_hover <- function(performance_data_type, curve) {
   text_for_hover <- "Sensitivity (sensitivity): {sensitivity}
@@ -62,11 +64,12 @@ FN: {FN}"
   text_for_hover
 }
 
-#' Title
+#' Adding models for text to hover
 #'
 #' @param text_for_hover text
 #'
 #' @return
+#' @keywords internal
 add_models_for_text_for_hover <- function(text_for_hover) {
   paste("<b>Model: {model}</b>",
     text_for_hover,
@@ -74,11 +77,12 @@ add_models_for_text_for_hover <- function(text_for_hover) {
   )
 }
 
-#' Title
+#' Adding population for text to hover
 #'
 #' @param text_for_hover text
 #'
 #' @return
+#' @keywords internal
 add_population_for_text_for_hover <- function(text_for_hover) {
   paste("<b>Population: {population}</b>",
     text_for_hover,
@@ -86,12 +90,13 @@ add_population_for_text_for_hover <- function(text_for_hover) {
   )
 }
 
-#' Title
+#' Making two performance metrics bold
 #'
 #' @param text_for_hover text
 #' @param performance_metric_x  x
 #' @param performance_metric_y  y
-#'
+#' 
+#' @keywords internal
 #' @return
 make_two_performance_metrics_bold <- function(text_for_hover, performance_metric_x, performance_metric_y) {
   text_for_hover %>%
@@ -99,11 +104,12 @@ make_two_performance_metrics_bold <- function(text_for_hover, performance_metric
     make_performance_metric_bold(performance_metric_y)
 }
 
-#' Title
+#' Making performance metric bold
 #'
 #' @param hover_text  text 
 #' @param performance_metric perf
 #'
+#' @keywords internal
 #' @return
 make_performance_metric_bold <- function(hover_text, performance_metric) {
   performance_metrics_text_hover <- unlist(stringr::str_split(hover_text, "\n"))
@@ -125,12 +131,13 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
 
 
 
-#' Title
+#' Adding hover text to performance data
 #'
 #' @param performance_data perf dat
 #' @param performance_data_type perf dat type
 #' @param curve curve
 #'
+#' @keywords internal
 #' @return
 add_hover_text_to_performance_data <- function(performance_data,
                                                performance_data_type,
