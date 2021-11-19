@@ -21,6 +21,8 @@ kind (one for each population)}
 \item{by}{number: increment of the sequence.}
 
 \item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
+
+\item{output_type}{the type of the output table, {gt} as default}
 }
 \description{
 Create a Performance Table

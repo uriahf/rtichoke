@@ -7,7 +7,7 @@
 #' Create a Performance Table
 #'
 #' @inheritParams create_roc_curve
-#'
+#' @param output_type the type of the output table, {gt} as default
 #'
 create_performance_table <- function(probs, real, by = 0.01,
                                      enforce_percentiles_symmetry = F) {
@@ -26,6 +26,7 @@ create_performance_table <- function(probs, real, by = 0.01,
 #' Create a Performance Table
 #'
 #' @inheritParams plot_roc_curve
+#' @inheritParams create_performance_table
 #'
 #' @examples
 #'
@@ -83,7 +84,7 @@ create_performance_table <- function(probs, real, by = 0.01,
 #' @export
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
-                                     interactive = F,
+                                     output_type = "gt",
                                      main_slider = "threshold",
                                      col_values = c(
                                        "#5BC0BE",
@@ -96,10 +97,7 @@ render_performance_table <- function(performance_data,
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
 
-  if (interactive == TRUE) {
-    performance_data %>%
-      reactable::reactable()
-  } else {
+  if (output_type == "gt") {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%  
       render_and_format_gt(main_slider, perf_dat_type, prevalence, col_values)

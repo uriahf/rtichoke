@@ -7,7 +7,7 @@
 render_performance_table(
   performance_data,
   chosen_threshold = NA,
-  interactive = F,
+  output_type = "gt",
   main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
@@ -17,7 +17,7 @@ render_performance_table(
 
 \item{chosen_threshold}{a chosen threshold to display}
 
-\item{interactive}{whether the plot should be interactive}
+\item{output_type}{the type of the output table, {gt} as default}
 
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
 
