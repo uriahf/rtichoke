@@ -143,7 +143,7 @@
   chosen_threshold <span class='op'>=</span> <span class='cn'>NA</span>,
   interactive <span class='op'>=</span> <span class='cn'>F</span>,
   main_slider <span class='op'>=</span> <span class='st'>"threshold"</span>,
-  col_values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#21DACD"</span>, <span class='st'>"#B6C174"</span>, <span class='st'>"#A7DA2E"</span>, <span class='st'>"#C2C172"</span>, <span class='st'>"#FFD700"</span><span class='op'>)</span>
+  col_values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#5BC0BE"</span>, <span class='st'>"#FC8D62"</span>, <span class='st'>"#8DA0CB"</span>, <span class='st'>"#E78AC3"</span>, <span class='st'>"#A4243B"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -173,57 +173,73 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='va'>one_pop_one_model_as_a_vector</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 rows containing missing values (geom_point).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 row(s) containing missing values (geom_path).</span></div><div class='img'><img src='plot_decision_curve-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='img'><img src='plot_decision_curve-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>one_pop_one_model_as_a_list</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 rows containing missing values (geom_point).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 row(s) containing missing values (geom_path).</span></div><div class='img'><img src='plot_decision_curve-3.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='img'><img src='plot_decision_curve-4.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>one_pop_three_models</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 3 rows containing missing values (geom_point).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 3 row(s) containing missing values (geom_path).</span></div><div class='img'><img src='plot_decision_curve-5.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>one_pop_three_models_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='img'><img src='plot_decision_curve-6.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>train_and_test_sets</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 2 rows containing missing values (geom_point).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 2 row(s) containing missing values (geom_path).</span></div><div class='img'><img src='plot_decision_curve-7.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>train_and_test_sets_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='img'><img src='plot_decision_curve-8.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-
-<span class='va'>one_pop_one_model_as_a_vector</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span>
-
-<span class='va'>one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span>
-
-<span class='va'>one_pop_one_model_as_a_list</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span>
-
-<span class='va'>one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span>
-
-<span class='va'>one_pop_three_models</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span>
-
-<span class='va'>one_pop_three_models_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span>
-
-<span class='va'>train_and_test_sets</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span>
-
-<span class='va'>train_and_test_sets_enforced_percentiles_symmetry</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>T</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_vector</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 1 rows containing missing values (geom_point).</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 1 row(s) containing missing values (geom_path).</span>
+<span class='r-plt img'><img src='plot_decision_curve-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot_decision_curve-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_list</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 1 rows containing missing values (geom_point).</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 1 row(s) containing missing values (geom_path).</span>
+<span class='r-plt img'><img src='plot_decision_curve-3.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot_decision_curve-4.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_three_models</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 3 rows containing missing values (geom_point).</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 3 row(s) containing missing values (geom_path).</span>
+<span class='r-plt img'><img src='plot_decision_curve-5.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_three_models_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot_decision_curve-6.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>train_and_test_sets</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 2 rows containing missing values (geom_point).</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Removed 2 row(s) containing missing values (geom_path).</span>
+<span class='r-plt img'><img src='plot_decision_curve-7.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>train_and_test_sets_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot_decision_curve-8.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_vector</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_list</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_three_models</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>one_pop_three_models_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>train_and_test_sets</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>train_and_test_sets_enforced_percentiles_symmetry</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'>plot_decision_curve</span><span class='op'>(</span>interactive <span class='op'>=</span> <span class='cn'>TRUE</span>, main_slider <span class='op'>=</span> <span class='st'>"predicted_positives_percent"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
