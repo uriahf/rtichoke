@@ -123,7 +123,7 @@ create_reference_lines_data_frame <- function(curve,
         prevalence,
         col_values,
         function(x, y) {
-          data.frame(
+          tibble::tibble(
             x = c(0, x),
             xend = c(x, 1),
             y = c(0, 1),
@@ -133,16 +133,16 @@ create_reference_lines_data_frame <- function(curve,
           )
         }
       ) %>% 
-        bind_rows(
-          data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "dotted")
+        dplyr::bind_rows(
+          tibble::tibble(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "dotted")
         )
     } else {
-      reference_lines_data_frame <- data.frame(population = names(prevalence), 
+      reference_lines_data_frame <- tibble::tibble(population = names(prevalence), 
                                                x = prevalence, 
                                                y = 1, 
                                                row.names = NULL) %>%
         bind_rows(
-          data.frame(
+          tibble::tibble(
             population = rep(names(prevalence), each = 2),
             x = c(0, 1),
             y = c(0, 1)
@@ -150,7 +150,7 @@ create_reference_lines_data_frame <- function(curve,
         ) %>%
         arrange(population, x, y) %>%
         bind_rows(
-          data.frame(population = "random", x = c(0, 1), y = c(0, 1))
+          tibble::tibble(population = "random", x = c(0, 1), y = c(0, 1))
         )
     }
   }
@@ -163,9 +163,9 @@ create_reference_lines_data_frame <- function(curve,
       )
     } else {
       reference_lines_data_frame <- bind_rows(
-        data.frame(population = names(prevalence), x = prevalence, y = 0, row.names = NULL),
-        data.frame(population = names(prevalence), x = 0, y = prevalence, row.names = NULL),
-        data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
+        tibble::tibble(population = names(prevalence), x = prevalence, y = 0, row.names = NULL),
+        tibble::tibble(population = names(prevalence), x = 0, y = prevalence, row.names = NULL),
+        tibble::tibble(population = "treat_none", x = c(0, 1), y = c(0, 0))
       )
     }
   }
@@ -184,14 +184,14 @@ create_reference_lines_data_frame <- function(curve,
       )[1:length(prevalence)]
     }
 
-    reference_lines_data_frame <- data.frame(
+    reference_lines_data_frame <- tibble::tibble(
       x = 0, xend = prevalence, y = prevalence, yend = 0, col = col_values,
       linetype = "dotted"
     )
   }
 
   if (curve == "decision treat none") {
-    reference_lines_data_frame <- data.frame(
+    reference_lines_data_frame <- tibble::tibble(
       x = 0, xend = 1, y = 0, yend = 0, col = "grey",
       linetype = "solid"
     )

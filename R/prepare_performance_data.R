@@ -104,7 +104,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   N <- TP <- TN <- FP <- FN <- NULL
   N <- length(probs)
 
-  data.frame(
+  tibble::tibble(
     threshold = if (enforce_percentiles_symmetry) stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
   ) %>%
     {
