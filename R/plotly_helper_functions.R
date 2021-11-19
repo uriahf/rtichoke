@@ -180,6 +180,12 @@ add_interactive_marker_to_plotly <- function(plotly_object,
         "FP:", FP, "<br>",
         "FN:", FN
       )
+    ) %>%
+    plotly::animation_slider(
+      currentvalue = list(prefix = ifelse(main_slider == "threshold", 
+                                          "Prob. Threshold: ",
+                                          "Predicted Positives: ")
+      )
     )
 }
 
@@ -392,6 +398,12 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         ),
         hoverinfo = "text",
         text = ~text
+      ) %>%
+      plotly::animation_slider(
+        currentvalue = list(prefix = ifelse(main_slider == "threshold", 
+                                            "Prob. Threshold: ",
+                                            "Predicted Positives: ")
+        )
       )
   }
   if (performance_data_type == "several models") {
@@ -411,6 +423,12 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         ),
         hoverinfo = "text",
         text = ~text
+      ) %>%
+      plotly::animation_slider(
+        currentvalue = list(prefix = ifelse(main_slider == "threshold", 
+                                            "Prob. Threshold: ",
+                                            "Predicted Positives: ")
+        )
       )
   }
   if (performance_data_type == "several populations") {
@@ -430,6 +448,12 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         ),
         hoverinfo = "text",
         text = ~text
+      ) %>%
+      plotly::animation_slider(
+        currentvalue = list(prefix = ifelse(main_slider == "threshold", 
+                                            "Prob. Threshold: ",
+                                            "Predicted Positives: ")
+        )
       )
   }
   plotly_plot 

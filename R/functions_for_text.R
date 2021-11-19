@@ -42,7 +42,7 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 #' @keywords internal
 #' @return
 create_text_for_hover <- function(performance_data_type, curve) {
-  text_for_hover <- "Sensitivity (sensitivity): {sensitivity}
+  text_for_hover <- "Sensitivity: {sensitivity}
 1 - Specificity (FPR): {FPR}
 Specificity: {specificity}
 Lift: {lift}
