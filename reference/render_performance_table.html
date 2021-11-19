@@ -141,7 +141,7 @@
     <pre class="usage"><span class='fu'>render_performance_table</span><span class='op'>(</span>
   <span class='va'>performance_data</span>,
   chosen_threshold <span class='op'>=</span> <span class='cn'>NA</span>,
-  interactive <span class='op'>=</span> <span class='cn'>F</span>,
+  output_type <span class='op'>=</span> <span class='st'>"gt"</span>,
   main_slider <span class='op'>=</span> <span class='st'>"threshold"</span>,
   col_values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#5BC0BE"</span>, <span class='st'>"#FC8D62"</span>, <span class='st'>"#8DA0CB"</span>, <span class='st'>"#E78AC3"</span>, <span class='st'>"#A4243B"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
@@ -158,8 +158,8 @@
       <td><p>a chosen threshold to display</p></td>
     </tr>
     <tr>
-      <th>interactive</th>
-      <td><p>whether the plot should be interactive</p></td>
+      <th>output_type</th>
+      <td><p>the type of the output table, gt as default</p></td>
     </tr>
     <tr>
       <th>main_slider</th>
