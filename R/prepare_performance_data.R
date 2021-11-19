@@ -65,9 +65,6 @@
 #'   )
 #' )
 #' @export
-
-
-
 prepare_performance_data <- function(probs, real, by = 0.01,
                                      enforce_percentiles_symmetry = F) {
   . <- threshold <- NULL

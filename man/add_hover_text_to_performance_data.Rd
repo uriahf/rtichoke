@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_for_text.R
 \name{add_hover_text_to_performance_data}
 \alias{add_hover_text_to_performance_data}
-\title{Title}
+\title{Adding hover text to performance data}
 \usage{
 add_hover_text_to_performance_data(
   performance_data,
@@ -21,5 +21,6 @@ add_hover_text_to_performance_data(
 
 }
 \description{
-Title
+Adding hover text to performance data
 }
+\keyword{internal}

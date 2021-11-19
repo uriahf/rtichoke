@@ -54,28 +54,28 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #' \dontrun{
 #'
 #' one_pop_one_model_as_a_vector %>%
-#'   plot_gains_curve(interactive = T)
+#'   plot_gains_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_gains_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_one_model_as_a_list %>%
-#'   plot_gains_curve(interactive = T)
+#'   plot_gains_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_gains_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_three_models %>%
-#'   plot_gains_curve(interactive = T)
+#'   plot_gains_curve(interactive = TRUE)
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_gains_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' train_and_test_sets %>%
-#'   plot_gains_curve(interactive = T)
+#'   plot_gains_curve(interactive = TRUE)
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_gains_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #' }
 #'
 #' @export
@@ -85,17 +85,17 @@ plot_gains_curve <- function(performance_data,
                              interactive = F,
                              main_slider = "threshold",
                              col_values = c(
-                               "#21DACD",
-                               "#B6C174",
-                               "#A7DA2E",
-                               "#C2C172",
-                               "#FFD700"
+                               "#5BC0BE",
+                               "#FC8D62",
+                               "#8DA0CB",
+                               "#E78AC3",
+                               "#A4243B"
                              )) {
   
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
   reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
     gains_curve <- performance_data %>%
@@ -104,7 +104,7 @@ plot_gains_curve <- function(performance_data,
       set_gains_curve_limits()
   }
 
-  if (interactive == T) {
+  if (interactive == TRUE) {
 
 
     print(perf_dat_type)
@@ -139,7 +139,7 @@ plot_gains_curve <- function(performance_data,
       
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "gains",
-                                                                  prevalence = prevalence,
+                                                                  prevalence = prevalence[1],
                                                                   population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -194,6 +194,7 @@ plot_gains_curve <- function(performance_data,
 #'
 #' @param gains_curve a ggplot object of a Gains Curve
 #' @param prevalence the prevalence of the outcome
+#' @keywords internal
 add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
   gains_curve$layers <- c(
     ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
@@ -216,7 +217,7 @@ add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
 #' Set the limits for Gains Curve
 #'
 #' @param gains_curve a ggplot object of a Gains Curve
-#'
+#' @keywords internal
 set_gains_curve_limits <- function(gains_curve) {
   gains_curve +
     ggplot2::xlim(0, 1) +

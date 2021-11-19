@@ -1,6 +1,7 @@
 #' Check Performance type for plotly
 #'
 #' @param performance_data an rtichoke Performance Data
+#' @keywords internal
 
 check_performance_data_type_for_plotly <- function(performance_data) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
@@ -26,6 +27,7 @@ check_performance_data_type_for_plotly <- function(performance_data) {
 #' @inheritParams create_ggplot_for_performance_metrics
 #' @param performance_data_type the type of the Performance Data
 #' @param col_values palette
+#' @keywords internal
 
 create_plotly_base <- function(performance_data,
                                x_perf_metric,
@@ -70,6 +72,13 @@ create_plotly_base <- function(performance_data,
 }
 
 
+#' Adding markers and lines to plotly
+#'
+#' @param plotly_object 
+#' @param performance_data_type 
+#'
+#' @return
+#' @keywords internal
 add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type) {
   if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_with_markers_and_lines <- plotly_object %>%
@@ -144,7 +153,7 @@ add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type
 #'
 #' @param plotly_object a plotly plot for performance metrics
 #' @param main_slider what is the main slider - threshold, percent positives or positives
-
+#' @keywords internal
 add_interactive_marker_to_plotly <- function(plotly_object,
                                              main_slider = "threshold") {
   plotly_object %>%
@@ -180,7 +189,7 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 #' @param plotly_object a plotly plot for performance metrics
 #' @param performance_data_type the type of the Performance Data
 #' @param reference_lines dataframe of reference lines
-
+#' @keywords internal
 add_reference_lines_to_plotly <- function(plotly_object,
                                           reference_lines,
                                           performance_data_type = "one model") {
@@ -244,6 +253,7 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #' @param plotly_object a plotly object
 #' @param curve the required curve
 #' @param max_y_range the maximum value of y range (for lift curve)
+#' @keywords internal
 #'
 #' @return
 set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
@@ -260,6 +270,7 @@ set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
 #' @param plotly_object a plotly object 
 #' @param curve the required curve
 #' @param max_y_range the maximum value for y range
+#' @keywords internal
 #'
 #' @return
 set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
@@ -351,6 +362,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
 #' Add interactive marker based on performance data
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
+#' @keywords internal
 #'
 #' @return
 add_interactive_marker_from_performance_data <- function(plotly_object,
@@ -436,6 +448,7 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param y_perf_metric performance metric for the y axis
 #' @param col_values color palette
 #' @param main_slider the main slider for interactivity
+#' @keywords internal
 #'
 #' @return
 add_lines_and_markers_from_performance_data <- function(plotly_object,
@@ -520,6 +533,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 #' @param curve the required curve
 #' @param prevalence the prevalence of the population
 #' @param population_color_vector color values
+#' @keywords internal
 #'
 #' @return
 create_reference_lines_for_plotly <- function(performance_table_type, 
@@ -645,6 +659,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 #'
 #' @param color_populations_vector color population vector 
 #' @param curve a curve
+#' @keywords internal
 #'
 #' @return
 create_color_reference_lines_vector <- function(color_populations_vector, curve){
@@ -666,6 +681,7 @@ create_color_reference_lines_vector <- function(color_populations_vector, curve)
 #'
 #' @param color_populations_vector color population vector
 #' @param curve a curve
+#' @keywords internal
 #'
 #' @return
 create_linetype_reference_vector <- function(color_populations_vector, curve){

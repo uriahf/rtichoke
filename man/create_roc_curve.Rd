@@ -9,7 +9,7 @@ create_roc_curve(
   real,
   by = 0.01,
   enforce_percentiles_symmetry = F,
-  col_values = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{

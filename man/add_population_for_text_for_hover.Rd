@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_for_text.R
 \name{add_population_for_text_for_hover}
 \alias{add_population_for_text_for_hover}
-\title{Title}
+\title{Adding population for text to hover}
 \usage{
 add_population_for_text_for_hover(text_for_hover)
 }
@@ -13,5 +13,6 @@ add_population_for_text_for_hover(text_for_hover)
 
 }
 \description{
-Title
+Adding population for text to hover
 }
+\keyword{internal}

@@ -20,3 +20,4 @@ add_reference_lines_to_plotly(
 \description{
 Add Reference Lines to Plotly Object
 }
+\keyword{internal}

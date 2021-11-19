@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_for_text.R
 \name{create_text_for_hover}
 \alias{create_text_for_hover}
-\title{Title}
+\title{Creating text to hover}
 \usage{
 create_text_for_hover(performance_data_type, curve)
 }
@@ -15,5 +15,6 @@ create_text_for_hover(performance_data_type, curve)
 
 }
 \description{
-Title
+Creating text to hover
 }
+\keyword{internal}

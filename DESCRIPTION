@@ -13,23 +13,23 @@ Imports:
     bslib,
     config (>= 0.3.1),
     dplyr,
-    glue,
     ggplot2,
+    glue,
     golem (>= 0.3.1),
+    gt,
     htmltools,
     magrittr,
     plotly,
     processx,
     purrr,
+    reactable,
     rlang,
     shiny (>= 1.6.0),
     shinyWidgets,
     stats,
     stringr
 Suggests: 
-    covr,
     knitr,
-    pkgdown,
     rmarkdown,
     testthat
 VignetteBuilder: 

@@ -19,3 +19,4 @@ set_styling_for_rtichoke(plotly_object, curve, max_y_range = NA)
 \description{
 Set styling for rtichoke plotly
 }
+\keyword{internal}

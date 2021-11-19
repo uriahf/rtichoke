@@ -12,3 +12,4 @@ check_performance_data_type_for_plotly(performance_data)
 \description{
 Check Performance type for plotly
 }
+\keyword{internal}

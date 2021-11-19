@@ -57,28 +57,28 @@ create_decision_curve <- function(probs, real, by = 0.01,
 #' \dontrun{
 #'
 #' one_pop_one_model_as_a_vector %>%
-#'   plot_decision_curve(interactive = T)
+#'   plot_decision_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_decision_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_one_model_as_a_list %>%
-#'   plot_decision_curve(interactive = T)
+#'   plot_decision_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_decision_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' one_pop_three_models %>%
-#'   plot_decision_curve(interactive = T)
+#'   plot_decision_curve(interactive = TRUE)
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_decision_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #'
 #' train_and_test_sets %>%
-#'   plot_decision_curve(interactive = T)
+#'   plot_decision_curve(interactive = TRUE)
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = T, main_slider = "predicted_positives_percent")
+#'   plot_decision_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
 #' }
 #' @export
 
@@ -87,23 +87,23 @@ plot_decision_curve <- function(performance_data,
                                 interactive = F,
                                 main_slider = "threshold",
                                 col_values = c(
-                                  "#21DACD",
-                                  "#B6C174",
-                                  "#A7DA2E",
-                                  "#C2C172",
-                                  "#FFD700"
+                                  "#5BC0BE",
+                                  "#FC8D62",
+                                  "#8DA0CB",
+                                  "#E78AC3",
+                                  "#A4243B"
                                 )) {
   
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
   
-  if (interactive == F) {
+  if (interactive == FALSE) {
     decision_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("threshold", "NB") %>%
       add_reference_lines_to_ggplot(create_reference_lines_data_frame("decision", prevalence)) %>%
       set_decision_curve_limits()
   }
-  if (interactive == T) {
+  if (interactive == TRUE) {
     
     print(perf_dat_type)
     print(prevalence)
@@ -137,7 +137,7 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "decision",
-                                                                  prevalence = prevalence,
+                                                                  prevalence = prevalence[1],
                                                                   population_color_vector = col_values) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -191,7 +191,7 @@ plot_decision_curve <- function(performance_data,
 #' Set the limits for Decision Curve
 #'
 #' @param decision_curve a ggplot object of Decision Curve
-#'
+#' @keywords internal
 set_decision_curve_limits <- function(decision_curve) {
   decision_curve +
     ggplot2::xlim(0, 1)

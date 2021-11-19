@@ -26,3 +26,4 @@ create_plotly_base(
 \description{
 Makes a basic plotly for the metrices
 }
+\keyword{internal}

@@ -23,3 +23,4 @@ create_ggplot_for_performance_metrics(
 \description{
 Makes a ggplot for the metrices
 }
+\keyword{internal}

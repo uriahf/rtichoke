@@ -35,3 +35,4 @@ add_lines_and_markers_from_performance_data(
 \description{
 Add lines and markers based on performance data
 }
+\keyword{internal}

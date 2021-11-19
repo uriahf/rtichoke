@@ -5,29 +5,56 @@
 #' @param performance_data an rtichoke Performance Data
 #' @param performance_data_type the type of the Performance Data
 #'
-#' @export
+#' @keywords internal
 get_prevalence_from_performance_data <- function(performance_data, 
                                                  performance_data_type = "not important") {
   PPV <- predicted_positives_percent <- NULL
 
-  prevalence <- performance_data %>%
-    dplyr::filter(predicted_positives_percent == 1) %>%
+  prevalence <- performance_data  %>% 
+    dplyr::filter(predicted_positives_percent == 1) %>% 
+    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) %>% 
+    distinct() %>% 
     dplyr::pull(PPV, name = 1)
-  
-  if(performance_data_type == "several models") {
-    prevalence <- prevalence[1] 
-  }
+
   prevalence
 }
 
+#' prevalence
+#'
+#' Get the prevalence out of Performance Data
+#'
+#' @param performance_data an rtichoke Performance Data
+#' @param performance_data_type the type of the Performance Data
+#'
+#' @keywords internal
+get_n_from_performance_data <- function(performance_data,
+                                        performance_data_type = "not important") {
+  positives <- predicted_positives_percent <- NULL
+  
+  # print(performance_data)
+  
+  real_positives <- performance_data %>% 
+    dplyr::filter(predicted_positives_percent == 1) %>% 
+    dplyr::select(dplyr::any_of(c("Model", "Population", "positives"))) %>% 
+    distinct()  %>% 
+    rename("n_obs" = positives) %>% 
+    select(1, "n_obs")
+    # dplyr::pull(positives, name = 1)
+  
+  print(real_positives)
+  
+  real_positives
+}
 
-#' Title
+
+#' Creating Reference Lines Data Frame
 #'
 #' @param curve the specified curve for the reference lines
 #' @param prevalence the prevalence of the outcome
 #' @param plotly should the reference lines data frame be competible with plotly
 #' @param multiple_pop should the reference lines data frame should be adjusted to multiple populations
 #' @param color the required color
+#' @keywords internal
 
 create_reference_lines_data_frame <- function(curve,
                                               prevalence = NA,
@@ -35,7 +62,7 @@ create_reference_lines_data_frame <- function(curve,
                                               plotly = F,
                                               multiple_pop = F) {
   if (curve == "roc") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(0, 1))
@@ -43,7 +70,7 @@ create_reference_lines_data_frame <- function(curve,
   }
 
   if (curve == "lift") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 1, yend = 1, col = "grey", linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(1, 1))
@@ -63,7 +90,7 @@ create_reference_lines_data_frame <- function(curve,
         "#75DBCD"
       )[1:length(prevalence)]
     }
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(
         x = 0, xend = 1, y = prevalence, yend = prevalence, col = col_values,
         linetype = "dotted"
@@ -91,7 +118,7 @@ create_reference_lines_data_frame <- function(curve,
       )[1:length(prevalence)]
     }
 
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- purrr::map2_df(
         prevalence,
         col_values,
@@ -129,7 +156,7 @@ create_reference_lines_data_frame <- function(curve,
   }
 
   if (curve == "decision") {
-    if (plotly == F) {
+    if (plotly == FALSE) {
       reference_lines_data_frame <- rbind(
         create_reference_lines_data_frame("decision treat all", prevalence),
         create_reference_lines_data_frame("decision treat none")
@@ -191,6 +218,7 @@ create_segment_for_reference_line <- function(reference_line) {
 #'
 #' @param ggplot_curve a non interactive ggplot curve
 #' @param reference_lines dataframe of reference lines
+#' @keywords internal
 
 add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
   ggplot_curve$layers <- c(

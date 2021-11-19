@@ -12,3 +12,4 @@ remove_grid_lines_from_plotly(plotly_object)
 \description{
 remove_grid_lines_from_plotly
 }
+\keyword{internal}

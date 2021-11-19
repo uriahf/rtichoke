@@ -26,3 +26,4 @@ create_reference_lines_for_plotly(
 \description{
 Create reference lines plotly as the first stage of interactive plot
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ create_linetype_reference_vector(color_populations_vector, curve)
 \description{
 Creating linetype reference lines vector
 }
+\keyword{internal}

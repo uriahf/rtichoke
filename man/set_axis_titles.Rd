@@ -19,3 +19,4 @@ set_axis_titles(plotly_object, curve, max_y_range = NA)
 \description{
 Set Titles for x and y axis in plotly objects
 }
+\keyword{internal}

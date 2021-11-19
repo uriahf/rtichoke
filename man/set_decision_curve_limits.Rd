@@ -12,3 +12,4 @@ set_decision_curve_limits(decision_curve)
 \description{
 Set the limits for Decision Curve
 }
+\keyword{internal}

@@ -14,3 +14,4 @@ add_interactive_marker_to_plotly(plotly_object, main_slider = "threshold")
 \description{
 Add Interactive Marker to Plotly
 }
+\keyword{internal}

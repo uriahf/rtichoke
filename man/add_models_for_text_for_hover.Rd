@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_for_text.R
 \name{add_models_for_text_for_hover}
 \alias{add_models_for_text_for_hover}
-\title{Title}
+\title{Adding models for text to hover}
 \usage{
 add_models_for_text_for_hover(text_for_hover)
 }
@@ -13,5 +13,6 @@ add_models_for_text_for_hover(text_for_hover)
 
 }
 \description{
-Title
+Adding models for text to hover
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions_for_text.R
 \name{make_two_performance_metrics_bold}
 \alias{make_two_performance_metrics_bold}
-\title{Title}
+\title{Making two performance metrics bold}
 \usage{
 make_two_performance_metrics_bold(
   text_for_hover,
@@ -21,5 +21,6 @@ make_two_performance_metrics_bold(
 
 }
 \description{
-Title
+Making two performance metrics bold
 }
+\keyword{internal}

@@ -14,3 +14,4 @@ add_reference_lines_to_ggplot(ggplot_curve, reference_lines)
 \description{
 Add reference lines to ggplot curve
 }
+\keyword{internal}

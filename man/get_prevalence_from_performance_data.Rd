@@ -17,3 +17,4 @@ get_prevalence_from_performance_data(
 \description{
 Get the prevalence out of Performance Data
 }
+\keyword{internal}

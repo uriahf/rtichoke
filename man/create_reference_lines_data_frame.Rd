@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{create_reference_lines_data_frame}
 \alias{create_reference_lines_data_frame}
-\title{Title}
+\title{Creating Reference Lines Data Frame}
 \usage{
 create_reference_lines_data_frame(
   curve,
@@ -24,5 +24,6 @@ create_reference_lines_data_frame(
 \item{multiple_pop}{should the reference lines data frame should be adjusted to multiple populations}
 }
 \description{
-Title
+Creating Reference Lines Data Frame
 }
+\keyword{internal}
