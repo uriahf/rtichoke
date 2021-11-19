@@ -103,7 +103,9 @@ plot_precision_recall_curve <- function(performance_data,
     precision_recall_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
-      set_precision_recall_curve_limits()
+      set_precision_recall_curve_limits() +
+      ggplot2::xlab("Sensitivity") +
+      ggplot2::ylab("PPV")
   }
   
   if (interactive == TRUE) {
@@ -116,10 +118,7 @@ plot_precision_recall_curve <- function(performance_data,
     
     performance_data <- performance_data %>% 
       add_hover_text_to_performance_data(perf_dat_type, curve = "precision recall")
-    
-    print(perf_dat_type)
-    print(prevalence)
-    
+
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 

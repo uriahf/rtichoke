@@ -112,7 +112,9 @@ plot_lift_curve <- function(performance_data,
     lift_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("predicted_positives_percent", "lift") %>%
       add_reference_lines_to_ggplot(reference_lines) %>% 
-      set_lift_curve_limits()
+      set_lift_curve_limits() +
+      ggplot2::xlab("Predicted Positives") +
+      ggplot2::ylab("Lift")
   }
   
   if (interactive == TRUE) {

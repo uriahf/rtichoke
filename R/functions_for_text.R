@@ -49,7 +49,7 @@ Lift: {lift}
 PPV: {PPV}
 NPV: {NPV}
 NB: {NB}
-Fraction of Predicted Positives: {predicted_positives_percent}
+Predicted Positives: {positives} ({100 * predicted_positives_percent}%)
 TP: {TP}
 TN: {TN}
 FP: {FP}

@@ -291,7 +291,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Predicted Positives Percent",
+          title = "Predicted Positives",
           range = c(-0.1,1.1)
         ),
         yaxis = list(
@@ -340,7 +340,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Threshold",
+          title = "Probability Threshold",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),

@@ -101,7 +101,9 @@ plot_decision_curve <- function(performance_data,
     decision_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("threshold", "NB") %>%
       add_reference_lines_to_ggplot(create_reference_lines_data_frame("decision", prevalence)) %>%
-      set_decision_curve_limits()
+      set_decision_curve_limits() +
+      ggplot2::xlab("Probability Threshold") +
+      ggplot2::ylab("Net Benefit")
   }
   if (interactive == TRUE) {
     

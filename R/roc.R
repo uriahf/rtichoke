@@ -111,7 +111,9 @@ plot_roc_curve <- function(performance_data,
     
     roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
-      add_reference_lines_to_ggplot(reference_lines)
+      add_reference_lines_to_ggplot(reference_lines) +
+      ggplot2::xlab("1 - Specificity") +
+      ggplot2::ylab("Sensitivity")
   }
   
   if (interactive == TRUE) {
