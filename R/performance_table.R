@@ -56,30 +56,6 @@ create_performance_table <- function(probs, real, by = 0.01,
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   render_performance_table()
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   render_performance_table(interactive = T)
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   render_performance_table(interactive = T)
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   render_performance_table(interactive = T)
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   render_performance_table(interactive = T)
-#'
-#' one_pop_three_models %>%
-#'   render_performance_table(interactive = T)
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   render_performance_table(interactive = T)
-#'
-#' train_and_test_sets %>%
-#'   render_performance_table(interactive = T)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   render_performance_table(interactive = T)
-#' }
 #'
 #' @export
 render_performance_table <- function(performance_data,
