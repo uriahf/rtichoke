@@ -199,7 +199,7 @@ plot_precision_recall_curve <- function(performance_data,
 #' Set the limits for percision recall curve
 #'
 #' @param precision_recall_curve a ggplot object of precision recall curve
-#'
+#' @keywords internal
 set_precision_recall_curve_limits <- function(precision_recall_curve) {
   precision_recall_curve +
     ggplot2::xlim(0, 1) +

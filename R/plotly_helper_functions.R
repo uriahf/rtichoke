@@ -79,8 +79,6 @@ create_plotly_base <- function(performance_data,
 #'
 #' @return
 #' @keywords internal
-#'
-#' @examples
 add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type) {
   if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_with_markers_and_lines <- plotly_object %>%

@@ -12,3 +12,4 @@ set_precision_recall_curve_limits(precision_recall_curve)
 \description{
 Set the limits for percision recall curve
 }
+\keyword{internal}

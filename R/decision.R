@@ -191,7 +191,7 @@ plot_decision_curve <- function(performance_data,
 #' Set the limits for Decision Curve
 #'
 #' @param decision_curve a ggplot object of Decision Curve
-#'
+#' @keywords internal
 set_decision_curve_limits <- function(decision_curve) {
   decision_curve +
     ggplot2::xlim(0, 1)

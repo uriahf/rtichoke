@@ -47,7 +47,7 @@ get_n_from_performance_data <- function(performance_data,
 }
 
 
-#' Title
+#' Creating Reference Lines Data Frame
 #'
 #' @param curve the specified curve for the reference lines
 #' @param prevalence the prevalence of the outcome

@@ -194,6 +194,7 @@ plot_gains_curve <- function(performance_data,
 #'
 #' @param gains_curve a ggplot object of a Gains Curve
 #' @param prevalence the prevalence of the outcome
+#' @keywords internal
 add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
   gains_curve$layers <- c(
     ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
@@ -216,7 +217,7 @@ add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
 #' Set the limits for Gains Curve
 #'
 #' @param gains_curve a ggplot object of a Gains Curve
-#'
+#' @keywords internal
 set_gains_curve_limits <- function(gains_curve) {
   gains_curve +
     ggplot2::xlim(0, 1) +

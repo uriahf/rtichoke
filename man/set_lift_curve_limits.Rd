@@ -12,3 +12,4 @@ set_lift_curve_limits(lift_curve)
 \description{
 Set the limits for lift curve
 }
+\keyword{internal}

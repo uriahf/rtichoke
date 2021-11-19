@@ -12,3 +12,4 @@ set_gains_curve_limits(gains_curve)
 \description{
 Set the limits for Gains Curve
 }
+\keyword{internal}

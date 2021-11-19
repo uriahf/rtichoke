@@ -202,7 +202,7 @@ plot_lift_curve <- function(performance_data,
 #' Set the limits for lift curve
 #'
 #' @param lift_curve a ggplot object of lift curve
-#'
+#' @keywords internal
 set_lift_curve_limits <- function(lift_curve) {
   lift_curve +
     ggplot2::xlim(0, 1) +

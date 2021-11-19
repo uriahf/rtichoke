@@ -14,3 +14,4 @@ add_gains_curve_reference_lines(gains_curve, prevalence)
 \description{
 Add reference lines to Gains Curve
 }
+\keyword{internal}

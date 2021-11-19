@@ -94,6 +94,51 @@ But other functions are built to work estimated probabilities and outcomes. Each
 | **rtichoke**           | `rtichoke()`                      | X                               |
 +------------------------+-----------------------------------+---------------------------------+
 
+```{r echo=FALSE}
+
+tibble::tribble(~"Output", ~"Predictions and Outcome", ~"Performance Data",
+
+                "Performance Data", "`prepare_performance_data()`", "",
+
+                "ROC", "`create_roc_curve()`", "`plot_roc_curve()`",
+
+                "Lift", "`create_lift_curve()`", "`plot_lift_curve()`",
+
+                "Gains", "`create_gains_curve()`", "`plot_gains_curve()`",
+
+                "Precision Recall", "`create_precision_recall_curve()`", "`plot_precision_recall_curve()`",
+
+                "Decision", "`create_decision_curve()`", "`plot_decision_curve()`",
+
+                "Calibration", "`create_calibration_curve()`", "",
+
+                "Performance Table", "`create_performance_table()`", "`render_performance_table()`",
+
+                "Summary Report", "`create_summary_report()`", "`render_summary_report()`") %>%
+
+  gt::gt(rowname_col = "Output")   %>%
+
+  gt::fmt_markdown(columns = c("Predictions and Outcome", "Performance Data"))  %>% 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_column_labels(dplyr::everything())
+  )  %>% 
+  gt::opt_table_lines(extent = "default") %>%
+  gt::tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = gt::px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = gt::px(3)
+  )
+
+ 
+
+```
+
 ## [**Plots of Performance Metrics across different Thresholds**]{.ul}
 
 Curves that are generated from performance metrics can be called by `plot_*_curve()` or `create_*_curve` from Performance Data.
