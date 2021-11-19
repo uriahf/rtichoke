@@ -10,7 +10,8 @@
 #' @param output_type the type of the output table, {gt} as default
 #'
 create_performance_table <- function(probs, real, by = 0.01,
-                                     enforce_percentiles_symmetry = F) {
+                                     enforce_percentiles_symmetry = F,
+                                     output_type = "gt") {
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -55,7 +56,7 @@ create_performance_table <- function(probs, real, by = 0.01,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   render_performance_table()
-#'
+#'}
 #'
 #' @export
 render_performance_table <- function(performance_data,

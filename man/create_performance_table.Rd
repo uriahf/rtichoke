@@ -8,7 +8,8 @@ create_performance_table(
   probs,
   real,
   by = 0.01,
-  enforce_percentiles_symmetry = F
+  enforce_percentiles_symmetry = F,
+  output_type = "gt"
 )
 }
 \arguments{
