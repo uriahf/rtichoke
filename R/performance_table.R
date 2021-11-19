@@ -135,10 +135,13 @@ prepare_performance_data_for_gt <- function(performance_data,
         .after = Threshold
       ) %>%
       dplyr::arrange(predicted_positives_percent) %>% 
-      dplyr::select(-Threshold)
+      dplyr::select(-Threshold) %>% 
+      mutate(rank = dplyr::dense_rank(predicted_positives_percent)) 
+
   } else {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
-      dplyr::arrange(Threshold)
+      dplyr::arrange(Threshold) %>% 
+      mutate(rank = dplyr::dense_rank(Threshold)) 
   }
 
   performance_data_ready_for_gt %>%
@@ -165,6 +168,7 @@ render_and_format_gt <- function(performance_data,
                                  col_values){
   performance_data %>% 
   gt::gt() %>%
+    gt::cols_hide(rank) %>% 
     gt::fmt_missing(
       columns = dplyr::everything(),
       rows = dplyr::everything(),
@@ -211,10 +215,32 @@ render_and_format_gt <- function(performance_data,
       subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
                                           prevalence = prevalence, 
                                           col_values = col_values))
-    )
+    ) %>%
+    add_zebra_colors_to_gt_table(perf_dat_type %in% c("several models", 
+                                                      "several populations"))
 }
 
 
+#' Add Zebra colors to gt table
+#'
+#' @param performance_table gt performance table
+#' @param add_zebra_colors add zebra colors or keep table as it is (FALSE)
+#'
+#' @keywords internal
+add_zebra_colors_to_gt_table <- function(performance_table, 
+                                         add_zebra_colors){
+
+  if ( add_zebra_colors == TRUE ) {
+    performance_table %>% 
+    gt::tab_style(
+  style = gt::cell_fill(color = "#f5f1f1"),
+  locations = gt::cells_body(
+    rows = rank %% 2 == 0)
+    ) } else {
+      performance_table
+}
+    
+}
 
 #' Creating Title for gt performance table
 #'
