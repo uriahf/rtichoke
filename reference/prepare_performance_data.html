@@ -152,7 +152,7 @@ use a list that is made of vectors of estimated probabilities, one for each mode
   <span class='va'>probs</span>,
   <span class='va'>real</span>,
   by <span class='op'>=</span> <span class='fl'>0.01</span>,
-  enforce_percentiles_symmetry <span class='op'>=</span> <span class='cn'>F</span>
+  stratified_by <span class='op'>=</span> <span class='st'>"probability_threshold"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -173,8 +173,9 @@ kind (one for each population)</p></td>
       <td><p>number: increment of the sequence.</p></td>
     </tr>
     <tr>
-      <th>enforce_percentiles_symmetry</th>
-      <td><p>in case a symmetry between the probabilities percentiles is desired</p></td>
+      <th>stratified_by</th>
+      <td><p>Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate</p></td>
     </tr>
     </table>
 
@@ -185,8 +186,9 @@ to enforce a symmetry between the percentiles of the probabilities, in medicine
 it is referred as "Risk Percentile" when the outcome stands for something negative
 in essence such as a severe disease or death: Let's say that we want to see the
 model performance for the top 5% patients at risk for some well defined population,
-in this case the user should change the parameter enforce_percentiles_symmetry
-from the default FALSE to TRUE and the results will be similar Performance Data,
+in this case the user should change the parameter stratified_by
+from the default "probability_threshold" to "predicted_positives" and the
+results will be similar Performance Data,
 only this time each row will represent some rounded percentile.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

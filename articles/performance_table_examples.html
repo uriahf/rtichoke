@@ -129,7 +129,7 @@
 <span class="va">one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_performance_data.html">prepare_performance_data</a></span><span class="op">(</span>
   probs <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,
   real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>,
-  enforce_percentiles_symmetry <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+  stratified_by <span class="op">=</span> <span class="st">"predicted_positives"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">one_pop_one_model_as_a_vector_enforced_percentiles_symmetry</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 6 × 14</span>
@@ -166,7 +166,7 @@
 <span class="va">one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_performance_data.html">prepare_performance_data</a></span><span class="op">(</span>
   probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"Logistic Regression"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,
   real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>,
-  enforce_percentiles_symmetry <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+  stratified_by <span class="op">=</span> <span class="st">"predicted_positives"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">one_pop_one_model_as_a_list_enforced_percentiles_symmetry</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 6 × 15</span>
@@ -199,7 +199,7 @@
                <span class="st">"Bad Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">bad_model</span>,
                <span class="st">"Random Guess"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span><span class="op">)</span>,
   real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, 
-  enforce_percentiles_symmetry <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+  stratified_by <span class="op">=</span> <span class="st">"predicted_positives"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="several-populations" class="section level2">
 <h2 class="hasAnchor">
@@ -246,7 +246,7 @@
               <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
                 <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
                 <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span><span class="op">)</span>, 
-  enforce_percentiles_symmetry <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+  stratified_by <span class="op">=</span> <span class="st">"predicted_positives"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">train_and_test_sets_enforced_percentiles_symmetry</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 6 × 15</span>

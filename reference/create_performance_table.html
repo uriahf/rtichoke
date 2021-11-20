@@ -142,7 +142,7 @@
   <span class='va'>probs</span>,
   <span class='va'>real</span>,
   by <span class='op'>=</span> <span class='fl'>0.01</span>,
-  enforce_percentiles_symmetry <span class='op'>=</span> <span class='cn'>F</span>,
+  stratified_by <span class='op'>=</span> <span class='st'>"probability_threshold"</span>,
   output_type <span class='op'>=</span> <span class='st'>"gt"</span>
 <span class='op'>)</span></pre>
 
@@ -164,8 +164,9 @@ kind (one for each population)</p></td>
       <td><p>number: increment of the sequence.</p></td>
     </tr>
     <tr>
-      <th>enforce_percentiles_symmetry</th>
-      <td><p>in case a symmetry between the probabilities percentiles is desired</p></td>
+      <th>stratified_by</th>
+      <td><p>Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate</p></td>
     </tr>
     <tr>
       <th>output_type</th>
