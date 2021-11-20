@@ -22,17 +22,16 @@ Imports:
     plotly,
     processx,
     purrr,
-    reactable,
     rlang,
     shiny (>= 1.6.0),
     shinyWidgets,
     stats,
-    stringr
+    stringr,
+    tibble
 Suggests: 
     knitr,
     rmarkdown,
-    testthat,
-    tibble
+    testthat
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

@@ -7,12 +7,85 @@
 #'
 #' @inheritParams prepare_performance_data
 #' @param col_values color palette
-#'
+#' @param chosen_threshold a chosen threshold to display (for non-interactive)
+#' @param interactive whether the plot should be interactive
+#' plots
+#' @param main_slider what is the main slider - threshold, percent positives or positives
+#' @param col_values color palette
+#' 
+#' 
 #' @export
 #'
-#'
+#' @examples
+#' 
+#' create_roc_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_roc_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_roc_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' \dontrun{
+#' 
+#' create_roc_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome,
+#'   interactive = TRUE
+#' )
+#' 
+#' create_roc_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome,
+#'   interactive = TRUE 
+#'   )
+#' 
+#' create_roc_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   interactive = TRUE   
+#' )
+#' }
 create_roc_curve <- function(probs, real, by = 0.01,
                              stratified_by = "probability_threshold",
+                             chosen_threshold = NA,
+                             interactive = F,
+                             main_slider = "threshold",
                              col_values = c(
                                "#5BC0BE",
                                "#FC8D62",
@@ -26,19 +99,19 @@ create_roc_curve <- function(probs, real, by = 0.01,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_roc_curve()
+    plot_roc_curve(chosen_threshold = NA,
+                   interactive = F,
+                   main_slider = main_slider,
+                   col_values = col_values)
 }
 
 
 #' ROC Curve from Performance Data
 #'
 #' Plot a ROC Curve
-#'
+#' 
+#' @inheritParams create_roc_curve
 #' @param performance_data an rtichoke Performance Data
-#' @param chosen_threshold a chosen threshold to display
-#' @param interactive whether the plot should be interactive
-#' @param main_slider what is the main slider - threshold, percent positives or positives
-#' @param col_values color palette
 #'
 #' @examples
 #'

@@ -15,9 +15,10 @@ plot_gains_curve(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{chosen_threshold}{a chosen threshold to display}
+\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
 
-\item{interactive}{whether the plot should be interactive}
+\item{interactive}{whether the plot should be interactive
+plots}
 
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
 

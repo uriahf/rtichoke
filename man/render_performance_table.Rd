@@ -15,7 +15,7 @@ render_performance_table(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{chosen_threshold}{a chosen threshold to display}
+\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
 
 \item{output_type}{the type of the output table, {gt} as default}
 
