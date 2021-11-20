@@ -39,7 +39,7 @@ head(one_pop_one_model_as_a_vector)
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome,
-  enforce_percentiles_symmetry = T)
+  stratified_by = "predicted_positives")
 
 head(one_pop_one_model_as_a_vector_enforced_percentiles_symmetry)
 
@@ -63,7 +63,7 @@ head(one_pop_one_model_as_a_list)
 one_pop_one_model_as_a_list_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = list("Logistic Regression" = example_dat$estimated_probabilities),
   real = example_dat$outcome,
-  enforce_percentiles_symmetry = T)
+  stratified_by = "predicted_positives")
 
 head(one_pop_one_model_as_a_list_enforced_percentiles_symmetry)
 
@@ -93,7 +93,7 @@ one_pop_three_models_enforced_percentiles_symmetry <- prepare_performance_data(
                "Bad Model" = example_dat$bad_model,
                "Random Guess" = example_dat$random_guess),
   real = example_dat$outcome, 
-  enforce_percentiles_symmetry = T)
+  stratified_by = "predicted_positives")
 
 ```
 
@@ -139,7 +139,7 @@ train_and_test_sets_enforced_percentiles_symmetry <- prepare_performance_data(
               "test" = example_dat %>% 
                 dplyr::filter(type_of_set == "test") %>%
                 dplyr::pull(outcome)), 
-  enforce_percentiles_symmetry = T)
+  stratified_by = "predicted_positives")
 
 head(train_and_test_sets_enforced_percentiles_symmetry)
 
