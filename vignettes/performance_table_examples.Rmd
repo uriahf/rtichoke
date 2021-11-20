@@ -125,7 +125,7 @@ train_and_test_sets <- prepare_performance_data(
                 dplyr::filter(type_of_set == "test") %>%
                 dplyr::pull(outcome)))
 
-head(train_and_test_sets) # bla
+head(train_and_test_sets)
 
 train_and_test_sets_enforced_percentiles_symmetry <- prepare_performance_data(
   probs = list("train" = example_dat %>%
