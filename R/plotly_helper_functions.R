@@ -329,7 +329,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "predicted_positives_percent",
+          title = "Predicted Positives",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),
