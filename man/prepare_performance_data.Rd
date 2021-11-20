@@ -8,7 +8,7 @@ prepare_performance_data(
   probs,
   real,
   by = 0.01,
-  enforce_percentiles_symmetry = F
+  stratified_by = "probability_threshold"
 )
 }
 \arguments{
@@ -20,7 +20,8 @@ kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
-\item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 The prepare_performance_data function makes a Performance Data that is made
@@ -36,8 +37,9 @@ to enforce a symmetry between the percentiles of the probabilities, in medicine
 it is referred as "Risk Percentile" when the outcome stands for something negative
 in essence such as a severe disease or death: Let's say that we want to see the
 model performance for the top 5\% patients at risk for some well defined population,
-in this case the user should change the parameter enforce_percentiles_symmetry
-from the default FALSE to TRUE and the results will be similar Performance Data,
+in this case the user should change the parameter stratified_by
+from the default "probability_threshold" to "predicted_positives" and the
+results will be similar Performance Data,
 only this time each row will represent some rounded percentile.
 }
 \examples{

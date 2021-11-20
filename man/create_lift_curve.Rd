@@ -8,7 +8,7 @@ create_lift_curve(
   probs,
   real,
   by = 0.01,
-  enforce_percentiles_symmetry = F,
+  stratified_by = "probability_threshold",
   col_values = c("#21DACD", "#B6C174", "#A7DA2E", "#C2C172", "#FFD700")
 )
 }
@@ -21,7 +21,8 @@ kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
-\item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 
 \item{col_values}{color palette}
 }

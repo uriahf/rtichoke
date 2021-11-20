@@ -8,7 +8,7 @@ create_precision_recall_curve(
   probs,
   real,
   by = 0.01,
-  enforce_percentiles_symmetry = F
+  stratified_by = "probability_threshold"
 )
 }
 \arguments{
@@ -20,7 +20,8 @@ kind (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
-\item{enforce_percentiles_symmetry}{in case a symmetry between the probabilities percentiles is desired}
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 Create a Precision Recall Curve
