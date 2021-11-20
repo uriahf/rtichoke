@@ -12,7 +12,7 @@
 #'
 #'
 create_lift_curve <- function(probs, real, by = 0.01,
-                             enforce_percentiles_symmetry = F,
+                              stratified_by = "probability_threshold",
                              col_values = c(
                                "#21DACD",
                                "#B6C174",
@@ -24,7 +24,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
     probs = probs,
     real = real,
     by = by,
-    enforce_percentiles_symmetry = enforce_percentiles_symmetry
+    stratified_by = stratified_by
   ) %>%
     plot_lift_curve()
 }

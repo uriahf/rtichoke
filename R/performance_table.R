@@ -10,13 +10,13 @@
 #' @param output_type the type of the output table, {gt} as default
 #'
 create_performance_table <- function(probs, real, by = 0.01,
-                                     enforce_percentiles_symmetry = F,
+                                     stratified_by = "probability_threshold",
                                      output_type = "gt") {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
-    enforce_percentiles_symmetry = enforce_percentiles_symmetry
+    stratified_by = stratified_by
   ) %>%
     render_performance_table()
 }

@@ -11,12 +11,12 @@
 #' @export
 #'
 create_decision_curve <- function(probs, real, by = 0.01,
-                                  enforce_percentiles_symmetry = F) {
+                                  stratified_by = "probability_threshold") {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
-    enforce_percentiles_symmetry = enforce_percentiles_symmetry
+    stratified_by = stratified_by
   ) %>%
     plot_decision_curve()
 }

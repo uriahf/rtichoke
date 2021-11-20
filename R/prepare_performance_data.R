@@ -12,8 +12,9 @@
 #' it is referred as "Risk Percentile" when the outcome stands for something negative
 #' in essence such as a severe disease or death: Let's say that we want to see the
 #' model performance for the top 5% patients at risk for some well defined population,
-#' in this case the user should change the parameter enforce_percentiles_symmetry
-#' from the default FALSE to TRUE and the results will be similar Performance Data,
+#' in this case the user should change the parameter stratified_by
+#' from the default "probability_threshold" to "predicted_positives" and the 
+#' results will be similar Performance Data,
 #' only this time each row will represent some rounded percentile.
 #'
 #'
@@ -22,7 +23,8 @@
 #' @param real a vector of binary outcomes or a list of vectors of that
 #' kind (one for each population)
 #' @param by number: increment of the sequence.
-#' @param enforce_percentiles_symmetry in case a symmetry between the probabilities percentiles is desired
+#' @param stratified_by Performance Metrics can be stratified by Probability
+#' Threshold or alternatively by Predicted Positives Condition Rate
 #'
 #' @examples
 #' # You can prepare Performance Data for one model
@@ -66,7 +68,7 @@
 #' )
 #' @export
 prepare_performance_data <- function(probs, real, by = 0.01,
-                                     enforce_percentiles_symmetry = F) {
+                                     stratified_by = "probability_threshold") {
   . <- threshold <- NULL
 
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
@@ -82,7 +84,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
         probs = .,
         real = real,
         by = by,
-        enforce_percentiles_symmetry = enforce_percentiles_symmetry
+        stratified_by = stratified_by
       )) %>%
       dplyr::bind_rows(.id = "model"))
   }
@@ -96,7 +98,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       real,
       ~ prepare_performance_data(.x, .y,
                                  by = by,
-                                 enforce_percentiles_symmetry = enforce_percentiles_symmetry),
+                                 stratified_by = stratified_by),
       .id = "population"
     ))
   }
@@ -105,10 +107,10 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   N <- length(probs)
 
   tibble::tibble(
-    threshold = if (enforce_percentiles_symmetry) stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
+    threshold = if (stratified_by != "probability_threshold") stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
   ) %>%
     {
-      if (enforce_percentiles_symmetry) dplyr::mutate(., predicted_positives_percent = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
+      if (stratified_by != "probability_threshold") dplyr::mutate(., predicted_positives_percent = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
     } %>%
     dplyr::mutate(
       TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
@@ -129,6 +131,6 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%
     {
-      if (!enforce_percentiles_symmetry) dplyr::mutate(., predicted_positives_percent = (TP + FP) / N) else .
+      if (stratified_by == "probability_threshold") dplyr::mutate(., predicted_positives_percent = (TP + FP) / N) else .
     }
 }
