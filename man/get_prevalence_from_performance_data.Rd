@@ -4,10 +4,15 @@
 \alias{get_prevalence_from_performance_data}
 \title{prevalence}
 \usage{
-get_prevalence_from_performance_data(performance_data)
+get_prevalence_from_performance_data(
+  performance_data,
+  performance_data_type = "not important"
+)
 }
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
+
+\item{performance_data_type}{the type of the Performance Data}
 }
 \description{
 Get the prevalence out of Performance Data
