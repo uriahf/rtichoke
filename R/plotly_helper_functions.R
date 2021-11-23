@@ -7,10 +7,10 @@ check_performance_data_type_for_plotly <- function(performance_data) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
     performance_data_type <- "one model"
   }
-  if ((names(performance_data)[1] == "model") & (length(unique(performance_data[, 1])) == 1)) {
+  if ((names(performance_data)[1] == "model") & (length(unique(performance_data %>% pull(1))) == 1)) {
     performance_data_type <- "one model with model column"
   }
-  if ((names(performance_data)[1] == "model") & (length(unique(performance_data[, 1])) > 1)) {
+  if ((names(performance_data)[1] == "model") & (length(unique(performance_data %>% pull(1))) > 1)) {
     performance_data_type <- "several models"
   }
   if (names(performance_data)[1] == "population") {
@@ -495,8 +495,8 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
   if (performance_data_type %in% c("one model", "one model with model column")) {
     col_values_vec <- "black"
   } else {
-    col_values_vec <- col_values[1:length(unique(performance_data[, 1]))]
-    names(col_values_vec) <- unique(performance_data[, 1])
+    col_values_vec <- col_values[1:length(unique(performance_data %>% pull(1)))]
+    names(col_values_vec) <- unique(performance_data %>% pull(1))
   }
   
   if (performance_data_type %in% c("one model", "one model with model column")) {
