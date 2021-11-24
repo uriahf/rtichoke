@@ -93,9 +93,6 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#E78AC3",
                                "#A4243B"
                              )) {
-  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
-  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
-  
   prepare_performance_data(
     probs = probs,
     real = real,
