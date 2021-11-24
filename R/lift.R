@@ -105,12 +105,15 @@ plot_lift_curve <- function(performance_data,
                              "#A4243B"
                            )) {
   
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+  
   if (interactive == FALSE) {
     
     reference_lines <- create_reference_lines_data_frame("lift")
     
     lift_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("predicted_positives_percent", "lift") %>%
+      create_ggplot_for_performance_metrics("predicted_positives_percent", "lift", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>% 
       set_lift_curve_limits() +
       ggplot2::xlab("Predicted Positives") +
@@ -153,7 +156,8 @@ plot_lift_curve <- function(performance_data,
 
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
                                                      "lift",
-                                                     population_color_vector = col_values) %>%
+                                                     population_color_vector = 
+                                                       col_values[1:length(prevalence)]) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -177,7 +181,8 @@ plot_lift_curve <- function(performance_data,
 
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
                                                      "lift",
-                                                     population_color_vector = col_values) %>%
+                                                     population_color_vector = 
+                                                       col_values[1:length(prevalence)]) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

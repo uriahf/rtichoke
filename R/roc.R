@@ -93,6 +93,9 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#E78AC3",
                                "#A4243B"
                              )) {
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+  
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -178,12 +181,15 @@ plot_roc_curve <- function(performance_data,
                              "#A4243B"
                            )) {
   
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+  
   if (interactive == FALSE) {
     
     reference_lines <- create_reference_lines_data_frame("roc")
     
     roc_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("FPR", "sensitivity") %>%
+      create_ggplot_for_performance_metrics("FPR", "sensitivity", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
       ggplot2::ylab("Sensitivity")
@@ -198,7 +204,7 @@ plot_roc_curve <- function(performance_data,
     
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
-    
+      
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
@@ -219,9 +225,13 @@ plot_roc_curve <- function(performance_data,
     
     if (perf_dat_type == "several models") {
       
+      performance_data <- performance_data %>% 
+        mutate(model  = forcats::fct_inorder(factor(model))) 
+      
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
-                                        population_color_vector = col_values) %>% 
+                                        population_color_vector = 
+                                          col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -243,9 +253,13 @@ plot_roc_curve <- function(performance_data,
     
     if (perf_dat_type == "several populations") {
       
+      performance_data <- performance_data %>% 
+        mutate(population  = forcats::fct_inorder(factor(population))) 
+      
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
-                                        population_color_vector = col_values) %>% 
+                                        population_color_vector = 
+                                          col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

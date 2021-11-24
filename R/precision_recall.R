@@ -101,7 +101,7 @@ plot_precision_recall_curve <- function(performance_data,
     reference_lines <- create_reference_lines_data_frame("precision recall", prevalence)
   
     precision_recall_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("sensitivity", "PPV") %>%
+      create_ggplot_for_performance_metrics("sensitivity", "PPV", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_precision_recall_curve_limits() +
       ggplot2::xlab("Sensitivity") +
@@ -122,8 +122,9 @@ plot_precision_recall_curve <- function(performance_data,
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                                  "precision recall",
-                                                                  prevalence = prevalence) %>% 
+                                                                  "precision recall", 
+                                                                  population_color_vector = 
+                                                                    col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -145,8 +146,9 @@ plot_precision_recall_curve <- function(performance_data,
       
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "precision recall",
-                                                                  prevalence = prevalence[1],
-                                                     population_color_vector = col_values) %>% 
+                                                                  prevalence = prevalence[1], 
+                                                                  population_color_vector = 
+                                                                    col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

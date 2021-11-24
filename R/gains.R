@@ -99,7 +99,7 @@ plot_gains_curve <- function(performance_data,
   reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
     gains_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity") %>%
+      create_ggplot_for_performance_metrics("predicted_positives_percent", "sensitivity", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits() +
       ggplot2::xlab("Predicted Positives") +
@@ -141,8 +141,9 @@ plot_gains_curve <- function(performance_data,
       
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "gains",
-                                                                  prevalence = prevalence[1],
-                                                                  population_color_vector = col_values) %>% 
+                                                                  prevalence = prevalence[1], 
+                                                       population_color_vector = 
+                                                         col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -166,8 +167,9 @@ plot_gains_curve <- function(performance_data,
       
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type,
                                                        "gains",
-                                                       prevalence = prevalence,
-                                                       population_color_vector = col_values) %>% 
+                                                       prevalence = prevalence, 
+                                                       population_color_vector = 
+                                                         col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

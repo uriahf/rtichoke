@@ -12,11 +12,11 @@ create_ggplot_for_performance_metrics <- function(performance_data,
                                                   x_perf_metric,
                                                   y_perf_metric,
                                                   col_values = c(
-                                                    "#5E7F9A",
-                                                    "#931B53",
-                                                    "#F7DC2E",
-                                                    "#C6C174",
-                                                    "#75DBCD"
+                                                    "#5BC0BE",
+                                                    "#FC8D62",
+                                                    "#8DA0CB",
+                                                    "#E78AC3",
+                                                    "#A4243B"
                                                   )) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
     col_values_vec <- "black"

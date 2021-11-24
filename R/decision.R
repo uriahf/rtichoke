@@ -99,7 +99,7 @@ plot_decision_curve <- function(performance_data,
   
   if (interactive == FALSE) {
     decision_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("threshold", "NB") %>%
+      create_ggplot_for_performance_metrics("threshold", "NB", col_values) %>%
       add_reference_lines_to_ggplot(create_reference_lines_data_frame("decision", prevalence)) %>%
       set_decision_curve_limits() +
       ggplot2::xlab("Probability Threshold") +
@@ -139,8 +139,9 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "decision",
-                                                                  prevalence = prevalence[1],
-                                                                  population_color_vector = col_values) %>% 
+                                                                  prevalence = prevalence[1], 
+                                                          population_color_vector = 
+                                                            col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -164,8 +165,9 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                                                   "decision",
-                                                                  prevalence = prevalence,
-                                                                  population_color_vector = col_values) %>% 
+                                                                  prevalence = prevalence, 
+                                                          population_color_vector = 
+                                                            col_values[1:length(prevalence)]) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
