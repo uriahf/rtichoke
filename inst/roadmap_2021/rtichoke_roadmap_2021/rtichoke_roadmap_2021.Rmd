@@ -1,6 +1,6 @@
 ---
-title: "Presentation Ninja"
-subtitle: "&#x2694;&#xFE0F; xaringan +<br/>&#x1F60E; xaringanthemer"  
+title: "rtichoke roadmap"
+subtitle: "From 0.0.1 to 0.0.5"  
 author: 
   - "Uriah Finkel"
 date: '`r Sys.Date()`'
@@ -30,6 +30,9 @@ knitr::opts_chunk$set(
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
+library(xaringanExtra)
+library(rtichoke)
+library(plotly)
 style_duo_accent(
   primary_color = "#7B457D",
   secondary_color = "#FF3E41",
@@ -41,7 +44,7 @@ style_duo_accent(
 ## Agenda
 
 - Quick review of rtichoke development so far
-- Detailed presentation of rtichoke 0.0.3
+- Presentation of rtichoke 0.0.3
 - Future roads to take rtichoke 0.0.5
 
 --
@@ -52,304 +55,349 @@ style_duo_accent(
 - Prioritize Possible Features
 
 ---
-name: colors
-
-## Key Features:
-
-## Past rtichoke 0.0.1 (2019):
-### it looks cool :sunglasses:
+## Past 
+.pull-left[
+###rtichoke 0.0.1 (2019)
+### it looks cool
 
 - Shiny Dashboard
 - Interactive performance metrics curves
 - Stratified performance by predicted positives
+]
 
 --
 
-##Current use rtichoke 0.0.2 (2020):
-### it's kind of usefull monocle_face
+.pull-right[
+```{r echo=FALSE}
 
+create_roc_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome,
+  interactive = TRUE
+) %>% 
+plotly::layout(plot_bgcolor="#FDF9F1") %>% 
+plotly::layout(paper_bgcolor="#FDF9F1", 
+               width=400, 
+               height=400) 
+
+```
+]
+
+
+---
+## Current use 
+.pull-left[
+### rtichoke 0.0.2 (2020):
+### it's kind of usefull   
 - Self contained Flex Dashboard
 - DT interactive Performance Table
 - Decision Curve and Net Benefit
 - Basic rest API for python
-
----
-
-# Big Topic or Inverse Slides `#`
-
-## Slide Headings `##`
-
-### Sub-slide Headings `###`
-
-#### Bold Call-Out `####`
-
-This is a normal paragraph text. Only use header levels 1-4.
-
-##### Possible, but not recommended `#####`
-
-###### Definitely don't use h6 `######`
-
----
-
-# Left-Column Headings
-
-.left-column[
-## First
-
-## Second
-
-## Third
 ]
 
-.right-column[
-Dolor quis aptent mus a dictum ultricies egestas.
+--
 
-Amet egestas neque tempor fermentum proin massa!
+.pull-right[
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-Dolor elementum fermentum pharetra lectus arcu pulvinar.
+create_decision_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome,
+  interactive = TRUE
+) %>%
+plotly::layout(plot_bgcolor="#FDF9F1") %>%
+plotly::layout(paper_bgcolor="#FDF9F1", 
+               width=400, 
+               height=400) 
+
+```
 ]
 
 ---
-class: inverse center middle
-
-# Topic Changing Interstitial
-
---
-
-```
-class: inverse center middle
-```
-
----
-layout: true
-
-## Blocks
-
----
-
-### Blockquote
-
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
-
----
-
-### Code Blocks
-
-#### R Code
-
-```{r eval=FALSE}
-ggplot(gapminder) +
-  aes(x = gdpPercap, y = lifeExp, size = pop, color = country) +
-  geom_point() +
-  facet_wrap(~year)
-```
-
-#### JavaScript
-
-```js
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
----
-
-### More R Code
-
-```{r eval=FALSE}
-dplyr::starwars %>% dplyr::slice_sample(n = 4)
-```
-
----
-
-```{r message=TRUE, eval=requireNamespace("cli", quietly = TRUE)}
-cli::cli_alert_success("It worked!")
-```
-
---
-
-```{r message=TRUE}
-message("Just a friendly message")
-```
-
---
-
-```{r warning=TRUE}
-warning("This could be bad...")
-```
-
---
-
-```{r error=TRUE}
-stop("I hope you're sitting down for this")
-```
-
-
----
-layout: true
-
-## Tables
-
----
-exclude: `r if (requireNamespace("tibble", quietly=TRUE)) "false" else "true"`
-
-```{r eval=requireNamespace("tibble", quietly=TRUE)}
-tibble::as_tibble(mtcars)
-```
-
----
-
-```{r}
-knitr::kable(head(mtcars), format = 'html')
-```
-
----
-exclude: `r if (requireNamespace("DT", quietly=TRUE)) "false" else "true"`
-
-```{r eval=requireNamespace("DT", quietly=TRUE)}
-DT::datatable(head(mtcars), fillContainer = FALSE, options = list(pageLength = 4))
-```
-
----
-layout: true
-
-## Lists
-
----
-
+## Soon to be released
 .pull-left[
-#### Here is an unordered list:
+### rtichoke 0.0.3 (2021):
+### let's focus
+- Models compairsion
+- Populations compairsion
+- New naming convention
+- {gt} performance table
+- html summary report 
+]
 
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
+
+---
+## Soon to be released
+.pull-left[
+### rtichoke 0.0.3 (2021):
+### let's focus
+- #### Models compairsion #### 
+- Populations compairsion
+- New naming convention
+- {gt} performance table
+- html summary report 
+]
+.pull-right[
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+one_pop_three_models %>%
+  plot_decision_curve(interactive = TRUE) %>%
+plotly::layout(plot_bgcolor="#FDF9F1") %>%
+plotly::layout(paper_bgcolor="#FDF9F1", 
+               width=400, 
+               height=400) 
+
+```
+]
+
+
+---
+## Soon to be released
+.pull-left[
+### rtichoke 0.0.3 (2021):
+### let's focus
+- Models compairsion
+- #### Populations compairsion#### 
+- New naming convention
+- {gt} performance table
+- html summary report 
 ]
 
 .pull-right[
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+create_decision_curve(
+  probs = list(
+    "train" = example_dat %>%
+      dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome),
+    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome)
+  ),
+  interactive = TRUE   
+) %>%
+plotly::layout(plot_bgcolor="#FDF9F1") %>%
+plotly::layout(paper_bgcolor="#FDF9F1", 
+               width=400, 
+               height=400) 
 
-#### And an ordered list:
+```
 
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
 ]
 
 ---
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
----
-
-### Nesting an ol in ul in an ol
-
-- level 1 item (ul)
-  1. level 2 item (ol)
-  1. level 2 item (ol)
-    - level 3 item (ul)
-    - level 3 item (ul)
-- level 1 item (ul)
-  1. level 2 item (ol)
-  1. level 2 item (ol)
-    - level 3 item (ul)
-    - level 3 item (ul)
-  1. level 4 item (ol)
-  1. level 4 item (ol)
-    - level 3 item (ul)
-    - level 3 item (ul)
-- level 1 item (ul)
-
----
-layout: true
-
-## Plots
-
----
-
-```{r plot-example, eval=requireNamespace("ggplot2", quietly=TRUE)}
-library(ggplot2)
-(g <- ggplot(mpg) + aes(hwy, cty, color = class) + geom_point())
-```
-
----
-
-```{r plot-example-themed, eval=requireNamespace("showtext", quietly=TRUE) && requireNamespace("ggplot2", quietly=TRUE)}
-g + xaringanthemer::theme_xaringan(text_font_size = 16, title_font_size = 18) +
-  ggtitle("A Plot About Cars")
-```
-
-.footnote[Requires `{showtext}`]
-
----
-layout: false
-
-## Square image
-
-<center><img src="https://octodex.github.com/images/labtocat.png" alt="GithHub Octocat" height="400px" /></center>
-
-.footnote[GitHub Octocat]
-
----
-
-### Wide image
-
-![A wide image with a diagram of branching in git.](https://docs.github.com/assets/images/help/repository/branching.png)
-
-.footnote[Wide images scale to 100% slide width]
-
----
-
-## Two images
-
+## Soon to be released
 .pull-left[
-![A GitHub Octocat, style "mother hubber"](https://octodex.github.com/images/motherhubbertocat.png)
+### rtichoke 0.0.3 (2021):
+### let's focus 
+- Models compairsion
+- Populations compairsion 
+- #### New naming convention ####
+- {gt} performance table
+- html summary report 
 ]
 
 .pull-right[
-![A GitHub Octocat, style "dinotcat"](https://octodex.github.com/images/dinotocat.png)
+```{r echo=FALSE}
+tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
+
+                "Performance Data", "`prepare_performance_data()`", "",
+
+                "ROC", "`create_roc_curve()`", "`plot_roc_curve()`",
+
+                "Lift", "`create_lift_curve()`", "`plot_lift_curve()`",
+
+                "Gains", "`create_gains_curve()`", "`plot_gains_curve()`",
+
+                "Precision Recall", "`create_precision_recall_curve()`", "`plot_precision_recall_curve()`",
+
+                "Decision", "`create_decision_curve()`", "`plot_decision_curve()`",
+
+                "Calibration", "`create_calibration_curve()`", "",
+
+                "Performance Table", "`create_performance_table()`", "`render_performance_table()`",
+
+                "Summary Report", "`create_summary_report()`", "`render_summary_report()`") %>%
+
+  gt::gt(rowname_col = "Output")   %>%
+
+  gt::fmt_markdown(columns = c("Predictions and Outcomes", "Performance Data"))  %>% 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_column_labels(dplyr::everything())
+  )  %>% 
+  gt::opt_table_lines(extent = "default") %>%
+  gt::tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = gt::px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = gt::px(3)
+  ) %>%
+    gt::tab_options(
+      table.background.color = "#FFFBF3"
+    )
+```
+
+]
+
+
+---
+## Soon to be released
+.pull-left[
+### rtichoke 0.0.3 (2021):
+### let's focus 
+- Models compairsion
+- Populations compairsion 
+- New naming convention
+- #### {gt} performance table ####
+- html summary report 
+]
+
+.pull-right[
+```{r echo=FALSE}
+one_pop_one_model_as_a_vector %>%
+  head() %>%
+  render_performance_table()
+```
+
+]
+
+---
+## Soon to be released
+.pull-left[
+### rtichoke 0.0.3 (2021):
+### let's focus 
+- Models compairsion
+- Populations compairsion 
+- New naming convention
+- {gt} performance table
+- #### html summary report ####
+]
+
+.pull-right[
+Soon! 😉
+]
+---
+## Soon to be released
+.pull-left[
+### rtichoke 0.0.3 (2021):
+### let's focus
+- Deprecated (for now?): Shiny Dashboard, Flex Dashboard, DT performance table
+- Will be available as an open source
+]
+---
+##  Near Future 
+.pull-left[
+### rtichoke 0.0.4 (2022):
+### Fine tuning
+]
+
+.pull-right[
+- Bug fixes and little customisation according to your quick feedback.
+- Detailed documentation, perhaps tutorial with learnr or something similar.
+- Should be released quickly.
+]
+---
+
+
+
+
+## Futuer Roads
+.pull-left[
+### rtichoke 0.0.5:
+### Future roads to take world_map
+
+
+- Rank usibility (Discrimination)
+- How useful will it be for CRI? (Calibrtaion)
+]
+
+
+
+.pull-right[
+### Difficulty
+#### ![](https://user-images.githubusercontent.com/11351434/143260636-c607dc08-dde9-445e-a8a7-77de5a514ffc.png) Novice
+
+- Interactive performance table.
+- Confidence Intervals.
+- Interactive Text (offered by Dan)
+
 ]
 
 ---
 
-### Definition lists can be used with HTML syntax.
+## Futuer Roads
+.pull-left[
+### rtichoke 0.0.5:
+### Future roads to take world_map
 
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
+
+- Rank usibility (Discrimination)
+- How useful will it be for CRI? (Calibrtaion)
+]
+
+
+
+.pull-right[
+### Difficulty
+#### ![](https://user-images.githubusercontent.com/11351434/143260876-08ddd4df-5850-465b-842d-0ba674c687ef.png) Intermediate
+
+- Shiny App
+- Blog
+- Office Support
+
+]
 
 ---
-class: center, middle
 
-# Thanks!
+## Futuer Roads
+.pull-left[
+### rtichoke 0.0.5:
+### Future roads to take world_map
 
-Slides created via the R packages:
 
-[**xaringan**](https://github.com/yihui/xaringan)<br>
-[gadenbuie/xaringanthemer](https://github.com/gadenbuie/xaringanthemer)
+- Rank usibility (Discrimination)
+- How useful will it be for CRI? (Calibrtaion)
+]
 
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+
+
+.pull-right[
+### Difficulty
+#### ![](https://user-images.githubusercontent.com/11351434/143261161-59e26b7c-c90c-4900-a6f1-dc129743a25e.png) Advanced
+
+- Interactive histogram of predictions
+- Interactive Confusion Matrix
+
+]
+
+---
+
+## Futuer Roads
+.pull-left[
+### rtichoke 0.0.5:
+### Future roads to take world_map
+
+
+- Rank usibility (Discrimination)
+- How useful will it be for CRI? (Calibrtaion)
+]
+
+
+
+.pull-right[
+### Difficulty
+#### ![](https://user-images.githubusercontent.com/11351434/143263269-87d1fae3-dae6-4b01-b6b9-eb9d127ab48e.png) God Mode
+
+- Interactive report with one slider
+]
+

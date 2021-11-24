@@ -94,9 +94,6 @@ create_plotly_for_performance_metrics <- function(performance_data,
     names(col_values_vec) <- unique(performance_data %>% dplyr::pull(1))
   }
 
-  print(performance_data_type)
-  print(col_values_vec)
-
   plotly_for_performance_metrics <- performance_data %>%
     create_plotly_base(x_perf_metric,
       y_perf_metric,

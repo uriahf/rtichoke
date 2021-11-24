@@ -199,9 +199,7 @@ add_interactive_marker_to_plotly <- function(plotly_object,
 add_reference_lines_to_plotly <- function(plotly_object,
                                           reference_lines,
                                           performance_data_type = "one model") {
-  print(reference_lines)
-  print(c(reference_lines$x, reference_lines$xend))
-  print(c(reference_lines$y, reference_lines$yend))
+
 
   if (performance_data_type == "several populations") {
     # plotly_object %>%
@@ -284,10 +282,12 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "1 - Specificity"
+          title = "1 - Specificity",
+          fixedrange = TRUE
         ),
         yaxis = list(
-          title = "Sensitivity"
+          title = "Sensitivity",
+          fixedrange = TRUE
         ),
         showlegend = F
       )
@@ -298,11 +298,13 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
       plotly::layout(
         xaxis = list(
           title = "Predicted Positives",
-          range = c(-0.1,1.1)
+          range = c(-0.1,1.1),
+          fixedrange = TRUE
         ),
         yaxis = list(
           title = "Lift",
-          range = c(-0.1,max_y_range)
+          range = c(-0.1,max_y_range),
+          fixedrange = TRUE
         ),
         showlegend = F
       )
@@ -615,12 +617,10 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 
       population_color_reference_vector <- col_values %>%
         create_color_reference_lines_vector("gains")
-      print(population_color_reference_vector)
 
 
       population_linetype_reference_vector <- col_values %>%
         create_linetype_reference_vector("gains")
-      print(population_linetype_reference_vector)
 
       
       reference_lines_for_plotly <- create_reference_lines_data_frame("gains", 

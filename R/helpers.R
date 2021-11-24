@@ -41,8 +41,6 @@ get_n_from_performance_data <- function(performance_data,
     select(1, "n_obs")
     # dplyr::pull(positives, name = 1)
   
-  print(real_positives)
-  
   real_positives
 }
 

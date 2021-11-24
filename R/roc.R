@@ -99,8 +99,8 @@ create_roc_curve <- function(probs, real, by = 0.01,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_roc_curve(chosen_threshold = NA,
-                   interactive = F,
+    plot_roc_curve(chosen_threshold = chosen_threshold,
+                   interactive = interactive,
                    main_slider = main_slider,
                    col_values = col_values)
 }

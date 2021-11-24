@@ -4,28 +4,106 @@
 
 #' Decision Curve
 #'
-#' Create a Decision Curve
+#' Create a decision Curve 
 #'
 #' @inheritParams create_roc_curve
-#'
+#' 
 #' @export
 #'
+#' @examples
+#' 
+#' create_decision_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' \dontrun{
+#' 
+#' create_decision_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome,
+#'   interactive = TRUE
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome,
+#'   interactive = TRUE 
+#'   )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   interactive = TRUE   
+#' )
+#' }
 create_decision_curve <- function(probs, real, by = 0.01,
-                                  stratified_by = "probability_threshold") {
+                             stratified_by = "probability_threshold",
+                             chosen_threshold = NA,
+                             interactive = F,
+                             main_slider = "threshold",
+                             col_values = c(
+                               "#5BC0BE",
+                               "#FC8D62",
+                               "#8DA0CB",
+                               "#E78AC3",
+                               "#A4243B"
+                             )) {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_decision_curve()
+    plot_decision_curve(chosen_threshold = chosen_threshold,
+                   interactive = interactive,
+                   main_slider = main_slider,
+                   col_values = col_values)
 }
 
 
 
-#' Precision Recall Curve from Performance Data
+#' Decision Curve from Performance Data
 #'
-#' Plot a Precision Recall Curve
+#' Plot a Precision decision Curve
 #'
 #' @inheritParams plot_roc_curve
 #'
@@ -106,10 +184,7 @@ plot_decision_curve <- function(performance_data,
       ggplot2::ylab("Net Benefit")
   }
   if (interactive == TRUE) {
-    
-    print(perf_dat_type)
-    print(prevalence)
-    
+
     performance_data <- performance_data %>% 
       add_hover_text_to_performance_data(perf_dat_type, curve = "decision")
     

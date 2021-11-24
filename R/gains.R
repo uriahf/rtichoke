@@ -108,10 +108,6 @@ plot_gains_curve <- function(performance_data,
 
   if (interactive == TRUE) {
 
-
-    print(perf_dat_type)
-    print(prevalence)
-    
     performance_data <- performance_data %>% 
       add_hover_text_to_performance_data(perf_dat_type, curve = "gains")
     

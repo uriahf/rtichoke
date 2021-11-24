@@ -2,7 +2,7 @@
 % Please edit documentation in R/decision.R
 \name{plot_decision_curve}
 \alias{plot_decision_curve}
-\title{Precision Recall Curve from Performance Data}
+\title{Decision Curve from Performance Data}
 \usage{
 plot_decision_curve(
   performance_data,
@@ -25,7 +25,7 @@ plots}
 \item{col_values}{color palette}
 }
 \description{
-Plot a Precision Recall Curve
+Plot a Precision decision Curve
 }
 \examples{
 
