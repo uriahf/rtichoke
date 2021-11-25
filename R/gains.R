@@ -1,24 +1,101 @@
-# Gains Curve -------------------------------------------------------------
+# Gains --------------------------------------------------
 
 #' Gains Curve
 #'
-#' Create a Gains Curve
+#' Create a Gains Curve 
 #'
 #' @inheritParams create_roc_curve
-#'
+#' 
 #' @export
 #'
+#' @examples
+#' 
+#' create_gains_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_gains_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_gains_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' \dontrun{
+#' 
+#' create_gains_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome,
+#'   interactive = TRUE
+#' )
+#' 
+#' create_gains_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome,
+#'   interactive = TRUE 
+#'   )
+#' 
+#' create_gains_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   interactive = TRUE   
+#' )
+#' }
 create_gains_curve <- function(probs, real, by = 0.01,
-                               stratified_by = "probability_threshold") {
+                                          stratified_by = "probability_threshold",
+                                          chosen_threshold = NA,
+                                          interactive = F,
+                                          main_slider = "threshold",
+                                          col_values = c(
+                                            "#5BC0BE",
+                                            "#FC8D62",
+                                            "#8DA0CB",
+                                            "#E78AC3",
+                                            "#A4243B"
+                                          )) {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_gains_curve()
+    plot_gains_curve(chosen_threshold = chosen_threshold,
+                                interactive = interactive,
+                                main_slider = main_slider,
+                                col_values = col_values)
 }
-
 
 #' Gains Curve from Performance Data
 #'

@@ -81,11 +81,11 @@ create_reference_lines_data_frame <- function(curve,
     }
     if (length(prevalence) > 1) {
       col_values <- c(
-        "#5E7F9A",
-        "#931B53",
-        "#F7DC2E",
-        "#C6C174",
-        "#75DBCD"
+        "#5BC0BE",
+        "#FC8D62",
+        "#8DA0CB",
+        "#E78AC3",
+        "#A4243B"
       )[1:length(prevalence)]
     }
     if (plotly == FALSE) {
@@ -108,11 +108,11 @@ create_reference_lines_data_frame <- function(curve,
     }
     if (length(prevalence) > 1) {
       col_values <- c(
-        "#5E7F9A",
-        "#931B53",
-        "#F7DC2E",
-        "#C6C174",
-        "#75DBCD"
+        "#5BC0BE",
+        "#FC8D62",
+        "#8DA0CB",
+        "#E78AC3",
+        "#A4243B"
       )[1:length(prevalence)]
     }
 
@@ -174,11 +174,11 @@ create_reference_lines_data_frame <- function(curve,
     }
     if (length(prevalence) > 1) {
       col_values <- c(
-        "#5E7F9A",
-        "#931B53",
-        "#F7DC2E",
-        "#C6C174",
-        "#75DBCD"
+        "#5BC0BE",
+        "#FC8D62",
+        "#8DA0CB",
+        "#E78AC3",
+        "#A4243B"
       )[1:length(prevalence)]
     }
 

@@ -8,7 +8,11 @@ create_gains_curve(
   probs,
   real,
   by = 0.01,
-  stratified_by = "probability_threshold"
+  stratified_by = "probability_threshold",
+  chosen_threshold = NA,
+  interactive = F,
+  main_slider = "threshold",
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{
@@ -22,7 +26,82 @@ kind (one for each population)}
 
 \item{stratified_by}{Performance Metrics can be stratified by Probability
 Threshold or alternatively by Predicted Positives Condition Rate}
+
+\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
+
+\item{interactive}{whether the plot should be interactive
+plots}
+
+\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+
+\item{col_values}{color palette}
 }
 \description{
 Create a Gains Curve
+}
+\examples{
+
+create_gains_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome
+)
+
+create_gains_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome
+)
+
+create_gains_curve(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  )
+)
+
+\dontrun{
+
+create_gains_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome,
+  interactive = TRUE
+)
+
+create_gains_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome,
+  interactive = TRUE 
+  )
+
+create_gains_curve(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ),
+  interactive = TRUE   
+)
+}
 }
