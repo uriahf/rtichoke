@@ -58,7 +58,6 @@ style_duo_accent(
 ## Past 
 .pull-left[
 ###rtichoke 0.0.1 (2019)
-### it looks cool
 
 - Shiny Dashboard
 - Interactive performance metrics curves
@@ -88,7 +87,6 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 ## Current use 
 .pull-left[
 ### rtichoke 0.0.2 (2020):
-### it's kind of usefull   
 - Self contained Flex Dashboard
 - DT interactive Performance Table
 - Decision Curve and Net Benefit
@@ -117,7 +115,6 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 ## Soon to be released
 .pull-left[
 ### rtichoke 0.0.3 (2021):
-### let's focus
 - Models compairsion
 - Populations compairsion
 - New naming convention
@@ -130,7 +127,6 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 ## Soon to be released
 .pull-left[
 ### rtichoke 0.0.3 (2021):
-### let's focus
 - #### Models compairsion #### 
 - Populations compairsion
 - New naming convention
@@ -155,7 +151,6 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 ## Soon to be released
 .pull-left[
 ### rtichoke 0.0.3 (2021):
-### let's focus
 - Models compairsion
 - #### Populations compairsion#### 
 - New naming convention
@@ -192,9 +187,8 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 
 ---
 ## Soon to be released
-.pull-left[
+.left-column[
 ### rtichoke 0.0.3 (2021):
-### let's focus 
 - Models compairsion
 - Populations compairsion 
 - #### New naming convention ####
@@ -202,7 +196,7 @@ plotly::layout(paper_bgcolor="#FDF9F1",
 - html summary report 
 ]
 
-.pull-right[
+.right-column[
 ```{r echo=FALSE}
 tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
 
@@ -235,15 +229,15 @@ tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
   )  %>% 
   gt::opt_table_lines(extent = "default") %>%
   gt::tab_options(
-    column_labels.border.top.color = "white",
+    column_labels.border.top.color = "#FDF9F1",
     column_labels.border.top.width = gt::px(3),
     column_labels.border.bottom.color = "black",
-    table_body.hlines.color = "white",
-    table.border.bottom.color = "white",
+    table_body.hlines.color = "#FDF9F1",
+    table.border.bottom.color = "#FDF9F1",
     table.border.bottom.width = gt::px(3)
   ) %>%
     gt::tab_options(
-      table.background.color = "#FFFBF3"
+      table.background.color = "#FDF9F1"
     )
 ```
 
@@ -251,10 +245,9 @@ tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
 
 
 ---
-## Soon to be released
-.pull-left[
+### Soon to be released
+.left-column[
 ### rtichoke 0.0.3 (2021):
-### let's focus 
 - Models compairsion
 - Populations compairsion 
 - New naming convention
@@ -262,7 +255,7 @@ tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
 - html summary report 
 ]
 
-.pull-right[
+.right-column[
 ```{r echo=FALSE}
 one_pop_one_model_as_a_vector %>%
   head() %>%
@@ -275,7 +268,6 @@ one_pop_one_model_as_a_vector %>%
 ## Soon to be released
 .pull-left[
 ### rtichoke 0.0.3 (2021):
-### let's focus 
 - Models compairsion
 - Populations compairsion 
 - New naming convention
@@ -290,7 +282,6 @@ Soon! 😉
 ## Soon to be released
 .pull-left[
 ### rtichoke 0.0.3 (2021):
-### let's focus
 - Deprecated (for now?): Shiny Dashboard, Flex Dashboard, DT performance table
 - Will be available as an open source
 ]
@@ -298,7 +289,6 @@ Soon! 😉
 ##  Near Future 
 .pull-left[
 ### rtichoke 0.0.4 (2022):
-### Fine tuning
 ]
 
 .pull-right[
@@ -311,10 +301,9 @@ Soon! 😉
 
 
 
-## Futuer Roads
+## Future Roads
 .pull-left[
 ### rtichoke 0.0.5:
-### Future roads to take world_map
 
 
 - Rank usibility (Discrimination)
@@ -335,10 +324,9 @@ Soon! 😉
 
 ---
 
-## Futuer Roads
+## Future Roads
 .pull-left[
 ### rtichoke 0.0.5:
-### Future roads to take world_map
 
 
 - Rank usibility (Discrimination)
@@ -359,10 +347,9 @@ Soon! 😉
 
 ---
 
-## Futuer Roads
+## Future Roads
 .pull-left[
 ### rtichoke 0.0.5:
-### Future roads to take world_map
 
 
 - Rank usibility (Discrimination)
@@ -382,12 +369,9 @@ Soon! 😉
 
 ---
 
-## Futuer Roads
+## Future Roads
 .pull-left[
 ### rtichoke 0.0.5:
-### Future roads to take world_map
-
-
 - Rank usibility (Discrimination)
 - How useful will it be for CRI? (Calibrtaion)
 ]

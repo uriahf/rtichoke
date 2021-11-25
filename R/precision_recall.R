@@ -1,23 +1,100 @@
 # Precision Recall --------------------------------------------------
 
-
 #' Precision Recall Curve
 #'
-#' Create a Precision Recall Curve
+#' Create a Precision Recall Curve 
 #'
 #' @inheritParams create_roc_curve
-#'
+#' 
 #' @export
 #'
+#' @examples
+#' 
+#' create_precision_recall_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome
+#' )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' \dontrun{
+#' 
+#' create_precision_recall_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome,
+#'   interactive = TRUE
+#' )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome,
+#'   interactive = TRUE 
+#'   )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   real = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   interactive = TRUE   
+#' )
+#' }
 create_precision_recall_curve <- function(probs, real, by = 0.01,
-                                          stratified_by = "probability_threshold") {
+                             stratified_by = "probability_threshold",
+                             chosen_threshold = NA,
+                             interactive = F,
+                             main_slider = "threshold",
+                             col_values = c(
+                               "#5BC0BE",
+                               "#FC8D62",
+                               "#8DA0CB",
+                               "#E78AC3",
+                               "#A4243B"
+                             )) {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_precision_recall_curve()
+    plot_precision_recall_curve(chosen_threshold = chosen_threshold,
+                   interactive = interactive,
+                   main_slider = main_slider,
+                   col_values = col_values)
 }
 
 
@@ -93,8 +170,8 @@ plot_precision_recall_curve <- function(performance_data,
                                           "#E78AC3",
                                           "#A4243B"
                                         )) {
-  performance_data_type <- check_performance_data_type_for_plotly(performance_data)
-  prevalence <- get_prevalence_from_performance_data(performance_data, performance_data_type)
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
   
   if (interactive == FALSE) {
   
@@ -113,18 +190,14 @@ plot_precision_recall_curve <- function(performance_data,
     performance_data$fake_PPV <- performance_data$PPV
     performance_data$fake_PPV[is.nan(performance_data$PPV)] <- -1  
 
-    perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
-    prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
-    
     performance_data <- performance_data %>% 
       add_hover_text_to_performance_data(perf_dat_type, curve = "precision recall")
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
       precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                                                  "precision recall", 
-                                                                  population_color_vector = 
-                                                                    col_values[1:length(prevalence)]) %>% 
+                                                                  "precision recall",
+                                                                  prevalence = prevalence) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
