@@ -34,11 +34,11 @@ create_plotly_base <- function(performance_data,
                                y_perf_metric,
                                performance_data_type = "one model",
                                col_values = c(
-                                 "#5E7F9A",
-                                 "#931B53",
-                                 "#F7DC2E",
-                                 "#C6C174",
-                                 "#75DBCD"
+                                 "#5BC0BE",
+                                 "#FC8D62",
+                                 "#8DA0CB",
+                                 "#E78AC3",
+                                 "#A4243B"
                                )) {
   if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_base <- performance_data %>%
@@ -88,7 +88,7 @@ add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type
           "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
           "FPR:", round(FPR, digits = 3), "<br>",
           "Specificity", round(specificity, digits = 3), "<br>",
-          "LIFT", round(lift, digits = 3), "<br>",
+          "Lift", round(lift, digits = 3), "<br>",
           "PPV", round(PPV, digits = 3), "<br>",
           "NPV", round(NPV, digits = 3), "<br>",
           "TP:", TP, "<br>",
@@ -133,7 +133,7 @@ add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type
           "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
           "FPR:", round(FPR, digits = 3), "<br>",
           "Specificity", round(specificity, digits = 3), "<br>",
-          "LIFT", round(lift, digits = 3), "<br>",
+          "Lift", round(lift, digits = 3), "<br>",
           "PPV", round(PPV, digits = 3), "<br>",
           "NPV", round(NPV, digits = 3), "<br>",
           "TP:", TP, "<br>",
@@ -172,7 +172,7 @@ add_interactive_marker_to_plotly <- function(plotly_object,
         "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
         "FPR:", round(FPR, digits = 3), "<br>",
         "Specificity", round(specificity, digits = 3), "<br>",
-        "LIFT", round(lift, digits = 3), "<br>",
+        "Lift", round(lift, digits = 3), "<br>",
         "PPV", round(PPV, digits = 3), "<br>",
         "NPV", round(NPV, digits = 3), "<br>",
         "TP:", TP, "<br>",
@@ -483,11 +483,11 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
                                                         x_perf_metric,
                                                         y_perf_metric,
                                                         col_values = c(
-                                                          "#5E7F9A",
-                                                          "#931B53",
-                                                          "#F7DC2E",
-                                                          "#C6C174",
-                                                          "#75DBCD"
+                                                          "#5BC0BE",
+                                                          "#FC8D62",
+                                                          "#8DA0CB",
+                                                          "#E78AC3",
+                                                          "#A4243B"
                                                         ),
                                                         main_slider = "threshold") {
   

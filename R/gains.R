@@ -277,11 +277,11 @@ add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
     ggplot2::geom_segment(x = 0, y = 0, xend = 1, yend = 1, color = "grey"),
     purrr::map2(
       prevalence, c(
-        "#5E7F9A",
-        "#931B53",
-        "#F7DC2E",
-        "#C6C174",
-        "#75DBCD"
+        "#5BC0BE",
+        "#FC8D62",
+        "#8DA0CB",
+        "#E78AC3",
+        "#A4243B"
       )[1:length(prevalence)],
       add_prevalence_layers_to_gains_curve
     ) %>% unlist(),

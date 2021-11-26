@@ -110,7 +110,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
     threshold = if (stratified_by != "probability_threshold") stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
   ) %>%
     {
-      if (stratified_by != "probability_threshold") dplyr::mutate(., predicted_positives_percent = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
+      if (stratified_by != "probability_threshold") dplyr::mutate(., ppcr  = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
     } %>%
     dplyr::mutate(
       TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
@@ -131,6 +131,6 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%
     {
-      if (stratified_by == "probability_threshold") dplyr::mutate(., predicted_positives_percent = (TP + FP) / N) else .
+      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr  = (TP + FP) / N) else .
     }
 }
