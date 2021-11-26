@@ -102,11 +102,7 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #'
 #' Plot a LIFT Curve
 #'
-#' @param performance_data an rtichoke Performance Data
-#' @param chosen_threshold a chosen threshold to display
-#' @param interactive whether the plot should be interactive
-#' @param main_slider what is the main slider - threshold, percent positives or positives
-#' @param col_values color palette
+#' @inheritParams plot_roc_curve
 #'
 #' @examples
 #'
