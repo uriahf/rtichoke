@@ -184,7 +184,7 @@ add_interactive_marker_to_plotly <- function(plotly_object,
     plotly::animation_slider(
       currentvalue = list(prefix = ifelse(main_slider == "threshold", 
                                           "Prob. Threshold: ",
-                                          "Predicted Positives: ")
+                                          "Predicted Positives (Rate): ")
       )
     )
 }
@@ -297,7 +297,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Predicted Positives",
+          title = "Predicted Positives (Rate)",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),
@@ -331,7 +331,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
     plotly_obj <- plotly_object %>% 
       plotly::layout(
         xaxis = list(
-          title = "Predicted Positives",
+          title = "Predicted Positives (Rate)",
           range = c(-0.1,1.1),
           fixedrange = TRUE
         ),
@@ -404,7 +404,7 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
       plotly::animation_slider(
         currentvalue = list(prefix = ifelse(main_slider == "threshold", 
                                             "Prob. Threshold: ",
-                                            "Predicted Positives: ")
+                                            "Predicted Positives (Rate): ")
         )
       )
   }
@@ -429,7 +429,7 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
       plotly::animation_slider(
         currentvalue = list(prefix = ifelse(main_slider == "threshold", 
                                             "Prob. Threshold: ",
-                                            "Predicted Positives: ")
+                                            "Predicted Positives (Rate): ")
         )
       )
   }
@@ -454,7 +454,7 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
       plotly::animation_slider(
         currentvalue = list(prefix = ifelse(main_slider == "threshold", 
                                             "Prob. Threshold: ",
-                                            "Predicted Positives: ")
+                                            "Predicted Positives (Rate): ")
         )
       )
   }

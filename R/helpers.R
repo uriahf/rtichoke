@@ -35,9 +35,9 @@ get_n_from_performance_data <- function(performance_data,
   
   real_positives <- performance_data %>% 
     dplyr::filter(ppcr  == 1) %>% 
-    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives "))) %>% 
+    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives"))) %>% 
     distinct()  %>% 
-    rename("n_obs" = predicted_positives ) %>% 
+    rename("n_obs" = predicted_positives) %>% 
     select(1, "n_obs")
     # dplyr::pull(predicted_positives , name = 1)
   

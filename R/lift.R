@@ -184,7 +184,7 @@ plot_lift_curve <- function(performance_data,
       create_ggplot_for_performance_metrics("ppcr", "lift", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>% 
       set_lift_curve_limits() +
-      ggplot2::xlab("Predicted Positives") +
+      ggplot2::xlab("Predicted Positives (Rate)") +
       ggplot2::ylab("Lift")
   }
   

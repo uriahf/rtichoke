@@ -8,7 +8,7 @@ create_plotly_for_performance_metrics(
   performance_data,
   x_perf_metric,
   y_perf_metric,
-  col_values = c("#5E7F9A", "#931B53", "#F7DC2E", "#C6C174", "#75DBCD"),
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   main_slider = "threshold",
   reference_lines = NA
 )
