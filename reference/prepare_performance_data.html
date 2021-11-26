@@ -211,8 +211,8 @@ only this time each row will represent some rounded percentile.</p>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 8</span>      0.07    50    70     0    30           1  0.3   1.88        0.7  0.625</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span>      0.08    50    70     0    30           1  0.3   1.88        0.7  0.625</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span>      0.09    50    70     0    30           1  0.3   1.88        0.7  0.625</span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 91 more rows, and 4 more variables: NPV &lt;dbl&gt;, positives &lt;int&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 91 more rows, and 4 more variables: NPV &lt;dbl&gt;,</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   predicted_positives &lt;int&gt;, NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># And you can prepare Performance Data for more than one model</span></span>
 <span class='r-in'><span class='fu'>prepare_performance_data</span><span class='op'>(</span></span>
@@ -236,7 +236,7 @@ only this time each row will represent some rounded percentile.</p>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span> First …      0.08    50    70     0    30           1  0.3   1.88        0.7 </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span> First …      0.09    50    70     0    30           1  0.3   1.88        0.7 </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 192 more rows, and 5 more variables: PPV &lt;dbl&gt;, NPV &lt;dbl&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   positives &lt;int&gt;, NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   predicted_positives &lt;int&gt;, NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># Notice that once you've put a list in the probs parameter you'll receive a new</span></span>
 <span class='r-in'><span class='co'># column in the Performance Data named "Model". If it's a named list (like in our</span></span>
@@ -275,7 +275,7 @@ only this time each row will represent some rounded percentile.</p>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span> train           0.08    28    48     0    20           1 0.294  2   </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span> train           0.09    28    48     0    20           1 0.294  2   </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 192 more rows, and 6 more variables: specificity &lt;dbl&gt;, PPV &lt;dbl&gt;,</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   NPV &lt;dbl&gt;, positives &lt;int&gt;, NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'>#   NPV &lt;dbl&gt;, predicted_positives &lt;int&gt;, NB &lt;dbl&gt;, ppcr &lt;dbl&gt;</span></span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
