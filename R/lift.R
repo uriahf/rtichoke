@@ -139,25 +139,25 @@ create_lift_curve <- function(probs, real, by = 0.01,
 #'   plot_lift_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
 #'
 #' one_pop_one_model_as_a_list %>%
 #'   plot_lift_curve(interactive = TRUE)
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
 #'
 #' one_pop_three_models %>%
 #'   plot_lift_curve(interactive = TRUE)
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
 #'
 #' train_and_test_sets %>%
 #'   plot_lift_curve(interactive = TRUE)
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "predicted_positives_percent")
+#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
 #' }
 #'
 #' @export
@@ -181,7 +181,7 @@ plot_lift_curve <- function(performance_data,
     reference_lines <- create_reference_lines_data_frame("lift")
     
     lift_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("predicted_positives_percent", "lift", col_values) %>%
+      create_ggplot_for_performance_metrics("ppcr", "lift", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>% 
       set_lift_curve_limits() +
       ggplot2::xlab("Predicted Positives") +
@@ -204,14 +204,14 @@ plot_lift_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           lift,
           main_slider
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           fake_lift,
           main_slider
         ) %>%
@@ -227,7 +227,7 @@ plot_lift_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           lift,
           col_values = col_values,
           main_slider = main_slider
@@ -235,7 +235,7 @@ plot_lift_curve <- function(performance_data,
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           fake_lift,
           main_slider = main_slider
         )  %>%
@@ -252,14 +252,14 @@ plot_lift_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           lift,
           main_slider = main_slider
         )  %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          predicted_positives_percent,
+          ppcr,
           fake_lift,
           main_slider = main_slider
         )  %>%

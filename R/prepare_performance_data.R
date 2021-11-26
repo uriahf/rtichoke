@@ -127,7 +127,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       specificity = TN / (TN + FP),
       PPV = TP / (TP + FP),
       NPV = TN / (TN + FN),
-      positives = TP + FP,
+      predicted_positives = TP + FP,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%
     {

@@ -13,7 +13,7 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 
   if (curve == "lift") {
     text_for_hover <- text_for_hover %>%
-      make_two_performance_metrics_bold("lift", "predicted_positives_percent")
+      make_two_performance_metrics_bold("lift", "ppcr")
   }
 
   if (curve == "precision recall") {
@@ -23,7 +23,7 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 
   if (curve == "gains") {
     text_for_hover <- text_for_hover %>%
-      make_two_performance_metrics_bold("predicted_positives_percent", "Sensitivity")
+      make_two_performance_metrics_bold("ppcr", "Sensitivity")
   }
 
   if (curve == "decision") {
@@ -49,7 +49,7 @@ Lift: {lift}
 PPV: {PPV}
 NPV: {NPV}
 NB: {NB}
-Predicted Positives: {positives} ({100 * predicted_positives_percent}%)
+Predicted Positives: {predicted_positives} ({100 * ppcr}%)
 TP: {TP}
 TN: {TN}
 FP: {FP}

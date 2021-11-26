@@ -29,17 +29,17 @@ get_prevalence_from_performance_data <- function(performance_data,
 #' @keywords internal
 get_n_from_performance_data <- function(performance_data,
                                         performance_data_type = "not important") {
-  positives <- ppcr  <- NULL
+  predicted_positives  <- ppcr  <- NULL
   
   # print(performance_data)
   
   real_positives <- performance_data %>% 
     dplyr::filter(ppcr  == 1) %>% 
-    dplyr::select(dplyr::any_of(c("Model", "Population", "positives"))) %>% 
+    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives "))) %>% 
     distinct()  %>% 
-    rename("n_obs" = positives) %>% 
+    rename("n_obs" = predicted_positives ) %>% 
     select(1, "n_obs")
-    # dplyr::pull(positives, name = 1)
+    # dplyr::pull(predicted_positives , name = 1)
   
   real_positives
 }

@@ -109,9 +109,9 @@ prepare_performance_data_for_gt <- function(performance_data,
       dplyr::relocate(plot_predicted_positives,
         .after = Threshold
       ) %>%
-      dplyr::arrange(predicted_positives_percent) %>% 
+      dplyr::arrange(ppcr) %>% 
       dplyr::select(-Threshold) %>% 
-      mutate(rank = dplyr::dense_rank(predicted_positives_percent)) 
+      mutate(rank = dplyr::dense_rank(ppcr)) 
 
   } else {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
@@ -121,8 +121,8 @@ prepare_performance_data_for_gt <- function(performance_data,
 
   performance_data_ready_for_gt %>%
     dplyr::select(-c(
-      predicted_positives_percent,
-      positives,
+      ppcr,
+      predicted_positives,
       display_predicted_postivies,
       FPR
     ))

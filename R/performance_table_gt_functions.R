@@ -142,7 +142,7 @@ add_color_to_lift <- function(performance_dat,
 
 add_color_to_predicted_positives <- function(performance_dat) {
   performance_dat %>% 
-    mutate(display_predicted_postivies = glue::glue("{positives} ({round(ppcr  * 100, digits = 1)}%)"),
+    mutate(display_predicted_postivies = glue::glue("{predicted_positives} ({round(ppcr  * 100, digits = 1)}%)"),
            plot_predicted_positives = 100 * ppcr ,
            plot_predicted_positives = purrr::map2(
              plot_predicted_positives, display_predicted_postivies, 

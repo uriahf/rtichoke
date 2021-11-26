@@ -9,8 +9,8 @@ test_that("Performance Table names are correct", {
     )),
     c(
       "model", "threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "lift", "specificity", "PPV", "NPV", "positives", "NB",
-      "predicted_positives_percent"
+      "FPR", "lift", "specificity", "PPV", "NPV", "predicted_positives", "NB",
+      "ppcr"
     )
   )
 
@@ -21,8 +21,8 @@ test_that("Performance Table names are correct", {
     )),
     c(
       "threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "lift", "specificity", "PPV", "NPV", "positives", "NB",
-      "predicted_positives_percent"
+      "FPR", "lift", "specificity", "PPV", "NPV", "predicted_positives", "NB",
+      "ppcr"
     )
   )
 
@@ -44,8 +44,8 @@ test_that("Performance Table names are correct", {
     )),
     c(
       "population", "threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "lift", "specificity", "PPV", "NPV", "positives", "NB",
-      "predicted_positives_percent"
+      "FPR", "lift", "specificity", "PPV", "NPV", "predicted_positives", "NB",
+      "ppcr"
     )
   )
 })
