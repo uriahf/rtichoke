@@ -26,13 +26,13 @@ The goal of rtichoke is to ...
 
 ## Installation
 
-You can install the released version of rtichoke from [CRAN](https://CRAN.R-project.org) with:
+<!-- You can install the released version of rtichoke from [CRAN](https://CRAN.R-project.org) with: -->
 
-``` r
-install.packages("rtichoke")
-```
+<!-- ``` r -->
+<!-- install.packages("rtichoke") -->
+<!-- ``` -->
 
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -44,7 +44,17 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(rtichoke)
-## basic example code
+
+prepare_performance_data(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome
+) %>% 
+  head() %>% 
+  render_performance_table()
+
 ```
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
