@@ -104,33 +104,34 @@ create_calibration_curve <- function(probs,
           line = list(color = "grey")
         )
       ) %>%
-      add_trace(
+      plotly::add_trace(
         type = "scatter",
         mode = "lines+markers" # ,
       ) %>%
-      layout(
+      plotly::layout(
         xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
         showlegend = FALSE
       ) %>%
-      config(displayModeBar = F)
+      plotly::config(displayModeBar = F)
   }
 
   histprobs <- probs %>%
     purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
       .[c("mids", "counts")], .id = "model") %>%
-    plot_ly(
+    plotly::plot_ly(
       colors = col_values,
       opacity = length(probs)
     ) %>%
-    add_bars(x = ~mids, y = ~counts, color = ~model) %>%
-    layout(
-      barmode = "overlay", xaxis = list(range = limits, showgrid = F), yaxis = list(showgrid = F),
+    plotly::add_bars(x = ~mids, y = ~counts, color = ~model) %>%
+    plotly::layout(
+      barmode = "overlay", xaxis = list(range = limits, showgrid = F), 
+      yaxis = list(showgrid = F),
       showlegend = FALSE
     ) %>%
     config(displayModeBar = F)
 
-  full_cal_plot <- subplot(cal_plot,
+  full_cal_plot <- plotly::subplot(cal_plot,
     histprobs,
     nrows = 2,
     shareX = T,
