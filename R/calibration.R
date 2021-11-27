@@ -19,7 +19,6 @@
 #'   real = example_dat$outcome
 #' )
 #'
-#' \dontrun{
 #' create_calibration_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -35,7 +34,6 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' }
 create_calibration_curve <- function(probs,
                                      real,
                                      col_values = c(
@@ -51,18 +49,36 @@ create_calibration_curve <- function(probs,
   if (!is.list( probs) ) {probs = list("model 1" = probs)}
   
   col_values <- col_values[1:length(probs)]
-
+  
+  if (is.list(probs) & !is.list(real)) {
+    
   deciles_dat <- purrr::map_df(probs,
     ~ make_deciles_dat(.x, real),
     .id = "model"
-  )
+  )%>% 
+    mutate(model  = forcats::fct_inorder(factor(model)))
+  }
+  
+  
+  if (is.list(probs) & is.list(real)) {
+    if (is.null(names(probs)) & is.null(names(real))) {
+      names(probs) <- paste("population", 1:length(probs))
+      names(real) <- paste("population", 1:length(real))
+    }
+    deciles_dat <- purrr::map2_dfr(probs,
+                           real,
+                           ~ make_deciles_dat(.x, .y),
+                           .id = "population"
+    ) %>% 
+      mutate(population  = forcats::fct_inorder(factor(population))) 
+  }
 
   limits <- define_limits_for_calibration_plot(deciles_dat)
 
   if (type == "smooth") {
     cal_plot <- probs %>%
       purrr::map_df(~ lowess(., real, iter = 0) %>%
-        approx(xout = seq(0, 1, by = 0.01), ties = mean), .id = "model") %>%
+        approx(xout = seq(0, 1, by = 0.01), ties = mean), .id = names(deciles_dat)[1]) %>%
       as.data.frame() %>%
       plotly::plot_ly(
         x = ~x,
@@ -83,7 +99,7 @@ create_calibration_curve <- function(probs,
         showlegend = FALSE
       ) %>%
       plotly::add_lines(
-        color = ~model
+        color = as.formula(paste0("~", names(deciles_dat)[1]))
       )
   }
 
@@ -92,7 +108,7 @@ create_calibration_curve <- function(probs,
       plotly::plot_ly(
         x = ~phatx,
         y = ~phaty,
-        color = ~model,
+        color = as.formula(paste0("~", names(deciles_dat)[1])),
         colors = col_values,
         opacity = length(probs)
       ) %>%
@@ -120,12 +136,14 @@ create_calibration_curve <- function(probs,
 
   histprobs <- probs %>%
     purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
-      .[c("mids", "counts")], .id = "model") %>%
+      .[c("mids", "counts")], .id = names(deciles_dat)[1]) %>%
     plotly::plot_ly(
       colors = col_values,
       opacity = length(probs)
     ) %>%
-    plotly::add_bars(x = ~mids, y = ~counts, color = ~model) %>%
+    plotly::add_bars(x = ~mids, 
+                     y = ~counts, 
+                     color = as.formula(paste0("~", names(deciles_dat)[1]))) %>%
     plotly::layout(
       barmode = "overlay", xaxis = list(range = limits, showgrid = F), 
       yaxis = list(showgrid = F),

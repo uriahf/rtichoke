@@ -21,10 +21,8 @@ Arrange estimated probabilities to long format
 \keyword{Model"}
 \keyword{\dontrun{}
 \keyword{arrange_estimated_probabilities_to_long_format(}
-\keyword{example_dat$estimated_probabilities),}
-\keyword{example_dat$outcome}
+\keyword{example_dat$estimated_probabilities)}
 \keyword{internal}
 \keyword{list("First}
 \keyword{probs}
-\keyword{real}
 \keyword{}}
