@@ -21,8 +21,7 @@ test_that("limits of calibration curve", {
 
 test_that("limits of calibration curve", {
   probs_long_format <-  arrange_estimated_probabilities_to_long_format(
-     probs = list("First Model" = example_dat$estimated_probabilities),
-     real = example_dat$outcome
+     probs = list("First Model" = example_dat$estimated_probabilities)
     )
   
   expect_identical(names(probs_long_format), c("model", "probs"))  
