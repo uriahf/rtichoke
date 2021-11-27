@@ -40,6 +40,7 @@ create_calibration_curve(
   real = example_dat$outcome
 )
 
+\dontrun{
 create_calibration_curve(
   probs = list(
     "train" = example_dat \%>\%
@@ -55,4 +56,5 @@ create_calibration_curve(
       dplyr::pull(outcome)
   )
 )
+}
 }

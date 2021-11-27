@@ -19,6 +19,7 @@
 #'   real = example_dat$outcome
 #' )
 #'
+#' \dontrun{
 #' create_calibration_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -34,6 +35,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' }
 create_calibration_curve <- function(probs,
                                      real,
                                      col_values = c(
@@ -129,7 +131,7 @@ create_calibration_curve <- function(probs,
       yaxis = list(showgrid = F),
       showlegend = FALSE
     ) %>%
-    config(displayModeBar = F)
+    plotly::config(displayModeBar = F)
 
   full_cal_plot <- plotly::subplot(cal_plot,
     histprobs,
@@ -149,10 +151,12 @@ create_calibration_curve <- function(probs,
 #' @return
 #' @keywords internal
 #' @examples 
+#' \dontrun{
 #' make_deciles_dat(
 #' probs = example_dat$estimated_probabilities,
 #' real = example_dat$outcome
 #')
+#'}
 make_deciles_dat <- function(probs, real) {
   data.frame(probs, real) %>%
     dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
@@ -170,11 +174,13 @@ make_deciles_dat <- function(probs, real) {
 #' @return
 #' @keywords internal
 #' @examples 
+#' \dontrun{
 #' make_deciles_dat(
 #' probs = example_dat$estimated_probabilities,
 #' real = example_dat$outcome
-#') %>% 
+#' ) %>% 
 #' define_limits_for_calibration_plot()
+#' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
   l <- max(0, min(deciles_dat$phatx[1], deciles_dat$phaty[1]))
   u <- max(deciles_dat$phatx, deciles_dat$phaty)
@@ -190,13 +196,13 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #'
 #' @return
 #' @keywords internal
-#'
-#' @examples
+#' 
+#' \dontrun{
 #' arrange_estimated_probabilities_to_long_format(
-#' probs = list("First Model" = example_dat$estimated_probabilities),
-#' real = example_dat$outcome
-#')
-arrange_estimated_probabilities_to_long_format <- function(probs, real) {
+#' probs = list("First Model" = example_dat$estimated_probabilities)
+#' )
+#' }
+arrange_estimated_probabilities_to_long_format <- function(probs) {
   purrr::map_df(probs,
     ~ data.frame(probs = .x),
     .id = "model"

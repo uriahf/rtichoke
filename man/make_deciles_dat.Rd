@@ -20,9 +20,11 @@ kind (one for each population)}
 Make deciles dataframe
 }
 \examples{
+\dontrun{
 make_deciles_dat(
 probs = example_dat$estimated_probabilities,
 real = example_dat$outcome
 )
+}
 }
 \keyword{internal}

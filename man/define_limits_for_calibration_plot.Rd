@@ -16,10 +16,12 @@ define_limits_for_calibration_plot(deciles_dat)
 Define limits for Calibration Curve
 }
 \examples{
+\dontrun{
 make_deciles_dat(
 probs = example_dat$estimated_probabilities,
 real = example_dat$outcome
 ) \%>\% 
 define_limits_for_calibration_plot()
+}
 }
 \keyword{internal}
