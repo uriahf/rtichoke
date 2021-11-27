@@ -154,7 +154,7 @@ create_calibration_curve <- function(probs,
 #')
 make_deciles_dat <- function(probs, real) {
   data.frame(probs, real) %>%
-    dplyr::mutate(quintile = ntile(probs, 10)) %>%
+    dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
     dplyr::group_by(quintile) %>%
     dplyr::summarise(phaty = sum(real) / n(), phatx = mean(probs)) %>%
     dplyr::ungroup()
