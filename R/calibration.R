@@ -3,6 +3,7 @@
 #' @inheritParams create_roc_curve
 #'
 #' @return
+#' calibration 
 #' @export
 #'
 #' @examples
