@@ -91,7 +91,8 @@ create_calibration_curve <- function(probs,
       
       cal_plot <- ggplot2::ggplot(
         smooth_dat,
-        ggplot2::aes(x = x, y = y)
+        ggplot2::aes(x = x, 
+                     y = y)
       )  +
         ggplot2::geom_abline(slope = 1, 
                             intercept = 0, 
@@ -140,34 +141,107 @@ create_calibration_curve <- function(probs,
   }
 
   if (type == "discrete") {
-    cal_plot <- plotly::plot_ly(
-      x =~ c(0,1),
-      y = c(0,1),
-      colors = col_values
-    ) %>% 
-      plotly::add_lines(
-        color = I("grey"),
-        line = list(width = 1.75),
-      ) %>%
-      plotly::add_trace(
-        data = deciles_dat,
-        type = "scatter",
-        mode = "lines+markers" ,
-        x = ~phatx,
-        y = ~phaty,
-        color = as.formula(paste0("~", names(deciles_dat)[1])),
-        colors = col_values,
-        opacity = length(probs)
-      ) %>%
-      plotly::layout(
-        xaxis = list(range = limits, showgrid = F),
-        yaxis = list(range = limits, showgrid = F),
-        showlegend = FALSE
-      ) %>%
-      plotly::config(displayModeBar = F)
+    
+    if(interactive == FALSE) {
+      
+      if ((length(probs) == 1) & (is.list(probs)) ) { 
+      
+      cal_plot <- ggplot2::ggplot(deciles_dat, 
+                                  ggplot2::aes(x = phatx, y = phaty)) +
+        ggplot2::geom_abline(slope = 1, intercept = 0, color = "grey") +
+        ggplot2::geom_line() +
+        ggplot2::geom_point() +
+        ggplot2::theme_classic() +
+        ggplot2::ylab("Observed") +
+        ggplot2::theme(
+          axis.title.x = ggplot2::element_blank(),
+          axis.text.x = ggplot2::element_blank(),
+          axis.ticks.x = ggplot2::element_blank()
+        ) +
+        ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)
+      }
+      
+      if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
+        
+        print("several models")
+        
+        cal_plot <- ggplot2::ggplot(deciles_dat, 
+                                    ggplot2::aes(x = phatx, 
+                                                 y = phaty,
+                                                 color = model)) +
+          ggplot2::geom_abline(slope = 1, 
+                               intercept = 0, 
+                               color = "grey") +
+          ggplot2::geom_line() +
+          ggplot2::geom_point() +
+          ggplot2::theme_classic() +
+          ggplot2::ylab("Observed") +
+          ggplot2::theme(
+            axis.title.x = ggplot2::element_blank(),
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+          ) +
+          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)
+        
+      }
+      
+      
+      
+      
+    }
+    if(interactive == TRUE) {
+      
+      if ((length(probs) == 1) & (is.list(probs)) ) { 
+        
+        print("one population")
+        
+        
+      cal_plot <- plotly::plot_ly(
+        x =~ c(0,1),
+        y = c(0,1)
+      ) %>% 
+        plotly::add_lines(
+          color = I("grey"),
+          line = list(width = 1.75),
+        ) %>%
+        plotly::add_trace(
+          data = deciles_dat,
+          type = "scatter",
+          mode = "lines+markers" ,
+          x = ~phatx,
+          y = ~phaty,
+          color = I("black"),
+          opacity = length(probs)
+        ) %>%
+        plotly::layout(
+          xaxis = list(range = limits, showgrid = F),
+          yaxis = list(range = limits, showgrid = F),
+          showlegend = FALSE
+        ) %>%
+        plotly::config(displayModeBar = F)
+      
+      }
+    }
   }
 
   if(interactive == TRUE) {
+    
+    if ((length(probs) == 1) & (is.list(probs)) ) { 
+      histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
+        plotly::plot_ly(
+          opacity = length(probs)
+        ) %>%
+        plotly::add_bars(x = ~mids, 
+                         y = ~counts,
+                         ) %>%
+        plotly::layout(
+          barmode = "overlay", xaxis = list(range = limits, showgrid = F), 
+          yaxis = list(showgrid = F),
+          showlegend = FALSE
+        ) %>%
+        plotly::config(displayModeBar = F)
+      
+    } else {
     
     histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
     plotly::plot_ly(
@@ -184,6 +258,8 @@ create_calibration_curve <- function(probs,
     ) %>%
     plotly::config(displayModeBar = F)
 
+    }
+    
   full_cal_plot <- plotly::subplot(cal_plot,
     histprobs,
     nrows = 2,
@@ -193,8 +269,10 @@ create_calibration_curve <- function(probs,
   }
   
   if (interactive == FALSE) {
-    if ((!is.list(probs)) | ( !is.list(real) & (length(probs) == 1)) & (is.list(probs)) ) { 
+    if ((length(probs) == 1) & (is.list(probs)) ) { 
     
+      print("one population")
+      
     histprobs <- ggplot2::ggplot(
       data = make_histogram_for_calibration(probs, deciles_dat),
       ggplot2::aes(x = mids, y = counts)) +
@@ -207,11 +285,15 @@ create_calibration_curve <- function(probs,
     
   }
   
-  if ((is.list(probs)) | ( !is.list(real)) ) { 
+  if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
   
+    print("several models")
+    
   histprobs <- ggplot2::ggplot(
     data = make_histogram_for_calibration(probs, deciles_dat),
-    ggplot2::aes(x = mids, y = counts, color = model)) +
+    ggplot2::aes(x = mids, 
+                 y = counts, 
+                 color = model)) +
     ggplot2::geom_col() +
     ggplot2::theme_classic() +
     ggplot2::coord_cartesian(xlim = limits,
@@ -223,6 +305,7 @@ create_calibration_curve <- function(probs,
   
     if ((is.list(probs)) & ( is.list(real)) ) { 
       print((is.list(probs)) & ( is.list(real)) )
+      print("several populations")
       
       histprobs <- ggplot2::ggplot(
         data = make_histogram_for_calibration(probs, deciles_dat),
