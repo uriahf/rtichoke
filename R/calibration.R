@@ -93,7 +93,7 @@ create_calibration_curve <- function(probs,
           x1 = 1,
           y0 = 0,
           y1 = 1,
-          line = list(color = "grey")
+          line = list(color = I("grey"))
         ), xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
         showlegend = FALSE
@@ -104,28 +104,25 @@ create_calibration_curve <- function(probs,
   }
 
   if (type == "discrete") {
-    cal_plot <- deciles_dat %>%
-      plotly::plot_ly(
+    cal_plot <- plotly::plot_ly(
+      x =~ c(0,1),
+      y = c(0,1),
+      colors = col_values
+    ) %>% 
+      plotly::add_lines(
+        color = I("grey"),
+        line = list(width = 1.75),
+      ) %>%
+      plotly::add_trace(
+        data = deciles_dat,
+        type = "scatter",
+        mode = "lines+markers" ,
+        x = ~phatx,
+        y = ~phaty,
         color = as.formula(paste0("~", names(deciles_dat)[1])),
         colors = col_values,
         opacity = length(probs)
       ) %>%
-      plotly::add_trace(
-        x = ~phatx,
-        y = ~phaty,
-        type = "scatter",
-        mode = "lines+markers" # ,
-      ) %>%
-      plotly::layout(
-        shapes = list(
-          type = "line",
-          x0 = 0,
-          x1 = 1,
-          y0 = 0,
-          y1 = 1,
-          line = list(color = "grey")
-        )
-      )  %>%
       plotly::layout(
         xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
