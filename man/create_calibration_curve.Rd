@@ -7,6 +7,7 @@
 create_calibration_curve(
   probs,
   real,
+  interactive = F,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   type = "discrete"
 )
@@ -17,6 +18,9 @@ kind (one for each model)}
 
 \item{real}{a vector of binary outcomes or a list of vectors of that
 kind (one for each population)}
+
+\item{interactive}{whether the plot should be interactive
+plots}
 
 \item{col_values}{color palette}
 

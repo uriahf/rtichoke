@@ -6,7 +6,6 @@
 #' @param digits number of digits
 #' @param no_round no rounding
 #'
-#' @return
 #' @keywords internal
 bar_chart <- function(value, 
                       display, 

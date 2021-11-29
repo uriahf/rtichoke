@@ -36,6 +36,7 @@
 #' )
 create_calibration_curve <- function(probs,
                                      real,
+                                     interactive = F,
                                      col_values = c(
                                        "#5BC0BE",
                                        "#FC8D62",
@@ -70,20 +71,46 @@ create_calibration_curve <- function(probs,
                            ~ make_deciles_dat(.x, .y),
                            .id = "population"
     ) %>% 
-      mutate(population  = forcats::fct_inorder(factor(population))) 
-  }
+      mutate(population  = forcats::fct_inorder(factor(population)))
+    }
 
   limits <- define_limits_for_calibration_plot(deciles_dat)
 
   if (type == "smooth") {
-    
+
+    print(real)
     smooth_dat <- create_dat_for_smooth_calibration(
       probs,
       real = real,
       deciles_dat
     )
-    print(smooth_dat)
+
+    if(interactive == FALSE) {
+      
+      print(smooth_dat)
+      
+      cal_plot <- ggplot2::ggplot(
+        smooth_dat,
+        ggplot2::aes(x = x, y = y)
+      )  +
+        ggplot2::geom_abline(slope = 1, 
+                            intercept = 0, 
+                            color = "grey") +
+        ggplot2::geom_line() +
+        ggplot2::ylab("Observed") +
+        ggplot2::theme(axis.title.x = ggplot2::element_blank(), 
+              axis.text.x = ggplot2::element_blank(), 
+              axis.ticks.x = ggplot2::element_blank()) +
+        ggplot2::coord_cartesian(xlim = limits, 
+                        ylim = limits, 
+                        expand = F)  +
+        ggplot2::theme_classic() +
+        ggplot2::theme(legend.position = "none")
+    }
     
+    if(interactive == TRUE) {
+      
+        
     cal_plot <- plotly::plot_ly(
       x =~ c(0,1),
       y = c(0,1),
@@ -109,6 +136,7 @@ create_calibration_curve <- function(probs,
         showlegend = FALSE
       ) %>%
       plotly::config(displayModeBar = F)
+    }
   }
 
   if (type == "discrete") {
@@ -139,9 +167,9 @@ create_calibration_curve <- function(probs,
       plotly::config(displayModeBar = F)
   }
 
-  histprobs <- probs %>%
-    purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
-      .[c("mids", "counts")], .id = names(deciles_dat)[1]) %>%
+  if(interactive == TRUE) {
+    
+    histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
     plotly::plot_ly(
       colors = col_values,
       opacity = length(probs)
@@ -162,6 +190,56 @@ create_calibration_curve <- function(probs,
     shareX = T,
     heights = c(0.8, 0.2)
   )
+  }
+  
+  if (interactive == FALSE) {
+    if ((!is.list(probs)) | ( !is.list(real) & (length(probs) == 1)) & (is.list(probs)) ) { 
+    
+    histprobs <- ggplot2::ggplot(
+      data = make_histogram_for_calibration(probs, deciles_dat),
+      ggplot2::aes(x = mids, y = counts)) +
+      ggplot2::geom_col() +
+      ggplot2::theme_classic() +
+      ggplot2::coord_cartesian(xlim = limits,
+                               expand = F) +
+      ggplot2::labs(x = "Predicted") +
+      ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+    
+  }
+  
+  if ((is.list(probs)) | ( !is.list(real)) ) { 
+  
+  histprobs <- ggplot2::ggplot(
+    data = make_histogram_for_calibration(probs, deciles_dat),
+    ggplot2::aes(x = mids, y = counts, color = model)) +
+    ggplot2::geom_col() +
+    ggplot2::theme_classic() +
+    ggplot2::coord_cartesian(xlim = limits,
+                             expand = F) +
+    ggplot2::labs(x = "Predicted") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+  
+}
+  
+    if ((is.list(probs)) & ( is.list(real)) ) { 
+      print((is.list(probs)) & ( is.list(real)) )
+      
+      histprobs <- ggplot2::ggplot(
+        data = make_histogram_for_calibration(probs, deciles_dat),
+        ggplot2::aes(x = mids, y = counts, color = population)) +
+        ggplot2::geom_col() +
+        ggplot2::theme_classic() +
+        ggplot2::coord_cartesian(xlim = limits,
+                                 expand = F) +
+        ggplot2::labs(x = "Predicted") +
+        ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+      
+    }  
+    
+  full_cal_plot <- patchwork::wrap_plots(cal_plot, histprobs, heights = c(3,1))
+  
+  }
+  
   full_cal_plot
 }
 
@@ -243,6 +321,7 @@ arrange_estimated_probabilities_to_long_format <- function(probs) {
 #' 
 #' @examples
 #' \dontrun{
+#' # several models
 #' deciles_dat <- purrr::map_df(list("Model 1" = example_dat$estimated_probabilities),
 #'                              ~ make_deciles_dat(.x, example_dat$outcome),
 #'                              .id = "model"
@@ -254,14 +333,122 @@ arrange_estimated_probabilities_to_long_format <- function(probs) {
 #'   real = example_dat$outcome,
 #'   deciles_dat
 #' )
+#' 
+#' # several populations
+#' 
+#' deciles_dat <- purrr::map2_dfr(list(
+#' "train" = example_dat %>%
+#'  dplyr::filter(type_of_set == "train") %>%
+#'  dplyr::pull(estimated_probabilities),
+#'  "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'  dplyr::pull(estimated_probabilities)
+#'),
+#'list(
+#'  "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'    dplyr::pull(outcome),
+#'  "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'    dplyr::pull(outcome)
+#'),
+#'~ make_deciles_dat(.x, .y),
+#'.id = "population"
+#') %>% 
+#'  mutate(population  = forcats::fct_inorder(factor(population)))
+#'
+#'create_dat_for_smooth_calibration(
+#'  probs = list(
+#'    "train" = example_dat %>%
+#'      dplyr::filter(type_of_set == "train") %>%
+#'      dplyr::pull(estimated_probabilities),
+#'    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'      dplyr::pull(estimated_probabilities)
+#'  ),
+#'  real = list(
+#'    "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'      dplyr::pull(outcome),
+#'    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'      dplyr::pull(outcome)
+#'  ),
+#'  deciles_dat
+#')
 #' }
 create_dat_for_smooth_calibration <- function(probs, 
                                               real,
                                               deciles_dat){
-  probs %>%
+  if (is.list(probs) & !is.list(real)) {
+  smooth_dat <- probs %>%
     purrr::map_df(~ lowess(., real, iter = 0) %>%
                     approx(xout = seq(0, 1, by = 0.01), 
-                           ties = mean), 
-                  .id = names(deciles_dat)[1]) %>%
+                           ties = mean),
+                  .id = "model") %>%
     as.data.frame() 
+  }
+  
+  if (is.list(probs) & is.list(real)) {
+
+    smooth_dat <- purrr::map2_dfr(probs,
+                                  real,
+                                  ~ lowess(.x, .y, iter = 0) %>%
+                                    approx(xout = seq(0, 1, by = 0.01),
+                                           ties = mean),
+                                     .id = "population"
+      )
+  }
+  smooth_dat
+}
+
+#' Creating dat for histogram calibration
+#'
+#' @inheritParams create_dat_for_smooth_calibration
+#'
+#' @keywords internal
+#' 
+#' @examples
+#' \dontrun{
+#' # several models
+#' deciles_dat <- purrr::map_df(list("Model 1" = example_dat$estimated_probabilities),
+#'                              ~ make_deciles_dat(.x, example_dat$outcome),
+#'                              .id = "model"
+#' ) %>% 
+#'   mutate(model  = forcats::fct_inorder(factor(model)))
+#' 
+#' make_histogram_for_calibration(
+#'   list("Model 1" = example_dat$estimated_probabilities),
+#'   deciles_dat
+#' )
+#' 
+#' # several populations
+#' 
+#' deciles_dat <- purrr::map2_dfr(list(
+#' "train" = example_dat %>%
+#'  dplyr::filter(type_of_set == "train") %>%
+#'  dplyr::pull(estimated_probabilities),
+#'  "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'  dplyr::pull(estimated_probabilities)
+#'),
+#'list(
+#'  "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'    dplyr::pull(outcome),
+#'  "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'    dplyr::pull(outcome)
+#'),
+#'~ make_deciles_dat(.x, .y),
+#'.id = "population"
+#') %>% 
+#'  mutate(population  = forcats::fct_inorder(factor(population)))
+#'
+#'make_histogram_for_calibration(
+#'  probs = list(
+#'    "train" = example_dat %>%
+#'      dplyr::filter(type_of_set == "train") %>%
+#'      dplyr::pull(estimated_probabilities),
+#'    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'      dplyr::pull(estimated_probabilities)
+#'  ),
+#'  deciles_dat
+#')
+#' }
+make_histogram_for_calibration <- function(probs, deciles_dat){
+  probs %>%
+  purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
+                  .[c("mids", "counts")], .id = names(deciles_dat)[1])
 }
