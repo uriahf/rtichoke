@@ -55,7 +55,7 @@ create_calibration_curve <- function(probs,
   deciles_dat <- purrr::map_df(probs,
     ~ make_deciles_dat(.x, real),
     .id = "model"
-  )%>% 
+  ) %>% 
     mutate(model  = forcats::fct_inorder(factor(model)))
   }
   
@@ -76,31 +76,39 @@ create_calibration_curve <- function(probs,
   limits <- define_limits_for_calibration_plot(deciles_dat)
 
   if (type == "smooth") {
-    cal_plot <- probs %>%
-      purrr::map_df(~ lowess(., real, iter = 0) %>%
-        approx(xout = seq(0, 1, by = 0.01), ties = mean), .id = names(deciles_dat)[1]) %>%
-      as.data.frame() %>%
-      plotly::plot_ly(
+    
+    smooth_dat <- create_dat_for_smooth_calibration(
+      probs,
+      real = real,
+      deciles_dat
+    )
+    print(smooth_dat)
+    
+    cal_plot <- plotly::plot_ly(
+      x =~ c(0,1),
+      y = c(0,1),
+      colors = col_values
+    ) %>% 
+      plotly::add_lines(
+        color = I("grey"),
+        line = list(width = 1.75),
+       ) %>%
+      plotly::add_lines(
+        data = smooth_dat,
+        type = "scatter",
+        mode = "lines+markers" ,
         x = ~x,
         y = ~y,
+        color = as.formula(paste0("~", names(deciles_dat)[1])),
         colors = col_values,
         opacity = length(probs)
       ) %>%
       plotly::layout(
-        shapes = list(
-          type = "line",
-          x0 = 0,
-          x1 = 1,
-          y0 = 0,
-          y1 = 1,
-          line = list(color = I("grey"))
-        ), xaxis = list(range = limits, showgrid = F),
+        xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
         showlegend = FALSE
       ) %>%
-      plotly::add_lines(
-        color = as.formula(paste0("~", names(deciles_dat)[1]))
-      )
+      plotly::config(displayModeBar = F)
   }
 
   if (type == "discrete") {
@@ -220,4 +228,40 @@ arrange_estimated_probabilities_to_long_format <- function(probs) {
     ~ data.frame(probs = .x),
     .id = "model"
   )
+}
+
+
+
+#' Creating dat for smooth calibration
+#'
+#' Arrange estimated probabilities to long format
+#'
+#' @inheritParams create_roc_curve
+#' @param deciles_dat data of deciles
+#'
+#' @keywords internal
+#' 
+#' @examples
+#' \dontrun{
+#' deciles_dat <- purrr::map_df(list("Model 1" = example_dat$estimated_probabilities),
+#'                              ~ make_deciles_dat(.x, example_dat$outcome),
+#'                              .id = "model"
+#' ) %>% 
+#'   mutate(model  = forcats::fct_inorder(factor(model)))
+#' 
+#' create_dat_for_smooth_calibration(
+#'   list("Model 1" = example_dat$estimated_probabilities),
+#'   real = example_dat$outcome,
+#'   deciles_dat
+#' )
+#' }
+create_dat_for_smooth_calibration <- function(probs, 
+                                              real,
+                                              deciles_dat){
+  probs %>%
+    purrr::map_df(~ lowess(., real, iter = 0) %>%
+                    approx(xout = seq(0, 1, by = 0.01), 
+                           ties = mean), 
+                  .id = names(deciles_dat)[1]) %>%
+    as.data.frame() 
 }
