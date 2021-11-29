@@ -10,19 +10,14 @@ arrange_estimated_probabilities_to_long_format(probs)
 \item{probs}{a vector of estimated probabilities or a list of vectors of that
 kind (one for each model)}
 }
-\value{
-
-}
 \description{
 Arrange estimated probabilities to long format
 }
-\keyword{)}
-\keyword{=}
-\keyword{Model"}
-\keyword{\dontrun{}
-\keyword{arrange_estimated_probabilities_to_long_format(}
-\keyword{example_dat$estimated_probabilities)}
+\examples{
+\dontrun{
+arrange_estimated_probabilities_to_long_format(
+probs = list("First Model" = example_dat$estimated_probabilities)
+)
+}
+}
 \keyword{internal}
-\keyword{list("First}
-\keyword{probs}
-\keyword{}}

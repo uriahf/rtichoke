@@ -11,9 +11,6 @@ prepare_performance_data_for_gt(performance_data, main_slider)
 
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
 }
-\value{
-
-}
 \description{
 Preparing Performance Data for gt
 }

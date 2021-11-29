@@ -77,7 +77,6 @@ create_plotly_base <- function(performance_data,
 #' @param plotly_object 
 #' @param performance_data_type 
 #'
-#' @return
 #' @keywords internal
 add_markers_and_lines_to_plotly <- function(plotly_object, performance_data_type) {
   if (performance_data_type %in% c("one model", "one model with model column")) {
@@ -258,8 +257,6 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #' @param curve the required curve
 #' @param max_y_range the maximum value of y range (for lift curve)
 #' @keywords internal
-#'
-#' @return
 set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
   plotly_object %>% 
     remove_grid_lines_from_plotly() %>% 
@@ -275,8 +272,6 @@ set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
 #' @param curve the required curve
 #' @param max_y_range the maximum value for y range
 #' @keywords internal
-#'
-#' @return
 set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
   if ( curve == "roc" ) {
     plotly_obj <- plotly_object %>% 
@@ -371,8 +366,6 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA){
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
 #' @keywords internal
-#'
-#' @return
 add_interactive_marker_from_performance_data <- function(plotly_object,
                                                          performance_data,
                                                          performance_data_type,
@@ -475,8 +468,6 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param col_values color palette
 #' @param main_slider the main slider for interactivity
 #' @keywords internal
-#'
-#' @return
 add_lines_and_markers_from_performance_data <- function(plotly_object,
                                                         performance_data,
                                                         performance_data_type,
@@ -560,8 +551,6 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 #' @param prevalence the prevalence of the population
 #' @param population_color_vector color values
 #' @keywords internal
-#'
-#' @return
 create_reference_lines_for_plotly <- function(performance_table_type, 
                                               curve, 
                                               prevalence = NA, 
@@ -684,8 +673,6 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 #' @param color_populations_vector color population vector 
 #' @param curve a curve
 #' @keywords internal
-#'
-#' @return
 create_color_reference_lines_vector <- function(color_populations_vector, curve){
   if (curve == "gains") {
     color_populations_vector <- c(color_populations_vector, random = "grey")
@@ -706,8 +693,6 @@ create_color_reference_lines_vector <- function(color_populations_vector, curve)
 #' @param color_populations_vector color population vector
 #' @param curve a curve
 #' @keywords internal
-#'
-#' @return
 create_linetype_reference_vector <- function(color_populations_vector, curve){
   col_populations_vec <- rep("dash", length(color_populations_vector))
   names(col_populations_vec) <- names(color_populations_vector)

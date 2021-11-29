@@ -4,7 +4,6 @@
 #' @param curve curve type
 #'
 #' @keywords internal
-#' @return
 make_performance_metrics_bold <- function(text_for_hover, curve) {
   if (curve == "roc") {
     text_for_hover <- text_for_hover %>%
@@ -40,7 +39,6 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 #' @param curve curve type
 #'
 #' @keywords internal
-#' @return
 create_text_for_hover <- function(performance_data_type, curve) {
   text_for_hover <- "Sensitivity: {sensitivity}
 1 - Specificity (FPR): {FPR}
@@ -68,7 +66,6 @@ FN: {FN}"
 #'
 #' @param text_for_hover text
 #'
-#' @return
 #' @keywords internal
 add_models_for_text_for_hover <- function(text_for_hover) {
   paste("<b>Model: {model}</b>",
@@ -81,7 +78,6 @@ add_models_for_text_for_hover <- function(text_for_hover) {
 #'
 #' @param text_for_hover text
 #'
-#' @return
 #' @keywords internal
 add_population_for_text_for_hover <- function(text_for_hover) {
   paste("<b>Population: {population}</b>",
@@ -97,7 +93,6 @@ add_population_for_text_for_hover <- function(text_for_hover) {
 #' @param performance_metric_y  y
 #' 
 #' @keywords internal
-#' @return
 make_two_performance_metrics_bold <- function(text_for_hover, performance_metric_x, performance_metric_y) {
   text_for_hover %>%
     make_performance_metric_bold(performance_metric_x) %>%
@@ -110,7 +105,6 @@ make_two_performance_metrics_bold <- function(text_for_hover, performance_metric
 #' @param performance_metric perf
 #'
 #' @keywords internal
-#' @return
 make_performance_metric_bold <- function(hover_text, performance_metric) {
   performance_metrics_text_hover <- unlist(stringr::str_split(hover_text, "\n"))
 
@@ -138,7 +132,6 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
 #' @param curve curve
 #'
 #' @keywords internal
-#' @return
 add_hover_text_to_performance_data <- function(performance_data,
                                                performance_data_type,
                                                curve) {

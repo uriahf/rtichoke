@@ -19,9 +19,8 @@ kind (one for each model)}
 kind (one for each population)}
 
 \item{col_values}{color palette}
-}
-\value{
 
+\item{type}{discrete or smooth}
 }
 \description{
 Create a Calibration Curve

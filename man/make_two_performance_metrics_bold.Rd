@@ -17,9 +17,6 @@ make_two_performance_metrics_bold(
 
 \item{performance_metric_y}{y}
 }
-\value{
-
-}
 \description{
 Making two performance metrics bold
 }

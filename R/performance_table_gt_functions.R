@@ -69,7 +69,6 @@ bar_style_nb <- function(width, display){
 #' @param metric the required metric
 #' @param color the required color
 #'
-#' @return
 #' @keywords internal
 add_color_to_confusion_metric <- function(performance_dat, 
                                 metric,
@@ -96,7 +95,6 @@ add_color_to_confusion_metric <- function(performance_dat,
 #' @param metric the required metric
 #' @param color the required color
 #'
-#' @return
 #' @keywords internal
 add_color_to_performance_metric <- function(performance_dat, 
                                           metric,
@@ -121,7 +119,6 @@ add_color_to_performance_metric <- function(performance_dat,
 #' @param metric the required metric
 #' @param color the required color
 #'
-#' @return
 #' @keywords internal
 add_color_to_lift <- function(performance_dat, 
                                           metric,
@@ -155,7 +152,6 @@ add_color_to_predicted_positives <- function(performance_dat) {
 
 #' Adding Color to Net Benifit metric
 #'
-#' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
 add_color_to_net_benifit <- function(performance_data) {
@@ -176,7 +172,6 @@ add_color_to_net_benifit <- function(performance_data) {
 #'
 #' @param performance_dat the original performance data 
 #'
-#' @return
 #' @keywords internal
 replace_nan_with_na <- function(performance_dat) {
   
@@ -194,7 +189,6 @@ replace_nan_with_na <- function(performance_dat) {
 #'
 #' @param performance_dat the original performance data
 #'
-#' @return
 #' @keywords internal
 add_colors_to_performance_dat <- function(performance_dat){
   

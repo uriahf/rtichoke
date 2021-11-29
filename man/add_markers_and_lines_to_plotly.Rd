@@ -11,9 +11,6 @@ add_markers_and_lines_to_plotly(plotly_object, performance_data_type)
 
 \item{performance_data_type}{}
 }
-\value{
-
-}
 \description{
 Adding markers and lines to plotly
 }

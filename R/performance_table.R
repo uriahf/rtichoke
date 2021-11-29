@@ -86,10 +86,8 @@ render_performance_table <- function(performance_data,
 
 #' Preparing Performance Data for gt
 #'
-#' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
-#'
 prepare_performance_data_for_gt <- function(performance_data, 
                                             main_slider) {
   
@@ -131,7 +129,6 @@ prepare_performance_data_for_gt <- function(performance_data,
 
 #' Rendering and Formatting gt
 #'
-#' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
 #' @param prevalence the prevalence of the populations
@@ -219,7 +216,6 @@ add_zebra_colors_to_gt_table <- function(performance_table,
 
 #' Creating Title for gt performance table
 #'
-#' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
 creating_title_for_gt <- function(main_slider){
@@ -235,7 +231,6 @@ creating_title_for_gt <- function(main_slider){
 
 #' Creating Subtitle for gt performance table
 #'
-#' @return
 #' @keywords internal
 #' @inheritParams plot_roc_curve
 #' @param models_names the names of the different models
@@ -288,7 +283,6 @@ creating_subtitle_for_gt <- function(
 #' @param pop_color the color of the population
 #' @param pop_prevalence the prevalence of the population
 #'
-#' @return
 #' @keywords internal
 create_subtitle_for_one_population <- function(pop_name, 
                                                pop_color, 
@@ -302,7 +296,6 @@ create_subtitle_for_one_population <- function(pop_name,
 #' @param model_name the name of the model
 #' @param model_color the color of the model
 #'
-#' @return
 #' @keywords internal
 add_html_color_to_model_for_subtitle <- function(model_name, 
                                                  model_color) {

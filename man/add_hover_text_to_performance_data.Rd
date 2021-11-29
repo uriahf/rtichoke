@@ -17,9 +17,6 @@ add_hover_text_to_performance_data(
 
 \item{curve}{curve}
 }
-\value{
-
-}
 \description{
 Adding hover text to performance data
 }

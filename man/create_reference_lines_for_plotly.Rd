@@ -20,9 +20,6 @@ create_reference_lines_for_plotly(
 
 \item{population_color_vector}{color values}
 }
-\value{
-
-}
 \description{
 Create reference lines plotly as the first stage of interactive plot
 }

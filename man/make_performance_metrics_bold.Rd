@@ -11,9 +11,6 @@ make_performance_metrics_bold(text_for_hover, curve)
 
 \item{curve}{curve type}
 }
-\value{
-
-}
 \description{
 Making performance metrics bold
 }

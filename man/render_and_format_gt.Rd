@@ -21,9 +21,6 @@ render_and_format_gt(
 
 \item{col_values}{color palette}
 }
-\value{
-
-}
 \description{
 Rendering and Formatting gt
 }

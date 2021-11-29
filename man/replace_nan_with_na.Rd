@@ -9,9 +9,6 @@ replace_nan_with_na(performance_dat)
 \arguments{
 \item{performance_dat}{the original performance data}
 }
-\value{
-
-}
 \description{
 Replancing NaN with NA
 }

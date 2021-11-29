@@ -1,10 +1,8 @@
 #' Create a Calibration Curve
-#' does it work
 #'
 #' @inheritParams create_roc_curve
+#' @param type discrete or smooth
 #'
-#' @return
-#' calibration 
 #' @export
 #'
 #' @examples
@@ -108,11 +106,15 @@ create_calibration_curve <- function(probs,
   if (type == "discrete") {
     cal_plot <- deciles_dat %>%
       plotly::plot_ly(
-        x = ~phatx,
-        y = ~phaty,
         color = as.formula(paste0("~", names(deciles_dat)[1])),
         colors = col_values,
         opacity = length(probs)
+      ) %>%
+      plotly::add_trace(
+        x = ~phatx,
+        y = ~phaty,
+        type = "scatter",
+        mode = "lines+markers" # ,
       ) %>%
       plotly::layout(
         shapes = list(
@@ -123,11 +125,7 @@ create_calibration_curve <- function(probs,
           y1 = 1,
           line = list(color = "grey")
         )
-      ) %>%
-      plotly::add_trace(
-        type = "scatter",
-        mode = "lines+markers" # ,
-      ) %>%
+      )  %>%
       plotly::layout(
         xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
@@ -168,7 +166,6 @@ create_calibration_curve <- function(probs,
 #'
 #' @inheritParams create_roc_curve
 #'
-#' @return
 #' @keywords internal
 #' @examples 
 #' \dontrun{
@@ -191,7 +188,6 @@ make_deciles_dat <- function(probs, real) {
 #'
 #' @param deciles_dat 
 #'
-#' @return
 #' @keywords internal
 #' @examples 
 #' \dontrun{
@@ -214,9 +210,9 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #'
 #' @inheritParams create_roc_curve
 #'
-#' @return
 #' @keywords internal
 #' 
+#' @examples
 #' \dontrun{
 #' arrange_estimated_probabilities_to_long_format(
 #' probs = list("First Model" = example_dat$estimated_probabilities)

@@ -26,9 +26,6 @@ add_interactive_marker_from_performance_data(
 
 \item{main_slider}{the main slider for interactivity}
 }
-\value{
-
-}
 \description{
 Add interactive marker based on performance data
 }

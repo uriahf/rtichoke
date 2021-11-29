@@ -13,9 +13,6 @@ add_color_to_lift(performance_dat, metric, color)
 
 \item{color}{the required color}
 }
-\value{
-
-}
 \description{
 Adding color to the lift metric
 }
