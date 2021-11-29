@@ -1,4 +1,5 @@
 #' Create a Calibration Curve
+#' does it work
 #'
 #' @inheritParams create_roc_curve
 #'
