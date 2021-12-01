@@ -47,6 +47,10 @@ create_calibration_curve <- function(probs,
                                      type = "discrete") {
   quintile <- phatx <- phaty <- gam <- NULL
   
+  check_probs_input(probs)
+  check_real_input(real)
+  
+  
   if (!is.list( probs) ) {probs = list("model 1" = probs)}
   
   col_values <- col_values[1:length(probs)]
@@ -106,11 +110,15 @@ create_calibration_curve <- function(probs,
                         ylim = limits, 
                         expand = F)  +
         ggplot2::theme_classic() +
-        ggplot2::theme(legend.position = "none")
+        ggplot2::theme(legend.position = "none") +
+        ggplot2::labs(x = "Predicted")
     }
     
     if(interactive == TRUE) {
       
+      if ((length(probs) == 1) & (is.list(probs)) ) { 
+        
+        print("one population")
         
     cal_plot <- plotly::plot_ly(
       x =~ c(0,1),
@@ -127,8 +135,12 @@ create_calibration_curve <- function(probs,
         mode = "lines+markers" ,
         x = ~x,
         y = ~y,
-        color = as.formula(paste0("~", names(deciles_dat)[1])),
-        colors = col_values,
+        hovertemplate = paste("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                              "<b>%{yaxis.title.text}:</b> %{y:.2f}<br>"
+        ),
+        # color = as.formula(paste0("~", names(deciles_dat)[1])),
+        # colors = col_values,
+        color = I("black"),
         opacity = length(probs)
       ) %>%
       plotly::layout(
@@ -137,6 +149,7 @@ create_calibration_curve <- function(probs,
         showlegend = FALSE
       ) %>%
       plotly::config(displayModeBar = F)
+      }
     }
   }
 
@@ -158,7 +171,8 @@ create_calibration_curve <- function(probs,
           axis.text.x = ggplot2::element_blank(),
           axis.ticks.x = ggplot2::element_blank()
         ) +
-        ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)
+        ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)+
+        ggplot2::labs(x = "Predicted")
       }
       
       if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
@@ -195,6 +209,9 @@ create_calibration_curve <- function(probs,
         
         print("one population")
         
+        print(names(deciles_dat))
+        print(deciles_dat)
+        
         
       cal_plot <- plotly::plot_ly(
         x =~ c(0,1),
@@ -211,14 +228,19 @@ create_calibration_curve <- function(probs,
           x = ~phatx,
           y = ~phaty,
           color = I("black"),
-          opacity = length(probs)
-        ) %>%
+          opacity = length(probs),
+          hovertemplate = paste("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                "<b>%{yaxis.title.text}:</b> %{y:.2f}<br>"
+        )) %>%
         plotly::layout(
           xaxis = list(range = limits, showgrid = F),
           yaxis = list(range = limits, showgrid = F),
           showlegend = FALSE
         ) %>%
         plotly::config(displayModeBar = F)
+      
+      
+      # print(cal_plot)
       
       }
     }
@@ -227,19 +249,25 @@ create_calibration_curve <- function(probs,
   if(interactive == TRUE) {
     
     if ((length(probs) == 1) & (is.list(probs)) ) { 
+      print(make_histogram_for_calibration(probs, deciles_dat))
+      
       histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
         plotly::plot_ly(
           opacity = length(probs)
         ) %>%
-        plotly::add_bars(x = ~mids, 
-                         y = ~counts,
-                         ) %>%
-        plotly::layout(
-          barmode = "overlay", xaxis = list(range = limits, showgrid = F), 
-          yaxis = list(showgrid = F),
-          showlegend = FALSE
-        ) %>%
-        plotly::config(displayModeBar = F)
+         plotly::add_bars(x = ~mids, 
+                          y = ~counts,
+                          width = 0.01,
+                          color = I("black")
+                        ) %>%
+         plotly::layout(
+           barmode = "overlay", xaxis = list(range = limits, showgrid = F),
+           yaxis = list(showgrid = F),
+           showlegend = FALSE
+         ) %>%
+         plotly::config(displayModeBar = F)
+      
+      
       
     } else {
     
@@ -265,7 +293,9 @@ create_calibration_curve <- function(probs,
     nrows = 2,
     shareX = T,
     heights = c(0.8, 0.2)
-  )
+  ) %>% 
+    plotly::layout(xaxis = list(title = 'Predicted'), 
+           yaxis = list(title = 'Observed'))
   }
   
   if (interactive == FALSE) {
@@ -293,8 +323,8 @@ create_calibration_curve <- function(probs,
     data = make_histogram_for_calibration(probs, deciles_dat),
     ggplot2::aes(x = mids, 
                  y = counts, 
-                 color = model)) +
-    ggplot2::geom_col() +
+                 fill = model)) +
+    ggplot2::geom_col(alpha = 0.5) +
     ggplot2::theme_classic() +
     ggplot2::coord_cartesian(xlim = limits,
                              expand = F) +

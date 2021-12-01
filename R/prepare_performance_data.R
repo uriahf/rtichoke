@@ -70,6 +70,10 @@
 prepare_performance_data <- function(probs, real, by = 0.01,
                                      stratified_by = "probability_threshold") {
   . <- threshold <- NULL
+  
+  check_probs_input(probs)
+  check_probs_input(real)
+  
 
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
     stop("Probabilities mustn't be greater than one ")

@@ -20,6 +20,7 @@ Imports:
     gt,
     htmltools,
     magrittr,
+    patchwork,
     plotly,
     processx,
     purrr,
