@@ -12,6 +12,7 @@
 #' plots
 #' @param main_slider what is the main slider - threshold, percent positives or positives
 #' @param col_values color palette
+#' @param title_included add title to the curve
 #' 
 #' 
 #' @export
@@ -92,7 +93,8 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#8DA0CB",
                                "#E78AC3",
                                "#A4243B"
-                             )) {
+                             ),
+                             title_included = F) {
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -102,7 +104,8 @@ create_roc_curve <- function(probs, real, by = 0.01,
     plot_roc_curve(chosen_threshold = chosen_threshold,
                    interactive = interactive,
                    main_slider = main_slider,
-                   col_values = col_values)
+                   col_values = col_values,
+                   title_included = F)
 }
 
 
@@ -176,7 +179,8 @@ plot_roc_curve <- function(performance_data,
                              "#8DA0CB",
                              "#E78AC3",
                              "#A4243B"
-                           )) {
+                           ),
+                           title_included = F) {
   
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)

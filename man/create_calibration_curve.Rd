@@ -8,7 +8,8 @@ create_calibration_curve(
   probs,
   real,
   interactive = F,
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B", title_included
+    = F),
   type = "discrete"
 )
 }
@@ -30,18 +31,90 @@ plots}
 Create a Calibration Curve
 }
 \examples{
+\dontrun{
 create_calibration_curve(
   probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
+  real = example_dat$outcome, type = "discrete"
 )
+
+create_calibration_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome, type = "discrete", 
+  interactive = TRUE
+)
+
+
+create_calibration_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome, type = "smooth"
+)
+
+create_calibration_curve(
+  probs = list(example_dat$estimated_probabilities),
+  real = example_dat$outcome, type = "smooth", 
+  interactive = TRUE
+)
+
+# Several Models
 
 create_calibration_curve(
   probs = list(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome
+  real = example_dat$outcome, type = "discrete"
+) 
+
+
+create_calibration_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome, 
+  interactive = TRUE, 
+  type = "discrete"
+) 
+
+
+create_calibration_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  real = example_dat$outcome, 
+  interactive = FALSE, 
+  type = "smooth"
+) 
+
+create_calibration_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess,
+    "Third Model" = sample(example_dat$random_guess, replace = TRUE)
+  ),
+  real = example_dat$outcome, 
+  interactive = TRUE, 
+  type = "smooth"
+) 
+  
+
+create_calibration_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess,
+    "Third Model" = sample(example_dat$random_guess, replace = TRUE),
+    "Fourth Model" = sample(example_dat$random_guess, replace = TRUE),
+    "Fifth Model" = sample(example_dat$random_guess, replace = TRUE)
+    
+  ),
+  real = example_dat$outcome, type = "smooth",
+  interactive = TRUE
 )
+
+
+# several populations
+
 
 create_calibration_curve(
   probs = list(
@@ -58,4 +131,27 @@ create_calibration_curve(
       dplyr::pull(outcome)
   )
 )
+
+
+create_calibration_curve(
+  probs = list(
+    "Train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "Test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "Val" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities) \%>\% 
+      sample(replace = TRUE)
+  ),
+  real = list(
+    "Train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "Test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome),
+    "Val" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ), interactive = TRUE,
+)
+}
 }

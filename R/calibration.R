@@ -6,19 +6,91 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' create_calibration_curve(
 #'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   real = example_dat$outcome, type = "discrete"
 #' )
-#'
+#' 
+#' create_calibration_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome, type = "discrete", 
+#'   interactive = TRUE
+#' )
+#' 
+#' 
+#' create_calibration_curve(
+#'   probs = example_dat$estimated_probabilities,
+#'   real = example_dat$outcome, type = "smooth"
+#' )
+#' 
+#' create_calibration_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   real = example_dat$outcome, type = "smooth", 
+#'   interactive = TRUE
+#' )
+#' 
+#' # Several Models
+#' 
 #' create_calibration_curve(
 #'   probs = list(
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
-#'   real = example_dat$outcome
+#'   real = example_dat$outcome, type = "discrete"
+#' ) 
+#' 
+#' 
+#' create_calibration_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome, 
+#'   interactive = TRUE, 
+#'   type = "discrete"
+#' ) 
+#' 
+#' 
+#' create_calibration_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   real = example_dat$outcome, 
+#'   interactive = FALSE, 
+#'   type = "smooth"
+#' ) 
+#' 
+#' create_calibration_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess,
+#'     "Third Model" = sample(example_dat$random_guess, replace = TRUE)
+#'   ),
+#'   real = example_dat$outcome, 
+#'   interactive = TRUE, 
+#'   type = "smooth"
+#' ) 
+#'   
+#' 
+#' create_calibration_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess,
+#'     "Third Model" = sample(example_dat$random_guess, replace = TRUE),
+#'     "Fourth Model" = sample(example_dat$random_guess, replace = TRUE),
+#'     "Fifth Model" = sample(example_dat$random_guess, replace = TRUE)
+#'     
+#'   ),
+#'   real = example_dat$outcome, type = "smooth",
+#'   interactive = TRUE
 #' )
-#'
+#' 
+#' 
+#' # several populations
+#' 
+#' 
 #' create_calibration_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -34,6 +106,29 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' 
+#' 
+#' create_calibration_curve(
+#'   probs = list(
+#'     "Train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "Val" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities) %>% 
+#'       sample(replace = TRUE)
+#'   ),
+#'   real = list(
+#'     "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome),
+#'     "Val" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ), interactive = TRUE,
+#' )
+#' }
 create_calibration_curve <- function(probs,
                                      real,
                                      interactive = F,
@@ -42,7 +137,8 @@ create_calibration_curve <- function(probs,
                                        "#FC8D62",
                                        "#8DA0CB",
                                        "#E78AC3",
-                                       "#A4243B"
+                                       "#A4243B",
+                                       title_included = F
                                      ),
                                      type = "discrete") {
   quintile <- phatx <- phaty <- gam <- NULL
@@ -57,11 +153,17 @@ create_calibration_curve <- function(probs,
   
   if (is.list(probs) & !is.list(real)) {
     
-  deciles_dat <- purrr::map_df(probs,
+  deciles_dat <- tibble::tribble(
+      ~model, ~quintile, ~phaty, ~phatx,
+      "reference", NA, 0, 0,
+      "reference", NA, 1, 1
+    ) %>% 
+  bind_rows(
+    purrr::map_df(probs,
     ~ make_deciles_dat(.x, real),
     .id = "model"
-  ) %>% 
-    mutate(model  = forcats::fct_inorder(factor(model)))
+  )) %>% 
+    dplyr::mutate(model  = forcats::fct_inorder(factor(model)))
   }
   
   
@@ -70,12 +172,19 @@ create_calibration_curve <- function(probs,
       names(probs) <- paste("population", 1:length(probs))
       names(real) <- paste("population", 1:length(real))
     }
-    deciles_dat <- purrr::map2_dfr(probs,
+    
+    deciles_dat <- tibble::tribble(
+      ~population, ~quintile, ~phaty, ~phatx,
+      "reference", NA, 0, 0,
+      "reference", NA, 1, 1
+    ) %>% dplyr::bind_rows(
+      purrr::map2_dfr(probs,
                            real,
                            ~ make_deciles_dat(.x, .y),
                            .id = "population"
-    ) %>% 
-      mutate(population  = forcats::fct_inorder(factor(population)))
+    )) %>% 
+      dplyr::mutate(population  = forcats::fct_inorder(factor(population)))
+    
     }
 
   limits <- define_limits_for_calibration_plot(deciles_dat)
@@ -90,9 +199,10 @@ create_calibration_curve <- function(probs,
     )
 
     if(interactive == FALSE) {
-      
-      print(smooth_dat)
-      
+
+      if ((length(probs) == 1) & !is.list(real)) {
+
+        
       cal_plot <- ggplot2::ggplot(
         smooth_dat,
         ggplot2::aes(x = x, 
@@ -101,55 +211,148 @@ create_calibration_curve <- function(probs,
         ggplot2::geom_abline(slope = 1, 
                             intercept = 0, 
                             color = "grey") +
-        ggplot2::geom_line() +
+        ggplot2::geom_line(size = 1) +
         ggplot2::ylab("Observed") +
+        ggplot2::theme_classic() +
         ggplot2::theme(axis.title.x = ggplot2::element_blank(), 
               axis.text.x = ggplot2::element_blank(), 
               axis.ticks.x = ggplot2::element_blank()) +
         ggplot2::coord_cartesian(xlim = limits, 
                         ylim = limits, 
                         expand = F)  +
-        ggplot2::theme_classic() +
-        ggplot2::theme(legend.position = "none") +
-        ggplot2::labs(x = "Predicted")
+        ggplot2::theme(legend.position = "none")
+      
+      
+      }
+      
+      if ((length(probs) > 1) & !is.list(real)) {
+        print(head(smooth_dat))
+        print(col_values)
+        
+        
+        cal_plot <- ggplot2::ggplot(
+          smooth_dat
+        )  +
+          ggplot2::geom_line(ggplot2::aes(x = x, 
+                                          y = y,
+                                          color = model),
+                             size = 1) +
+          ggplot2::ylab("Observed") +
+          ggplot2::theme_classic() +
+          ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                         axis.text.x = ggplot2::element_blank(),
+                         axis.ticks.x = ggplot2::element_blank()) +
+          ggplot2::coord_cartesian(xlim = limits,
+                                   ylim = limits,
+                                   expand = F)  +
+          ggplot2::scale_color_manual(values = c("grey", unname(col_values)))
+        
+      }
+      
+      if ((length(probs) > 1) & is.list(real)) {
+        print(smooth_dat)
+        
+      }
+      
     }
     
     if(interactive == TRUE) {
       
-      if ((length(probs) == 1) & (is.list(probs)) ) { 
+      if ((length(probs) == 1) & (!is.list(real)) ) { 
         
         print("one population")
         
     cal_plot <- plotly::plot_ly(
-      x =~ c(0,1),
-      y = c(0,1),
-      colors = col_values
+      x = ~x,
+      y = ~y,
+      hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                             "<b>%{yaxis.title.text}:</b> %{y:.2f}",
+                             "<extra></extra>"
+      ),
+      color =~ model,
+      colors = c("grey", I("black"))
     ) %>% 
       plotly::add_lines(
-        color = I("grey"),
-        line = list(width = 1.75),
-       ) %>%
-      plotly::add_lines(
-        data = smooth_dat,
-        type = "scatter",
-        mode = "lines+markers" ,
-        x = ~x,
-        y = ~y,
-        hovertemplate = paste("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
-                              "<b>%{yaxis.title.text}:</b> %{y:.2f}<br>"
-        ),
-        # color = as.formula(paste0("~", names(deciles_dat)[1])),
-        # colors = col_values,
-        color = I("black"),
-        opacity = length(probs)
+        data = smooth_dat
       ) %>%
       plotly::layout(
         xaxis = list(range = limits, showgrid = F),
         yaxis = list(range = limits, showgrid = F),
-        showlegend = FALSE
-      ) %>%
-      plotly::config(displayModeBar = F)
+        showlegend = TRUE
+      ) 
       }
+      if ((length(probs) > 1) & (!is.list(real)) ) { 
+        
+        print("several models")
+        print(smooth_dat %>% na.omit())
+        print(col_values)
+        
+        cal_plot <- plotly::plot_ly(
+          x = ~x,
+          y = ~y,
+          hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                 "<b>%{yaxis.title.text}:</b> %{y:.2f}"
+          ),
+          colors = c("grey", unname(col_values)),
+          color =~ model,
+          legendgroup =~ model
+        ) %>%
+          plotly::add_lines(
+            data = smooth_dat %>% dplyr::filter(model == "reference"),
+            showlegend = FALSE
+          ) %>% 
+          plotly::add_lines(
+            data = smooth_dat %>% dplyr::filter(model != "reference"),
+            showlegend = TRUE
+        ) %>%
+          plotly::layout(legend = list(orientation = 'h',
+                                       xanchor = "center",
+                                       yanchor = "top",
+                                       x = 0.5,
+                                       y = 1.1
+          ),
+          xaxis = list(range = limits, showgrid = F),
+          yaxis = list(range = limits, showgrid = F))
+        
+        print(cal_plot)
+        
+      }
+      if ((length(probs) > 1) & (is.list(real)) ) { 
+        
+        print("several populations")
+        
+        cal_plot <- plotly::plot_ly(
+          x = ~x,
+          y = ~y,
+          hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                 "<b>%{yaxis.title.text}:</b> %{y:.2f}"
+          ),
+          colors = c("grey", unname(col_values)),
+          color =~ population,
+          legendgroup =~ population
+        ) %>%
+          plotly::add_lines(
+            data = smooth_dat %>% dplyr::filter(population == "reference"),
+            showlegend = FALSE
+          ) %>% 
+          plotly::add_lines(
+            data = smooth_dat %>% dplyr::filter(population != "reference"),
+            showlegend = TRUE
+          ) %>%
+          plotly::layout(legend = list(orientation = 'h',
+                                       xanchor = "center",
+                                       yanchor = "top",
+                                       x = 0.5,
+                                       y = 1.1
+          ),
+          xaxis = list(range = limits, showgrid = F),
+          yaxis = list(range = limits, showgrid = F))
+        
+        print(cal_plot)
+        
+      }
+      
+      
     }
   }
 
@@ -157,12 +360,12 @@ create_calibration_curve <- function(probs,
     
     if(interactive == FALSE) {
       
-      if ((length(probs) == 1) & (is.list(probs)) ) { 
+      if ((length(probs) == 1) ) { 
       
       cal_plot <- ggplot2::ggplot(deciles_dat, 
                                   ggplot2::aes(x = phatx, y = phaty)) +
         ggplot2::geom_abline(slope = 1, intercept = 0, color = "grey") +
-        ggplot2::geom_line() +
+        ggplot2::geom_line(size = 1) +
         ggplot2::geom_point() +
         ggplot2::theme_classic() +
         ggplot2::ylab("Observed") +
@@ -175,18 +378,17 @@ create_calibration_curve <- function(probs,
         ggplot2::labs(x = "Predicted")
       }
       
-      if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
+      if ((length(probs) > 1) & ( !is.list(real)) ) { 
         
-        print("several models")
-        
-        cal_plot <- ggplot2::ggplot(deciles_dat, 
+        cal_plot <- ggplot2::ggplot(deciles_dat %>% 
+                                      dplyr::filter(model!= "reference"), 
                                     ggplot2::aes(x = phatx, 
                                                  y = phaty,
                                                  color = model)) +
-          ggplot2::geom_abline(slope = 1, 
-                               intercept = 0, 
+          ggplot2::geom_abline(slope = 1,
+                               intercept = 0,
                                color = "grey") +
-          ggplot2::geom_line() +
+          ggplot2::geom_line(size = 1) +
           ggplot2::geom_point() +
           ggplot2::theme_classic() +
           ggplot2::ylab("Observed") +
@@ -195,97 +397,205 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)
+          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)  +
+          ggplot2::scale_color_manual(values = unname(col_values)) #+
+          ggplot2::theme(legend.position = "none")
         
       }
       
+      if ((length(probs) > 1) & ( is.list(real)) ) { 
+        
+        cal_plot <- ggplot2::ggplot(deciles_dat %>% 
+                                      dplyr::filter(population!= "reference"), 
+                                    ggplot2::aes(x = phatx, 
+                                                 y = phaty,
+                                                 color = population)) +
+          ggplot2::geom_abline(slope = 1,
+                               intercept = 0,
+                               color = "grey") +
+          ggplot2::geom_line(size = 1) +
+          ggplot2::geom_point() +
+          ggplot2::theme_classic() +
+          ggplot2::ylab("Observed") +
+          ggplot2::theme(
+            axis.title.x = ggplot2::element_blank(),
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+          ) +
+          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F)  +
+          ggplot2::scale_color_manual(values = unname(col_values)) #+
+        ggplot2::theme(legend.position = "none")
+        
+      }
       
       
       
     }
     if(interactive == TRUE) {
       
-      if ((length(probs) == 1) & (is.list(probs)) ) { 
+      if ((length(probs) == 1) & (!is.list(real)) ) { 
         
         print("one population")
         
         print(names(deciles_dat))
         print(deciles_dat)
         
-        
-      cal_plot <- plotly::plot_ly(
-        x =~ c(0,1),
-        y = c(0,1)
+        cal_plot <- plotly::plot_ly(
+        x = ~phatx,
+        y = ~phaty,
+        color =~ model,
+        legendgroup = ~model,
+        colors = c("grey", "black")
       ) %>% 
+        plotly::add_markers(
+          data = deciles_dat %>% dplyr::filter(model != "reference"),
+          showlegend = TRUE,
+          hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                 "<b>%{yaxis.title.text}:</b> %{y:.2f}",
+                                 "<extra></extra>"
+        )) %>% 
         plotly::add_lines(
-          color = I("grey"),
-          line = list(width = 1.75),
-        ) %>%
-        plotly::add_trace(
           data = deciles_dat,
-          type = "scatter",
-          mode = "lines+markers" ,
-          x = ~phatx,
-          y = ~phaty,
-          color = I("black"),
-          opacity = length(probs),
-          hovertemplate = paste("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
-                                "<b>%{yaxis.title.text}:</b> %{y:.2f}<br>"
-        )) %>%
+          line = list(width = 1),
+        ) %>%
         plotly::layout(
           xaxis = list(range = limits, showgrid = F),
           yaxis = list(range = limits, showgrid = F),
           showlegend = FALSE
-        ) %>%
-        plotly::config(displayModeBar = F)
-      
-      
-      # print(cal_plot)
-      
+        ) 
+
       }
+      if ((length(probs) > 1) & (!is.list(real)) ) { 
+        
+        print("Several Models")
+        
+        print(names(deciles_dat))
+        print(deciles_dat)
+        print(col_values)
+          
+        
+        cal_plot <- plotly::plot_ly(
+          x = ~phatx,
+          y = ~phaty,
+          color =~ model,
+          legendgroup = ~model,
+          colors = unname(c(I("grey"), col_values)),
+        ) %>% 
+          plotly::add_markers(
+            data = deciles_dat %>% dplyr::filter(model != "reference"),
+            showlegend = TRUE,
+            hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                   "<b>%{yaxis.title.text}:</b> %{y:.2f}"
+            )
+          ) %>% 
+          plotly::add_lines(
+            data = deciles_dat,
+            showlegend = FALSE) %>%
+          plotly::layout(
+            xaxis = list(range = limits, showgrid = F),
+            yaxis = list(range = limits, showgrid = F)
+          ) %>%
+          plotly::layout(legend = list(orientation = 'h',
+                                       xanchor = "center",
+                                       yanchor = "top",
+                                       x = 0.5,
+                                       y = 1.1
+                                       ),
+                         xaxis = list(title = 'Predicted'), 
+                         yaxis = list(title = 'Observed'))
+        
+
+        print(cal_plot)
+        
+      }
+      if ((length(probs) > 1) & (is.list(real)) ) { 
+        
+        print("Several Populations")
+        
+        print(names(deciles_dat))
+        print(deciles_dat)
+        print(col_values)
+        
+        
+        cal_plot <- plotly::plot_ly(
+          x = ~phatx,
+          y = ~phaty,
+          color =~ population,
+          legendgroup = ~population,
+          colors = unname(c(I("grey"), col_values)),
+        ) %>% 
+          plotly::add_markers(
+            data = deciles_dat %>% dplyr::filter(population != "reference"),
+            showlegend = TRUE,
+            hovertemplate = paste0("<b>%{xaxis.title.text}:</b> %{x:.2f}<br>",
+                                   "<b>%{yaxis.title.text}:</b> %{y:.2f}"
+            )
+          ) %>% 
+          plotly::add_lines(
+            data = deciles_dat,
+            showlegend = FALSE) %>%
+          plotly::layout(
+            xaxis = list(range = limits, showgrid = F),
+            yaxis = list(range = limits, showgrid = F)
+          )  %>%
+          plotly::layout(legend = list(orientation = 'h',
+                                       xanchor = "center",
+                                       yanchor = "top",
+                                       x = 0.5,
+                                       y = 1.1
+          ))
+        
+      }
+      
+      
     }
   }
 
   if(interactive == TRUE) {
     
-    if ((length(probs) == 1) & (is.list(probs)) ) { 
+    if ((length(probs) == 1) ) { 
       print(make_histogram_for_calibration(probs, deciles_dat))
       
-      histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
-        plotly::plot_ly(
-          opacity = length(probs)
-        ) %>%
+      histprobs <- make_histogram_for_calibration(probs, 
+                                                  deciles_dat)  %>%
+        plotly::plot_ly() %>%
          plotly::add_bars(x = ~mids, 
                           y = ~counts,
                           width = 0.01,
-                          color = I("black")
+                          # color = I("black"),
+                          color = I("grey35"),
+                          text =~ text,
+                          hoverinfo = "text"
                         ) %>%
          plotly::layout(
            barmode = "overlay", xaxis = list(range = limits, showgrid = F),
            yaxis = list(showgrid = F),
            showlegend = FALSE
-         ) %>%
-         plotly::config(displayModeBar = F)
+         ) 
       
       
       
     } else {
+      
+      print(make_histogram_for_calibration(probs, deciles_dat))
     
     histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
     plotly::plot_ly(
-      colors = col_values,
-      opacity = length(probs)
+      color = as.formula(paste0("~", names(deciles_dat)[1])),
+      legendgroup = as.formula(paste0("~", names(deciles_dat)[1])),
+      x = ~mids, 
+      y = ~counts,
+      opacity = 0.5,
+      text =~ text,
+      hoverinfo = "text"
     ) %>%
-    plotly::add_bars(x = ~mids, 
-                     y = ~counts, 
-                     color = as.formula(paste0("~", names(deciles_dat)[1]))) %>%
+      plotly::add_bars(showlegend = FALSE, 
+                       colors =  c(unname(col_values))) %>% 
     plotly::layout(
-      barmode = "overlay", xaxis = list(range = limits, showgrid = F), 
-      yaxis = list(showgrid = F),
-      showlegend = FALSE
-    ) %>%
-    plotly::config(displayModeBar = F)
-
+      barmode = "overlay", xaxis = list(range = limits, showgrid = F),
+      yaxis = list(showgrid = F)
+    ) 
+    
     }
     
   full_cal_plot <- plotly::subplot(cal_plot,
@@ -295,7 +605,9 @@ create_calibration_curve <- function(probs,
     heights = c(0.8, 0.2)
   ) %>% 
     plotly::layout(xaxis = list(title = 'Predicted'), 
-           yaxis = list(title = 'Observed'))
+           yaxis = list(title = 'Observed')) %>%
+    plotly::config(displayModeBar = F) 
+  
   }
   
   if (interactive == FALSE) {
@@ -311,25 +623,28 @@ create_calibration_curve <- function(probs,
       ggplot2::coord_cartesian(xlim = limits,
                                expand = F) +
       ggplot2::labs(x = "Predicted") +
-      ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+      ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))  +
+      ggplot2::scale_color_manual(values = col_values)
     
   }
   
   if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
-  
-    print("several models")
     
+    print("several models")
+    print(make_histogram_for_calibration(probs, deciles_dat))
+  
   histprobs <- ggplot2::ggplot(
     data = make_histogram_for_calibration(probs, deciles_dat),
     ggplot2::aes(x = mids, 
                  y = counts, 
                  fill = model)) +
-    ggplot2::geom_col(alpha = 0.5) +
+    ggplot2::geom_col(position = "identity", alpha = 0.5) +
     ggplot2::theme_classic() +
     ggplot2::coord_cartesian(xlim = limits,
                              expand = F) +
     ggplot2::labs(x = "Predicted") +
-    ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+    ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))  +
+    ggplot2::scale_fill_manual(values = unname(col_values)) 
   
 }
   
@@ -339,17 +654,28 @@ create_calibration_curve <- function(probs,
       
       histprobs <- ggplot2::ggplot(
         data = make_histogram_for_calibration(probs, deciles_dat),
-        ggplot2::aes(x = mids, y = counts, color = population)) +
-        ggplot2::geom_col() +
+        ggplot2::aes(x = mids, y = counts, fill = population)) +
+        ggplot2::geom_col(position = "identity", alpha = 0.5) +
         ggplot2::theme_classic() +
         ggplot2::coord_cartesian(xlim = limits,
                                  expand = F) +
         ggplot2::labs(x = "Predicted") +
+        ggplot2::scale_fill_manual(values = unname(col_values)) +
         ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
+      
+      print(
+        plotly::ggplotly(
+          histprobs
+        )
+      )
       
     }  
     
-  full_cal_plot <- patchwork::wrap_plots(cal_plot, histprobs, heights = c(3,1))
+  full_cal_plot <- patchwork::wrap_plots(cal_plot+
+                                           ggplot2::theme(legend.position = "none"), 
+                                         histprobs+
+                                           ggplot2::theme(legend.position = "none"), 
+                                         heights = c(3,1))
   
   }
   
@@ -375,7 +701,7 @@ make_deciles_dat <- function(probs, real) {
     dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
     dplyr::group_by(quintile) %>%
     dplyr::summarise(phaty = sum(real) / n(), phatx = mean(probs)) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() 
 }
 
 
@@ -488,23 +814,37 @@ create_dat_for_smooth_calibration <- function(probs,
                                               real,
                                               deciles_dat){
   if (is.list(probs) & !is.list(real)) {
-  smooth_dat <- probs %>%
+  smooth_dat <- tibble::tribble(
+    ~model, ~x, ~y,
+    "reference", 0, 0,
+    "reference", 1, 1
+  ) %>% 
+  dplyr::bind_rows(
+  probs %>%
     purrr::map_df(~ lowess(., real, iter = 0) %>%
                     approx(xout = seq(0, 1, by = 0.01), 
                            ties = mean),
-                  .id = "model") %>%
-    as.data.frame() 
+                  .id = "model") 
+  ) %>%
+    dplyr::mutate(model  = forcats::fct_inorder(factor(model))) %>% 
+    na.omit()
   }
   
   if (is.list(probs) & is.list(real)) {
-
-    smooth_dat <- purrr::map2_dfr(probs,
+    smooth_dat <- tibble::tribble(
+      ~population, ~x, ~y,
+      "reference", 0, 0,
+      "reference", 1, 1
+    ) %>% 
+      dplyr::bind_rows(purrr::map2_dfr(probs,
                                   real,
                                   ~ lowess(.x, .y, iter = 0) %>%
                                     approx(xout = seq(0, 1, by = 0.01),
                                            ties = mean),
                                      .id = "population"
-      )
+      )) %>%
+      dplyr::mutate(population  = forcats::fct_inorder(factor(population))) %>% 
+      na.omit()
   }
   smooth_dat
 }
@@ -563,5 +903,13 @@ create_dat_for_smooth_calibration <- function(probs,
 make_histogram_for_calibration <- function(probs, deciles_dat){
   probs %>%
   purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
-                  .[c("mids", "counts")], .id = names(deciles_dat)[1])
+                  .[c("mids", "counts")], .id = names(deciles_dat)[1]) %>% 
+    dplyr::mutate(
+      text_obs = glue::glue("{counts} observations in "),
+      text_range = ifelse(mids == 0.005, "[0,0.01]", glue::glue("({mids - 0.005},{mids + 0.005}]")),
+      text = glue::glue("{text_obs}{text_range}"),
+      dplyr::across(dplyr::any_of(c("model", "population")), 
+                      ~forcats::fct_inorder(factor(.x)))
+    )  
+    
 }
