@@ -12,6 +12,7 @@ Depends:
 Imports: 
     bslib,
     config (>= 0.3.1),
+    crosstalk,
     dplyr,
     forcats,
     ggplot2,
@@ -19,11 +20,15 @@ Imports:
     golem (>= 0.3.1),
     gt,
     htmltools,
+    jsonlite,
+    lazyeval,
     magrittr,
     patchwork,
     plotly,
+    pROC,
     processx,
     purrr,
+    reactable,
     rlang,
     shiny (>= 1.6.0),
     shinyWidgets,
@@ -32,8 +37,10 @@ Imports:
     tibble
 Suggests: 
     knitr,
+    lattice,
     rmarkdown,
-    testthat
+    testthat,
+    thematic
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

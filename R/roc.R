@@ -13,6 +13,7 @@
 #' @param main_slider what is the main slider - threshold, percent positives or positives
 #' @param col_values color palette
 #' @param title_included add title to the curve
+#' @param size the size of the curve
 #' 
 #' 
 #' @export
@@ -92,9 +93,9 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#FC8D62",
                                "#8DA0CB",
                                "#E78AC3",
-                               "#A4243B"
-                             ),
-                             title_included = F) {
+                               "#A4243B"),
+                             title_included = F,
+                             size = NULL) {
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -105,7 +106,8 @@ create_roc_curve <- function(probs, real, by = 0.01,
                    interactive = interactive,
                    main_slider = main_slider,
                    col_values = col_values,
-                   title_included = F)
+                   title_included = F,
+                   size = size)
 }
 
 
@@ -180,7 +182,8 @@ plot_roc_curve <- function(performance_data,
                              "#E78AC3",
                              "#A4243B"
                            ),
-                           title_included = F) {
+                           title_included = F,
+                           size = NULL) {
   
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
@@ -206,7 +209,8 @@ plot_roc_curve <- function(performance_data,
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc") %>% 
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc",
+                                                     size = size) %>% 
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
@@ -232,7 +236,8 @@ plot_roc_curve <- function(performance_data,
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
                                         population_color_vector = 
-                                          col_values[1:length(prevalence)]) %>% 
+                                          col_values[1:length(prevalence)],
+                                        size = size) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -260,7 +265,8 @@ plot_roc_curve <- function(performance_data,
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
                                         "roc", 
                                         population_color_vector = 
-                                          col_values[1:length(prevalence)]) %>% 
+                                          col_values[1:length(prevalence)],
+                                        size = size) %>% 
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

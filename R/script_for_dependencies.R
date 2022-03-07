@@ -4,4 +4,5 @@
 #' @import dplyr
 #' @importFrom stats quantile as.formula
 #' @import rlang
+#' @import crosstalk
 NULL

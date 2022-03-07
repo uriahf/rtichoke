@@ -11,14 +11,14 @@
 #'
 create_performance_table <- function(probs, real, by = 0.01,
                                      stratified_by = "probability_threshold",
-                                     output_type = "gt") {
+                                     output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
     real = real,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    render_performance_table()
+    render_performance_table(output_type = output_type)
 }
 
 
@@ -37,31 +37,31 @@ create_performance_table <- function(probs, real, by = 0.01,
 #'   render_performance_table()
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   render_performance_table()
+#'   render_performance_table(main_slider = "ppcr")
 #'
 #' one_pop_one_model_as_a_list %>%
 #'   render_performance_table()
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   render_performance_table()
+#'   render_performance_table(main_slider = "ppcr")
 #'
 #' one_pop_three_models %>%
 #'   render_performance_table()
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   render_performance_table()
+#'   render_performance_table(main_slider = "ppcr")
 #'
 #' train_and_test_sets %>%
 #'   render_performance_table()
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   render_performance_table()
+#'   render_performance_table(main_slider = "ppcr")
 #'}
 #'
 #' @export
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
-                                     output_type = "gt",
+                                     output_type = "reactable",
                                      main_slider = "threshold",
                                      col_values = c(
                                        "#5BC0BE",
@@ -80,7 +80,277 @@ render_performance_table <- function(performance_data,
       render_and_format_gt(main_slider, perf_dat_type, prevalence, col_values)
       
   }
-}
+  
+  if (output_type == "reactable") {
+    
+    performance_data_reactable <- performance_data %>%
+      dplyr::select(any_of(
+        c("threshold", "model", "population", "sensitivity","specificity",
+          "PPV", "NPV","lift", "predicted_positives", "NB", "ppcr")
+      )) %>% 
+      dplyr::rename(any_of(c("Model" = "model", 
+                             "Population" = "population", 
+                             "Threshold" = "threshold"))) 
+    
+    
+      if (main_slider != "threshold") {
+        performance_data_reactable <- performance_data_reactable %>%
+          dplyr::relocate(predicted_positives,
+                          ppcr,
+                          .after = Threshold
+          ) %>%
+          dplyr::arrange(ppcr) %>% 
+          dplyr::select(-Threshold) %>% 
+          mutate(rank = dplyr::dense_rank(ppcr)) 
+        
+      } else {
+        
+        performance_data_reactable <- performance_data_reactable %>%
+          dplyr::arrange(Threshold) %>% 
+          mutate(rank = dplyr::dense_rank(Threshold)) 
+        
+      } 
+    
+
+    if ("Model" %in% names(performance_data_reactable)) {
+      
+      performance_data_reactable <- performance_data_reactable %>% 
+        dplyr::mutate(
+          Model = forcats::fct_inorder(
+            factor(Model)),
+          key_values = 
+                 forcats::fct_inorder(
+                   factor(Model)),
+               key_values = 
+                 factor(key_values,
+                        labels = c("1", "2","3", "4", "5")[1:length(unique(performance_data_reactable %>%  
+                                                                             dplyr::pull(Model)))])
+        )
+      
+    }  
+      
+    if ("Population" %in% names(performance_data_reactable)) {
+      
+      performance_data_reactable <- performance_data_reactable %>% 
+        dplyr::mutate(
+          Population = forcats::fct_inorder(
+            factor(Population)),
+          key_values = 
+                        forcats::fct_inorder(
+                   factor(Population)),
+               key_values = 
+                 factor(key_values,
+                        labels = c("1", "2","3", "4", "5")[1:length(unique(performance_data_reactable %>%  
+                                                                             dplyr::pull(Population)))])
+        )
+    }
+    
+    confusion_matrix_list <- performance_data %>%
+      create_conf_mat_list(main_slider = main_slider)
+    
+    interactive_data <- SharedData$new(performance_data_reactable)
+    
+    status_badge <- function(color = "#aaa", width = "9px", height = width) {
+      span(style = list(
+        display = "inline-block",
+        marginRight = "8px",
+        width = width,
+        height = height,
+        backgroundColor = color,
+        borderRadius = "50%"
+      ))
+    }
+
+    interactive_data_reactable <- interactive_data %>% 
+      reactable::reactable(
+        showSortIcon = FALSE,
+        borderless = FALSE,
+        defaultColDef = reactable::colDef(
+          align = "left"
+        ),
+        columns = list(
+          rank = reactable::colDef(show = FALSE),
+          Threshold = reactable::colDef(
+            name = "Probability Threshold",
+            style = reactable::JS("function(rowInfo, colInfo, state) {
+        const firstSorted = state.sorted[0]
+        // Merge cells if unsorted or sorting by school
+        if (!firstSorted || firstSorted.id === 'Threshold') {
+          const prevRow = state.pageRows[rowInfo.viewIndex - 1]
+          if (prevRow && rowInfo.row['Threshold'] === prevRow['Threshold']) {
+            return { visibility: 'hidden' }
+          }
+        }
+      }")),
+          sensitivity = reactable::colDef(
+            name = "Sens", style = function(value) {
+              bar_style_perf(width = value)
+            }, 
+            format = reactable::colFormat(digits = 2)
+          ),
+          specificity = reactable::colDef(
+            name = "Spec", style = function(value) {
+              bar_style_perf(width = value)
+            }, format = reactable::colFormat(digits = 2)
+          ),
+          PPV = reactable::colDef(
+            name = "PPV", style = function(value) {
+              bar_style_perf(width = value)
+            }, format = reactable::colFormat(digits = 2)
+          ),
+          NPV = reactable::colDef(
+            name = "NPV", style = function(value) {
+              bar_style_perf(width = value)
+            }, format = reactable::colFormat(digits = 2)
+          ),
+          lift = reactable::colDef(
+            name = "Lift", style = function(value) {
+              bar_style_perf(width = value / max(performance_data_reactable$lift, na.rm = T))
+            }, format = reactable::colFormat(digits = 2)
+          ),
+          NB = reactable::colDef(
+            name = "Net Benefit",
+            format = reactable::colFormat(digits = 2),
+            style = function(value) {
+              bar_style_nb_reactable(width = value /
+                             max(abs(performance_data_reactable$NB),
+                                 na.rm = T)
+                           )
+            }
+          ),
+          ppcr = reactable::colDef(
+            name = "Predicted Positives",
+            cell = function(value, index) {
+              predicted_positives <- performance_data_reactable$predicted_positives[index]
+              glue::glue("{predicted_positives} ({round(value, digits = 2) * 100}%) ")
+            },
+            style = function(value) {
+              bar_style_perf(width = value, color = "lightgrey")
+            }
+          ),
+          predicted_positives = reactable::colDef(
+            show = FALSE
+          ),
+          Population = reactable::colDef(
+            show = TRUE,
+            cell = function(value, index) {
+              n_levels <- length(levels(value))
+              
+              key_num <- index %% n_levels
+              if (key_num == 0 ) {key_num <- n_levels}
+              key_num <- as.character(key_num)
+              
+              color <- switch(
+                as.character(key_num),
+                "1" = "#5BC0BE",
+                "2" = "#FC8D62",
+                "3" = "#8DA0CB",
+                "4" = "#E78AC3",
+                "5" = "#A4243B"
+              )
+              
+              badge <- status_badge(color = color)
+              tagList(badge, value)
+            }
+          ),
+          Model = reactable::colDef(
+            show = TRUE,
+            cell = function(value, index) {
+              n_levels <- length(levels(value))
+              
+              key_num <- index %% n_levels
+              if (key_num == 0 ) {key_num <- n_levels}
+              key_num <- as.character(key_num)
+              
+              color <- switch(
+                as.character(key_num),
+                "1" = "#5BC0BE",
+                "2" = "#FC8D62",
+                "3" = "#8DA0CB",
+                "4" = "#E78AC3",
+                "5" = "#A4243B"
+              )
+              
+              badge <- status_badge(color = color)
+              tagList(badge, value)
+            }
+          ),
+          key_values = reactable::colDef(
+            show = FALSE
+          )
+          ),
+        columnGroups = list(
+          reactable::colGroup(name = "Performance Metrics", 
+                   columns = c("sensitivity",
+                               "specificity",
+                               "PPV", "NPV", 
+                               "lift", "NB"))
+        ),
+        details = function(index) {
+          htmltools::div(
+            style = "padding: 16px",
+            confusion_matrix_list %>%
+              .[[index]] 
+      )}
+      )
+    
+    if (main_slider != "threshold") {
+      slider_filter_strata <- as.formula(
+        paste0("~", "ppcr")
+      )
+      
+      slider_label <- "Predicted Positives Condition Rate (PPCR)"
+      
+    } else {
+      slider_filter_strata <- as.formula(
+        paste0("~", "Threshold")
+      )
+      
+      slider_label <- "Probability Threshold"
+      
+    }
+      
+    
+    if ( perf_dat_type %in% 
+         c("one model", "one model with model column") ) {
+      
+      crosstalk::bscols(
+        widths = c(6, 12),
+        crosstalk::filter_slider("Propability Threshold",
+                                 slider_label,
+                                 interactive_data,
+                                 slider_filter_strata),
+        interactive_data_reactable
+      )
+
+    } else {
+      
+      if (perf_dat_type == "several models") {
+        main_label <- "Model"
+      } else {
+        main_label <- "Population"
+      }
+      
+    
+    crosstalk::bscols(
+      widths = c(12, 6, 12),
+      filter_checkbox_rtichoke("population", 
+                               main_label, 
+                                 interactive_data,
+                                 ~key_values,
+                                 inline = TRUE,
+                               labels_values = unique(performance_data_reactable %>%  
+                                                        pull(main_label))),
+      crosstalk::filter_slider("Propability Threshold",
+                               slider_label,
+                               interactive_data,
+                               slider_filter_strata),
+      interactive_data_reactable
+    )
+    }
+    
+    }
+  }
 
 
 
@@ -90,8 +360,6 @@ render_performance_table <- function(performance_data,
 #' @inheritParams plot_roc_curve
 prepare_performance_data_for_gt <- function(performance_data, 
                                             main_slider) {
-  
-  # print(performance_data)
   
   performance_data_ready_for_gt <- performance_data %>%
     replace_nan_with_na() %>%
@@ -179,15 +447,15 @@ render_and_format_gt <- function(performance_data,
       specificity = "Spec",
       plot_predicted_positives = "Predicted Positives"
     ) %>%
-    gt::tab_options(
-      table.background.color = "#FFFBF3"
-    ) %>%
-    gt::tab_header(
-      title = gt::md(creating_title_for_gt(main_slider)),
-      subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
-                                          prevalence = prevalence, 
-                                          col_values = col_values))
-    ) %>%
+    # gt::tab_options(
+    #   table.background.color = "#FFFBF3"
+    # ) %>%
+    # gt::tab_header(
+    #   title = gt::md(creating_title_for_gt(main_slider)),
+    #   subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
+    #                                       prevalence = prevalence, 
+    #                                       col_values = col_values))
+    # ) %>%
     add_zebra_colors_to_gt_table(perf_dat_type %in% c("several models", 
                                                       "several populations"))
 }
@@ -300,4 +568,50 @@ create_subtitle_for_one_population <- function(pop_name,
 add_html_color_to_model_for_subtitle <- function(model_name, 
                                                  model_color) {
   glue::glue("<b><span style=\"color: {model_color};\">{model_name}</span></b>")
+}
+
+
+
+
+#' Add background color
+#'
+#' @param The width of the background color 
+#'
+#' @keywords internal
+bar_style_perf <- function(width = 1, color = "lightgreen") {
+  if(is.na(width)) {width <- 0}
+  position <- paste0(width * 100, "%")
+  list(
+    background = sprintf("linear-gradient(90deg, %2$s %1$s, transparent %1$s)", position, color),
+    backgroundSize = "98% 88%",
+    backgroundRepeat = "no-repeat",
+    backgroundPosition = "center"
+  )
+}
+
+
+#' Add background color
+#'
+#' @param The width of the background color 
+#'
+#' @keywords internal
+bar_style_nb_reactable <- function(width = 1,
+                         pos_fill = "lightgreen", 
+                         neg_fill = "pink") {
+  if (is.na(width)) {width <- 0}
+  # Split the background into 2 halves for negative and positive bars.
+  # For positive bars, draw the bar from 50% to 50% + width
+  # For negative bars, draw the bar from 50% + -width to 50%
+  position <- paste0((0.5 + width / 2) * 100, "%")
+  if (width >= 0) {
+    background <- sprintf("linear-gradient(90deg, transparent 50%%, %2$s 50%%, %2$s %1$s, transparent %1$s)", position, pos_fill)
+  } else {
+    background <- sprintf("linear-gradient(90deg, transparent %1$s, %2$s %1$s, %2$s 50%%, transparent 50%%)", position, neg_fill)
+  }
+  list(
+    background = background,
+    backgroundSize = "98% 88%",
+    backgroundRepeat = "no-repeat",
+    backgroundPosition = "center"
+  )
 }

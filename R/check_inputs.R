@@ -84,7 +84,7 @@ check_real_input <- function(real){
   
   if (!is.list(real)){
     if ( !all(real %in% c(0,1)) ) {
-      stop("Estimated Probabilities are out of the range")
+      stop("Outcomes are out of the range")
     }
   }
 }

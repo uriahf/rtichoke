@@ -74,42 +74,42 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   check_probs_input(probs)
   check_probs_input(real)
   
-
+  
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
     stop("Probabilities mustn't be greater than one ")
   }
-
+  
   if (is.list(probs) & !is.list(real)) {
     if (is.null(names(probs))) {
       names(probs) <- paste("model", 1:length(probs))
     }
     return(probs %>%
-      purrr::map(~ prepare_performance_data(
-        probs = .,
-        real = real,
-        by = by,
-        stratified_by = stratified_by
-      )) %>%
-      dplyr::bind_rows(.id = "model"))
+             purrr::map(~ prepare_performance_data(
+               probs = .,
+               real = real,
+               by = by,
+               stratified_by = stratified_by
+             )) %>%
+             dplyr::bind_rows(.id = "model"))
   }
-
+  
   if (is.list(probs) & is.list(real)) {
     if (is.null(names(probs)) & is.null(names(real))) {
       names(probs) <- paste("population", 1:length(probs))
       names(real) <- paste("population", 1:length(real))
     }
     return(purrr::map2_dfr(probs,
-      real,
-      ~ prepare_performance_data(.x, .y,
-                                 by = by,
-                                 stratified_by = stratified_by),
-      .id = "population"
+                           real,
+                           ~ prepare_performance_data(.x, .y,
+                                                      by = by,
+                                                      stratified_by = stratified_by),
+                           .id = "population"
     ))
   }
-
+  
   N <- TP <- TN <- FP <- FN <- NULL
   N <- length(probs)
-
+  
   tibble::tibble(
     threshold = if (stratified_by != "probability_threshold") stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
   ) %>%
@@ -122,15 +122,19 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       TN = lapply(threshold, function(x) sum(probs[real == 0] <= x)) %>%
         unlist()
     ) %>%
+    {
+      if (stratified_by != "probability_threshold") dplyr::mutate(., TN = dplyr::case_when(ppcr != 1 ~ TN,
+                                                                                           TRUE ~ as.integer(0))) else .
+    } %>%
     dplyr::mutate(
       FN = sum(real) - TP,
       FP = N - sum(real) - TN,
       sensitivity = TP / (TP + FN),
       FPR = FP / (FP + TN),
-      lift = (TP / (TP + FN)) / ((TP + FP) / N),
       specificity = TN / (TN + FP),
       PPV = TP / (TP + FP),
       NPV = TN / (TN + FN),
+      lift = (TP / (TP + FN)) / ((TP + FP) / N),
       predicted_positives = TP + FP,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%

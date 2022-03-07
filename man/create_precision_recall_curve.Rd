@@ -12,7 +12,8 @@ create_precision_recall_curve(
   chosen_threshold = NA,
   interactive = F,
   main_slider = "threshold",
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
+  size = NULL
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ plots}
 \item{main_slider}{what is the main slider - threshold, percent positives or positives}
 
 \item{col_values}{color palette}
+
+\item{size}{the size of the curve}
 }
 \description{
 Create a Precision Recall Curve

@@ -137,10 +137,10 @@ create_calibration_curve <- function(probs,
                                        "#FC8D62",
                                        "#8DA0CB",
                                        "#E78AC3",
-                                       "#A4243B",
-                                       title_included = F
-                                     ),
-                                     type = "discrete") {
+                                       "#A4243B"),
+                                     title_included = F,
+                                     type = "discrete",
+                                     size = NULL) {
   quintile <- phatx <- phaty <- gam <- NULL
   
   check_probs_input(probs)
@@ -191,7 +191,7 @@ create_calibration_curve <- function(probs,
 
   if (type == "smooth") {
 
-    print(real)
+    # print(real)
     smooth_dat <- create_dat_for_smooth_calibration(
       probs,
       real = real,
@@ -226,9 +226,9 @@ create_calibration_curve <- function(probs,
       }
       
       if ((length(probs) > 1) & !is.list(real)) {
-        print(head(smooth_dat))
-        print(col_values)
-        
+        # print(head(smooth_dat))
+        # print(col_values)
+        # 
         
         cal_plot <- ggplot2::ggplot(
           smooth_dat
@@ -250,7 +250,7 @@ create_calibration_curve <- function(probs,
       }
       
       if ((length(probs) > 1) & is.list(real)) {
-        print(smooth_dat)
+        # print(smooth_dat)
         
       }
       
@@ -260,7 +260,7 @@ create_calibration_curve <- function(probs,
       
       if ((length(probs) == 1) & (!is.list(real)) ) { 
         
-        print("one population")
+        # print("one population")
         
     cal_plot <- plotly::plot_ly(
       x = ~x,
@@ -270,7 +270,9 @@ create_calibration_curve <- function(probs,
                              "<extra></extra>"
       ),
       color =~ model,
-      colors = c("grey", I("black"))
+      colors = c("grey", I("black")),
+      height = size,
+      width = size
     ) %>% 
       plotly::add_lines(
         data = smooth_dat
@@ -283,9 +285,9 @@ create_calibration_curve <- function(probs,
       }
       if ((length(probs) > 1) & (!is.list(real)) ) { 
         
-        print("several models")
-        print(smooth_dat %>% na.omit())
-        print(col_values)
+        # print("several models")
+        # print(smooth_dat %>% na.omit())
+        # print(col_values)
         
         cal_plot <- plotly::plot_ly(
           x = ~x,
@@ -295,7 +297,9 @@ create_calibration_curve <- function(probs,
           ),
           colors = c("grey", unname(col_values)),
           color =~ model,
-          legendgroup =~ model
+          legendgroup =~ model,
+          height = size,
+          width = size
         ) %>%
           plotly::add_lines(
             data = smooth_dat %>% dplyr::filter(model == "reference"),
@@ -314,12 +318,12 @@ create_calibration_curve <- function(probs,
           xaxis = list(range = limits, showgrid = F),
           yaxis = list(range = limits, showgrid = F))
         
-        print(cal_plot)
+        # print(cal_plot)
         
       }
       if ((length(probs) > 1) & (is.list(real)) ) { 
         
-        print("several populations")
+        # print("several populations")
         
         cal_plot <- plotly::plot_ly(
           x = ~x,
@@ -329,7 +333,9 @@ create_calibration_curve <- function(probs,
           ),
           colors = c("grey", unname(col_values)),
           color =~ population,
-          legendgroup =~ population
+          legendgroup =~ population,
+          height = size,
+          width = size
         ) %>%
           plotly::add_lines(
             data = smooth_dat %>% dplyr::filter(population == "reference"),
@@ -348,7 +354,7 @@ create_calibration_curve <- function(probs,
           xaxis = list(range = limits, showgrid = F),
           yaxis = list(range = limits, showgrid = F))
         
-        print(cal_plot)
+        # print(cal_plot)
         
       }
       
@@ -435,17 +441,19 @@ create_calibration_curve <- function(probs,
       
       if ((length(probs) == 1) & (!is.list(real)) ) { 
         
-        print("one population")
-        
-        print(names(deciles_dat))
-        print(deciles_dat)
+        # print("one population")
+        # 
+        # print(names(deciles_dat))
+        # print(deciles_dat)
         
         cal_plot <- plotly::plot_ly(
         x = ~phatx,
         y = ~phaty,
         color =~ model,
         legendgroup = ~model,
-        colors = c("grey", "black")
+        colors = c("grey", "black"),
+        height = size,
+        width = size
       ) %>% 
         plotly::add_markers(
           data = deciles_dat %>% dplyr::filter(model != "reference"),
@@ -467,11 +475,11 @@ create_calibration_curve <- function(probs,
       }
       if ((length(probs) > 1) & (!is.list(real)) ) { 
         
-        print("Several Models")
-        
-        print(names(deciles_dat))
-        print(deciles_dat)
-        print(col_values)
+        # print("Several Models")
+        # 
+        # print(names(deciles_dat))
+        # print(deciles_dat)
+        # print(col_values)
           
         
         cal_plot <- plotly::plot_ly(
@@ -480,6 +488,8 @@ create_calibration_curve <- function(probs,
           color =~ model,
           legendgroup = ~model,
           colors = unname(c(I("grey"), col_values)),
+          height = size,
+          width = size
         ) %>% 
           plotly::add_markers(
             data = deciles_dat %>% dplyr::filter(model != "reference"),
@@ -505,16 +515,16 @@ create_calibration_curve <- function(probs,
                          yaxis = list(title = 'Observed'))
         
 
-        print(cal_plot)
+        # print(cal_plot)
         
       }
       if ((length(probs) > 1) & (is.list(real)) ) { 
         
-        print("Several Populations")
-        
-        print(names(deciles_dat))
-        print(deciles_dat)
-        print(col_values)
+        # print("Several Populations")
+        # 
+        # print(names(deciles_dat))
+        # print(deciles_dat)
+        # print(col_values)
         
         
         cal_plot <- plotly::plot_ly(
@@ -523,6 +533,8 @@ create_calibration_curve <- function(probs,
           color =~ population,
           legendgroup = ~population,
           colors = unname(c(I("grey"), col_values)),
+          height = size,
+          width = size
         ) %>% 
           plotly::add_markers(
             data = deciles_dat %>% dplyr::filter(population != "reference"),
@@ -554,7 +566,7 @@ create_calibration_curve <- function(probs,
   if(interactive == TRUE) {
     
     if ((length(probs) == 1) ) { 
-      print(make_histogram_for_calibration(probs, deciles_dat))
+      # print(make_histogram_for_calibration(probs, deciles_dat))
       
       histprobs <- make_histogram_for_calibration(probs, 
                                                   deciles_dat)  %>%
@@ -565,7 +577,8 @@ create_calibration_curve <- function(probs,
                           # color = I("black"),
                           color = I("grey35"),
                           text =~ text,
-                          hoverinfo = "text"
+                          hoverinfo = "text", 
+                          textposition = "none"
                         ) %>%
          plotly::layout(
            barmode = "overlay", xaxis = list(range = limits, showgrid = F),
@@ -577,7 +590,7 @@ create_calibration_curve <- function(probs,
       
     } else {
       
-      print(make_histogram_for_calibration(probs, deciles_dat))
+      # print(make_histogram_for_calibration(probs, deciles_dat))
     
     histprobs <- make_histogram_for_calibration(probs, deciles_dat)  %>%
     plotly::plot_ly(
@@ -590,7 +603,8 @@ create_calibration_curve <- function(probs,
       hoverinfo = "text"
     ) %>%
       plotly::add_bars(showlegend = FALSE, 
-                       colors =  c(unname(col_values))) %>% 
+                       colors =  c(unname(col_values)), 
+                       textposition = "none") %>% 
     plotly::layout(
       barmode = "overlay", xaxis = list(range = limits, showgrid = F),
       yaxis = list(showgrid = F)
@@ -598,22 +612,24 @@ create_calibration_curve <- function(probs,
     
     }
     
-  full_cal_plot <- plotly::subplot(cal_plot,
+  full_cal_plot <- plotly::subplot(
+    cal_plot,
     histprobs,
     nrows = 2,
     shareX = T,
     heights = c(0.8, 0.2)
   ) %>% 
-    plotly::layout(xaxis = list(title = 'Predicted'), 
+    plotly::layout(xaxis = list(title = 'Predicted', range = limits), 
            yaxis = list(title = 'Observed')) %>%
     plotly::config(displayModeBar = F) 
   
   }
   
+  
   if (interactive == FALSE) {
     if ((length(probs) == 1) & (is.list(probs)) ) { 
     
-      print("one population")
+      # print("one population")
       
     histprobs <- ggplot2::ggplot(
       data = make_histogram_for_calibration(probs, deciles_dat),
@@ -630,8 +646,8 @@ create_calibration_curve <- function(probs,
   
   if ((is.list(probs) &  (length(probs) > 1)) & ( !is.list(real)) ) { 
     
-    print("several models")
-    print(make_histogram_for_calibration(probs, deciles_dat))
+    # print("several models")
+    # print(make_histogram_for_calibration(probs, deciles_dat))
   
   histprobs <- ggplot2::ggplot(
     data = make_histogram_for_calibration(probs, deciles_dat),
@@ -649,8 +665,8 @@ create_calibration_curve <- function(probs,
 }
   
     if ((is.list(probs)) & ( is.list(real)) ) { 
-      print((is.list(probs)) & ( is.list(real)) )
-      print("several populations")
+      # print((is.list(probs)) & ( is.list(real)) )
+      # print("several populations")
       
       histprobs <- ggplot2::ggplot(
         data = make_histogram_for_calibration(probs, deciles_dat),
@@ -663,11 +679,11 @@ create_calibration_curve <- function(probs,
         ggplot2::scale_fill_manual(values = unname(col_values)) +
         ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white"))
       
-      print(
-        plotly::ggplotly(
-          histprobs
-        )
-      )
+      # print(
+      #   plotly::ggplotly(
+      #     histprobs
+      #   )
+      # )
       
     }  
     
@@ -720,9 +736,13 @@ make_deciles_dat <- function(probs, real) {
 #' define_limits_for_calibration_plot()
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
+  
+  deciles_dat <- deciles_dat %>% dplyr::filter(!is.na(quintile))
+  
   l <- max(0, min(deciles_dat$phatx[1], deciles_dat$phaty[1]))
   u <- max(deciles_dat$phatx, deciles_dat$phaty)
   limits <- c(l - (u - l) * 0.05, u + (u - l) * 0.05)
+  
   limits
 }
 

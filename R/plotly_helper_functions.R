@@ -39,12 +39,16 @@ create_plotly_base <- function(performance_data,
                                  "#8DA0CB",
                                  "#E78AC3",
                                  "#A4243B"
-                               )) {
+                               ),
+                               height = size,
+                               width = size) {
   if (performance_data_type %in% c("one model", "one model with model column")) {
     plotly_base <- performance_data %>%
       plotly::plot_ly(
         x = x_perf_metric,
-        y = y_perf_metric
+        y = y_perf_metric,
+        height = size,
+        width = size
       )
   }
 
@@ -54,7 +58,9 @@ create_plotly_base <- function(performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
         color = ~model,
-        colors = col_values
+        colors = col_values,
+        height = size,
+        width = size
       )
   }
 
@@ -64,7 +70,9 @@ create_plotly_base <- function(performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
         color = ~population,
-        colors = col_values
+        colors = col_values,
+        height = size,
+        width = size
       )
   }
 
@@ -550,11 +558,13 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 #' @param curve the required curve
 #' @param prevalence the prevalence of the population
 #' @param population_color_vector color values
+#' @param size the size of the curve
 #' @keywords internal
 create_reference_lines_for_plotly <- function(performance_table_type, 
                                               curve, 
                                               prevalence = NA, 
-                                              population_color_vector = NA){
+                                              population_color_vector = NA,
+                                              size = NULL){
   if ((curve %in% c("roc", "lift")) || ((performance_table_type != "several populations" ))) {
     
     if (curve %in% c("gains", "decision")) {
@@ -562,7 +572,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
                                                                       plotly = T, 
                                                                       prevalence) %>%
-      plotly::plot_ly(x =~ x ,y =~y)  %>%
+      plotly::plot_ly(x =~ x ,y =~y,
+                      height = size,
+                      width = size)  %>%
         plotly::add_lines(color = I("grey"), 
                           colors = population_color_vector, 
                           line = list(width = 1.75),
@@ -572,7 +584,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
     reference_lines_for_plotly <- create_reference_lines_data_frame(curve, 
                                                                     plotly = T, 
                                                                     prevalence) %>%
-      plotly::plot_ly(x =~ x ,y =~y)  %>%
+      plotly::plot_ly(x =~ x ,y =~y,
+                      height = size,
+                      width = size)  %>%
       plotly::add_lines(color = I("grey"), 
                         colors = population_color_vector, 
                         line = list(width = 1.75))
@@ -588,7 +602,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly::plot_ly(x =~ x ,
                         y =~y, 
                         color =~ population,
-                        colors =  population_color_vector) %>%
+                        colors =  population_color_vector,
+                        height = size,
+                        width = size) %>%
         plotly::add_lines(line = list(dash = 'dash',  width = 1.75))
       
     }
@@ -619,7 +635,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly::plot_ly(x =~ x,
                         y =~ y, 
                         color =~ population,
-                        colors = population_color_reference_vector) %>%
+                        colors = population_color_reference_vector,
+                        height = size,
+                        width = size) %>%
         plotly::add_lines(line = list(width = 1.75),
                           linetype =~ population,
                           linetypes = population_linetype_reference_vector)
@@ -649,7 +667,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly::plot_ly(x =~ x,
                         y =~ y,
                         color =~ population,
-                        colors =  population_color_reference_vector) %>%
+                        colors =  population_color_reference_vector,
+                        height = size,
+                        width = size) %>%
         plotly::add_lines(line = list(width = 1.75),
                           linetype =~ population,
                           linetypes = population_linetype_reference_vector)

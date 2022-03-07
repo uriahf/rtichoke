@@ -9,7 +9,9 @@ create_plotly_base(
   x_perf_metric,
   y_perf_metric,
   performance_data_type = "one model",
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
+  height = size,
+  width = size
 )
 }
 \arguments{

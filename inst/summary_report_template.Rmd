@@ -1,0 +1,452 @@
+---
+title: "Summary Report"
+output: 
+  html_document:
+    toc: true
+params:
+  probs: NA
+  real: NA
+  interactive: NA
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+library(rtichoke)
+library(dplyr)
+```
+
+
+
+<details>
+  <summary>Performance Metrics Cheat Sheet</summary>
+  
+<br>  
+    
+```{r}
+tibble::tribble(
+  ~"type", ~"predicted_positive", ~"predicted_negative",
+  "Real Positive", "TP", "FN",
+  "Real Negative", "FP", "TN"
+) %>% 
+  reactable::reactable(sortable = FALSE,
+            fullWidth = FALSE,
+            borderless = FALSE,
+            defaultColDef = reactable::colDef(
+              align = "center",
+              headerStyle  = list(fontWeight = 100)
+            ),
+            columns = list(
+              type = reactable::colDef(
+                name = "",
+                align = "left",
+                style = list(fontWeight = 100),
+                minWidth = 110
+              ),
+              predicted_positive = reactable::colDef(
+                name = "Predicted Positive",
+                style = function(value) {
+                  color <- if (value == "TP") {
+                    "lightgreen"
+                  } else if (value == "FP") {
+                    "pink"
+                  }
+                  list(fontWeight = 600, background = color)
+                }
+            ),
+            predicted_negative = reactable::colDef(
+              name = "Predicted Negative",
+              style = function(value) {
+                color <- if (value == "TN") {
+                  "lightgreen"
+                } else if (value == "FN") {
+                  "pink"
+                }
+                list(fontWeight = 600, background = color)
+              }
+            )
+            )
+  )
+```
+
+<br>
+<br>
+$\begin{aligned}
+{\text{Prevalence}} = \frac{\text{TP + FN}}{\text{TP + FP + TN + FN}}
+\end{aligned}$
+
+<br>  
+
+$\begin{aligned}
+{\text{PPCR (Predicted Positives Condition Rate)}} = \frac{\text{TP + FP}}{\text{TP + FP + TN + FN}}
+\end{aligned}$
+
+<br>  
+
+$\begin{aligned}
+\text{Sensitivity (Recall, True Positive Rate)} = \frac{\text{TP}}{\text{TP + FN}} = \frac{\text{TP}}{\text{Real Positives}} = \text{Prob( Predicted Positive | Real Positive )}
+\end{aligned}$
+
+<br>  
+
+$\begin{aligned}
+\text{Specificity (True Negative Rate)} = \frac{\text{TN}}{\text{TN + FP}} = \frac{\text{TN}}{\text{Real Negatives}} = \text{Prob( Predicted Negative | Real Negative )}
+\end{aligned}$
+
+<br>  
+
+$\begin{aligned}
+    \text{PPV (Precision)} = \frac{\text{TP}}{\text{TP + FP}} = \frac{\text{TP}}{\text{Predicted Positives}} = \text{Prob( Real Positive | Predicted Positive )}
+\end{aligned}$
+  
+<br>  
+
+$\begin{aligned}
+    \text{NPV} = \frac{\text{TN}}{\text{TN + FN}} = \frac{\text{TN}}{\text{Predicted Negatives}} = \text{Prob( Real Negative | Predicted Negative )}
+\end{aligned}$
+  
+<br>  
+
+$\begin{aligned}
+\text{Lift} = \frac{\text{PPV}}{\text{Prevalence}} = \frac{\cfrac{\text{TP}}{\text{TP + FP}}}{\cfrac{\text{TP + FN}}{\text{TP + FP + TN + FN}}} 
+\end{aligned}$
+  
+<br>  
+
+$\begin{aligned}
+\text{Net Benefit} = \frac{\text{TP}}{\text{TP + FP + TN + FN}} - \frac{\text{FP}}{\text{TP + FP + TN + FN}} * {\frac{{p_{t}}}{{1 - p_{t}}}}
+\end{aligned}$
+  
+<br>  
+
+</details>
+
+<br>
+<br>
+
+```{r echo=FALSE}
+# tibble(
+#   "Model" = c("Test"),
+#   "bs" = c(
+#   sum((params$probs - params$real)^2) / length(params$probs)#,
+#   # sum((params$probs[[2]] - params$real[[2]])^2) / length(params$probs[[1]])
+#   ),
+#   "auc" = c(
+#   pROC::auc(params$real, params$probs)),
+#   # pROC::auc(params$real[[2]], params$probs[[2]])),
+#   "prevalence" = sum(params$real) / length(params$real)  #c(0.29, 0.41)
+#   ) %>% 
+#   mutate(
+#     bs_plot = bs * 100,
+#     bs_plot = purrr::map2(
+#       bs_plot, bs, 
+#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "pink", digits = 2))
+#   ) %>% 
+#   mutate(
+#     auc_plot = auc * 100,
+#     auc_plot = purrr::map2(
+#       auc_plot, auc, 
+#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "lightgreen", digits = 2))
+#   ) %>% 
+#   mutate(
+#     prevalence_plot = prevalence * 100,
+#     prevalence_plot = purrr::map2(
+#       prevalence_plot, prevalence, 
+#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "lightgrey", digits = 2))
+#   ) %>% 
+#   select(Model, bs_plot, auc_plot, prevalence_plot) %>% 
+#   gt::gt() %>% 
+#   gt::cols_align(
+#     align = "left",
+#     columns = gt::everything()
+#   ) %>% 
+#   gt::cols_width(
+#     everything()~gt::px(100)
+#   ) %>%
+#   gt::cols_label(
+#     bs_plot = "Brier Score",
+#     auc_plot = "AUROC",
+#     prevalence_plot = "Prevalence"
+#   ) %>%
+#   gt::tab_options(
+#     table.align = "left",
+#     # column_labels.hidden = TRUE,
+#     table_body.border.bottom.color = "white",
+#     table_body.border.top.color = "white",
+#   )
+
+```
+
+
+```{r message=FALSE, warning=FALSE}
+performance_dat <- prepare_performance_data(probs = params$probs, 
+                         real = params$real)
+```
+
+```{r}
+create_table_for_prevalence(performance_dat)
+```
+
+
+
+# Calibration {.tabset}
+
+## Smooth
+
+```{r message=FALSE, warning=FALSE}
+create_calibration_curve(probs = params$probs, 
+                         real = params$real, 
+                         interactive = params$interactive, 
+                         type = "smooth", size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+<!-- ```{r} -->
+<!-- create_table_for_brier_score(probs = params$probs,  -->
+<!--                          real = params$real) -->
+<!-- ``` -->
+
+
+## Discrete
+
+```{r message=FALSE, warning=FALSE}
+create_calibration_curve(probs = params$probs, 
+                         real = params$real, 
+                         interactive = params$interactive, 
+                         size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+
+<!-- ```{r} -->
+<!-- create_table_for_brier_score(probs = params$probs,  -->
+<!--                          real = params$real) -->
+<!-- ``` -->
+
+
+# Probability Threshold Dependent Performance Metrics{.tabset}
+
+```{r}
+create_table_for_auc(probs = params$probs, real = params$real)
+```
+
+
+## By Probability Threshold
+
+### Performance Metrics Curves {.tabset}
+
+#### ROC
+
+
+```{r}
+plot_roc_curve(performance_dat, interactive = params$interactive, 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+#### Lift
+
+```{r}
+plot_lift_curve(performance_dat, interactive = params$interactive, 
+                size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+#### Precision Recall
+
+```{r}
+plot_precision_recall_curve(performance_dat, interactive = params$interactive,
+                            size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+#### Gains
+
+```{r}
+plot_gains_curve(performance_dat, interactive = params$interactive, 
+                 size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+#### Decision
+
+```{r}
+plot_decision_curve(performance_dat, interactive = params$interactive, 
+                    size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+### Performance Table
+
+```{r}
+render_performance_table(performance_dat) 
+```
+
+## By Predicted Positives Condition Rate (PPCR)
+
+### Performance Metrics Curves {.tabset}
+
+#### ROC
+
+```{r message=FALSE, warning=FALSE}
+performance_dat_ppcr <- prepare_performance_data(probs = params$probs, 
+                         real = params$real, 
+                         stratified_by = "predicted_positives")
+```
+
+```{r}
+plot_roc_curve(performance_dat_ppcr, interactive = params$interactive,
+               main_slider = "ppcr", 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+#### Lift
+
+```{r}
+plot_lift_curve(performance_dat_ppcr, interactive = params$interactive,
+               main_slider = "ppcr", 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+#### Precision Recall
+
+```{r}
+plot_precision_recall_curve(performance_dat_ppcr, interactive = params$interactive,
+               main_slider = "ppcr", 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+#### Gains
+
+```{r}
+plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
+               main_slider = "ppcr", 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+#### Decision
+
+```{r}
+plot_decision_curve(performance_dat_ppcr, interactive = params$interactive,
+               main_slider = "ppcr", 
+               size = 550) %>% 
+  plotly::partial_bundle()
+```
+
+
+### Performance Table
+
+```{r}
+render_performance_table(performance_dat_ppcr, main_slider = "ppcr")
+```
+
+
+
+```{css echo=FALSE}
+
+.form-control {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+  place-content: center;
+}
+
+.form-control + .form-control {
+  margin-top: 1em;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  font: inherit;
+  width: 1.15em;
+  height: 1.15em;
+  border: 0.15em solid currentColor;
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+}
+
+
+input[type="checkbox"][value="1"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #5BC0BE;
+  background-color: CanvasText;
+}
+
+
+input[type="checkbox"][value="2"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #FC8D62;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="3"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #8DA0CB;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="4"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #E78AC3;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="5"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #A4243B;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+
+```

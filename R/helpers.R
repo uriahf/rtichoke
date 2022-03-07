@@ -1,3 +1,25 @@
+#' Real Positives
+#'
+#' Get the real positives out of Performance Data
+#'
+#' @param performance_data an rtichoke Performance Data
+#' @param performance_data_type the type of the Performance Data
+#'
+#' @keywords internal
+get_real_positives_from_performance_data <- function(performance_data, 
+                                                 performance_data_type = "not important") {
+  real_positives <- real_positives  <- NULL
+  
+  real_positives <- performance_data  %>% 
+    mutate(real_positives = TP + FN) %>% 
+    dplyr::filter(ppcr  == 1) %>% 
+    dplyr::select(dplyr::any_of(c("model", "population", "real_positives"))) %>% 
+    distinct() %>% 
+    dplyr::pull(real_positives, name = 1)
+  
+  real_positives
+}
+
 #' prevalence
 #'
 #' Get the prevalence out of Performance Data
@@ -19,7 +41,7 @@ get_prevalence_from_performance_data <- function(performance_data,
   prevalence
 }
 
-#' prevalence
+#' n
 #'
 #' Get the prevalence out of Performance Data
 #'
@@ -225,4 +247,32 @@ add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
     ggplot_curve$layers
   )
   ggplot_curve
+}
+
+
+
+#' Creating subtitle for ggplot2
+#' 
+#' @inheritParams create_roc_curve
+#' @param probs_names the names of the probs
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#'create_subtitle_for_ggplot(
+#'   probs_names = c(
+#'     "First Model","Second Model", "Third Model"
+#'   )
+#' ) 
+#'}
+create_subtitle_for_ggplot <- function(probs_names, col_values = c(
+  "#5BC0BE",
+  "#FC8D62",
+  "#8DA0CB",
+  "#E78AC3",
+  "#A4243B"
+)){
+
+  subtitle <- glue::glue("{probs_names}, 
+                         {col_values[1:length(probs_names)]}")
+  subtitle
 }

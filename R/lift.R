@@ -84,7 +84,8 @@ create_lift_curve <- function(probs, real, by = 0.01,
                                  "#8DA0CB",
                                  "#E78AC3",
                                  "#A4243B"
-                               )) {
+                               ),
+                              size = NULL) {
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -94,7 +95,8 @@ create_lift_curve <- function(probs, real, by = 0.01,
     plot_lift_curve(chosen_threshold = chosen_threshold,
                      interactive = interactive,
                      main_slider = main_slider,
-                     col_values = col_values)
+                     col_values = col_values,
+                    size = size)
 }
 
 
@@ -167,7 +169,8 @@ plot_lift_curve <- function(performance_data,
                              "#8DA0CB",
                              "#E78AC3",
                              "#A4243B"
-                           )) {
+                           ),
+                           size = NULL) {
   
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
@@ -196,7 +199,8 @@ plot_lift_curve <- function(performance_data,
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
 
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift") %>%
+      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift",
+                                                      size = size) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -219,7 +223,8 @@ plot_lift_curve <- function(performance_data,
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
                                                      "lift",
                                                      population_color_vector = 
-                                                       col_values[1:length(prevalence)]) %>%
+                                                       col_values[1:length(prevalence)],
+                                                     size = size) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
@@ -244,7 +249,8 @@ plot_lift_curve <- function(performance_data,
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
                                                      "lift",
                                                      population_color_vector = 
-                                                       col_values[1:length(prevalence)]) %>%
+                                                       col_values[1:length(prevalence)],
+                                                     size = size) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,

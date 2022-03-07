@@ -8,7 +8,8 @@ create_reference_lines_for_plotly(
   performance_table_type,
   curve,
   prevalence = NA,
-  population_color_vector = NA
+  population_color_vector = NA,
+  size = NULL
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ create_reference_lines_for_plotly(
 \item{prevalence}{the prevalence of the population}
 
 \item{population_color_vector}{color values}
+
+\item{size}{the size of the curve}
 }
 \description{
 Create reference lines plotly as the first stage of interactive plot

@@ -8,9 +8,10 @@ create_calibration_curve(
   probs,
   real,
   interactive = F,
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B", title_included
-    = F),
-  type = "discrete"
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
+  title_included = F,
+  type = "discrete",
+  size = NULL
 )
 }
 \arguments{
@@ -25,7 +26,11 @@ plots}
 
 \item{col_values}{color palette}
 
+\item{title_included}{add title to the curve}
+
 \item{type}{discrete or smooth}
+
+\item{size}{the size of the curve}
 }
 \description{
 Create a Calibration Curve

@@ -9,7 +9,7 @@ create_performance_table(
   real,
   by = 0.01,
   stratified_by = "probability_threshold",
-  output_type = "gt"
+  output_type = "reactable"
 )
 }
 \arguments{

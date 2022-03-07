@@ -7,7 +7,7 @@
 render_performance_table(
   performance_data,
   chosen_threshold = NA,
-  output_type = "gt",
+  output_type = "reactable",
   main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
@@ -34,25 +34,25 @@ one_pop_one_model_as_a_vector \%>\%
   render_performance_table()
 
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  render_performance_table()
+  render_performance_table(main_slider = "ppcr")
 
 one_pop_one_model_as_a_list \%>\%
   render_performance_table()
 
 one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  render_performance_table()
+  render_performance_table(main_slider = "ppcr")
 
 one_pop_three_models \%>\%
   render_performance_table()
 
 one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  render_performance_table()
+  render_performance_table(main_slider = "ppcr")
 
 train_and_test_sets \%>\%
   render_performance_table()
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  render_performance_table()
+  render_performance_table(main_slider = "ppcr")
 }
 
 }
