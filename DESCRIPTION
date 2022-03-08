@@ -30,6 +30,7 @@ Imports:
     purrr,
     reactable,
     rlang,
+    rmarkdown,
     shiny (>= 1.6.0),
     shinyWidgets,
     stats,
@@ -38,7 +39,6 @@ Imports:
 Suggests: 
     knitr,
     lattice,
-    rmarkdown,
     testthat,
     thematic
 VignetteBuilder: 
