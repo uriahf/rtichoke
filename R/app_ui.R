@@ -7,7 +7,7 @@
 app_ui <- function(request) {
   rtichoke_theme <- bslib::bs_theme(
     bg = "#fdf9f1", fg = "#141516", primary = "#7f687c",
-    base_font = bslib::font_google("Roboto"), 
+    base_font = bslib::font_google("Roboto"),
     heading_font = bslib::font_google("Alegreya"),
     "font-size-base" = "1.0rem"
   )

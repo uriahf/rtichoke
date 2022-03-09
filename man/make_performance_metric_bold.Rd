@@ -11,9 +11,6 @@ make_performance_metric_bold(hover_text, performance_metric)
 
 \item{performance_metric}{perf}
 }
-\value{
-
-}
 \description{
 Making performance metric bold
 }

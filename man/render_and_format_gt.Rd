@@ -15,14 +15,12 @@ render_and_format_gt(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 
 \item{prevalence}{the prevalence of the populations}
 
 \item{col_values}{color palette}
-}
-\value{
-
 }
 \description{
 Rendering and Formatting gt

@@ -11,9 +11,6 @@ creating_subtitle_for_gt(perf_dat_type, col_values = NA, prevalence = NA)
 
 \item{models_names}{the names of the different models}
 }
-\value{
-
-}
 \description{
 Creating Subtitle for gt performance table
 }

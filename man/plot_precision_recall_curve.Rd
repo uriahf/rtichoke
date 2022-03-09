@@ -7,9 +7,10 @@
 plot_precision_recall_curve(
   performance_data,
   chosen_threshold = NA,
-  interactive = F,
+  interactive = FALSE,
   main_slider = "threshold",
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
+  size = NULL
 )
 }
 \arguments{
@@ -20,9 +21,12 @@ plot_precision_recall_curve(
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 
 \item{col_values}{color palette}
+
+\item{size}{the size of the curve}
 }
 \description{
 Plot a Precision Recall Curve

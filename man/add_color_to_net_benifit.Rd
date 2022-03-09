@@ -9,9 +9,6 @@ add_color_to_net_benifit(performance_data)
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 }
-\value{
-
-}
 \description{
 Adding Color to Net Benifit metric
 }

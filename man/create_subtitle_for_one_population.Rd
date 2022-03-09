@@ -13,9 +13,6 @@ create_subtitle_for_one_population(pop_name, pop_color, pop_prevalence)
 
 \item{pop_prevalence}{the prevalence of the population}
 }
-\value{
-
-}
 \description{
 Creating Subtitle for One Population
 }

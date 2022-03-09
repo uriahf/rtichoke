@@ -9,7 +9,8 @@ add_interactive_marker_to_plotly(plotly_object, main_slider = "threshold")
 \arguments{
 \item{plotly_object}{a plotly plot for performance metrics}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives or
+positives}
 }
 \description{
 Add Interactive Marker to Plotly

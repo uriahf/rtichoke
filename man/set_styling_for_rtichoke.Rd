@@ -13,9 +13,6 @@ set_styling_for_rtichoke(plotly_object, curve, max_y_range = NA)
 
 \item{max_y_range}{the maximum value of y range (for lift curve)}
 }
-\value{
-
-}
 \description{
 Set styling for rtichoke plotly
 }

@@ -17,9 +17,6 @@ bar_chart(value, display, color = "red", digits = 0, no_round = FALSE)
 
 \item{no_round}{no rounding}
 }
-\value{
-
-}
 \description{
 Creating html bar
 }

@@ -8,8 +8,8 @@ create_reference_lines_data_frame(
   curve,
   prevalence = NA,
   color = NA,
-  plotly = F,
-  multiple_pop = F
+  plotly = FALSE,
+  multiple_pop = FALSE
 )
 }
 \arguments{
@@ -19,9 +19,11 @@ create_reference_lines_data_frame(
 
 \item{color}{the required color}
 
-\item{plotly}{should the reference lines data frame be competible with plotly}
+\item{plotly}{should the reference lines data frame be
+competible with plotly}
 
-\item{multiple_pop}{should the reference lines data frame should be adjusted to multiple populations}
+\item{multiple_pop}{should the reference lines data frame should be
+adjusted to multiple populations}
 }
 \description{
 Creating Reference Lines Data Frame

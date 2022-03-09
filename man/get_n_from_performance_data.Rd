@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{get_n_from_performance_data}
 \alias{get_n_from_performance_data}
-\title{prevalence}
+\title{n}
 \usage{
 get_n_from_performance_data(
   performance_data,

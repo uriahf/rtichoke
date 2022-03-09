@@ -29,9 +29,6 @@ add_lines_and_markers_from_performance_data(
 
 \item{main_slider}{the main slider for interactivity}
 }
-\value{
-
-}
 \description{
 Add lines and markers based on performance data
 }

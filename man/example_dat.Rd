@@ -19,7 +19,7 @@ A data frame with 53940 rows and 10 variables:
 example_dat
 }
 \description{
-An example data frame that contains estimated probabilities and binary outcomes,
-used as an input for rtichoke functions.
+An example data frame that contains estimated probabilities and binary
+outcomes, used as an input for rtichoke functions.
 }
 \keyword{datasets}

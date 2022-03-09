@@ -11,9 +11,6 @@ create_text_for_hover(performance_data_type, curve)
 
 \item{curve}{curve type}
 }
-\value{
-
-}
 \description{
 Creating text to hover
 }

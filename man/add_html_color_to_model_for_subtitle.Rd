@@ -11,9 +11,6 @@ add_html_color_to_model_for_subtitle(model_name, model_color)
 
 \item{model_color}{the color of the model}
 }
-\value{
-
-}
 \description{
 Add html color to model for subtitle
 }

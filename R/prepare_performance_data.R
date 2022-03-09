@@ -3,18 +3,20 @@
 #' The prepare_performance_data function makes a Performance Data that is made
 #' of different cutoffs.
 #' Each row represents a cutoff and each column stands for a performance metric.
-#' It is possible to use this function for more than one model in order to compare
-#' different models performance for the same population. In this case the user should
-#' use a list that is made of vectors of estimated probabilities, one for each model.
+#' It is possible to use this function for more than one model in order to 
+#' compare different models performance for the same population. 
+#' In this case the user should use a list that is made of vectors of estimated 
+#' probabilities, one for each model.
 #'
-#' Sometime instead of using a cutoff for the estimated probability it is required
-#' to enforce a symmetry between the percentiles of the probabilities, in medicine
-#' it is referred as "Risk Percentile" when the outcome stands for something negative
-#' in essence such as a severe disease or death: Let's say that we want to see the
-#' model performance for the top 5% patients at risk for some well defined population,
-#' in this case the user should change the parameter stratified_by
-#' from the default "probability_threshold" to "predicted_positives" and the 
-#' results will be similar Performance Data,
+#' Sometime instead of using a cutoff for the estimated probability it 
+#' is required to enforce a symmetry between the percentiles of the 
+#' probabilities, in medicine it is referred as "Risk Percentile" when the 
+#' outcome stands for something negative in essence such as a severe disease 
+#' or death: Let's say that we want to see the model performance for the top 5% 
+#' patients at risk for some well defined population, in this case the user 
+#' should change the parameter stratified_by from the default 
+#' "probability_threshold" to "predicted_positives" and the results will be 
+#' similar Performance Data,
 #' only this time each row will represent some rounded percentile.
 #'
 #'
@@ -43,11 +45,16 @@
 #'   real = example_dat$outcome
 #' )
 #'
-#' # Notice that once you've put a list in the probs parameter you'll receive a new
-#' # column in the Performance Data named "Model". If it's a named list (like in our
-#' # example) the Model column will mention the names of each element in the probs-list
-#' # as the name of the model, if it's unnamed list the Models will count "Model 1",
-#' # "Model 2", etc.. according to the order of the estimated-probabilities vector in the
+#' # Notice that once you've put a list in the probs parameter you'll 
+#' # receive a new
+#' # column in the Performance Data named "Model". If it's a named list 
+#' # (like in our
+#' # example) the Model column will mention the names of each element 
+#' # in the probs-list
+#' # as the name of the model, if it's unnamed list the Models will count 
+#' # "Model 1",
+#' # "Model 2", etc.. according to the order of the estimated-probabilities 
+#' # vector in the
 #' # list.
 #'
 #'
@@ -71,13 +78,17 @@ prepare_performance_data <- function(probs, real, by = 0.01,
                                      stratified_by = "probability_threshold") {
   . <- threshold <- NULL
 
+  check_probs_input(probs)
+  check_probs_input(real)
+
+
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
     stop("Probabilities mustn't be greater than one ")
   }
 
   if (is.list(probs) & !is.list(real)) {
     if (is.null(names(probs))) {
-      names(probs) <- paste("model", 1:length(probs))
+      names(probs) <- paste("model", seq_len(length(probs)))
     }
     return(probs %>%
       purrr::map(~ prepare_performance_data(
@@ -91,14 +102,15 @@ prepare_performance_data <- function(probs, real, by = 0.01,
 
   if (is.list(probs) & is.list(real)) {
     if (is.null(names(probs)) & is.null(names(real))) {
-      names(probs) <- paste("population", 1:length(probs))
-      names(real) <- paste("population", 1:length(real))
+      names(probs) <- paste("population", seq_len(length(probs)))
+      names(real) <- paste("population", seq_len(length(real)))
     }
     return(purrr::map2_dfr(probs,
       real,
       ~ prepare_performance_data(.x, .y,
-                                 by = by,
-                                 stratified_by = stratified_by),
+        by = by,
+        stratified_by = stratified_by
+      ),
       .id = "population"
     ))
   }
@@ -107,10 +119,15 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   N <- length(probs)
 
   tibble::tibble(
-    threshold = if (stratified_by != "probability_threshold") stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
+    threshold = if (stratified_by != "probability_threshold") 
+      stats::quantile(probs, 
+                      probs = rev(seq(0, 1, by = by))) else round(
+                        seq(0, 1, by = by),
+                        digits = nchar(format(by, scientific= FALSE)))
   ) %>%
     {
-      if (stratified_by != "probability_threshold") dplyr::mutate(., ppcr  = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
+      if (stratified_by != "probability_threshold") dplyr::mutate(.,
+                                                                  ppcr = round(seq(0, 1, by = by), digits = nchar(format(by, scientific= FALSE)))) else .
     } %>%
     dplyr::mutate(
       TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
@@ -118,19 +135,29 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       TN = lapply(threshold, function(x) sum(probs[real == 0] <= x)) %>%
         unlist()
     ) %>%
+    {
+      if (stratified_by != "probability_threshold") {
+        dplyr::mutate(., TN = dplyr::case_when(
+          ppcr != 1 ~ TN,
+          TRUE ~ as.integer(0)
+        ))
+      } else {
+        .
+      }
+    } %>%
     dplyr::mutate(
       FN = sum(real) - TP,
       FP = N - sum(real) - TN,
       sensitivity = TP / (TP + FN),
       FPR = FP / (FP + TN),
-      lift = (TP / (TP + FN)) / ((TP + FP) / N),
       specificity = TN / (TN + FP),
       PPV = TP / (TP + FP),
       NPV = TN / (TN + FN),
+      lift = (TP / (TP + FN)) / ((TP + FP) / N),
       predicted_positives = TP + FP,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%
     {
-      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr  = (TP + FP) / N) else .
+      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
     }
 }

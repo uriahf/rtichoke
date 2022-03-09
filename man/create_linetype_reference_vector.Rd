@@ -11,9 +11,6 @@ create_linetype_reference_vector(color_populations_vector, curve)
 
 \item{curve}{a curve}
 }
-\value{
-
-}
 \description{
 Creating linetype reference lines vector
 }

@@ -13,17 +13,14 @@ kind (one for each model)}
 \item{real}{a vector of binary outcomes or a list of vectors of that
 kind (one for each population)}
 }
-\value{
-
-}
 \description{
 Make deciles dataframe
 }
 \examples{
 \dontrun{
 make_deciles_dat(
-probs = example_dat$estimated_probabilities,
-real = example_dat$outcome
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome
 )
 }
 }

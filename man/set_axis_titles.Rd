@@ -13,9 +13,6 @@ set_axis_titles(plotly_object, curve, max_y_range = NA)
 
 \item{max_y_range}{the maximum value for y range}
 }
-\value{
-
-}
 \description{
 Set Titles for x and y axis in plotly objects
 }

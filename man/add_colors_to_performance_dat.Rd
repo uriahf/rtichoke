@@ -9,9 +9,6 @@ add_colors_to_performance_dat(performance_dat)
 \arguments{
 \item{performance_dat}{the original performance data}
 }
-\value{
-
-}
 \description{
 Adding color to Performance Data
 }
