@@ -70,7 +70,7 @@ create_conf_mat_list <- function(performance_table,
     mutate(idx = 1:n()) %>%
     split(f = .["idx"]) %>%
     purrr::map(~ dplyr::select(., -threshold, -ppcr, -idx)) %>%
-    purrr::map(~ matrix(., nrow = 3, byrow = T)) %>%
+    purrr::map(~ matrix(., nrow = 3, byrow = TRUE)) %>%
     purrr::map(~ magrittr::set_rownames(., c(
       "Predicted Positive",
       "Predicted Negative", " "

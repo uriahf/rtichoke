@@ -9,7 +9,8 @@ prepare_performance_data_for_gt(performance_data, main_slider)
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 }
 \description{
 Preparing Performance Data for gt

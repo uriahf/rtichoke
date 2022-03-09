@@ -4,7 +4,8 @@
 #'
 #' @keywords internal
 create_table_for_prevalence <- function(performance_data) {
-  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
+  perf_dat_type <- check_performance_data_type_for_plotly(
+    performance_data = performance_data)
 
   if (perf_dat_type == "several populations") {
     data_for_prevalence <- dplyr::bind_cols(
@@ -35,7 +36,11 @@ create_table_for_prevalence <- function(performance_data) {
             align = "left",
             cell = function(value) {
               width <- paste0(value * 100, "%")
-              bar_chart_with_background(format(round(value, digits = 2), nsmall = 2), width = width, fill = "grey", background = "#e1e1e1")
+              bar_chart_with_background(format(round(value, digits = 2), 
+                                               nsmall = 2), 
+                                        width = width, 
+                                        fill = "grey", 
+                                        background = "#e1e1e1")
             }
           ),
           n_obs = reactable::colDef(show = FALSE),
@@ -75,7 +80,8 @@ create_table_for_prevalence <- function(performance_data) {
       )
   } else {
     data_for_prevalence <- tibble::tibble(
-      real_positives = get_real_positives_from_performance_data(performance_data)[1],
+      real_positives = 
+        get_real_positives_from_performance_data(performance_data)[1],
       prevalence = get_prevalence_from_performance_data(performance_data)[1],
       n_obs = as.numeric(get_n_from_performance_data(performance_data))
     )
@@ -90,7 +96,11 @@ create_table_for_prevalence <- function(performance_data) {
             minWidth = 300,
             cell = function(value) {
               width <- paste0(value * 100, "%")
-              bar_chart_with_background(format(round(value, digits = 2), nsmall = 2), width = width, fill = "grey", background = "#e1e1e1")
+              bar_chart_with_background(format(round(value, digits = 2), 
+                                               nsmall = 2), 
+                                        width = width, 
+                                        fill = "grey", 
+                                        background = "#e1e1e1")
             }
           ),
           n_obs = reactable::colDef(show = FALSE),

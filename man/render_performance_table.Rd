@@ -19,7 +19,8 @@ render_performance_table(
 
 \item{output_type}{the type of the output table, {gt} as default}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 
 \item{col_values}{color palette}
 }
@@ -27,7 +28,6 @@ render_performance_table(
 Create a Performance Table
 }
 \examples{
-
 \dontrun{
 
 one_pop_one_model_as_a_vector \%>\%

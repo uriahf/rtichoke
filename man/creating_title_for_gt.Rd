@@ -7,7 +7,8 @@
 creating_title_for_gt(main_slider)
 }
 \arguments{
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 }
 \description{
 Creating Title for gt performance table

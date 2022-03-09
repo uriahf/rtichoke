@@ -18,19 +18,18 @@ mod_inputs_ui <- function(id) {
         "Threshold" = "threshold",
         "Percent of Predicted Positives" = "percentpositives"
       ),
-      inline = T
+      inline = TRUE
     ),
     shinyWidgets::checkboxGroupButtons(
       inputId = NS(id, "model_picker"),
       label = "Choose a Model",
-      choices = c("First Model", "Second Model") # unique(perf_dat_percent_positives$model)
+      choices = c("First Model", "Second Model") 
     ),
     shinyWidgets::sliderTextInput(
       NS(id, "cutoff"),
       label = "Choose a Cutoff",
       choices = seq(0, 1, by = 0.01)
     ),
-    # div(reactableOutput(NS(id, "performance_metrics_and_conf")), style = "font-size:80%"),
     width = 4
   )
   # )

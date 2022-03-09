@@ -77,7 +77,7 @@
 create_decision_curve <- function(probs, real, by = 0.01,
                                   stratified_by = "probability_threshold",
                                   chosen_threshold = NA,
-                                  interactive = F,
+                                  interactive = FALSE,
                                   main_slider = "threshold",
                                   col_values = c(
                                     "#5BC0BE",
@@ -165,7 +165,7 @@ create_decision_curve <- function(probs, real, by = 0.01,
 
 plot_decision_curve <- function(performance_data,
                                 chosen_threshold = NA,
-                                interactive = F,
+                                interactive = FALSE,
                                 main_slider = "threshold",
                                 col_values = c(
                                   "#5BC0BE",

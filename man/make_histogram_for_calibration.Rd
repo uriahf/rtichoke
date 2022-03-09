@@ -18,11 +18,13 @@ Creating dat for histogram calibration
 \examples{
 \dontrun{
 # several models
-deciles_dat <- purrr::map_df(list("Model 1" = example_dat$estimated_probabilities),
-                             ~ make_deciles_dat(.x, example_dat$outcome),
-                             .id = "model"
-) \%>\% 
-  mutate(model  = forcats::fct_inorder(factor(model)))
+deciles_dat <- purrr::map_df(list(
+  "Model 1" = example_dat$estimated_probabilities
+),
+~ make_deciles_dat(.x, example_dat$outcome),
+.id = "model"
+) \%>\%
+  mutate(model = forcats::fct_inorder(factor(model)))
 
 make_histogram_for_calibration(
   list("Model 1" = example_dat$estimated_probabilities),
@@ -32,32 +34,32 @@ make_histogram_for_calibration(
 # several populations
 
 deciles_dat <- purrr::map2_dfr(list(
-"train" = example_dat \%>\%
- dplyr::filter(type_of_set == "train") \%>\%
- dplyr::pull(estimated_probabilities),
- "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
- dplyr::pull(estimated_probabilities)
+  "train" = example_dat \%>\%
+    dplyr::filter(type_of_set == "train") \%>\%
+    dplyr::pull(estimated_probabilities),
+  "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+    dplyr::pull(estimated_probabilities)
 ),
 list(
- "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
-   dplyr::pull(outcome),
- "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-   dplyr::pull(outcome)
+  "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+    dplyr::pull(outcome),
+  "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+    dplyr::pull(outcome)
 ),
 ~ make_deciles_dat(.x, .y),
 .id = "population"
-) \%>\% 
- mutate(population  = forcats::fct_inorder(factor(population)))
+) \%>\%
+  mutate(population = forcats::fct_inorder(factor(population)))
 
 make_histogram_for_calibration(
- probs = list(
-   "train" = example_dat \%>\%
-     dplyr::filter(type_of_set == "train") \%>\%
-     dplyr::pull(estimated_probabilities),
-   "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-     dplyr::pull(estimated_probabilities)
- ),
- deciles_dat
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  deciles_dat
 )
 }
 }

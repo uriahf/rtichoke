@@ -130,7 +130,7 @@
 #' }
 create_calibration_curve <- function(probs,
                                      real,
-                                     interactive = F,
+                                     interactive = FALSE,
                                      col_values = c(
                                        "#5BC0BE",
                                        "#FC8D62",
@@ -138,7 +138,7 @@ create_calibration_curve <- function(probs,
                                        "#E78AC3",
                                        "#A4243B"
                                      ),
-                                     title_included = F,
+                                     title_included = FALSE,
                                      type = "discrete",
                                      size = NULL) {
   quintile <- phatx <- phaty <- gam <- NULL
@@ -151,7 +151,7 @@ create_calibration_curve <- function(probs,
     probs <- list("model 1" = probs)
   }
 
-  col_values <- col_values[1:length(probs)]
+  col_values <- col_values[seq_len(length(probs))]
 
   if (is.list(probs) & !is.list(real)) {
     deciles_dat <- tibble::tribble(
@@ -226,7 +226,7 @@ create_calibration_curve <- function(probs,
           ggplot2::coord_cartesian(
             xlim = limits,
             ylim = limits,
-            expand = F
+            expand = FALSE
           ) +
           ggplot2::theme(legend.position = "none")
       }
@@ -256,7 +256,7 @@ create_calibration_curve <- function(probs,
           ggplot2::coord_cartesian(
             xlim = limits,
             ylim = limits,
-            expand = F
+            expand = FALSE
           ) +
           ggplot2::scale_color_manual(values = c("grey", unname(col_values)))
       }
@@ -288,8 +288,8 @@ create_calibration_curve <- function(probs,
             data = smooth_dat
           ) %>%
           plotly::layout(
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F),
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE),
             showlegend = TRUE
           )
       }
@@ -328,8 +328,8 @@ create_calibration_curve <- function(probs,
               x = 0.5,
               y = 1.1
             ),
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F)
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE)
           )
 
         # print(cal_plot)
@@ -367,8 +367,8 @@ create_calibration_curve <- function(probs,
               x = 0.5,
               y = 1.1
             ),
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F)
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE)
           )
 
         # print(cal_plot)
@@ -393,7 +393,8 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F) +
+          ggplot2::coord_cartesian(xlim = limits, 
+                                   ylim = limits, expand = FALSE) +
           ggplot2::labs(x = "Predicted")
       }
 
@@ -421,7 +422,8 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F) +
+          ggplot2::coord_cartesian(xlim = limits, 
+                                   ylim = limits, expand = FALSE) +
           ggplot2::scale_color_manual(values = unname(col_values)) #+
         ggplot2::theme(legend.position = "none")
       }
@@ -450,7 +452,8 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, ylim = limits, expand = F) +
+          ggplot2::coord_cartesian(xlim = limits, 
+                                   ylim = limits, expand = FALSE) +
           ggplot2::scale_color_manual(values = unname(col_values)) #+
         ggplot2::theme(legend.position = "none")
       }
@@ -486,8 +489,8 @@ create_calibration_curve <- function(probs,
             line = list(width = 1),
           ) %>%
           plotly::layout(
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F),
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE),
             showlegend = FALSE
           )
       }
@@ -522,8 +525,8 @@ create_calibration_curve <- function(probs,
             showlegend = FALSE
           ) %>%
           plotly::layout(
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F)
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE)
           ) %>%
           plotly::layout(
             legend = list(
@@ -571,8 +574,8 @@ create_calibration_curve <- function(probs,
             showlegend = FALSE
           ) %>%
           plotly::layout(
-            xaxis = list(range = limits, showgrid = F),
-            yaxis = list(range = limits, showgrid = F)
+            xaxis = list(range = limits, showgrid = FALSE),
+            yaxis = list(range = limits, showgrid = FALSE)
           ) %>%
           plotly::layout(legend = list(
             orientation = "h",
@@ -605,8 +608,8 @@ create_calibration_curve <- function(probs,
           textposition = "none"
         ) %>%
         plotly::layout(
-          barmode = "overlay", xaxis = list(range = limits, showgrid = F),
-          yaxis = list(showgrid = F),
+          barmode = "overlay", xaxis = list(range = limits, showgrid = FALSE),
+          yaxis = list(showgrid = FALSE),
           showlegend = FALSE
         )
     } else {
@@ -629,8 +632,8 @@ create_calibration_curve <- function(probs,
           textposition = "none"
         ) %>%
         plotly::layout(
-          barmode = "overlay", xaxis = list(range = limits, showgrid = F),
-          yaxis = list(showgrid = F)
+          barmode = "overlay", xaxis = list(range = limits, showgrid = FALSE),
+          yaxis = list(showgrid = FALSE)
         )
     }
 
@@ -638,14 +641,14 @@ create_calibration_curve <- function(probs,
       cal_plot,
       histprobs,
       nrows = 2,
-      shareX = T,
+      shareX = TRUE,
       heights = c(0.8, 0.2)
     ) %>%
       plotly::layout(
         xaxis = list(title = "Predicted", range = limits),
         yaxis = list(title = "Observed")
       ) %>%
-      plotly::config(displayModeBar = F)
+      plotly::config(displayModeBar = FALSE)
   }
 
 
@@ -662,7 +665,7 @@ create_calibration_curve <- function(probs,
         ggplot2::theme_classic() +
         ggplot2::coord_cartesian(
           xlim = limits,
-          expand = F
+          expand = FALSE
         ) +
         ggplot2::labs(x = "Predicted") +
         ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white")) +
@@ -686,7 +689,7 @@ create_calibration_curve <- function(probs,
         ggplot2::theme_classic() +
         ggplot2::coord_cartesian(
           xlim = limits,
-          expand = F
+          expand = FALSE
         ) +
         ggplot2::labs(x = "Predicted") +
         ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white")) +
@@ -705,7 +708,7 @@ create_calibration_curve <- function(probs,
         ggplot2::theme_classic() +
         ggplot2::coord_cartesian(
           xlim = limits,
-          expand = F
+          expand = FALSE
         ) +
         ggplot2::labs(x = "Predicted") +
         ggplot2::scale_fill_manual(values = unname(col_values)) +
@@ -965,7 +968,7 @@ create_dat_for_smooth_calibration <- function(probs,
 #' }
 make_histogram_for_calibration <- function(probs, deciles_dat) {
   probs %>%
-    purrr::map_df(~ hist(.x, plot = F, breaks = seq(0, 1, 0.01)) %>%
+    purrr::map_df(~ hist(.x, plot = FALSE, breaks = seq(0, 1, 0.01)) %>%
       .[c("mids", "counts")], .id = names(deciles_dat)[1]) %>%
     dplyr::mutate(
       text_obs = glue::glue("{counts} observations in "),

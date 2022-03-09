@@ -93,7 +93,9 @@ add_population_for_text_for_hover <- function(text_for_hover) {
 #' @param performance_metric_y  y
 #'
 #' @keywords internal
-make_two_performance_metrics_bold <- function(text_for_hover, performance_metric_x, performance_metric_y) {
+make_two_performance_metrics_bold <- function(text_for_hover, 
+                                              performance_metric_x, 
+                                              performance_metric_y) {
   text_for_hover %>%
     make_performance_metric_bold(performance_metric_x) %>%
     make_performance_metric_bold(performance_metric_y)
@@ -116,7 +118,10 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
     "</b>"
   )
 
-  updated_text_hover <- paste(unlist(stringr::str_split(performance_metrics_text_hover, "\n")), collapse = "\n")
+  updated_text_hover <- paste(
+    unlist(
+      stringr::str_split(
+        performance_metrics_text_hover, "\n")), collapse = "\n")
 
 
 

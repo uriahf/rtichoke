@@ -10,7 +10,8 @@
 #' @param chosen_threshold a chosen threshold to display (for non-interactive)
 #' @param interactive whether the plot should be interactive
 #' plots
-#' @param main_slider what is the main slider - threshold, percent positives or positives
+#' @param main_slider what is the main slider - threshold, percent positives 
+#' or positives
 #' @param col_values color palette
 #' @param title_included add title to the curve
 #' @param size the size of the curve
@@ -85,7 +86,7 @@
 create_roc_curve <- function(probs, real, by = 0.01,
                              stratified_by = "probability_threshold",
                              chosen_threshold = NA,
-                             interactive = F,
+                             interactive = FALSE,
                              main_slider = "threshold",
                              col_values = c(
                                "#5BC0BE",
@@ -94,7 +95,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#E78AC3",
                                "#A4243B"
                              ),
-                             title_included = F,
+                             title_included = FALSE,
                              size = NULL) {
   prepare_performance_data(
     probs = probs,
@@ -107,7 +108,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
       interactive = interactive,
       main_slider = main_slider,
       col_values = col_values,
-      title_included = F,
+      title_included = FALSE,
       size = size
     )
 }
@@ -175,7 +176,7 @@ create_roc_curve <- function(probs, real, by = 0.01,
 #' @export
 plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
-                           interactive = F,
+                           interactive = FALSE,
                            main_slider = "threshold",
                            col_values = c(
                              "#5BC0BE",
@@ -184,16 +185,19 @@ plot_roc_curve <- function(performance_data,
                              "#E78AC3",
                              "#A4243B"
                            ),
-                           title_included = F,
+                           title_included = FALSE,
                            size = NULL) {
-  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
-  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+  perf_dat_type <- 
+    check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence <- 
+    get_prevalence_from_performance_data(performance_data, perf_dat_type)
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("roc")
 
     roc_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("FPR", "sensitivity", col_values) %>%
+      create_ggplot_for_performance_metrics("FPR", 
+                                            "sensitivity", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
       ggplot2::ylab("Sensitivity")
@@ -234,7 +238,7 @@ plot_roc_curve <- function(performance_data,
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
         "roc",
         population_color_vector =
-          col_values[1:length(prevalence)],
+          col_values[seq_len(length(prevalence))],
         size = size
       ) %>%
         add_lines_and_markers_from_performance_data(
@@ -262,7 +266,7 @@ plot_roc_curve <- function(performance_data,
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
         "roc",
         population_color_vector =
-          col_values[1:length(prevalence)],
+          col_values[seq_len(length(prevalence))],
         size = size
       ) %>%
         add_lines_and_markers_from_performance_data(

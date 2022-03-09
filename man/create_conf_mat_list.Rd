@@ -7,13 +7,13 @@
 create_conf_mat_list(performance_table, main_slider = "threshold")
 }
 \arguments{
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 }
 \description{
 Create a list of confusion matrices
 }
 \examples{
-
 \dontrun{
 one_pop_one_model_as_a_vector \%>\%
   create_conf_mat_list()

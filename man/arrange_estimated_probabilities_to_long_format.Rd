@@ -16,7 +16,7 @@ Arrange estimated probabilities to long format
 \examples{
 \dontrun{
 arrange_estimated_probabilities_to_long_format(
-probs = list("First Model" = example_dat$estimated_probabilities)
+  probs = list("First Model" = example_dat$estimated_probabilities)
 )
 }
 }

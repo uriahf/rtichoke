@@ -22,7 +22,8 @@ create_plotly_for_performance_metrics(
 
 \item{col_values}{color palette}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold,
+percent positives or positives}
 
 \item{reference_lines}{a list of reference lines}
 }

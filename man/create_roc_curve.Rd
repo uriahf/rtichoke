@@ -10,10 +10,10 @@ create_roc_curve(
   by = 0.01,
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
-  interactive = F,
+  interactive = FALSE,
   main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  title_included = F,
+  title_included = FALSE,
   size = NULL
 )
 }
@@ -34,7 +34,8 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives or positives}
+\item{main_slider}{what is the main slider - threshold, percent positives
+or positives}
 
 \item{col_values}{color palette}
 
@@ -75,7 +76,6 @@ create_roc_curve(
       dplyr::pull(outcome)
   )
 )
-
 \dontrun{
 
 create_roc_curve(
@@ -90,8 +90,8 @@ create_roc_curve(
     "Second Model" = example_dat$random_guess
   ),
   real = example_dat$outcome,
-  interactive = TRUE 
-  )
+  interactive = TRUE
+)
 
 create_roc_curve(
   probs = list(
@@ -107,7 +107,7 @@ create_roc_curve(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   ),
-  interactive = TRUE   
+  interactive = TRUE
 )
 }
 }

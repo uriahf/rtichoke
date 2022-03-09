@@ -30,8 +30,6 @@ plots}
 Create a summary report
 }
 \examples{
-
-
 \dontrun{
 create_summary_report(
   probs = example_dat$estimated_probabilities,
@@ -74,8 +72,8 @@ create_summary_report(
     "Second Model" = example_dat$random_guess
   ),
   real = example_dat$outcome,
-  interactive = TRUE 
-  )
+  interactive = TRUE
+)
 
 create_summary_report(
   probs = list(
@@ -91,7 +89,7 @@ create_summary_report(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   ),
-  interactive = TRUE   
+  interactive = TRUE
 )
 }
 }

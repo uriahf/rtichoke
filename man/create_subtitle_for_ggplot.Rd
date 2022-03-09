@@ -21,9 +21,9 @@ Creating subtitle for ggplot2
 \dontrun{
 create_subtitle_for_ggplot(
   probs_names = c(
-    "First Model","Second Model", "Third Model"
+    "First Model", "Second Model", "Third Model"
   )
-) 
+)
 }
 }
 \keyword{internal}

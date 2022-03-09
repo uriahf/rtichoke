@@ -19,8 +19,8 @@ Make deciles dataframe
 \examples{
 \dontrun{
 make_deciles_dat(
-probs = example_dat$estimated_probabilities,
-real = example_dat$outcome
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome
 )
 }
 }

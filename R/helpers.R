@@ -7,7 +7,8 @@
 #'
 #' @keywords internal
 get_real_positives_from_performance_data <- function(performance_data,
-                                                     performance_data_type = "not important") {
+                                                     performance_data_type = 
+                                                       "not important") {
   real_positives <- real_positives <- NULL
 
   real_positives <- performance_data %>%
@@ -29,7 +30,8 @@ get_real_positives_from_performance_data <- function(performance_data,
 #'
 #' @keywords internal
 get_prevalence_from_performance_data <- function(performance_data,
-                                                 performance_data_type = "not important") {
+                                                 performance_data_type = 
+                                                   "not important") {
   PPV <- ppcr <- NULL
 
   prevalence <- performance_data %>%
@@ -50,14 +52,16 @@ get_prevalence_from_performance_data <- function(performance_data,
 #'
 #' @keywords internal
 get_n_from_performance_data <- function(performance_data,
-                                        performance_data_type = "not important") {
+                                        performance_data_type = 
+                                          "not important") {
   predicted_positives <- ppcr <- NULL
 
   # print(performance_data)
 
   real_positives <- performance_data %>%
     dplyr::filter(ppcr == 1) %>%
-    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives"))) %>%
+    dplyr::select(dplyr::any_of(
+      c("Model", "Population", "predicted_positives"))) %>%
     distinct() %>%
     rename("n_obs" = predicted_positives) %>%
     select(1, "n_obs")
@@ -71,19 +75,23 @@ get_n_from_performance_data <- function(performance_data,
 #'
 #' @param curve the specified curve for the reference lines
 #' @param prevalence the prevalence of the outcome
-#' @param plotly should the reference lines data frame be competible with plotly
-#' @param multiple_pop should the reference lines data frame should be adjusted to multiple populations
+#' @param plotly should the reference lines data frame be 
+#' competible with plotly
+#' @param multiple_pop should the reference lines data frame should be 
+#' adjusted to multiple populations
 #' @param color the required color
 #' @keywords internal
 
 create_reference_lines_data_frame <- function(curve,
                                               prevalence = NA,
                                               color = NA,
-                                              plotly = F,
-                                              multiple_pop = F) {
+                                              plotly = FALSE,
+                                              multiple_pop = FALSE) {
   if (curve == "roc") {
     if (plotly == FALSE) {
-      reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "solid")
+      reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 0, 
+                                               yend = 1, col = "grey", 
+                                               linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(0, 1))
     }
@@ -91,7 +99,10 @@ create_reference_lines_data_frame <- function(curve,
 
   if (curve == "lift") {
     if (plotly == FALSE) {
-      reference_lines_data_frame <- data.frame(x = 0, xend = 1, y = 1, yend = 1, col = "grey", linetype = "solid")
+      reference_lines_data_frame <- data.frame(x = 0, xend = 1, 
+                                               y = 1, yend = 1, 
+                                               col = "grey", 
+                                               linetype = "solid")
     } else {
       reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(1, 1))
     }
@@ -154,7 +165,8 @@ create_reference_lines_data_frame <- function(curve,
         }
       ) %>%
         bind_rows(
-          data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "dotted")
+          data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", 
+                     linetype = "dotted")
         )
     } else {
       reference_lines_data_frame <- data.frame(
@@ -185,8 +197,10 @@ create_reference_lines_data_frame <- function(curve,
       )
     } else {
       reference_lines_data_frame <- bind_rows(
-        data.frame(population = names(prevalence), x = prevalence, y = 0, row.names = NULL),
-        data.frame(population = names(prevalence), x = 0, y = prevalence, row.names = NULL),
+        data.frame(population = names(prevalence), x = prevalence, y = 0, 
+                   row.names = NULL),
+        data.frame(population = names(prevalence), x = 0, y = prevalence, 
+                   row.names = NULL),
         data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
       )
     }

@@ -41,15 +41,20 @@ bar_style_nb <- function(width, display) {
 
     if (width <= 0) {
       fill <- "pink"
-      html_code <- glue::glue("<span style=\"display: inline-block; background: linear-gradient(90deg,
+      html_code <- glue::glue("<span style=\"display: \\
+      inline-block; background: linear-gradient(90deg,
              transparent {position}, {fill} {position}, {fill} 50%,
-             transparent 50%) center center / 98% 88% no-repeat; border-radius: 4px;
+             transparent 50%) center center / 98% 88% no-repeat; \\
+             border-radius: 4px;
              flex: 100 0 auto; width: 100px;\">{display_rounded}</span>")
     } else {
       fill <- "lightgreen"
-      html_code <- glue::glue("<span style=\"display: inline-block;background: linear-gradient(90deg,
-             transparent 50%, {fill} 50%, {fill} {position}, transparent {position}) center center / 98% 88% no-repeat;
-             border-radius: 4px; flex: 100 0 auto; width: 100px;\">{display_rounded}</span>")
+      html_code <- glue::glue("<span style=\"display: \\
+      inline-block;background: linear-gradient(90deg,
+             transparent 50%, {fill} 50%, {fill} {position}, \\
+             transparent {position}) center center / 98% 88% no-repeat;
+             border-radius: 4px; flex: 100 0 auto; \\
+                              width: 100px;\">{display_rounded}</span>")
     }
 
     html_code %>%
@@ -125,7 +130,7 @@ add_color_to_lift <- function(performance_dat,
                               color) {
   performance_dat %>%
     dplyr::mutate(
-      metric_plot = 100 * {{ metric }} / max({{ metric }}, na.rm = T),
+      metric_plot = 100 * {{ metric }} / max({{ metric }}, na.rm = TRUE),
       metric_plot = purrr::map2(
         metric_plot, {{ metric }},
         .f = ~ bar_chart(
@@ -143,7 +148,8 @@ add_color_to_lift <- function(performance_dat,
 add_color_to_predicted_positives <- function(performance_dat) {
   performance_dat %>%
     mutate(
-      display_predicted_postivies = glue::glue("{predicted_positives} ({round(ppcr  * 100, digits = 1)}%)"),
+      display_predicted_postivies = 
+        glue::glue("{predicted_positives} ({round(ppcr  * 100, digits = 1)}%)"),
       plot_predicted_positives = 100 * ppcr,
       plot_predicted_positives = purrr::map2(
         plot_predicted_positives, display_predicted_postivies,
@@ -151,7 +157,7 @@ add_color_to_predicted_positives <- function(performance_dat) {
           value = .x,
           display = .y,
           color = "lightgrey",
-          no_round = T
+          no_round = TRUE
         )
       )
     )

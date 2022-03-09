@@ -75,7 +75,7 @@
 create_gains_curve <- function(probs, real, by = 0.01,
                                stratified_by = "probability_threshold",
                                chosen_threshold = NA,
-                               interactive = F,
+                               interactive = FALSE,
                                main_slider = "threshold",
                                col_values = c(
                                  "#5BC0BE",
@@ -162,7 +162,7 @@ create_gains_curve <- function(probs, real, by = 0.01,
 
 plot_gains_curve <- function(performance_data,
                              chosen_threshold = NA,
-                             interactive = F,
+                             interactive = FALSE,
                              main_slider = "threshold",
                              col_values = c(
                                "#5BC0BE",
@@ -172,14 +172,17 @@ plot_gains_curve <- function(performance_data,
                                "#A4243B"
                              ),
                              size = NULL) {
-  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
-  prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
+  perf_dat_type <- check_performance_data_type_for_plotly(
+    performance_data = performance_data)
+  prevalence <- get_prevalence_from_performance_data(performance_data, 
+                                                     perf_dat_type)
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
     gains_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("ppcr", "sensitivity", col_values) %>%
+      create_ggplot_for_performance_metrics("ppcr", "sensitivity", 
+                                            col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits() +
       ggplot2::xlab("Predicted Positives (Rate)") +
