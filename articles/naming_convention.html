@@ -4,105 +4,92 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="rtichoke">
 <title>Naming Convention • rtichoke</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><link href="../deps/_Prompt-0.4.0/font.css" rel="stylesheet">
+<link href="../deps/_JetBrains%20Mono-0.4.0/font.css" rel="stylesheet">
+<link href="../deps/_Muli-0.4.0/font.css" rel="stylesheet">
+<!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Naming Convention">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Naming Convention">
 <meta property="og:description" content="rtichoke">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">rtichoke</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">rtichoke</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/naming_convention.html">Naming Convention</a>
-    </li>
-    <li>
-      <a href="../articles/performance_table_examples.html">Performance Data Examples</a>
-    </li>
-    <li>
-      <a href="../articles/rtichoke_introduction.html">rtichoke Introduction</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
-      </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/uriahf/rtichoke/">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
-</div>
-<!--/.nav-collapse -->
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/bslib_example.html">Theming with bslib and thematic</a>
+    <a class="dropdown-item" href="../articles/naming_convention.html">Naming Convention</a>
+    <a class="dropdown-item" href="../articles/performance_table_examples.html">Performance Data Examples</a>
+    <a class="dropdown-item" href="../articles/rtichoke_introduction.html">rtichoke Introduction</a>
   </div>
-<!--/.container -->
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
+      </ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/uriahf/rtichoke/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
-<!--/.navbar -->
 
-      
+    
+  </div>
+</nav><div class="container template-article">
 
-      </header><script src="naming_convention_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Naming Convention</h1>
+
+
+<script src="naming_convention_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+  <main id="main"><div class="page-header">
+      <img src="" class="logo" alt=""><h1>Naming Convention</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/uriahf/rtichoke/blob/master/vignettes/naming_convention.Rmd"><code>vignettes/naming_convention.Rmd</code></a></small>
-      <div class="hidden name"><code>naming_convention.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/uriahf/rtichoke/blob/HEAD/vignettes/naming_convention.Rmd" class="external-link"><code>vignettes/naming_convention.Rmd</code></a></small>
+      <div class="d-none name"><code>naming_convention.Rmd</code></div>
     </div>
 
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/uriahf/rtichoke">rtichoke</a></span><span class="op">)</span></code></pre></div>
-<div id="types-of-inputs" class="section level2">
-<h2 class="hasAnchor">
-<a href="#types-of-inputs" class="anchor"></a><span class="ul"><strong>Types of Inputs</strong></span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/uriahf/rtichoke" class="external-link">rtichoke</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="types-of-inputs">
+<span class="ul"><strong>Types of Inputs</strong></span><a class="anchor" aria-label="anchor" href="#types-of-inputs"></a>
 </h2>
 <p>There are two types of inputs for each function in {rtichoke}:</p>
 <ol style="list-style-type: decimal">
@@ -139,18 +126,18 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </li>
 </ol>
 </div>
-<div id="naming-convention" class="section level2">
-<h2 class="hasAnchor">
-<a href="#naming-convention" class="anchor"></a><span class="ul"><strong>Naming Convention</strong></span>
+<div class="section level2">
+<h2 id="naming-convention">
+<span class="ul"><strong>Naming Convention</strong></span><a class="anchor" aria-label="anchor" href="#naming-convention"></a>
 </h2>
 <p>Some of the functions in <code>rtichoke</code> are built to work with an object that is called “performance_data” - a data frame that includes different performance metrics for different cutoffs.</p>
 <p>But other functions are built to work estimated probabilities and outcomes. Each of these function starts with “create” (as create from scratch) - create_*():</p>
-<div id="kfxfaiflbb" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ltodnrqbua" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#kfxfaiflbb .gt_table {
+#ltodnrqbua .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -175,7 +162,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-left-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_heading {
+#ltodnrqbua .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -187,33 +174,37 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_title {
+#ltodnrqbua .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#kfxfaiflbb .gt_subtitle {
+#ltodnrqbua .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#kfxfaiflbb .gt_bottom_border {
+#ltodnrqbua .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_col_headings {
+#ltodnrqbua .gt_col_headings {
   border-top-style: solid;
   border-top-width: 3px;
   border-top-color: #FFFFFF;
@@ -228,7 +219,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_col_heading {
+#ltodnrqbua .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -248,7 +239,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   overflow-x: hidden;
 }
 
-#kfxfaiflbb .gt_column_spanner_outer {
+#ltodnrqbua .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -260,15 +251,15 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 4px;
 }
 
-#kfxfaiflbb .gt_column_spanner_outer:first-child {
+#ltodnrqbua .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kfxfaiflbb .gt_column_spanner_outer:last-child {
+#ltodnrqbua .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kfxfaiflbb .gt_column_spanner {
+#ltodnrqbua .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -280,8 +271,11 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   width: 100%;
 }
 
-#kfxfaiflbb .gt_group_heading {
-  padding: 8px;
+#ltodnrqbua .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -302,7 +296,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   vertical-align: middle;
 }
 
-#kfxfaiflbb .gt_empty_group_heading {
+#ltodnrqbua .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -317,15 +311,15 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   vertical-align: middle;
 }
 
-#kfxfaiflbb .gt_from_md > :first-child {
+#ltodnrqbua .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kfxfaiflbb .gt_from_md > :last-child {
+#ltodnrqbua .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kfxfaiflbb .gt_row {
+#ltodnrqbua .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -344,7 +338,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   overflow-x: hidden;
 }
 
-#kfxfaiflbb .gt_stub {
+#ltodnrqbua .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -353,10 +347,29 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-style: solid;
   border-right-width: 2px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#kfxfaiflbb .gt_summary_row {
+#ltodnrqbua .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ltodnrqbua .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ltodnrqbua .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -366,17 +379,26 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 5px;
 }
 
-#kfxfaiflbb .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
+#ltodnrqbua .gt_first_summary_row {
   border-top-style: solid;
-  border-top-width: 2px;
   border-top-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_grand_summary_row {
+#ltodnrqbua .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ltodnrqbua .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ltodnrqbua .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -386,7 +408,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 5px;
 }
 
-#kfxfaiflbb .gt_first_grand_summary_row {
+#ltodnrqbua .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -396,11 +418,11 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-top-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_striped {
+#ltodnrqbua .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kfxfaiflbb .gt_table_body {
+#ltodnrqbua .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -409,7 +431,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-bottom-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_footnotes {
+#ltodnrqbua .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -423,13 +445,16 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_footnote {
+#ltodnrqbua .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#kfxfaiflbb .gt_sourcenotes {
+#ltodnrqbua .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -443,44 +468,71 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#kfxfaiflbb .gt_sourcenote {
+#ltodnrqbua .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#kfxfaiflbb .gt_left {
+#ltodnrqbua .gt_left {
   text-align: left;
 }
 
-#kfxfaiflbb .gt_center {
+#ltodnrqbua .gt_center {
   text-align: center;
 }
 
-#kfxfaiflbb .gt_right {
+#ltodnrqbua .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kfxfaiflbb .gt_font_normal {
+#ltodnrqbua .gt_font_normal {
   font-weight: normal;
 }
 
-#kfxfaiflbb .gt_font_bold {
+#ltodnrqbua .gt_font_bold {
   font-weight: bold;
 }
 
-#kfxfaiflbb .gt_font_italic {
+#ltodnrqbua .gt_font_italic {
   font-style: italic;
 }
 
-#kfxfaiflbb .gt_super {
+#ltodnrqbua .gt_super {
   font-size: 65%;
 }
 
-#kfxfaiflbb .gt_footnote_marks {
+#ltodnrqbua .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ltodnrqbua .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ltodnrqbua .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ltodnrqbua .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ltodnrqbua .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="table gt_table">
@@ -491,14 +543,14 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
     </tr></thead>
 <tbody class="gt_table_body">
 <tr>
-<td class="gt_row gt_left gt_stub">Performance Data</td>
+<td class="gt_row gt_right gt_stub">Performance Data</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/prepare_performance_data.html">prepare_performance_data()</a></code></p>
 </div></td>
 <td class="gt_row gt_left"><div class="gt_from_md"></div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">ROC</td>
+<td class="gt_row gt_right gt_stub">ROC</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_roc_curve.html">create_roc_curve()</a></code></p>
 </div></td>
@@ -507,7 +559,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Lift</td>
+<td class="gt_row gt_right gt_stub">Lift</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_lift_curve.html">create_lift_curve()</a></code></p>
 </div></td>
@@ -516,7 +568,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Gains</td>
+<td class="gt_row gt_right gt_stub">Gains</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_gains_curve.html">create_gains_curve()</a></code></p>
 </div></td>
@@ -525,7 +577,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Precision Recall</td>
+<td class="gt_row gt_right gt_stub">Precision Recall</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_precision_recall_curve.html">create_precision_recall_curve()</a></code></p>
 </div></td>
@@ -534,7 +586,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Decision</td>
+<td class="gt_row gt_right gt_stub">Decision</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_decision_curve.html">create_decision_curve()</a></code></p>
 </div></td>
@@ -543,14 +595,14 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Calibration</td>
+<td class="gt_row gt_right gt_stub">Calibration</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_calibration_curve.html">create_calibration_curve()</a></code></p>
 </div></td>
 <td class="gt_row gt_left"><div class="gt_from_md"></div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Performance Table</td>
+<td class="gt_row gt_right gt_stub">Performance Table</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code><a href="../reference/create_performance_table.html">create_performance_table()</a></code></p>
 </div></td>
@@ -559,9 +611,9 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </div></td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Summary Report</td>
+<td class="gt_row gt_right gt_stub">Summary Report</td>
 <td class="gt_row gt_left"><div class="gt_from_md">
-<p><code>create_summary_report()</code></p>
+<p><code><a href="../reference/create_summary_report.html">create_summary_report()</a></code></p>
 </div></td>
 <td class="gt_row gt_left"><div class="gt_from_md">
 <p><code>render_summary_report()</code></p>
@@ -571,46 +623,46 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 </table>
 </div>
 </div>
-<div id="plots-of-performance-metrics-across-different-thresholds" class="section level2">
-<h2 class="hasAnchor">
-<a href="#plots-of-performance-metrics-across-different-thresholds" class="anchor"></a><span class="ul"><strong>Plots of Performance Metrics across different Thresholds</strong></span>
+<div class="section level2">
+<h2 id="plots-of-performance-metrics-across-different-thresholds">
+<span class="ul"><strong>Plots of Performance Metrics across different Thresholds</strong></span><a class="anchor" aria-label="anchor" href="#plots-of-performance-metrics-across-different-thresholds"></a>
 </h2>
 <p>Curves that are generated from performance metrics can be called by <code>plot_*_curve()</code> or <code>create_*_curve</code> from Performance Data.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html">tribble</a></span><span class="op">(</span><span class="op">~</span><span class="st">"Curve"</span>, <span class="op">~</span><span class="st">"Sens"</span>, <span class="op">~</span><span class="st">"Spec"</span>, <span class="op">~</span><span class="st">"PPV"</span>, <span class="op">~</span><span class="st">"PPCR"</span>, <span class="op">~</span><span class="st">"Lift"</span>, <span class="op">~</span><span class="st">"NB"</span>, <span class="op">~</span><span class="st">"P. Thr"</span>,
+<code class="sourceCode R"><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span><span class="op">~</span><span class="st">"Curve"</span>, <span class="op">~</span><span class="st">"Sens"</span>, <span class="op">~</span><span class="st">"Spec"</span>, <span class="op">~</span><span class="st">"PPV"</span>, <span class="op">~</span><span class="st">"PPCR"</span>, <span class="op">~</span><span class="st">"Lift"</span>, <span class="op">~</span><span class="st">"NB"</span>, <span class="op">~</span><span class="st">"P. Thr"</span>,
                 <span class="st">"ROC"</span>,<span class="st">"y"</span>, <span class="st">"x"</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>,
                 <span class="st">"Lift"</span>,<span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">" "</span>, <span class="st">" "</span>,
                 <span class="st">"Gains"</span>,<span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">" "</span>, <span class="st">"x"</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>,
                 <span class="st">"Precision Recall"</span>,<span class="st">"x"</span>, <span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">" "</span>,
-                <span class="st">"Decision"</span>,<span class="st">"x"</span>, <span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">"x"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html">gt</a></span><span class="op">(</span>rowname_col <span class="op">=</span> <span class="st">"Curve"</span><span class="op">)</span>   <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_style.html">tab_style</a></span><span class="op">(</span>
-    style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-      <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cell_text.html">cell_text</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>
+                <span class="st">"Decision"</span>,<span class="st">"x"</span>, <span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">" "</span>, <span class="st">" "</span>, <span class="st">"y"</span>, <span class="st">"x"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span>rowname_col <span class="op">=</span> <span class="st">"Curve"</span><span class="op">)</span>   <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_style.html" class="external-link">tab_style</a></span><span class="op">(</span>
+    style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+      <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cell_text.html" class="external-link">cell_text</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>
     <span class="op">)</span>,
-    locations <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cells_column_labels.html">cells_column_labels</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span>  <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/opt_table_lines.html">opt_table_lines</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_options.html">tab_options</a></span><span class="op">(</span>
+    locations <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cells_column_labels.html" class="external-link">cells_column_labels</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">)</span>  <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/opt_table_lines.html" class="external-link">opt_table_lines</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_options.html" class="external-link">tab_options</a></span><span class="op">(</span>
     column_labels.border.top.color <span class="op">=</span> <span class="st">"white"</span>,
-    column_labels.border.top.width <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/px.html">px</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,
+    column_labels.border.top.width <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/px.html" class="external-link">px</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,
     column_labels.border.bottom.color <span class="op">=</span> <span class="st">"black"</span>,
     table_body.hlines.color <span class="op">=</span> <span class="st">"white"</span>,
     table.border.bottom.color <span class="op">=</span> <span class="st">"white"</span>,
-    table.border.bottom.width <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/px.html">px</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cols_align.html">cols_align</a></span><span class="op">(</span>
+    table.border.bottom.width <span class="op">=</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/px.html" class="external-link">px</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cols_align.html" class="external-link">cols_align</a></span><span class="op">(</span>
     align <span class="op">=</span> <span class="st">"center"</span>
-  <span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span> 
-  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cols_width.html">cols_width</a></span><span class="op">(</span>
-    <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span> <span class="op">~</span> <span class="fu">px</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/cols_width.html" class="external-link">cols_width</a></span><span class="op">(</span>
+    <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span> <span class="op">~</span> <span class="fu">px</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>
   <span class="op">)</span></code></pre></div>
-<div id="ctbwbrkmvj" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ulnvptjezy" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#ctbwbrkmvj .gt_table {
+#ulnvptjezy .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -635,7 +687,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-left-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_heading {
+#ulnvptjezy .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -647,33 +699,37 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_title {
+#ulnvptjezy .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#ctbwbrkmvj .gt_subtitle {
+#ulnvptjezy .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#ctbwbrkmvj .gt_bottom_border {
+#ulnvptjezy .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_col_headings {
+#ulnvptjezy .gt_col_headings {
   border-top-style: solid;
   border-top-width: 3px;
   border-top-color: #FFFFFF;
@@ -688,7 +744,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_col_heading {
+#ulnvptjezy .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -708,7 +764,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   overflow-x: hidden;
 }
 
-#ctbwbrkmvj .gt_column_spanner_outer {
+#ulnvptjezy .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -720,15 +776,15 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 4px;
 }
 
-#ctbwbrkmvj .gt_column_spanner_outer:first-child {
+#ulnvptjezy .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ctbwbrkmvj .gt_column_spanner_outer:last-child {
+#ulnvptjezy .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ctbwbrkmvj .gt_column_spanner {
+#ulnvptjezy .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #000000;
@@ -740,8 +796,11 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   width: 100%;
 }
 
-#ctbwbrkmvj .gt_group_heading {
-  padding: 8px;
+#ulnvptjezy .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -762,7 +821,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   vertical-align: middle;
 }
 
-#ctbwbrkmvj .gt_empty_group_heading {
+#ulnvptjezy .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -777,15 +836,15 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   vertical-align: middle;
 }
 
-#ctbwbrkmvj .gt_from_md > :first-child {
+#ulnvptjezy .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ctbwbrkmvj .gt_from_md > :last-child {
+#ulnvptjezy .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ctbwbrkmvj .gt_row {
+#ulnvptjezy .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -804,7 +863,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   overflow-x: hidden;
 }
 
-#ctbwbrkmvj .gt_stub {
+#ulnvptjezy .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -813,10 +872,29 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-style: solid;
   border-right-width: 2px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#ctbwbrkmvj .gt_summary_row {
+#ulnvptjezy .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ulnvptjezy .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ulnvptjezy .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -826,17 +904,26 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 5px;
 }
 
-#ctbwbrkmvj .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
+#ulnvptjezy .gt_first_summary_row {
   border-top-style: solid;
-  border-top-width: 2px;
   border-top-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_grand_summary_row {
+#ulnvptjezy .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ulnvptjezy .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ulnvptjezy .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -846,7 +933,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   padding-right: 5px;
 }
 
-#ctbwbrkmvj .gt_first_grand_summary_row {
+#ulnvptjezy .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -856,11 +943,11 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-top-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_striped {
+#ulnvptjezy .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ctbwbrkmvj .gt_table_body {
+#ulnvptjezy .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -869,7 +956,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-bottom-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_footnotes {
+#ulnvptjezy .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -883,13 +970,16 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_footnote {
+#ulnvptjezy .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#ctbwbrkmvj .gt_sourcenotes {
+#ulnvptjezy .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -903,47 +993,74 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
   border-right-color: #D3D3D3;
 }
 
-#ctbwbrkmvj .gt_sourcenote {
+#ulnvptjezy .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#ctbwbrkmvj .gt_left {
+#ulnvptjezy .gt_left {
   text-align: left;
 }
 
-#ctbwbrkmvj .gt_center {
+#ulnvptjezy .gt_center {
   text-align: center;
 }
 
-#ctbwbrkmvj .gt_right {
+#ulnvptjezy .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ctbwbrkmvj .gt_font_normal {
+#ulnvptjezy .gt_font_normal {
   font-weight: normal;
 }
 
-#ctbwbrkmvj .gt_font_bold {
+#ulnvptjezy .gt_font_bold {
   font-weight: bold;
 }
 
-#ctbwbrkmvj .gt_font_italic {
+#ulnvptjezy .gt_font_italic {
   font-style: italic;
 }
 
-#ctbwbrkmvj .gt_super {
+#ulnvptjezy .gt_super {
   font-size: 65%;
 }
 
-#ctbwbrkmvj .gt_footnote_marks {
+#ulnvptjezy .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ulnvptjezy .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ulnvptjezy .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ulnvptjezy .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ulnvptjezy .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
-<table class="table gt_table">
+<table class="table gt_table" style="table-layout: fixed;; width: 0px">
 <colgroup>
 <col style="width:100px;">
 <col style="width:100px;">
@@ -966,7 +1083,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
     </tr></thead>
 <tbody class="gt_table_body">
 <tr>
-<td class="gt_row gt_left gt_stub">ROC</td>
+<td class="gt_row gt_right gt_stub">ROC</td>
 <td class="gt_row gt_center">y</td>
 <td class="gt_row gt_center">x</td>
 <td class="gt_row gt_center"> </td>
@@ -976,7 +1093,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 <td class="gt_row gt_center"> </td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Lift</td>
+<td class="gt_row gt_right gt_stub">Lift</td>
 <td class="gt_row gt_center"> </td>
 <td class="gt_row gt_center"> </td>
 <td class="gt_row gt_center"> </td>
@@ -986,7 +1103,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 <td class="gt_row gt_center"> </td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Gains</td>
+<td class="gt_row gt_right gt_stub">Gains</td>
 <td class="gt_row gt_center"> </td>
 <td class="gt_row gt_center">y</td>
 <td class="gt_row gt_center"> </td>
@@ -996,7 +1113,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 <td class="gt_row gt_center"> </td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Precision Recall</td>
+<td class="gt_row gt_right gt_stub">Precision Recall</td>
 <td class="gt_row gt_center">x</td>
 <td class="gt_row gt_center"> </td>
 <td class="gt_row gt_center">y</td>
@@ -1006,7 +1123,7 @@ Like in Train-Test comparison in order to asses if the model is underfitted or o
 <td class="gt_row gt_center"> </td>
 </tr>
 <tr>
-<td class="gt_row gt_left gt_stub">Decision</td>
+<td class="gt_row gt_right gt_stub">Decision</td>
 <td class="gt_row gt_center">x</td>
 <td class="gt_row gt_center"> </td>
 <td class="gt_row gt_center">y</td>
@@ -1122,9 +1239,9 @@ Benifit</th>
 <p><span class="ul"><strong><code>stratified_by</code>argument:</strong></span></p>
 <p>If the use wants to observe cutoffs according to probabilities percentiles he can do so by setting the <code>stratified_by</code> to <code>Probability Threshold</code>.</p>
 </div>
-<div id="interactive-tables" class="section level2">
-<h2 class="hasAnchor">
-<a href="#interactive-tables" class="anchor"></a><span class="ul"><strong>Interactive Tables</strong></span>
+<div class="section level2">
+<h2 id="interactive-tables">
+<span class="ul"><strong>Interactive Tables</strong></span><a class="anchor" aria-label="anchor" href="#interactive-tables"></a>
 </h2>
 <p>Interactive Performance Data is just a <code>reactable</code> object that wraps a Performance Data and returns an HTML object..</p>
 <p>There are two advantages that are built in interactive tables:</p>
@@ -1133,47 +1250,44 @@ Benifit</th>
 <li>Filter options with crosstalk - if <code>TRUE</code> returns a crosstalk object that let the user filter by model / population and main slider.</li>
 </ol>
 </div>
-<div id="interactive-report" class="section level2">
-<h2 class="hasAnchor">
-<a href="#interactive-report" class="anchor"></a><span class="ul"><strong>Interactive Report</strong></span>
+<div class="section level2">
+<h2 id="interactive-report">
+<span class="ul"><strong>Interactive Report</strong></span><a class="anchor" aria-label="anchor" href="#interactive-report"></a>
 </h2>
 </div>
-<div id="calibration" class="section level2">
-<h2 class="hasAnchor">
-<a href="#calibration" class="anchor"></a><span class="ul"><strong>Calibration</strong></span>
+<div class="section level2">
+<h2 id="calibration">
+<span class="ul"><strong>Calibration</strong></span><a class="anchor" aria-label="anchor" href="#calibration"></a>
 </h2>
 <p>Plots a calibration curve</p>
 </div>
-<div id="rtichoke" class="section level2">
-<h2 class="hasAnchor">
-<a href="#rtichoke" class="anchor"></a><span class="ul"><strong>rtichoke</strong></span>
+<div class="section level2">
+<h2 id="rtichoke">
+<span class="ul"><strong>rtichoke</strong></span><a class="anchor" aria-label="anchor" href="#rtichoke"></a>
 </h2>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p>Developed by Uriah Finkel.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Uriah Finkel.</p>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
 
+  
 
   </body>
 </html>
