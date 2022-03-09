@@ -3,7 +3,7 @@
 
 #' ROC Curve
 #'
-#' Create a ROC Curve 
+#' Create a ROC Curve
 #'
 #' @inheritParams prepare_performance_data
 #' @param col_values color palette
@@ -14,17 +14,17 @@
 #' @param col_values color palette
 #' @param title_included add title to the curve
 #' @param size the size of the curve
-#' 
-#' 
+#'
+#'
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' create_roc_curve(
 #'   probs = example_dat$estimated_probabilities,
 #'   real = example_dat$outcome
 #' )
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(
 #'     "First Model" = example_dat$estimated_probabilities,
@@ -32,7 +32,7 @@
 #'   ),
 #'   real = example_dat$outcome
 #' )
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -48,24 +48,23 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
 #' \dontrun{
-#' 
+#'
 #' create_roc_curve(
 #'   probs = example_dat$estimated_probabilities,
 #'   real = example_dat$outcome,
 #'   interactive = TRUE
 #' )
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
 #'   real = example_dat$outcome,
-#'   interactive = TRUE 
-#'   )
-#' 
+#'   interactive = TRUE
+#' )
+#'
 #' create_roc_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -80,7 +79,7 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(outcome)
 #'   ),
-#'   interactive = TRUE   
+#'   interactive = TRUE
 #' )
 #' }
 create_roc_curve <- function(probs, real, by = 0.01,
@@ -93,7 +92,8 @@ create_roc_curve <- function(probs, real, by = 0.01,
                                "#FC8D62",
                                "#8DA0CB",
                                "#E78AC3",
-                               "#A4243B"),
+                               "#A4243B"
+                             ),
                              title_included = F,
                              size = NULL) {
   prepare_performance_data(
@@ -102,19 +102,21 @@ create_roc_curve <- function(probs, real, by = 0.01,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    plot_roc_curve(chosen_threshold = chosen_threshold,
-                   interactive = interactive,
-                   main_slider = main_slider,
-                   col_values = col_values,
-                   title_included = F,
-                   size = size)
+    plot_roc_curve(
+      chosen_threshold = chosen_threshold,
+      interactive = interactive,
+      main_slider = main_slider,
+      col_values = col_values,
+      title_included = F,
+      size = size
+    )
 }
 
 
 #' ROC Curve from Performance Data
 #'
 #' Plot a ROC Curve
-#' 
+#'
 #' @inheritParams create_roc_curve
 #' @param performance_data an rtichoke Performance Data
 #'
@@ -184,109 +186,102 @@ plot_roc_curve <- function(performance_data,
                            ),
                            title_included = F,
                            size = NULL) {
-  
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, perf_dat_type)
-  
+
   if (interactive == FALSE) {
-    
     reference_lines <- create_reference_lines_data_frame("roc")
-    
+
     roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("FPR", "sensitivity", col_values) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
       ggplot2::ylab("Sensitivity")
   }
-  
+
   if (interactive == TRUE) {
-    
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
-    
-    performance_data <- performance_data %>% 
+
+    performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type, curve = "roc")
-    
-    
+
+
     if (perf_dat_type %in% c("one model with model column", "one model")) {
-      
       roc_curve <- create_reference_lines_for_plotly(perf_dat_type, "roc",
-                                                     size = size) %>% 
-      add_lines_and_markers_from_performance_data(
-        performance_data = performance_data,
-        performance_data_type = perf_dat_type,
-        FPR,
-        sensitivity, 
-        main_slider
+        size = size
       ) %>%
-      add_interactive_marker_from_performance_data(
-        performance_data = performance_data,
-        performance_data_type = perf_dat_type,
-        FPR,
-        sensitivity,
-        main_slider
-      ) %>%
-      set_styling_for_rtichoke("roc")
+        add_lines_and_markers_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          main_slider
+        ) %>%
+        add_interactive_marker_from_performance_data(
+          performance_data = performance_data,
+          performance_data_type = perf_dat_type,
+          FPR,
+          sensitivity,
+          main_slider
+        ) %>%
+        set_styling_for_rtichoke("roc")
     }
-    
+
     if (perf_dat_type == "several models") {
-      
-      performance_data <- performance_data %>% 
-        mutate(model  = forcats::fct_inorder(factor(model))) 
-      
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                        "roc", 
-                                        population_color_vector = 
-                                          col_values[1:length(prevalence)],
-                                        size = size) %>% 
+      performance_data <- performance_data %>%
+        mutate(model = forcats::fct_inorder(factor(model)))
+
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
+        "roc",
+        population_color_vector =
+          col_values[1:length(prevalence)],
+        size = size
+      ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           FPR,
           sensitivity,
-          col_values = col_values, 
+          col_values = col_values,
           main_slider = main_slider
-        )  %>%
+        ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           FPR,
           sensitivity,
           main_slider = main_slider
-        )  %>%
+        ) %>%
         set_styling_for_rtichoke("roc")
-      
     }
-    
+
     if (perf_dat_type == "several populations") {
-      
-      performance_data <- performance_data %>% 
-        mutate(population  = forcats::fct_inorder(factor(population))) 
-      
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type, 
-                                        "roc", 
-                                        population_color_vector = 
-                                          col_values[1:length(prevalence)],
-                                        size = size) %>% 
+      performance_data <- performance_data %>%
+        mutate(population = forcats::fct_inorder(factor(population)))
+
+      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
+        "roc",
+        population_color_vector =
+          col_values[1:length(prevalence)],
+        size = size
+      ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           FPR,
           sensitivity,
           main_slider = main_slider
-        )  %>%
+        ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           FPR,
           sensitivity,
           main_slider = main_slider
-        )  %>%
+        ) %>%
         set_styling_for_rtichoke("roc")
-      
     }
   }
-  
+
   return(roc_curve)
 }
-
-

@@ -1,7 +1,7 @@
 #' Example Data Frame for rtichoke package
 #'
-#' An example data frame that contains estimated probabilities and binary outcomes,
-#' used as an input for rtichoke functions.
+#' An example data frame that contains estimated probabilities and binary
+#' outcomes, used as an input for rtichoke functions.
 #'
 #' @format A data frame with 53940 rows and 10 variables:
 #' \describe{

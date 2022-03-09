@@ -6,7 +6,7 @@
 #' @param x_perf_metric a performance metrice for the x axis
 #' @param y_perf_metric a performance metrice for the y axis
 #' @param col_values color palette
-#' 
+#'
 #' @keywords internal
 create_ggplot_for_performance_metrics <- function(performance_data,
                                                   x_perf_metric,
@@ -129,6 +129,3 @@ remove_grid_lines_from_plotly <- function(plotly_object) {
       yaxis = list(showgrid = F)
     )
 }
-
-
-

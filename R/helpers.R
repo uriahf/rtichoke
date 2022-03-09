@@ -6,17 +6,17 @@
 #' @param performance_data_type the type of the Performance Data
 #'
 #' @keywords internal
-get_real_positives_from_performance_data <- function(performance_data, 
-                                                 performance_data_type = "not important") {
-  real_positives <- real_positives  <- NULL
-  
-  real_positives <- performance_data  %>% 
-    mutate(real_positives = TP + FN) %>% 
-    dplyr::filter(ppcr  == 1) %>% 
-    dplyr::select(dplyr::any_of(c("model", "population", "real_positives"))) %>% 
-    distinct() %>% 
+get_real_positives_from_performance_data <- function(performance_data,
+                                                     performance_data_type = "not important") {
+  real_positives <- real_positives <- NULL
+
+  real_positives <- performance_data %>%
+    mutate(real_positives = TP + FN) %>%
+    dplyr::filter(ppcr == 1) %>%
+    dplyr::select(dplyr::any_of(c("model", "population", "real_positives"))) %>%
+    distinct() %>%
     dplyr::pull(real_positives, name = 1)
-  
+
   real_positives
 }
 
@@ -28,14 +28,14 @@ get_real_positives_from_performance_data <- function(performance_data,
 #' @param performance_data_type the type of the Performance Data
 #'
 #' @keywords internal
-get_prevalence_from_performance_data <- function(performance_data, 
+get_prevalence_from_performance_data <- function(performance_data,
                                                  performance_data_type = "not important") {
-  PPV <- ppcr  <- NULL
+  PPV <- ppcr <- NULL
 
-  prevalence <- performance_data  %>% 
-    dplyr::filter(ppcr  == 1) %>% 
-    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) %>% 
-    distinct() %>% 
+  prevalence <- performance_data %>%
+    dplyr::filter(ppcr == 1) %>%
+    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) %>%
+    distinct() %>%
     dplyr::pull(PPV, name = 1)
 
   prevalence
@@ -51,18 +51,18 @@ get_prevalence_from_performance_data <- function(performance_data,
 #' @keywords internal
 get_n_from_performance_data <- function(performance_data,
                                         performance_data_type = "not important") {
-  predicted_positives  <- ppcr  <- NULL
-  
+  predicted_positives <- ppcr <- NULL
+
   # print(performance_data)
-  
-  real_positives <- performance_data %>% 
-    dplyr::filter(ppcr  == 1) %>% 
-    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives"))) %>% 
-    distinct()  %>% 
-    rename("n_obs" = predicted_positives) %>% 
+
+  real_positives <- performance_data %>%
+    dplyr::filter(ppcr == 1) %>%
+    dplyr::select(dplyr::any_of(c("Model", "Population", "predicted_positives"))) %>%
+    distinct() %>%
+    rename("n_obs" = predicted_positives) %>%
     select(1, "n_obs")
-    # dplyr::pull(predicted_positives , name = 1)
-  
+  # dplyr::pull(predicted_positives , name = 1)
+
   real_positives
 }
 
@@ -108,7 +108,7 @@ create_reference_lines_data_frame <- function(curve,
         "#8DA0CB",
         "#E78AC3",
         "#A4243B"
-      )[1:length(prevalence)]
+      )[seq_len(length(prevalence))]
     }
     if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(
@@ -135,7 +135,7 @@ create_reference_lines_data_frame <- function(curve,
         "#8DA0CB",
         "#E78AC3",
         "#A4243B"
-      )[1:length(prevalence)]
+      )[seq_len(length(prevalence))]
     }
 
     if (plotly == FALSE) {
@@ -152,15 +152,17 @@ create_reference_lines_data_frame <- function(curve,
             linetype = "dotted"
           )
         }
-      ) %>% 
+      ) %>%
         bind_rows(
           data.frame(x = 0, xend = 1, y = 0, yend = 1, col = "grey", linetype = "dotted")
         )
     } else {
-      reference_lines_data_frame <- data.frame(population = names(prevalence), 
-                                               x = prevalence, 
-                                               y = 1, 
-                                               row.names = NULL) %>%
+      reference_lines_data_frame <- data.frame(
+        population = names(prevalence),
+        x = prevalence,
+        y = 1,
+        row.names = NULL
+      ) %>%
         bind_rows(
           data.frame(
             population = rep(names(prevalence), each = 2),
@@ -201,7 +203,7 @@ create_reference_lines_data_frame <- function(curve,
         "#8DA0CB",
         "#E78AC3",
         "#A4243B"
-      )[1:length(prevalence)]
+      )[seq_len(length(prevalence))]
     }
 
     reference_lines_data_frame <- data.frame(
@@ -243,7 +245,7 @@ create_segment_for_reference_line <- function(reference_line) {
 add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
   ggplot_curve$layers <- c(
     purrr::map(reference_lines %>%
-      split(1:nrow(.)), ~ create_segment_for_reference_line(.x)),
+      split(seq_len(nrow(.))), ~ create_segment_for_reference_line(.x)),
     ggplot_curve$layers
   )
   ggplot_curve
@@ -252,27 +254,26 @@ add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
 
 
 #' Creating subtitle for ggplot2
-#' 
+#'
 #' @inheritParams create_roc_curve
 #' @param probs_names the names of the probs
 #' @keywords internal
 #' @examples
 #' \dontrun{
-#'create_subtitle_for_ggplot(
+#' create_subtitle_for_ggplot(
 #'   probs_names = c(
-#'     "First Model","Second Model", "Third Model"
+#'     "First Model", "Second Model", "Third Model"
 #'   )
-#' ) 
-#'}
+#' )
+#' }
 create_subtitle_for_ggplot <- function(probs_names, col_values = c(
-  "#5BC0BE",
-  "#FC8D62",
-  "#8DA0CB",
-  "#E78AC3",
-  "#A4243B"
-)){
-
-  subtitle <- glue::glue("{probs_names}, 
+                                         "#5BC0BE",
+                                         "#FC8D62",
+                                         "#8DA0CB",
+                                         "#E78AC3",
+                                         "#A4243B"
+                                       )) {
+  subtitle <- glue::glue("{probs_names},
                          {col_values[1:length(probs_names)]}")
   subtitle
 }

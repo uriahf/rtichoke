@@ -91,7 +91,7 @@ add_population_for_text_for_hover <- function(text_for_hover) {
 #' @param text_for_hover text
 #' @param performance_metric_x  x
 #' @param performance_metric_y  y
-#' 
+#'
 #' @keywords internal
 make_two_performance_metrics_bold <- function(text_for_hover, performance_metric_x, performance_metric_y) {
   text_for_hover %>%
@@ -101,7 +101,7 @@ make_two_performance_metrics_bold <- function(text_for_hover, performance_metric
 
 #' Making performance metric bold
 #'
-#' @param hover_text  text 
+#' @param hover_text  text
 #' @param performance_metric perf
 #'
 #' @keywords internal
@@ -136,9 +136,9 @@ add_hover_text_to_performance_data <- function(performance_data,
                                                performance_data_type,
                                                curve) {
   text_for_hover <- create_text_for_hover(performance_data_type, curve)
-  
+
   performance_data %>%
     dplyr::mutate(dplyr::across(where(is.numeric), round, 3),
-           text = glue::glue(text_for_hover)
+      text = glue::glue(text_for_hover)
     )
 }

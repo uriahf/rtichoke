@@ -13,7 +13,7 @@
 #' in essence such as a severe disease or death: Let's say that we want to see the
 #' model performance for the top 5% patients at risk for some well defined population,
 #' in this case the user should change the parameter stratified_by
-#' from the default "probability_threshold" to "predicted_positives" and the 
+#' from the default "probability_threshold" to "predicted_positives" and the
 #' results will be similar Performance Data,
 #' only this time each row will represent some rounded percentile.
 #'
@@ -70,51 +70,52 @@
 prepare_performance_data <- function(probs, real, by = 0.01,
                                      stratified_by = "probability_threshold") {
   . <- threshold <- NULL
-  
+
   check_probs_input(probs)
   check_probs_input(real)
-  
-  
+
+
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
     stop("Probabilities mustn't be greater than one ")
   }
-  
+
   if (is.list(probs) & !is.list(real)) {
     if (is.null(names(probs))) {
       names(probs) <- paste("model", 1:length(probs))
     }
     return(probs %>%
-             purrr::map(~ prepare_performance_data(
-               probs = .,
-               real = real,
-               by = by,
-               stratified_by = stratified_by
-             )) %>%
-             dplyr::bind_rows(.id = "model"))
+      purrr::map(~ prepare_performance_data(
+        probs = .,
+        real = real,
+        by = by,
+        stratified_by = stratified_by
+      )) %>%
+      dplyr::bind_rows(.id = "model"))
   }
-  
+
   if (is.list(probs) & is.list(real)) {
     if (is.null(names(probs)) & is.null(names(real))) {
       names(probs) <- paste("population", 1:length(probs))
       names(real) <- paste("population", 1:length(real))
     }
     return(purrr::map2_dfr(probs,
-                           real,
-                           ~ prepare_performance_data(.x, .y,
-                                                      by = by,
-                                                      stratified_by = stratified_by),
-                           .id = "population"
+      real,
+      ~ prepare_performance_data(.x, .y,
+        by = by,
+        stratified_by = stratified_by
+      ),
+      .id = "population"
     ))
   }
-  
+
   N <- TP <- TN <- FP <- FN <- NULL
   N <- length(probs)
-  
+
   tibble::tibble(
     threshold = if (stratified_by != "probability_threshold") stats::quantile(probs, probs = rev(seq(0, 1, by = by))) else round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))
   ) %>%
     {
-      if (stratified_by != "probability_threshold") dplyr::mutate(., ppcr  = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
+      if (stratified_by != "probability_threshold") dplyr::mutate(., ppcr = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = F)))) else .
     } %>%
     dplyr::mutate(
       TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
@@ -123,8 +124,14 @@ prepare_performance_data <- function(probs, real, by = 0.01,
         unlist()
     ) %>%
     {
-      if (stratified_by != "probability_threshold") dplyr::mutate(., TN = dplyr::case_when(ppcr != 1 ~ TN,
-                                                                                           TRUE ~ as.integer(0))) else .
+      if (stratified_by != "probability_threshold") {
+        dplyr::mutate(., TN = dplyr::case_when(
+          ppcr != 1 ~ TN,
+          TRUE ~ as.integer(0)
+        ))
+      } else {
+        .
+      }
     } %>%
     dplyr::mutate(
       FN = sum(real) - TP,
@@ -139,6 +146,6 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       NB = TP / N - (FP / N) * (threshold / (1 - threshold))
     ) %>%
     {
-      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr  = (TP + FP) / N) else .
+      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
     }
 }
