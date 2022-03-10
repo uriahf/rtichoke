@@ -31,10 +31,10 @@
 #'   create_conf_mat_list(main_slider = "ppcr")
 #'
 #' one_pop_one_model_as_a_vector %>%
-#'   plot_roc_curve(interactive = TRUE)
+#'   create_conf_mat_list()
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
+#'   create_conf_mat_list(main_slider = "ppcr")
 #' }
 create_conf_mat_list <- function(performance_table,
                                  main_slider = "threshold") {
@@ -99,8 +99,6 @@ render_reactable_confusion_matrix <- function(confusion_matrix) {
       "Real Positive" = reactable::colDef(
         align = "left",
         style = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           bar_style_perf(
             width = value / N,
             c(
@@ -110,8 +108,6 @@ render_reactable_confusion_matrix <- function(confusion_matrix) {
           )
         },
         cell = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           glue::glue(
             "{value} ({round(value / N * 100, digits = 2)}%) "
           )
@@ -120,8 +116,6 @@ render_reactable_confusion_matrix <- function(confusion_matrix) {
       "Real Negative" = reactable::colDef(
         align = "left",
         style = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           bar_style_perf(
             width = value / N,
             c(
@@ -132,8 +126,6 @@ render_reactable_confusion_matrix <- function(confusion_matrix) {
           )
         },
         cell = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           glue::glue(
             "{value} ({round(value / N * 100, digits = 2)}%)
                                "
@@ -143,13 +135,9 @@ render_reactable_confusion_matrix <- function(confusion_matrix) {
       " " = reactable::colDef(
         align = "left",
         style = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           bar_style_perf(width = value / N, "lightgrey")
         },
         cell = function(value, index) {
-          # N <- matrix_list %>% .[[index]] %>% .[3,3] %>%
-          .[[1]]
           glue::glue(
             "{value} ({round(value / N * 100, digits = 2)}%) "
           )
