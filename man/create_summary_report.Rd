@@ -8,7 +8,8 @@ create_summary_report(
   probs,
   real,
   interactive = FALSE,
-  output_file = "summary_report.html"
+  output_file = "summary_report.html",
+  output_dir = getwd()
 )
 }
 \arguments{
@@ -22,6 +23,13 @@ kind (one for each population)}
 plots}
 
 \item{output_file}{The name of the output file}
+
+\item{output_dir}{The output directory for the rendered \code{output_file}.
+This allows for a choice of an alternate directory to which the output file
+should be written (the default output directory of that of the input file).
+If a path is provided with a filename in \code{output_file} the directory
+specified here will take precedence. Please note that any directory path
+provided will create any necessary directories if they do not exist.}
 }
 \value{
 

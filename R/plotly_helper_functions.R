@@ -85,8 +85,8 @@ create_plotly_base <- function(performance_data,
 
 #' Adding markers and lines to plotly
 #'
-#' @param plotly_object
-#' @param performance_data_type
+#' @param plotly_object a plotly object
+#' @param performance_data_type the type of the performance data
 #'
 #' @keywords internal
 add_markers_and_lines_to_plotly <- function(plotly_object, 

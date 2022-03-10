@@ -7,7 +7,9 @@
 add_markers_and_lines_to_plotly(plotly_object, performance_data_type)
 }
 \arguments{
-\item{performance_data_type}{}
+\item{plotly_object}{a plotly object}
+
+\item{performance_data_type}{the type of the performance data}
 }
 \description{
 Adding markers and lines to plotly

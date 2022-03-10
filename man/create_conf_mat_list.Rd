@@ -40,10 +40,10 @@ train_and_test_sets_enforced_percentiles_symmetry \%>\%
   create_conf_mat_list(main_slider = "ppcr")
 
 one_pop_one_model_as_a_vector \%>\%
-  plot_roc_curve(interactive = TRUE)
+  create_conf_mat_list()
 
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
+  create_conf_mat_list(main_slider = "ppcr")
 }
 }
 \keyword{internal}

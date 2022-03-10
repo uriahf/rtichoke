@@ -1,12 +1,12 @@
 #' Create a summary report
 #'
 #' @inheritParams create_roc_curve
+#' @inheritParams rmarkdown::render
 #' @param output_file The name of the output file
 #'
 #' @return
 #' @export
 #'
-#' @examples
 #' @examples
 #' \dontrun{
 #' create_summary_report(
@@ -71,7 +71,9 @@
 #' )
 #' }
 create_summary_report <- function(probs, real, interactive = FALSE,
-                                  output_file = "summary_report.html") {
+                                  output_file = "summary_report.html",
+                                  output_dir = getwd()) {
+  
   rmarkdown::render(
     file.path(
       system.file(package = "rtichoke"),
@@ -82,6 +84,10 @@ create_summary_report <- function(probs, real, interactive = FALSE,
       real = real,
       interactive = interactive
     ),
-    output_file = output_file
+    output_file = output_file,
+    output_dir = output_dir
   )
+  
+  print(glue::glue("{output_file} was rendered in {output_dir}"))
+  
 }
