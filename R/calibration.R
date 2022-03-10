@@ -723,7 +723,7 @@ create_calibration_curve <- function(probs,
 
     full_cal_plot <- patchwork::wrap_plots(cal_plot +
       ggplot2::theme(
-        egend.position = "none"
+        legend.position = "none"
       ),
     histprobs +
       ggplot2::theme(
