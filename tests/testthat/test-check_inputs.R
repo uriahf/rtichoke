@@ -37,49 +37,48 @@ test_that("input checks should return error", {
       real = c(example_dat$outcome, 1)
     )
   )
-  
+
   expect_error(
     create_roc_curve(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
-)
-    
+  )
+
   expect_error(
     create_lift_curve(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
   )
-  
+
   expect_error(
     create_precision_recall_curve(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
   )
-  
+
   expect_error(
     prepare_performance_data(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
   )
-  
+
   expect_error(
     prepare_performance_data(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
   )
-    
+
   expect_error(
     prepare_performance_data(
       probs = c(example_dat$estimated_probabilities, -0.1),
       real = c(example_dat$outcome, 1)
     )
   )
-    
 })
 
 # Test consistency for performance_data and plot_*_curve functions
@@ -89,64 +88,70 @@ test_that("input checks should return error", {
 
 
 test_that("input checks should return error", {
-  
   expect_error(
     train_and_test_sets %>%
-      plot_roc_curve(interactive = FALSE, 
-                     main_slider = "ppcr")
+      plot_roc_curve(
+        interactive = FALSE,
+        main_slider = "ppcr"
+      )
   )
-  
+
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
       plot_roc_curve(interactive = FALSE)
   )
-  
+
   expect_error(
     train_and_test_sets %>%
-      plot_lift_curve(interactive = FALSE, 
-                     main_slider = "ppcr")
+      plot_lift_curve(
+        interactive = FALSE,
+        main_slider = "ppcr"
+      )
   )
-  
+
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
       plot_lift_curve(interactive = FALSE)
   )
-  
+
   expect_error(
     train_and_test_sets %>%
-      plot_precision_recall_curve(interactive = FALSE, 
-                      main_slider = "ppcr")
+      plot_precision_recall_curve(
+        interactive = FALSE,
+        main_slider = "ppcr"
+      )
   )
-  
+
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
       plot_precision_recall_curve(interactive = FALSE)
   )
-  
-  
+
+
   expect_error(
     train_and_test_sets %>%
-      plot_gains_curve(interactive = FALSE, 
-                      main_slider = "ppcr")
+      plot_gains_curve(
+        interactive = FALSE,
+        main_slider = "ppcr"
+      )
   )
-  
+
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
       plot_gains_curve(interactive = FALSE)
   )
-  
-  
+
+
   expect_error(
     train_and_test_sets %>%
-      plot_decision_curve(interactive = FALSE, 
-                      main_slider = "ppcr")
+      plot_decision_curve(
+        interactive = FALSE,
+        main_slider = "ppcr"
+      )
   )
-  
+
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
       plot_decision_curve(interactive = FALSE)
   )
-  
-  
 })
-

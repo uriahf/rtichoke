@@ -23,7 +23,7 @@ mod_inputs_ui <- function(id) {
     shinyWidgets::checkboxGroupButtons(
       inputId = NS(id, "model_picker"),
       label = "Choose a Model",
-      choices = c("First Model", "Second Model") 
+      choices = c("First Model", "Second Model")
     ),
     shinyWidgets::sliderTextInput(
       NS(id, "cutoff"),

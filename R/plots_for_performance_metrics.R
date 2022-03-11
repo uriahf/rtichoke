@@ -30,8 +30,9 @@ create_ggplot_for_performance_metrics <- function(performance_data,
     )
   } else {
     col_values_vec <- col_values[
-      seq_len(length(unique(performance_data %>% 
-                              dplyr::pull(1))))]
+      seq_len(length(unique(performance_data %>%
+        dplyr::pull(1))))
+    ]
 
     if (length(unique(performance_data %>% dplyr::pull(1))) == 1) {
       col_values_vec <- "black"
@@ -67,7 +68,7 @@ create_ggplot_for_performance_metrics <- function(performance_data,
 #'
 #'
 #' @inheritParams create_ggplot_for_performance_metrics
-#' @param main_slider what is the main slider - threshold, 
+#' @param main_slider what is the main slider - threshold,
 #' percent positives or positives
 #' @param reference_lines a list of reference lines
 #' @keywords internal
@@ -89,14 +90,17 @@ create_plotly_for_performance_metrics <- function(performance_data,
 
 
   performance_data_type <- check_performance_data_type_for_plotly(
-    performance_data)
+    performance_data
+  )
 
-  if (performance_data_type %in% c("one model", 
-                                   "one model with model column")) {
+  if (performance_data_type %in% c(
+    "one model",
+    "one model with model column"
+  )) {
     col_values_vec <- "black"
   } else {
-    col_values_vec <- col_values[seq_len(length(unique(performance_data %>% 
-                                                         dplyr::pull(1))))]
+    col_values_vec <- col_values[seq_len(length(unique(performance_data %>%
+      dplyr::pull(1))))]
     names(col_values_vec) <- unique(performance_data %>% dplyr::pull(1))
   }
 
@@ -115,7 +119,8 @@ create_plotly_for_performance_metrics <- function(performance_data,
 
   plotly_for_performance_metrics <- plotly_for_performance_metrics %>%
     add_markers_and_lines_to_plotly(
-      performance_data_type = performance_data_type) %>%
+      performance_data_type = performance_data_type
+    ) %>%
     add_interactive_marker_to_plotly() %>%
     remove_grid_lines_from_plotly()
 

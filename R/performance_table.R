@@ -70,9 +70,11 @@ render_performance_table <- function(performance_data,
                                        "#A4243B"
                                      )) {
   perf_dat_type <- check_performance_data_type_for_plotly(
-    performance_data = performance_data)
+    performance_data = performance_data
+  )
   prevalence <- get_prevalence_from_performance_data(
-    performance_data, perf_dat_type)
+    performance_data, perf_dat_type
+  )
 
   if (output_type == "gt") {
     performance_data %>%
@@ -123,10 +125,11 @@ render_performance_table <- function(performance_data,
             ),
           key_values =
             factor(key_values,
-              labels = 
+              labels =
                 c("1", "2", "3", "4", "5")[
                   seq_len(length(unique(performance_data_reactable %>%
-                                          dplyr::pull(Model))))]
+                    dplyr::pull(Model))))
+                ]
             )
         )
     }
@@ -146,8 +149,9 @@ render_performance_table <- function(performance_data,
               labels = c("1", "2", "3", "4", "5")[
                 seq_len(
                   length(unique(performance_data_reactable %>%
-                                  dplyr::pull(Population)))
-                  )]
+                    dplyr::pull(Population)))
+                )
+              ]
             )
         )
     }
@@ -213,9 +217,10 @@ render_performance_table <- function(performance_data,
           ),
           lift = reactable::colDef(
             name = "Lift", style = function(value) {
-              bar_style_perf(width = value / 
-                               max(performance_data_reactable$lift, 
-                                   na.rm = TRUE))
+              bar_style_perf(width = value /
+                max(performance_data_reactable$lift,
+                  na.rm = TRUE
+                ))
             }, format = reactable::colFormat(digits = 2)
           ),
           NB = reactable::colDef(
@@ -231,7 +236,7 @@ render_performance_table <- function(performance_data,
           ppcr = reactable::colDef(
             name = "Predicted Positives",
             cell = function(value, index) {
-              predicted_positives <- 
+              predicted_positives <-
                 performance_data_reactable$predicted_positives[index]
               glue::glue("{predicted_positives} \\
                          ({round(value, digits = 2) * 100}%) ")
@@ -534,7 +539,7 @@ creating_subtitle_for_gt <- function(perf_dat_type,
     subtitle_for_gt <- glue::glue(
       "**{names(prevalence)}** model \\
       (Prevalence: {round(prevalence, digits = 2)})"
-      )
+    )
   }
 
   if (perf_dat_type == "several models") {
@@ -611,8 +616,10 @@ bar_style_perf <- function(width = 1, color = "lightgreen") {
   }
   position <- paste0(width * 100, "%")
   list(
-    background = sprintf("linear-gradient(90deg, %2$s %1$s, transparent %1$s)", 
-                         position, color),
+    background = sprintf(
+      "linear-gradient(90deg, %2$s %1$s, transparent %1$s)",
+      position, color
+    ),
     backgroundSize = "98% 88%",
     backgroundRepeat = "no-repeat",
     backgroundPosition = "center"
@@ -636,11 +643,15 @@ bar_style_nb_reactable <- function(width = 1,
   # For negative bars, draw the bar from 50% + -width to 50%
   position <- paste0((0.5 + width / 2) * 100, "%")
   if (width >= 0) {
-    background <- sprintf("linear-gradient(90deg, transparent 50%%, %2$s 50%%, %2$s %1$s, transparent %1$s)", 
-                          position, pos_fill)
+    background <- sprintf(
+      "linear-gradient(90deg, transparent 50%%, %2$s 50%%, %2$s %1$s, transparent %1$s)",
+      position, pos_fill
+    )
   } else {
-    background <- sprintf("linear-gradient(90deg, transparent %1$s, %2$s %1$s, %2$s 50%%, transparent 50%%)", 
-                          position, neg_fill)
+    background <- sprintf(
+      "linear-gradient(90deg, transparent %1$s, %2$s %1$s, %2$s 50%%, transparent 50%%)",
+      position, neg_fill
+    )
   }
   list(
     background = background,

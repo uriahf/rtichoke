@@ -6,8 +6,10 @@ filter_checkbox_rtichoke <- function(id,
                                      inline = FALSE,
                                      columns = 1,
                                      labels_values) {
-  options <- makeGroupOptions_rtichoke(sharedData, group, allLevels, 
-                                       labels_values)
+  options <- makeGroupOptions_rtichoke(
+    sharedData, group, allLevels,
+    labels_values
+  )
 
   labels <- options$items$label
   values <- options$items$value
@@ -17,7 +19,7 @@ filter_checkbox_rtichoke <- function(id,
 
   htmltools::browsable(attachDependencies(
     tags$div(
-      id = id, 
+      id = id,
       class = "form-group crosstalk-input-checkboxgroup crosstalk-input",
       tags$label(class = "control-label", `for` = id, label),
       tags$div(
@@ -39,7 +41,7 @@ filter_checkbox_rtichoke <- function(id,
   ))
 }
 
-makeGroupOptions_rtichoke <- function(sharedData, group, allLevels, 
+makeGroupOptions_rtichoke <- function(sharedData, group, allLevels,
                                       labels_values) {
   df <- sharedData$data(
     withSelection = FALSE,

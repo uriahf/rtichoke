@@ -13,7 +13,6 @@ Check chosen threshold input
 \dontrun{
 check_chosen_threshold_input(0.23)
 check_chosen_threshold_input(1.02)
-
-} 
+}
 }
 \keyword{internal}

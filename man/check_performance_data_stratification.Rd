@@ -13,8 +13,8 @@ Check cheson threshold input
 \dontrun{
 check_performance_data_stratification(one_pop_one_model_as_a_vector)
 check_performance_data_stratification(
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry)
-
-} 
+  one_pop_one_model_as_a_vector_enforced_percentiles_symmetry
+)
+}
 }
 \keyword{internal}

@@ -393,8 +393,10 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, 
-                                   ylim = limits, expand = FALSE) +
+          ggplot2::coord_cartesian(
+            xlim = limits,
+            ylim = limits, expand = FALSE
+          ) +
           ggplot2::labs(x = "Predicted")
       }
 
@@ -422,8 +424,10 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, 
-                                   ylim = limits, expand = FALSE) +
+          ggplot2::coord_cartesian(
+            xlim = limits,
+            ylim = limits, expand = FALSE
+          ) +
           ggplot2::scale_color_manual(values = unname(col_values)) #+
         ggplot2::theme(legend.position = "none")
       }
@@ -452,8 +456,10 @@ create_calibration_curve <- function(probs,
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank()
           ) +
-          ggplot2::coord_cartesian(xlim = limits, 
-                                   ylim = limits, expand = FALSE) +
+          ggplot2::coord_cartesian(
+            xlim = limits,
+            ylim = limits, expand = FALSE
+          ) +
           ggplot2::scale_color_manual(values = unname(col_values)) #+
         ggplot2::theme(legend.position = "none")
       }

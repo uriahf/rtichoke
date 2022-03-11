@@ -73,7 +73,6 @@
 create_summary_report <- function(probs, real, interactive = FALSE,
                                   output_file = "summary_report.html",
                                   output_dir = getwd()) {
-  
   rmarkdown::render(
     file.path(
       system.file(package = "rtichoke"),
@@ -87,7 +86,6 @@ create_summary_report <- function(probs, real, interactive = FALSE,
     output_file = output_file,
     output_dir = output_dir
   )
-  
+
   print(glue::glue("{output_file} was rendered in {output_dir}"))
-  
 }

@@ -85,11 +85,10 @@ create_lift_curve <- function(probs, real, by = 0.01,
                                 "#A4243B"
                               ),
                               size = NULL) {
-  
-  if(!is.na(chosen_threshold)) {
+  if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
-  
+
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -177,26 +176,30 @@ plot_lift_curve <- function(performance_data,
                               "#A4243B"
                             ),
                             size = NULL) {
-  
-  if(!is.na(chosen_threshold)) {
+  if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
-  
+
   performance_data_stratification <- check_performance_data_stratification(
     performance_data
   )
-  
+
   if (((performance_data_stratification == "ppcr") &
-       (main_slider != "ppcr")) | 
-      ((performance_data_stratification != "ppcr") &
-       (main_slider == "ppcr"))
+    (main_slider != "ppcr")) |
+    ((performance_data_stratification != "ppcr") &
+      (main_slider == "ppcr"))
+  ) {
+    stop("Performance data and Main Slider are not consistent")
+  }
+
+  perf_dat_type <- check_performance_data_type_for_plotly(
+    performance_data =
+      performance_data
   )
-  { stop("Performance data and Main Slider are not consistent") }
-  
-  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = 
-                                                            performance_data)
-  prevalence <- get_prevalence_from_performance_data(performance_data, 
-                                                     perf_dat_type)
+  prevalence <- get_prevalence_from_performance_data(
+    performance_data,
+    perf_dat_type
+  )
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("lift")
@@ -236,9 +239,11 @@ plot_lift_curve <- function(performance_data,
           fake_lift,
           main_slider
         ) %>%
-        set_styling_for_rtichoke("lift", 
-                                 max_y_range = max(performance_data$lift, 
-                                                   na.rm = TRUE) + 0.1)
+        set_styling_for_rtichoke("lift",
+          max_y_range = max(performance_data$lift,
+            na.rm = TRUE
+          ) + 0.1
+        )
     }
 
     if (perf_dat_type == "several models") {
@@ -263,9 +268,11 @@ plot_lift_curve <- function(performance_data,
           fake_lift,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("lift", 
-                                 max_y_range = max(performance_data$lift, 
-                                                   na.rm = TRUE) + 0.1)
+        set_styling_for_rtichoke("lift",
+          max_y_range = max(performance_data$lift,
+            na.rm = TRUE
+          ) + 0.1
+        )
     }
 
     if (perf_dat_type == "several populations") {
@@ -289,9 +296,11 @@ plot_lift_curve <- function(performance_data,
           fake_lift,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("lift", 
-                                 max_y_range = max(performance_data$lift, 
-                                                   na.rm = TRUE) + 0.1)
+        set_styling_for_rtichoke("lift",
+          max_y_range = max(performance_data$lift,
+            na.rm = TRUE
+          ) + 0.1
+        )
     }
   }
 

@@ -10,7 +10,7 @@
 #' @param chosen_threshold a chosen threshold to display (for non-interactive)
 #' @param interactive whether the plot should be interactive
 #' plots
-#' @param main_slider what is the main slider - threshold, percent positives 
+#' @param main_slider what is the main slider - threshold, percent positives
 #' or positives
 #' @param col_values color palette
 #' @param title_included add title to the curve
@@ -97,14 +97,13 @@ create_roc_curve <- function(probs, real, by = 0.01,
                              ),
                              title_included = FALSE,
                              size = NULL) {
-  
   check_probs_input(probs)
   check_real_input(real)
-  
-  if(!is.na(chosen_threshold)) {
+
+  if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
-  
+
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -195,35 +194,37 @@ plot_roc_curve <- function(performance_data,
                            ),
                            title_included = FALSE,
                            size = NULL) {
-  
-  if(!is.na(chosen_threshold)) {
-  check_chosen_threshold_input(chosen_threshold)
+  if (!is.na(chosen_threshold)) {
+    check_chosen_threshold_input(chosen_threshold)
   }
-    
-    
+
+
   performance_data_stratification <- check_performance_data_stratification(
-      performance_data
-      )
-  
-  if (((performance_data_stratification == "ppcr") &
-       (main_slider != "ppcr")) | 
-      ((performance_data_stratification != "ppcr") &
-       (main_slider == "ppcr"))
+    performance_data
   )
-      { stop("Performance data and Main Slider are not consistent") }
-  
-  
-  perf_dat_type <- 
+
+  if (((performance_data_stratification == "ppcr") &
+    (main_slider != "ppcr")) |
+    ((performance_data_stratification != "ppcr") &
+      (main_slider == "ppcr"))
+  ) {
+    stop("Performance data and Main Slider are not consistent")
+  }
+
+
+  perf_dat_type <-
     check_performance_data_type_for_plotly(performance_data = performance_data)
-  prevalence <- 
+  prevalence <-
     get_prevalence_from_performance_data(performance_data, perf_dat_type)
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("roc")
 
     roc_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("FPR", 
-                                            "sensitivity", col_values) %>%
+      create_ggplot_for_performance_metrics(
+        "FPR",
+        "sensitivity", col_values
+      ) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
       ggplot2::ylab("Sensitivity")
