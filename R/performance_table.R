@@ -69,6 +69,20 @@ render_performance_table <- function(performance_data,
                                        "#E78AC3",
                                        "#A4243B"
                                      )) {
+  
+  
+  performance_data_stratification <- check_performance_data_stratification(
+    performance_data
+  )
+  
+  if (((performance_data_stratification == "ppcr") &
+       (main_slider != "ppcr")) |
+      ((performance_data_stratification != "ppcr") &
+       (main_slider == "ppcr"))
+  ) {
+    stop("Performance data and Main Slider are not consistent")
+  }
+  
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
