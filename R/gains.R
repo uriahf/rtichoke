@@ -117,25 +117,25 @@ create_gains_curve <- function(probs, real, by = 0.01,
 #'   plot_gains_curve()
 #'
 #' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve()
+#'   plot_gains_curve(main_slider = "ppcr")
 #'
 #' one_pop_one_model_as_a_list %>%
 #'   plot_gains_curve()
 #'
 #' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve()
+#'   plot_gains_curve(main_slider = "ppcr")
 #'
 #' one_pop_three_models %>%
 #'   plot_gains_curve()
 #'
 #' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve()
+#'   plot_gains_curve(main_slider = "ppcr")
 #'
 #' train_and_test_sets %>%
 #'   plot_gains_curve()
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve()
+#'   plot_gains_curve(main_slider = "ppcr")
 #' \dontrun{
 #'
 #' one_pop_one_model_as_a_vector %>%

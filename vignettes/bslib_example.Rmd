@@ -4,14 +4,13 @@ output:
   html_document:
     code_folding: show
     theme:
-      bg: "#202123"
-      fg: "#B8BCC2"
-      primary: "#EA80FC"
-      secondary: "#00DAC6"
+      bg: "#fdf9f1"
+      fg: "#141516"
+      primary: "#7f687c"
       base_font:
-        google: Prompt
+        google: Roboto
       heading_font:
-        google: Proza Libre
+        google: Alegreya
 ---
 
 ```{r setup, include=FALSE}
