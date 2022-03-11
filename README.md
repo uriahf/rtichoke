@@ -23,34 +23,98 @@ The goal of rtichoke is to …
 <!-- install.packages("rtichoke") -->
 <!-- ``` -->
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+You can install rtichoke from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("uriahf/rtichoke")
 ```
 
-## Example
+## Overview:
 
-This is a basic example which shows you how to solve a common problem:
+rtichoke is a package designed for interactive visualization for
+performance metrics of prediction models with a binary outcome.
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+## Getting started
+
+### Predictions and Outcomes
+
+In order to use rtichoke you need to have
+
+1.  `probs`: Estimated Probabilities as predictions (0 ≤ *p̂* ≤ 1).
+2.  `real`: Binary Outcomes (*y* ∈ {1, 0}).
+
+There are 3 different cases and for each one of them rtichoke requires a
+different kind of input:
+
+1.  One model for One Population: 🔀
+
+The user is required to provide one vector for the model predictions and
+one vector for the outcome of the population.
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+library(rtichoke)
+
+create_roc_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome
+)
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/master/examples>.
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+(gif)
+
+Alternatively the vector of the model predictions can be in a list:
+
+``` r
+create_roc_curve(
+  probs = list("Logistic Regression" = example_dat$estimated_probabilities),
+  real = example_dat$outcome
+)
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+### Make it Interactive
+
+<!-- While you can use the non-interactive version of rtichoke curves, there is nothing special about  -->
+
+(gif roc, lift, precision recall, gains, NB curve for
+non-interactive-interactive )
+
+1.  Several models for One Population 🔀 🌲 🙈
+
+The user is required to provide one vector of predictions for each model
+in a list and one vector for the outcome of the population.
+
+(code) probs = list(“Model 1” = …, “Model 2” = ..), real = c() (gif)
+
+1.  Several Populations 👩👨
+
+The user is required to provide one vector of predictions for each
+population in a list and one vector for each outcome of the population
+in another list.
+
+(code) probs = list(“Train” = …, “Test” = …), real = list(“Train” = …,
+“Test” = …) (gif)
+
+### Performance Data
+
+For roc, lift, precision recall, gains, decision curves and for
+performance table you can alternatively prepare a performance data and
+use it as an input, but instead of create\_**curve use plot**\_curve and
+instead of create\_performance\_table use render\_performance\_table:
+(gif render\_roc\_curve, prepare\_performance\_table, plot\_roc\_curve)
+(table of inputs)
+
+### Summary Report
+
+In order to get all the supported outputs of rtichoke in one html file
+the user can call create\_summary\_report().
+
+### Getting help
+
+If you encounter a bug please fill an issue with a minimal reproducible
+example, it will be easier for me to help you and it might help others
+in the future. Alternatively you are welcome to contact me personally:
+<ufinkel@gmail.com>
