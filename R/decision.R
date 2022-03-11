@@ -87,6 +87,11 @@ create_decision_curve <- function(probs, real, by = 0.01,
                                     "#A4243B"
                                   ),
                                   size = NULL) {
+  
+  if(!is.na(chosen_threshold)) {
+    check_chosen_threshold_input(chosen_threshold)
+  }
+  
   prepare_performance_data(
     probs = probs,
     real = real,
@@ -175,6 +180,22 @@ plot_decision_curve <- function(performance_data,
                                   "#A4243B"
                                 ),
                                 size = NULL) {
+  
+  if(!is.na(chosen_threshold)) {
+    check_chosen_threshold_input(chosen_threshold)
+  }
+  
+  performance_data_stratification <- check_performance_data_stratification(
+    performance_data
+  )
+  
+  if (((performance_data_stratification == "ppcr") &
+       (main_slider != "ppcr")) | 
+      ((performance_data_stratification != "ppcr") &
+       (main_slider == "ppcr"))
+  )
+  { stop("Performance data and Main Slider are not consistent") }
+  
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )

@@ -179,6 +179,17 @@ plot_precision_recall_curve <- function(performance_data,
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(performance_data, 
                                                      perf_dat_type)
+  
+  performance_data_stratification <- check_performance_data_stratification(
+    performance_data
+  )
+  
+  if (((performance_data_stratification == "ppcr") &
+       (main_slider != "ppcr")) | 
+      ((performance_data_stratification != "ppcr") &
+       (main_slider == "ppcr"))
+  )
+  { stop("Performance data and Main Slider are not consistent") }
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("precision recall", 

@@ -88,3 +88,45 @@ check_real_input <- function(real){
     }
   }
 }
+
+#' Check chosen threshold input
+#'
+#' @inheritParams prepare_performance_data
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#' check_chosen_threshold_input(0.23)
+#' check_chosen_threshold_input(1.02)
+#' 
+#' } 
+check_chosen_threshold_input <- function(chosen_threshold){
+  if ( (chosen_threshold < 0) | (chosen_threshold > 1) ) {
+    stop("Chosen Threshold is out of the range")
+  }
+}
+
+
+
+#' Check cheson threshold input
+#'
+#' @inheritParams prepare_performance_data
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#' check_performance_data_stratification(one_pop_one_model_as_a_vector)
+#' check_performance_data_stratification(
+#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry)
+#' 
+#' } 
+check_performance_data_stratification <- function(performance_data){
+  
+  ifelse(
+    tail(names(performance_data), n = 1) == "ppcr",
+    "probability_threshold",
+    "ppcr"
+  )
+  
+}
+
+
+

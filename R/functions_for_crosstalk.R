@@ -35,7 +35,7 @@ filter_checkbox_rtichoke <- function(id,
         jsonlite::toJSON(options, dataframe = "columns", pretty = TRUE)
       )
     ),
-    c(list(jqueryLib()), crosstalkLibs())
+    c(list(jqueryLib()), crosstalk::crosstalkLibs())
   ))
 }
 

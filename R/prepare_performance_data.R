@@ -79,7 +79,7 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   . <- threshold <- NULL
 
   check_probs_input(probs)
-  check_probs_input(real)
+  check_real_input(real)
 
 
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
