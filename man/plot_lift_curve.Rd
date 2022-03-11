@@ -37,25 +37,25 @@ one_pop_one_model_as_a_vector \%>\%
   plot_lift_curve()
 
 one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve()
+  plot_lift_curve(main_slider = "ppcr")
 
 one_pop_one_model_as_a_list \%>\%
   plot_lift_curve()
 
 one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve()
+  plot_lift_curve(main_slider = "ppcr")
 
 one_pop_three_models \%>\%
   plot_lift_curve()
 
 one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve()
+  plot_lift_curve(main_slider = "ppcr")
 
 train_and_test_sets \%>\%
   plot_lift_curve()
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_lift_curve()
+  plot_lift_curve(main_slider = "ppcr")
 \dontrun{
 
 one_pop_one_model_as_a_vector \%>\%
