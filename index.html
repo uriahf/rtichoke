@@ -77,7 +77,6 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of rtichoke is to …</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -110,36 +109,22 @@
 </ol>
 <p>There are 3 different cases and for each one of them rtichoke requires a different kind of input:</p>
 <ol style="list-style-type: decimal">
-<li>One model for One Population: 🔀</li>
+<li>One model for One Population:</li>
 </ol>
-<p>The user is required to provide one vector for the model predictions and one vector for the outcome of the population.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/uriahf/rtichoke" class="external-link">rtichoke</a></span><span class="op">)</span>
-
-<span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>
-  probs <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,
-  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"> (gif)</p>
+<p>The user is required to provide one vector for the model’s predictions and one vector for the outcome of the population.</p>
+<p>For example a Logistic Regression 🔀:</p>
+<p>! We will use median imputation for the age variable, it is not a good practice for imputation but it is easy to understand and it allows us to use the <code>Age</code> variable.</p>
+<p>(gif)</p>
+<!-- TODO: Force cur ve to be squared  -->
 <p>Alternatively the vector of the model predictions can be in a list:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>
-  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Logistic Regression"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,
-  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
-</div>
-<div class="section level3">
-<h3 id="make-it-interactive">Make it Interactive<a class="anchor" aria-label="anchor" href="#make-it-interactive"></a>
-</h3>
-<!-- While you can use the non-interactive version of rtichoke curves, there is nothing special about  -->
-<p>(gif roc, lift, precision recall, gains, NB curve for non-interactive-interactive )</p>
-<ol style="list-style-type: decimal">
-<li>Several models for One Population 🔀 🌲 🙈</li>
+<ol start="2" style="list-style-type: decimal">
+<li>Several models for One Population 🔀</li>
 </ol>
+<p>Let’s say we want to compare performance for three different models:</p>
 <p>The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.</p>
-<p>(code) probs = list(“Model 1” = …, “Model 2” = ..), real = c() (gif)</p>
-<ol style="list-style-type: decimal">
+<p>This time we will use Decision Tree Model 🌲</p>
+<p>And just for fun we will add A random guess 🙈</p>
+<ol start="3" style="list-style-type: decimal">
 <li>Several Populations 👩👨</li>
 </ol>
 <p>The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.</p>
@@ -148,7 +133,7 @@
 <div class="section level3">
 <h3 id="performance-data">Performance Data<a class="anchor" aria-label="anchor" href="#performance-data"></a>
 </h3>
-<p>For roc, lift, precision recall, gains, decision curves and for performance table you can alternatively prepare a performance data and use it as an input, but instead of create_<strong>curve use plot</strong>_curve and instead of create_performance_table use render_performance_table: (gif render_roc_curve, prepare_performance_table, plot_roc_curve) (table of inputs)</p>
+<p>For roc, lift, precision recall, gains and decision curves and for performance table you can alternatively prepare a performance data and use it as an input, but instead of create_<strong>curve use plot</strong>_curve and instead of create_performance_table use render_performance_table: (gif render_roc_curve, prepare_performance_table, plot_roc_curve) (table of inputs)</p>
 </div>
 <div class="section level3">
 <h3 id="summary-report">Summary Report<a class="anchor" aria-label="anchor" href="#summary-report"></a>
