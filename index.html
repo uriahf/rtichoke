@@ -101,34 +101,107 @@
 <h3 id="predictions-and-outcomes">Predictions and Outcomes<a class="anchor" aria-label="anchor" href="#predictions-and-outcomes"></a>
 </h3>
 <p>In order to use rtichoke you need to have</p>
-<ol style="list-style-type: decimal">
+<ul>
 <li>
 <code>probs</code>: Estimated Probabilities as predictions (0 ≤ <em>p̂</em> ≤ 1).</li>
 <li>
 <code>real</code>: Binary Outcomes (<em>y</em> ∈ {1, 0}).</li>
-</ol>
+</ul>
 <p>There are 3 different cases and for each one of them rtichoke requires a different kind of input:</p>
-<ol style="list-style-type: decimal">
-<li>One model for One Population:</li>
-</ol>
-<p>The user is required to provide one vector for the model’s predictions and one vector for the outcome of the population.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="one-model-for-one-population">One model for One Population:<a class="anchor" aria-label="anchor" href="#one-model-for-one-population"></a>
+</h2>
+<div class="section level3">
+<h3 id="probs---real--">(probs = 🔀, real = 😁)<a class="anchor" aria-label="anchor" href="#probs---real--"></a>
+</h3>
+<p><em>Why?</em> In order to examine performance of a single model 🔀 for one population 😁.</p>
+<p><em>How?</em> The user is required to provide one vector for the model’s predictions and one vector for the outcome of the population.</p>
+<p>(table with emojis)</p>
 <p>For example a Logistic Regression 🔀:</p>
-<p>! We will use median imputation for the age variable, it is not a good practice for imputation but it is easy to understand and it allows us to use the <code>Age</code> variable.</p>
+<p>! (We will use median imputation for the age variable, it is not a good practice for imputation but it is easy to understand and it allows us to use the <code>Age</code> variable.)</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/uriahf/rtichoke" class="external-link">rtichoke</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paulhendricks/titanic" class="external-link">titanic</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"titanic_train"</span><span class="op">)</span>
+
+<span class="va">titanic_train</span><span class="op">$</span><span class="va">Age</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">titanic_train</span><span class="op">$</span><span class="va">Age</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">titanic_train</span><span class="op">$</span><span class="va">Age</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="va">logistic_regression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Survived</span> <span class="op">~</span> <span class="va">Age</span> <span class="op">+</span> <span class="va">Sex</span>, family <span class="op">=</span> <span class="st">"binomial"</span>, data <span class="op">=</span> <span class="va">titanic_train</span><span class="op">)</span>
+
+<span class="va">logistic_preds_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">logistic_regression</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>
+<span class="va">survived_train</span> <span class="op">&lt;-</span> <span class="va">titanic_train</span><span class="op">$</span><span class="va">Survived</span></code></pre></div>
 <p>(gif)</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="va">logistic_preds_train</span>,
+                 real <span class="op">=</span> <span class="va">survived_train</span>,
+                 interactive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <!-- TODO: Force cur ve to be squared  -->
 <p>Alternatively the vector of the model predictions can be in a list:</p>
-<ol start="2" style="list-style-type: decimal">
-<li>Several models for One Population 🔀</li>
-</ol>
-<p>Let’s say we want to compare performance for three different models:</p>
-<p>The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="several-models-for-one-population">Several Models for One Population<a class="anchor" aria-label="anchor" href="#several-models-for-one-population"></a>
+</h2>
+<div class="section level3">
+<h3 id="probs--listlogistic-regression---decision-tree---random-guess--">(probs = list(“logistic regression” = 🔀, “Decision Tree” = 🌲, “Random Guess” = 🙈"),<a class="anchor" aria-label="anchor" href="#probs--listlogistic-regression---decision-tree---random-guess--"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="real--">real = 😁)<a class="anchor" aria-label="anchor" href="#real--"></a>
+</h3>
+<p><em>Why?</em> In order to compare performance for three different models for the same population.</p>
+<p><em>How?</em> The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.</p>
 <p>This time we will use Decision Tree Model 🌲</p>
 <p>And just for fun we will add A random guess 🙈</p>
-<ol start="3" style="list-style-type: decimal">
-<li>Several Populations 👩👨</li>
-</ol>
-<p>The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="several-populations-">Several Populations 🏋📝<a class="anchor" aria-label="anchor" href="#several-populations-"></a>
+</h2>
+<div class="section level3">
+<h3 id="probs--listtrain--️-test--">(probs = list(“Train” = 🏋️🌲, “Test” = 📝🌲),<a class="anchor" aria-label="anchor" href="#probs--listtrain--%EF%B8%8F-test--"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="real--listtrain---test--">real = list(“Train” = 🏋🧑, “Test” = 🏋🧔))<a class="anchor" aria-label="anchor" href="#real--listtrain---test--"></a>
+</h3>
+<p><em>Why?</em> In order to compare performance for different populations, like in Train / Test split or in order to check the fairness of the algorithms.</p>
+<p><em>How?</em> The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.</p>
 <p>(code) probs = list(“Train” = …, “Test” = …), real = list(“Train” = …, “Test” = …) (gif)</p>
+<!-- TODO add another test and return error when NULL -->
+<!-- Why not working? :() -->
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">titanic_test</span><span class="op">)</span>
+
+<span class="va">tree_preds_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">tree_model</span>, newdata <span class="op">=</span> <span class="va">titanic_test</span><span class="op">)</span>
+
+<span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="st">"Train"</span> <span class="op">=</span> <span class="va">tree_preds_train</span>,
+  <span class="st">"Test"</span> <span class="op">=</span> <span class="va">tree_preds_test</span><span class="op">)</span>,
+  real <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="st">"Train"</span> <span class="op">=</span> <span class="va">titanic_train</span><span class="op">$</span><span class="va">Survived</span>,
+  <span class="st">"Test"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">titanic_train</span><span class="op">$</span><span class="va">Survived</span><span class="op">)</span><span class="op">)</span>, 
+  interactive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>
+    probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+        <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,
+        <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>
+    <span class="op">)</span>,
+    real <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+        <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,
+        <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>
+    <span class="op">)</span>,
+    interactive <span class="op">=</span> <span class="cn">TRUE</span>   
+<span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="performance-data">Performance Data<a class="anchor" aria-label="anchor" href="#performance-data"></a>
