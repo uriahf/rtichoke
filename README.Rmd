@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r eval=FALSE, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -21,8 +21,6 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test coverage](https://codecov.io/gh/uriahf/rtichoke/branch/main/graph/badge.svg)](https://codecov.io/gh/uriahf/rtichoke?branch=main)
 <!-- badges: end -->
-
-The goal of rtichoke is to ...
 
 ## Installation 
 
@@ -54,47 +52,98 @@ In order to use rtichoke you need to have
 
 There are 3 different cases and for each one of them rtichoke requires a different kind of input:
 
-1. One model for One Population: 🔀
+1. One model for One Population: 
 
-The user is required to provide one vector for the model predictions and one vector for the outcome of the population.
+The user is required to provide one vector for the model's predictions and one 
+vector for the outcome of the population.
 
-```{r}
+For example a Logistic Regression 🔀:
+
+! 
+We will use median imputation for the age variable, it is not a good practice 
+for imputation but it is easy to understand and it allows us to use the `Age` 
+variable.
+
+```{r eval=FALSE, include=FALSE}
 
 library(rtichoke)
+library(titanic)
 
-create_roc_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
-)
+data("titanic_train")
+
+titanic_train$Age[is.na(titanic_train$Age)] <- median(titanic_train$Age, 
+                                                      na.rm = TRUE)
+
+logistic_regression <- glm(Survived ~ Age + Sex, family = "binomial", data = titanic_train)
+
+logistic_preds_train <- predict(logistic_regression, type = "response")
+survived_train <- titanic_train$Survived
+
 ```
 (gif)
+
+```{r eval=FALSE, include=FALSE}
+
+create_roc_curve(probs = logistic_preds_train,
+                 real = survived_train,
+                 interactive = TRUE)
+```
+
+<!-- TODO: Force cur ve to be squared  -->
+
+
 
 Alternatively the vector of the model predictions can be in a list:
 
-```{r}
-create_roc_curve(
-  probs = list("Logistic Regression" = example_dat$estimated_probabilities),
-  real = example_dat$outcome
-)
+```{r eval=FALSE, include=FALSE}
+create_roc_curve(probs = list("Logistic Regression" = 
+                   logistic_preds_train),
+                 real = survived_train,
+                 interactive = TRUE)
 ```
 
 
+2. Several models for One Population 🔀   
 
-### Make it Interactive 
-
-<!-- While you can use the non-interactive version of rtichoke curves, there is nothing special about  -->
-
-(gif roc, lift, precision recall, gains, NB curve for non-interactive-interactive )
-
-
-
-2. Several models for One Population 🔀 🌲 🙈 
+Let's say we want to compare performance for three different models:
 
 The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.
 
-(code)
-probs = list("Model 1" = …, "Model 2" = ..), real = c()
-(gif)
+This time we will use Decision Tree Model 🌲
+
+```{r eval=FALSE, include=FALSE}
+library(rpart)
+
+fit <- rpart( Survived~ Age + Sex, data = titanic_train, method = 'class')
+
+tree_model <- rpart(Survived ~ Age + Sex, data = titanic_train)
+
+tree_preds_train <- predict(tree_model)
+
+```
+
+And just for fun we will add A random guess 🙈
+
+```{r eval=FALSE, include=FALSE}
+
+set.seed(123)
+
+random_preds_train <- runif(nrow(titanic_train), 0, 1)
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+
+create_roc_curve(probs = list(
+  "Logistic Regression" = logistic_preds_train,
+  "Decision Tree" = tree_preds_train,
+  "Random Guess" = random_preds_train),
+                 real = survived_train,
+                 interactive = TRUE)
+
+```
+
 
 3. Several Populations 👩👨
 
@@ -108,7 +157,7 @@ probs = list("Train" = …, "Test" = …), real = list("Train" = …, "Test" = �
 
 ### Performance Data
 
-For roc, lift, precision recall, gains, decision curves and for performance table you can alternatively prepare a performance data and use it as an input, but instead of create_*_curve use plot_*_curve and instead of create_performance_table use render_performance_table:
+For roc, lift, precision recall, gains and decision curves and for performance table you can alternatively prepare a performance data and use it as an input, but instead of create_*_curve use plot_*_curve and instead of create_performance_table use render_performance_table:
 (gif render_roc_curve, prepare_performance_table, plot_roc_curve)
 (table of inputs)
 

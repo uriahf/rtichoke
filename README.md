@@ -14,8 +14,6 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/uriahf/rtichoke/branch/main/graph/badge.svg)](https://codecov.io/gh/uriahf/rtichoke?branch=main)
 <!-- badges: end -->
 
-The goal of rtichoke is to …
-
 ## Installation
 
 <!-- You can install the released version of rtichoke from [CRAN](https://CRAN.R-project.org) with: -->
@@ -47,49 +45,35 @@ In order to use rtichoke you need to have
 There are 3 different cases and for each one of them rtichoke requires a
 different kind of input:
 
-1.  One model for One Population: 🔀
+1.  One model for One Population:
 
-The user is required to provide one vector for the model predictions and
-one vector for the outcome of the population.
+The user is required to provide one vector for the model’s predictions
+and one vector for the outcome of the population.
 
-``` r
-library(rtichoke)
+For example a Logistic Regression 🔀:
 
-create_roc_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
-)
-```
+! We will use median imputation for the age variable, it is not a good
+practice for imputation but it is easy to understand and it allows us to
+use the `Age` variable.
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 (gif)
+
+<!-- TODO: Force cur ve to be squared  -->
 
 Alternatively the vector of the model predictions can be in a list:
 
-``` r
-create_roc_curve(
-  probs = list("Logistic Regression" = example_dat$estimated_probabilities),
-  real = example_dat$outcome
-)
-```
+2.  Several models for One Population 🔀
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
-
-### Make it Interactive
-
-<!-- While you can use the non-interactive version of rtichoke curves, there is nothing special about  -->
-
-(gif roc, lift, precision recall, gains, NB curve for
-non-interactive-interactive )
-
-1.  Several models for One Population 🔀 🌲 🙈
+Let’s say we want to compare performance for three different models:
 
 The user is required to provide one vector of predictions for each model
 in a list and one vector for the outcome of the population.
 
-(code) probs = list(“Model 1” = …, “Model 2” = ..), real = c() (gif)
+This time we will use Decision Tree Model 🌲
 
-1.  Several Populations 👩👨
+And just for fun we will add A random guess 🙈
+
+3.  Several Populations 👩👨
 
 The user is required to provide one vector of predictions for each
 population in a list and one vector for each outcome of the population
@@ -100,7 +84,7 @@ in another list.
 
 ### Performance Data
 
-For roc, lift, precision recall, gains, decision curves and for
+For roc, lift, precision recall, gains and decision curves and for
 performance table you can alternatively prepare a performance data and
 use it as an input, but instead of create\_**curve use plot**\_curve and
 instead of create\_performance\_table use render\_performance\_table:
