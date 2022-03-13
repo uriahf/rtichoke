@@ -39,48 +39,122 @@ performance metrics of prediction models with a binary outcome.
 
 In order to use rtichoke you need to have
 
-1.  `probs`: Estimated Probabilities as predictions (0 ≤ *p̂* ≤ 1).
-2.  `real`: Binary Outcomes (*y* ∈ {1, 0}).
+-   `probs`: Estimated Probabilities as predictions (0 ≤ *p̂* ≤ 1).
+-   `real`: Binary Outcomes (*y* ∈ {1, 0}).
 
 There are 3 different cases and for each one of them rtichoke requires a
 different kind of input:
 
-1.  One model for One Population:
+## One model for One Population:
 
-The user is required to provide one vector for the model’s predictions
-and one vector for the outcome of the population.
+### (probs = 🔀, real = 😁)
+
+*Why?* In order to examine performance of a single model 🔀 for one
+population 😁.
+
+*How?* The user is required to provide one vector for the model’s
+predictions and one vector for the outcome of the population.
+
+(table with emojis)
 
 For example a Logistic Regression 🔀:
 
-! We will use median imputation for the age variable, it is not a good
+! (We will use median imputation for the age variable, it is not a good
 practice for imputation but it is easy to understand and it allows us to
-use the `Age` variable.
+use the `Age` variable.)
+
+``` r
+library(rtichoke)
+library(titanic)
+
+data("titanic_train")
+
+titanic_train$Age[is.na(titanic_train$Age)] <- median(titanic_train$Age, na.rm = TRUE)
+
+logistic_regression <- glm(Survived ~ Age + Sex, family = "binomial", data = titanic_train)
+
+logistic_preds_train <- predict(logistic_regression, type = "response")
+survived_train <- titanic_train$Survived
+```
 
 (gif)
+
+``` r
+create_roc_curve(probs = logistic_preds_train,
+                 real = survived_train,
+                 interactive = TRUE)
+```
 
 <!-- TODO: Force cur ve to be squared  -->
 
 Alternatively the vector of the model predictions can be in a list:
 
-2.  Several models for One Population 🔀
+## Several Models for One Population
 
-Let’s say we want to compare performance for three different models:
+### (probs = list(“logistic regression” = 🔀, “Decision Tree” = 🌲, “Random Guess” = 🙈"),
 
-The user is required to provide one vector of predictions for each model
-in a list and one vector for the outcome of the population.
+### real = 😁)
+
+*Why?* In order to compare performance for three different models for
+the same population.
+
+*How?* The user is required to provide one vector of predictions for
+each model in a list and one vector for the outcome of the population.
 
 This time we will use Decision Tree Model 🌲
 
 And just for fun we will add A random guess 🙈
 
-3.  Several Populations 👩👨
+## Several Populations 🏋📝
 
-The user is required to provide one vector of predictions for each
-population in a list and one vector for each outcome of the population
-in another list.
+### (probs = list(“Train” = 🏋️🌲, “Test” = 📝🌲),
+
+### real = list(“Train” = 🏋🧑, “Test” = 🏋🧔))
+
+*Why?* In order to compare performance for different populations, like
+in Train / Test split or in order to check the fairness of the
+algorithms.
+
+*How?* The user is required to provide one vector of predictions for
+each population in a list and one vector for each outcome of the
+population in another list.
 
 (code) probs = list(“Train” = …, “Test” = …), real = list(“Train” = …,
 “Test” = …) (gif)
+
+<!-- TODO add another test and return error when NULL -->
+<!-- Why not working? :() -->
+
+``` r
+data(titanic_test)
+
+tree_preds_test <- predict(tree_model, newdata = titanic_test)
+
+create_roc_curve(probs = list(
+  "Train" = tree_preds_train,
+  "Test" = tree_preds_test),
+  real = list(
+  "Train" = titanic_train$Survived,
+  "Test" = sample(titanic_train$Survived)), 
+  interactive = TRUE)
+
+create_roc_curve(
+    probs = list(
+        "train" = example_dat %>%
+            dplyr::filter(type_of_set == "train") %>%
+            dplyr::pull(estimated_probabilities),
+        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+            dplyr::pull(estimated_probabilities)
+    ),
+    real = list(
+        "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+            dplyr::pull(outcome),
+        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+            dplyr::pull(outcome)
+    ),
+    interactive = TRUE   
+)
+```
 
 ### Performance Data
 
