@@ -36,7 +36,7 @@ You can install rtichoke from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("uriahf/rtichoke")
 ```
-
+<!-- TODO change to good model, bad model and random guess -->
 ## Overview: 
 
 rtichoke is a package designed for interactive visualization for performance metrics of prediction models with a binary outcome.
@@ -53,92 +53,89 @@ In order to use rtichoke you need to have
 There are 3 different cases and for each one of them rtichoke requires a different kind of input:
 
 ## One model for One Population: 
-### (probs = 🔀, real = 😁) 
 
-*Why?* 
-In order to examine performance of a single model 🔀 for one population 😁.
+**Why?** 
+In order to examine performance of a single model for one population.
 
-*How?*
+**How?**
 The user is required to provide one vector for the model's predictions and one vector for the outcome of the population.
 
-(table with emojis)
-
-For example a Logistic Regression 🔀:
-
-!
-(We will use median imputation for the age variable, it is not a good practice for imputation but it is easy to understand and it allows us to use the `Age` 
-variable.)
-
-```{r eval=FALSE, include=TRUE}
+```{r echo=FALSE}
 
 library(rtichoke)
-library(titanic)
+set.seed(42)
 
-data("titanic_train")
+predictions_and_outcomes <- tibble::tibble(
+  probs = example_dat$bad_model,
+  real = rtichoke::example_dat$outcome) 
 
-titanic_train$Age[is.na(titanic_train$Age)] <- median(titanic_train$Age, na.rm = TRUE)
 
-logistic_regression <- glm(Survived ~ Age + Sex, family = "binomial", data = titanic_train)
-
-logistic_preds_train <- predict(logistic_regression, type = "response")
-survived_train <- titanic_train$Survived
-
+predictions_and_outcomes %>% 
+  dplyr::sample_n(replace = FALSE, size = 6) %>% 
+  gt::gt()
 ```
-(gif)
+
 
 ```{r eval=FALSE, include=TRUE}
 
-create_roc_curve(probs = logistic_preds_train,
-                 real = survived_train,
+create_roc_curve(probs = example_dat$bad_model,
+                 real = example_dat$outcome,
                  interactive = TRUE)
 ```
-
-<!-- TODO: Force cur ve to be squared  -->
-
-
 
 Alternatively the vector of the model predictions can be in a list:
 
 ```{r eval=FALSE, include=FALSE}
-create_roc_curve(probs = list("Logistic Regression" = 
-                   logistic_preds_train),
-                 real = survived_train,
+create_roc_curve(probs = list("Bad Model" = 
+                   example_dat$bad_model),
+                 real = example_dat$outcome,
                  interactive = TRUE)
 ```
 
 
 ## Several Models for One Population 
-### (probs = list("logistic regression" = 🔀, "Decision Tree" = 🌲, "Random Guess" = 🙈"),
-###  real = 😁)
 
-*Why?* 
+**Why?** 
 In order to compare performance for three different models for the same population.
 
-*How?* 
+**How?** 
 The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.
 
-This time we will use Decision Tree Model 🌲
+
+```{r echo=FALSE}
+
+library(rtichoke)
+set.seed(42)
+
+predictions_and_outcomes <- tibble::tibble(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model" = example_dat$bad_model,
+    "Random Guess" = example_dat$random_guess,
+  real = rtichoke::example_dat$outcome) 
+
+
+predictions_and_outcomes %>% 
+  dplyr::sample_n(replace = FALSE, size = 6) %>% 
+  gt::gt()
+```
+
 
 ```{r eval=FALSE, include=FALSE}
-library(rpart)
-
-fit <- rpart( Survived~ Age + Sex, data = titanic_train, method = 'class')
-
-tree_model <- rpart(Survived ~ Age + Sex, data = titanic_train)
-
-tree_preds_train <- predict(tree_model)
+create_roc_curve(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model" = example_dat$bad_model,
+    "Random Guess" = example_dat$random_guess
+  ),
+  real = example_dat$outcome,
+  interactive = TRUE
+)
 
 ```
 
-And just for fun we will add A random guess 🙈
 
-```{r eval=FALSE, include=FALSE}
 
-set.seed(123)
 
-random_preds_train <- runif(nrow(titanic_train), 0, 1)
-
-```
 
 
 ```{r eval=FALSE, include=FALSE}
@@ -153,9 +150,7 @@ create_roc_curve(probs = list(
 ```
 
 
-## Several Populations 🏋📝
-### (probs = list("Train" = 🏋️🌲, "Test" = 📝🌲),
-###  real = list("Train" =  🏋🧑, "Test" = 🏋🧔))
+## Several Populations 
 
 *Why?* 
 In order to compare performance for different populations, like in Train / Test
@@ -164,45 +159,64 @@ split or in order to check the fairness of the algorithms.
 *How?* 
 The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
 
-(code)
-probs = list("Train" = …, "Test" = …), real = list("Train" = …, "Test" = …)
-(gif)
 
- <!-- TODO add another test and return error when NULL -->
-<!-- Why not working? :() -->
+```{r echo=FALSE}
+
+library(rtichoke)
+set.seed(42)
+
+predictions_and_outcomes_train <- tibble::tibble(
+    "probs" = example_dat %>%
+      dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+  real = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome))  
+
+predictions_and_outcomes_test <- tibble::tibble(
+    "probs" = example_dat %>%
+      dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities),
+  real = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome))  
 
 
-```{r eval=FALSE, include = TRUE}
 
-data(titanic_test)
+predictions_and_outcomes_train %>% 
+  dplyr::sample_n(replace = FALSE, size = 6) %>% 
+  gt::gt() %>%
+  gt::tab_header(
+    title = gt::md("**Train Set**")
+  )
 
-tree_preds_test <- predict(tree_model, newdata = titanic_test)
 
-create_roc_curve(probs = list(
-  "Train" = tree_preds_train,
-  "Test" = tree_preds_test),
-  real = list(
-  "Train" = titanic_train$Survived,
-  "Test" = sample(titanic_train$Survived)), 
-  interactive = TRUE)
+predictions_and_outcomes_test %>% 
+  dplyr::sample_n(replace = FALSE, size = 6) %>% 
+  gt::gt() %>%
+  gt::tab_header(
+    title = gt::md("**Test Set**")
+  )
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
 
 create_roc_curve(
-    probs = list(
-        "train" = example_dat %>%
-            dplyr::filter(type_of_set == "train") %>%
-            dplyr::pull(estimated_probabilities),
-        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-            dplyr::pull(estimated_probabilities)
-    ),
-    real = list(
-        "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-            dplyr::pull(outcome),
-        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-            dplyr::pull(outcome)
-    ),
-    interactive = TRUE   
+  probs = list(
+    "Train" = example_dat %>%
+      dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome)
+  ),
+  interactive = TRUE
 )
-
 
 ```
 
