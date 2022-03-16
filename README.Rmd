@@ -37,9 +37,10 @@ You can install rtichoke from [GitHub](https://github.com/) with:
 devtools::install_github("uriahf/rtichoke")
 ```
 <!-- TODO change to good model, bad model and random guess -->
+
 ## Overview: 
 
-rtichoke is a package designed for interactive visualization for performance metrics of prediction models with a binary outcome.
+- `rtichoke` is designed to help analysts with exploration of performance metrics with a binary outcome. In order to do so it uses interactive visualization.
 
 ## Getting started
 
@@ -100,6 +101,10 @@ tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P
                 "Precision Recall","x", " ", "y", " ", " ", " ", " ",
                 "Decision","x", " ", "y", " ", " ", "y", "x") %>%
   gt::gt(rowname_col = "Curve")   %>%
+  # 
+  # gt::fmt_markdown(columns = c("Sens", "Spec", "PPV", "PPCR", "Lift", "NB", "P. Thr")) %>% 
+  # 
+  # gt::fmt_markdown(columns = everything()) %>%
   gt::tab_style(
     style = list(
       gt::cell_text(weight = "bold")
@@ -114,16 +119,20 @@ tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P
     table_body.hlines.color = "white",
     table.border.bottom.color = "white",
     table.border.bottom.width = gt::px(3)
-  ) %>%
-  gt::cols_align(
-    align = "center"
-  )
+  ) 
+  
 
 
 ```
 
 
 ### Predictions and Outcomes as input
+
+<!-- - ` is designed for interactive visualization for performance metrics of prediction models with a binary outcome. -->
+
+<!-- -- -->
+
+<!-- It is agnostic in a sense that it does not care about the models that were used to develop predictions. It takes only the estimated probabilities of an outcome  -->
 
 In order to use rtichoke you need to have 
 
