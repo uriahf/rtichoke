@@ -90,7 +90,7 @@ tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
 
                 "Performance Table", "`create_performance_table()`", "`render_performance_table()`",
 
-                "Summary Report", "`create_summary_report()`", "`render_summary_report()`") %>%
+                "Summary Report", "`create_summary_report()`", "") %>%
 
   gt::gt(rowname_col = "Output")   %>%
 

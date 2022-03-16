@@ -43,7 +43,87 @@ rtichoke is a package designed for interactive visualization for performance met
 
 ## Getting started
 
-### Predictions and Outcomes
+### Naming Convention
+
+```{r echo=FALSE}
+
+library(magrittr)
+
+tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
+
+                "Performance Data", "`prepare_performance_data()`", "",
+
+                "ROC", "`create_roc_curve()`", "`plot_roc_curve()`",
+
+                "Lift", "`create_lift_curve()`", "`plot_lift_curve()`",
+
+                "Gains", "`create_gains_curve()`", "`plot_gains_curve()`",
+
+                "Precision Recall", "`create_precision_recall_curve()`", "`plot_precision_recall_curve()`",
+
+                "Decision", "`create_decision_curve()`", "`plot_decision_curve()`",
+
+                "Calibration", "`create_calibration_curve()`", "",
+
+                "Performance Table", "`create_performance_table()`", "`render_performance_table()`",
+
+                "Summary Report", "`create_summary_report()`", "") %>%
+
+  gt::gt(rowname_col = "Output")   %>%
+
+  gt::fmt_markdown(columns = c("Predictions and Outcomes", "Performance Data"))  %>% 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_column_labels(dplyr::everything())
+  )  %>% 
+  gt::opt_table_lines(extent = "default") %>%
+  gt::tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = gt::px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = gt::px(3)
+  )
+
+```
+
+### Curves based on Performance Metrics
+
+```{r echo=FALSE}
+tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P. Thr",
+                "ROC","y", "x", " ", " ", " ", " ", " ",
+                "Lift"," ", " ", " ", "x", "y", " ", " ",
+                "Gains"," ", "y", " ", "x", " ", " ", " ",
+                "Precision Recall","x", " ", "y", " ", " ", " ", " ",
+                "Decision","x", " ", "y", " ", " ", "y", "x") %>%
+  gt::gt(rowname_col = "Curve")   %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_column_labels(dplyr::everything())
+  )  %>%
+  gt::opt_table_lines(extent = "default") %>%
+  gt::tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = gt::px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = gt::px(3)
+  ) %>%
+  gt::cols_align(
+    align = "center"
+  )
+
+
+```
+
+
+### Predictions and Outcomes as input
 
 In order to use rtichoke you need to have 
 
@@ -52,7 +132,7 @@ In order to use rtichoke you need to have
 
 There are 3 different cases and for each one of them rtichoke requires a different kind of input:
 
-## One model for One Population: 
+### One model for One Population: 
 
 **Why?** 
 In order to examine performance of a single model for one population.
@@ -63,16 +143,21 @@ The user is required to provide one vector for the model's predictions and one v
 ```{r echo=FALSE}
 
 library(rtichoke)
-set.seed(42)
+set.seed(123)
 
 predictions_and_outcomes <- tibble::tibble(
   probs = example_dat$bad_model,
-  real = rtichoke::example_dat$outcome) 
+  real = as.numeric(
+    rtichoke::example_dat$outcome)
+  ) 
 
 
 predictions_and_outcomes %>% 
   dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt()
+  gt::gt() %>% 
+  gt::cols_align(align = "center") %>% 
+  gt::fmt_number(columns = probs,
+                 decimals  = 2)
 ```
 
 
@@ -85,18 +170,17 @@ create_roc_curve(probs = example_dat$bad_model,
 
 Alternatively the vector of the model predictions can be in a list:
 
-```{r eval=FALSE, include=FALSE}
-create_roc_curve(probs = list("Bad Model" = 
-                   example_dat$bad_model),
+```{r eval=FALSE, include=TRUE}
+create_roc_curve(probs = list("Bad Model" = example_dat$bad_model),
                  real = example_dat$outcome,
                  interactive = TRUE)
 ```
 
 
-## Several Models for One Population 
+### Several Models for One Population 
 
 **Why?** 
-In order to compare performance for three different models for the same population.
+In order to compare performance for several different models for the same population.
 
 **How?** 
 The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.
@@ -111,46 +195,33 @@ predictions_and_outcomes <- tibble::tibble(
     "Good Model" = example_dat$estimated_probabilities,
     "Bad Model" = example_dat$bad_model,
     "Random Guess" = example_dat$random_guess,
-  real = rtichoke::example_dat$outcome) 
+  real = as.numeric(rtichoke::example_dat$outcome)) 
 
 
 predictions_and_outcomes %>% 
   dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt()
+  gt::gt() %>% 
+  gt::cols_align(align = "center") %>% 
+  gt::fmt_number(columns = 1:3,
+                 decimals  = 2)
 ```
 
 
-```{r eval=FALSE, include=FALSE}
+```{r eval=FALSE, include = TRUE}
 create_roc_curve(
   probs = list(
     "Good Model" = example_dat$estimated_probabilities,
     "Bad Model" = example_dat$bad_model,
     "Random Guess" = example_dat$random_guess
   ),
-  real = example_dat$outcome,
+  real = as.numeric(rtichoke::example_dat$outcome),
   interactive = TRUE
 )
 
 ```
 
 
-
-
-
-
-```{r eval=FALSE, include=FALSE}
-
-create_roc_curve(probs = list(
-  "Logistic Regression" = logistic_preds_train,
-  "Decision Tree" = tree_preds_train,
-  "Random Guess" = random_preds_train),
-                 real = survived_train,
-                 interactive = TRUE)
-
-```
-
-
-## Several Populations 
+### Several Populations 
 
 *Why?* 
 In order to compare performance for different populations, like in Train / Test
@@ -170,14 +241,16 @@ predictions_and_outcomes_train <- tibble::tibble(
       dplyr::filter(type_of_set == "train") %>%
       dplyr::pull(estimated_probabilities),
   real = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-      dplyr::pull(outcome))  
+      dplyr::pull(outcome) %>% 
+    as.numeric())  
 
 predictions_and_outcomes_test <- tibble::tibble(
     "probs" = example_dat %>%
       dplyr::filter(type_of_set == "test") %>%
       dplyr::pull(estimated_probabilities),
   real = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(outcome))  
+      dplyr::pull(outcome) %>% 
+    as.numeric())  
 
 
 
@@ -186,7 +259,9 @@ predictions_and_outcomes_train %>%
   gt::gt() %>%
   gt::tab_header(
     title = gt::md("**Train Set**")
-  )
+  )  %>% 
+  gt::fmt_number(columns = probs,
+                 decimals  = 2)
 
 
 predictions_and_outcomes_test %>% 
@@ -194,12 +269,14 @@ predictions_and_outcomes_test %>%
   gt::gt() %>%
   gt::tab_header(
     title = gt::md("**Test Set**")
-  )
+  )%>% 
+  gt::fmt_number(columns = probs,
+                 decimals  = 2)
 
 ```
 
 
-```{r eval=FALSE, include=FALSE}
+```{r eval=FALSE, include = TRUE}
 
 create_roc_curve(
   probs = list(
@@ -222,18 +299,25 @@ create_roc_curve(
 
 
 
-### Performance Data
+## Performance Data as input
 
-For roc, lift, precision recall, gains and decision curves and for performance table you can alternatively prepare a performance data and use it as an input, but instead of create_*_curve use plot_*_curve and instead of create_performance_table use render_performance_table:
-(gif render_roc_curve, prepare_performance_table, plot_roc_curve)
-(table of inputs)
+For some outputs in rtichoke you can alternatively prepare a performance data and use it as an input:
+instead of `create_*_curve` use `plot_*_curve` and instead of `create_performance_table` use `render_performance_table`:
+
+```{r eval=FALSE, include = TRUE}
+one_pop_one_model_as_a_vector %>%
+  plot_roc_curve(interactive = TRUE)
+```
+
 
 
 ### Summary Report 
 
-In order to get all the supported outputs of rtichoke in one html file the user can call create_summary_report().
+In order to get all the supported outputs of rtichoke in one html file the user can call `create_summary_report()`.
 
 ### Getting help
 
 If you encounter a bug please fill an issue with a minimal reproducible example, it will be easier for me to help you and it might help others in the future. Alternatively you are welcome to contact me personally: ufinkel@gmail.com
+
+
 
