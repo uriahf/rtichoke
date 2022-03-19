@@ -49,6 +49,7 @@ background-position: 50% 50%
 class: center, bottom, inverse
 
 ---
+
 ## Agenda
 
 - Presentation of available features in rtichoke 0.0.3
@@ -179,5 +180,466 @@ Binary Outcomes $$y∈\{1, 0\}$$.
 
 ---
 
-There are 3 different cases and for each one of them rtichoke requires a different kind of input:
+### Singel Model: 
+
+The user is required to provide one vector for the predictions and one vector for the outcomes.
+
+```r
+create_roc_curve(
+  probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome) 
+
+```
+
+--
+
+.pull-left[
+
+
+```{r echo=FALSE}
+
+set.seed(123)
+
+single_model_gt <- example_dat %>% 
+  dplyr::mutate(probs = 
+                  round(estimated_probabilities, digits = 3),
+                real = outcome) %>% 
+  dplyr::select(probs, real) %>% 
+  dplyr::sample_n(5) %>% 
+  tibble::as_tibble() %>%
+  gt::gt() 
+
+single_model_gt
+
+```
+
+
+]
+
+--
+
+.pull-right[
+```{r include=TRUE, echo = FALSE}
+create_roc_curve(
+  probs = example_dat$estimated_probabilities, #<<
+  real = example_dat$outcome,
+  interactive = TRUE
+) %>% 
+plotly::layout(width=400, 
+               height=400) 
+```
+]
+
+---
+
+### Singel Model: 
+The user is required to provide one vector for the **predictions** and one vector for the outcomes.
+
+```r
+create_roc_curve(
+* probs = example_dat$estimated_probabilities,
+  real = example_dat$outcome)
+```
+
+.pull-left[
+
+```{r echo=FALSE}
+
+single_model_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      columns = probs
+    )
+  )
+
+```
+
+]
+
+.pull-right[
+```{r include=TRUE, echo = FALSE}
+create_roc_curve(
+  probs = example_dat$estimated_probabilities, #<<
+  real = example_dat$outcome,
+  interactive = TRUE
+) %>% 
+plotly::layout(width=400, 
+               height=400) 
+```
+]
+
+---
+
+
+### Singel Model: 
+The user is required to provide one vector for the predictions and one vector for the **outcomes**.
+
+```r
+create_roc_curve(
+  probs = example_dat$estimated_probabilities,
+* real = example_dat$outcome)
+```
+
+.pull-left[
+
+```{r echo=FALSE}
+
+single_model_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      columns = real
+    )
+  )
+
+```
+
+]
+
+.pull-right[
+```{r include=TRUE, echo = FALSE}
+create_roc_curve(
+  probs = example_dat$estimated_probabilities, 
+  real = example_dat$outcome, #<<
+  interactive = TRUE
+) %>% 
+plotly::layout(width=400, 
+               height=400) 
+```
+]
+
+---
+
+### Models Comparison: 
+
+The user is required to provide one vector of predictions for each model in a list and one vector for the outcomes.
+
+
+```r
+create_roc_curve(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model" = example_dat$bad_model,
+    "Random Guess" = example_dat$random_guess
+  ),
+  real = rtichoke::example_dat$outcome
+)
+```
+
+--
+
+
+```{r echo=FALSE}
+
+set.seed(123)
+
+several_models_gt <- example_dat %>% 
+  dplyr::mutate("Good Model" = 
+                  round(example_dat$estimated_probabilities, digits = 3),
+                "Bad Model" = round(
+                  example_dat$bad_model, digits = 3),
+                
+                  "Random Guess" = round(example_dat$random_guess, digits = 3),
+                real = outcome) %>% 
+  dplyr::select("Good Model", 
+                "Bad Model", 
+                "Random Guess",
+                real) %>%
+  dplyr::sample_n(5) %>% 
+  tibble::as_tibble() %>%
+  gt::gt() 
+
+several_models_gt
+
+```
+
+
+---
+
+### Models Comparison: 
+
+The user is required to provide one vector of **predictions** for each model in a list and one vector for the outcomes.
+
+
+```r
+create_roc_curve(
+  probs = list(
+*   "Good Model" = example_dat$estimated_probabilities,
+*   "Bad Model" = example_dat$bad_model,
+*   "Random Guess" = example_dat$random_guess
+  ),
+  real = rtichoke::example_dat$outcome
+)
+```
+
+
+```{r echo=FALSE}
+
+several_models_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      columns = c("Good Model", 
+                "Bad Model", 
+                "Random Guess")
+    )
+  )
+
+```
+
+
+
+---
+
+### Models Comparison: 
+
+The user is required to provide one vector of predictions for each model in a list and one vector for the **outcomes**.
+
+```r
+create_roc_curve(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model" = example_dat$bad_model,
+    "Random Guess" = example_dat$random_guess
+  ),
+* real = rtichoke::example_dat$outcome
+)
+```
+
+```{r echo=FALSE}
+
+several_models_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      columns = real
+    )
+  )
+
+```
+
+---
+
+### Models Comparison: 
+
+The user is required to provide one vector of predictions for each model in a list and one vector for the outcomes.
+
+<style>
+
+.center2 {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+</style>
+
+.center2[
+
+```{r echo=FALSE}
+create_roc_curve(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model" = example_dat$bad_model,
+    "Random Guess" = example_dat$random_guess
+  ),
+  real = as.numeric(rtichoke::example_dat$outcome),
+  interactive = TRUE
+)  %>% 
+plotly::layout(width=400, 
+               height=400) 
+
+```
+
+]
+
+
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+```r
+create_roc_curve(
+  probs = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome)
+  )
+)
+```
+
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+
+```r
+create_roc_curve(
+  probs = list(
+*   "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+*     dplyr::pull(estimated_probabilities),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+*   "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+*     dplyr::pull(outcome),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome)
+  )
+)
+```
+
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+```r
+create_roc_curve(
+  probs = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+*   "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+*     dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome),
+*   "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+*     dplyr::pull(outcome)
+  )
+)
+```
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+```{r echo=FALSE}
+
+set.seed(42)
+
+several_populations_gt <- example_dat %>% 
+  dplyr::mutate("probs" = 
+                  round(estimated_probabilities, digits = 3),
+                "real" = outcome,
+                "Population" = type_of_set) %>% 
+  dplyr::select("probs", 
+                "real", 
+                "Population") %>%
+  dplyr::sample_n(9) %>% 
+  tibble::as_tibble() %>%
+  gt::gt() 
+
+several_populations_gt
+
+```
+
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+```{r echo=FALSE}
+
+several_populations_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      rows = Population == "train"
+    )
+  )
+
+```
+
+
+---
+
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+
+```{r echo=FALSE}
+
+several_populations_gt %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "yellow")
+      ),
+    locations = gt::cells_body(
+      rows = Population == "test"
+    )
+  )
+
+```
+
+
+---
+
+### Population Comparison: 
+
+The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+
+.center2[
+
+```{r echo=FALSE}
+create_roc_curve(
+  probs = list(
+    "Train" = example_dat %>%
+      dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(estimated_probabilities),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(estimated_probabilities)
+  ),
+  real = list(
+    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+      dplyr::pull(outcome),
+    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+      dplyr::pull(outcome)
+  ),
+  interactive = TRUE
+)  %>% 
+plotly::layout(width=400, 
+               height=400) 
+
+```
+
+]
+
+
+---
+
+### Time for live coding
+
 

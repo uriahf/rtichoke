@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
 ```
 
 # rtichoke
@@ -44,88 +45,6 @@ devtools::install_github("uriahf/rtichoke")
 
 ## Getting started
 
-### Naming Convention
-
-```{r echo=FALSE}
-
-library(magrittr)
-
-tibble::tribble(~"Output", ~"Predictions and Outcomes", ~"Performance Data",
-
-                "Performance Data", "`prepare_performance_data()`", "",
-
-                "ROC", "`create_roc_curve()`", "`plot_roc_curve()`",
-
-                "Lift", "`create_lift_curve()`", "`plot_lift_curve()`",
-
-                "Gains", "`create_gains_curve()`", "`plot_gains_curve()`",
-
-                "Precision Recall", "`create_precision_recall_curve()`", "`plot_precision_recall_curve()`",
-
-                "Decision", "`create_decision_curve()`", "`plot_decision_curve()`",
-
-                "Calibration", "`create_calibration_curve()`", "",
-
-                "Performance Table", "`create_performance_table()`", "`render_performance_table()`",
-
-                "Summary Report", "`create_summary_report()`", "") %>%
-
-  gt::gt(rowname_col = "Output")   %>%
-
-  gt::fmt_markdown(columns = c("Predictions and Outcomes", "Performance Data"))  %>% 
-  gt::tab_style(
-    style = list(
-      gt::cell_text(weight = "bold")
-    ),
-    locations = gt::cells_column_labels(dplyr::everything())
-  )  %>% 
-  gt::opt_table_lines(extent = "default") %>%
-  gt::tab_options(
-    column_labels.border.top.color = "white",
-    column_labels.border.top.width = gt::px(3),
-    column_labels.border.bottom.color = "black",
-    table_body.hlines.color = "white",
-    table.border.bottom.color = "white",
-    table.border.bottom.width = gt::px(3)
-  )
-
-```
-
-### Curves based on Performance Metrics
-
-```{r echo=FALSE}
-tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P. Thr",
-                "ROC","y", "x", " ", " ", " ", " ", " ",
-                "Lift"," ", " ", " ", "x", "y", " ", " ",
-                "Gains"," ", "y", " ", "x", " ", " ", " ",
-                "Precision Recall","x", " ", "y", " ", " ", " ", " ",
-                "Decision","x", " ", "y", " ", " ", "y", "x") %>%
-  gt::gt(rowname_col = "Curve")   %>%
-  # 
-  # gt::fmt_markdown(columns = c("Sens", "Spec", "PPV", "PPCR", "Lift", "NB", "P. Thr")) %>% 
-  # 
-  # gt::fmt_markdown(columns = everything()) %>%
-  gt::tab_style(
-    style = list(
-      gt::cell_text(weight = "bold")
-    ),
-    locations = gt::cells_column_labels(dplyr::everything())
-  )  %>%
-  gt::opt_table_lines(extent = "default") %>%
-  gt::tab_options(
-    column_labels.border.top.color = "white",
-    column_labels.border.top.width = gt::px(3),
-    column_labels.border.bottom.color = "black",
-    table_body.hlines.color = "white",
-    table.border.bottom.color = "white",
-    table.border.bottom.width = gt::px(3)
-  ) 
-  
-
-
-```
-
-
 ### Predictions and Outcomes as input
 
 <!-- - ` is designed for interactive visualization for performance metrics of prediction models with a binary outcome. -->
@@ -134,40 +53,36 @@ tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P
 
 <!-- It is agnostic in a sense that it does not care about the models that were used to develop predictions. It takes only the estimated probabilities of an outcome  -->
 
-In order to use rtichoke you need to have 
+In order to use `rtichoke` you need to have 
 
-- `probs`: Estimated Probabilities as predictions ($0 \leq\hat{p} \leq 1$).
-- `real`: Binary Outcomes ($y∈\{1, 0\}$). 
+- `probs`: Estimated Probabilities as predictions.
+- `real`: Binary Outcomes. 
 
 There are 3 different cases and for each one of them rtichoke requires a different kind of input:
 
-### One model for One Population: 
+### Singel Model: 
 
-**Why?** 
-In order to examine performance of a single model for one population.
+The user is required to provide one vector for the predictions and one vector for the outcomes.
 
-**How?**
-The user is required to provide one vector for the model's predictions and one vector for the outcome of the population.
+<!-- ```{r echo=FALSE} -->
 
-```{r echo=FALSE}
+<!-- library(rtichoke) -->
+<!-- set.seed(123) -->
 
-library(rtichoke)
-set.seed(123)
-
-predictions_and_outcomes <- tibble::tibble(
-  probs = example_dat$bad_model,
-  real = as.numeric(
-    rtichoke::example_dat$outcome)
-  ) 
+<!-- predictions_and_outcomes <- tibble::tibble( -->
+<!--   probs = example_dat$bad_model, -->
+<!--   real = as.numeric( -->
+<!--     rtichoke::example_dat$outcome) -->
+<!--   )  -->
 
 
-predictions_and_outcomes %>% 
-  dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt() %>% 
-  gt::cols_align(align = "center") %>% 
-  gt::fmt_number(columns = probs,
-                 decimals  = 2)
-```
+<!-- predictions_and_outcomes %>%  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
+<!--   gt::gt() %>%  -->
+<!--   gt::cols_align(align = "center") %>%  -->
+<!--   gt::fmt_number(columns = probs, -->
+<!--                  decimals  = 2)  -->
+<!-- ``` -->
 
 
 ```{r eval=FALSE, include=TRUE}
@@ -186,7 +101,7 @@ create_roc_curve(probs = list("Bad Model" = example_dat$bad_model),
 ```
 
 
-### Several Models for One Population 
+### Models Comparison: 
 
 **Why?** 
 In order to compare performance for several different models for the same population.
@@ -195,25 +110,25 @@ In order to compare performance for several different models for the same popula
 The user is required to provide one vector of predictions for each model in a list and one vector for the outcome of the population.
 
 
-```{r echo=FALSE}
+<!-- ```{r echo=FALSE} -->
 
-library(rtichoke)
-set.seed(42)
+<!-- library(rtichoke) -->
+<!-- set.seed(42) -->
 
-predictions_and_outcomes <- tibble::tibble(
-    "Good Model" = example_dat$estimated_probabilities,
-    "Bad Model" = example_dat$bad_model,
-    "Random Guess" = example_dat$random_guess,
-  real = as.numeric(rtichoke::example_dat$outcome)) 
+<!-- predictions_and_outcomes <- tibble::tibble( -->
+<!--     "Good Model" = example_dat$estimated_probabilities, -->
+<!--     "Bad Model" = example_dat$bad_model, -->
+<!--     "Random Guess" = example_dat$random_guess, -->
+<!--   real = as.numeric(rtichoke::example_dat$outcome))  -->
 
 
-predictions_and_outcomes %>% 
-  dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt() %>% 
-  gt::cols_align(align = "center") %>% 
-  gt::fmt_number(columns = 1:3,
-                 decimals  = 2)
-```
+<!-- predictions_and_outcomes %>%  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
+<!--   gt::gt() %>%  -->
+<!--   gt::cols_align(align = "center") %>%  -->
+<!--   gt::fmt_number(columns = 1:3, -->
+<!--                  decimals  = 2) -->
+<!-- ``` -->
 
 
 ```{r eval=FALSE, include = TRUE}
@@ -240,49 +155,49 @@ split or in order to check the fairness of the algorithms.
 The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
 
 
-```{r echo=FALSE}
+<!-- ```{r echo=FALSE} -->
 
-library(rtichoke)
-set.seed(42)
+<!-- library(rtichoke) -->
+<!-- set.seed(42) -->
 
-predictions_and_outcomes_train <- tibble::tibble(
-    "probs" = example_dat %>%
-      dplyr::filter(type_of_set == "train") %>%
-      dplyr::pull(estimated_probabilities),
-  real = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-      dplyr::pull(outcome) %>% 
-    as.numeric())  
+<!-- predictions_and_outcomes_train <- tibble::tibble( -->
+<!--     "probs" = example_dat %>% -->
+<!--       dplyr::filter(type_of_set == "train") %>% -->
+<!--       dplyr::pull(estimated_probabilities), -->
+<!--   real = example_dat %>% dplyr::filter(type_of_set == "train") %>% -->
+<!--       dplyr::pull(outcome) %>%  -->
+<!--     as.numeric())   -->
 
-predictions_and_outcomes_test <- tibble::tibble(
-    "probs" = example_dat %>%
-      dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(estimated_probabilities),
-  real = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(outcome) %>% 
-    as.numeric())  
-
-
-
-predictions_and_outcomes_train %>% 
-  dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt() %>%
-  gt::tab_header(
-    title = gt::md("**Train Set**")
-  )  %>% 
-  gt::fmt_number(columns = probs,
-                 decimals  = 2)
+<!-- predictions_and_outcomes_test <- tibble::tibble( -->
+<!--     "probs" = example_dat %>% -->
+<!--       dplyr::filter(type_of_set == "test") %>% -->
+<!--       dplyr::pull(estimated_probabilities), -->
+<!--   real = example_dat %>% dplyr::filter(type_of_set == "test") %>% -->
+<!--       dplyr::pull(outcome) %>%  -->
+<!--     as.numeric())   -->
 
 
-predictions_and_outcomes_test %>% 
-  dplyr::sample_n(replace = FALSE, size = 6) %>% 
-  gt::gt() %>%
-  gt::tab_header(
-    title = gt::md("**Test Set**")
-  )%>% 
-  gt::fmt_number(columns = probs,
-                 decimals  = 2)
 
-```
+<!-- predictions_and_outcomes_train %>%  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
+<!--   gt::gt() %>% -->
+<!--   gt::tab_header( -->
+<!--     title = gt::md("**Train Set**") -->
+<!--   )  %>%  -->
+<!--   gt::fmt_number(columns = probs, -->
+<!--                  decimals  = 2) -->
+
+
+<!-- predictions_and_outcomes_test %>%  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
+<!--   gt::gt() %>% -->
+<!--   gt::tab_header( -->
+<!--     title = gt::md("**Test Set**") -->
+<!--   )%>%  -->
+<!--   gt::fmt_number(columns = probs, -->
+<!--                  decimals  = 2) -->
+
+<!-- ``` -->
 
 
 ```{r eval=FALSE, include = TRUE}
@@ -317,7 +232,6 @@ instead of `create_*_curve` use `plot_*_curve` and instead of `create_performanc
 one_pop_one_model_as_a_vector %>%
   plot_roc_curve(interactive = TRUE)
 ```
-
 
 
 ### Summary Report 
