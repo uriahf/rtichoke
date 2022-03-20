@@ -5,7 +5,7 @@ create_summary_report(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome,
   interactive = TRUE,
-  output_file = "regular.html"
+  output_file = "one_model.html"
 )
 
 
@@ -17,7 +17,7 @@ create_summary_report(
   ),
   real = example_dat$outcome,
   interactive = TRUE,
-  output_file = "Models.html"
+  output_file = "several_models.html"
 )
 
 
@@ -27,19 +27,13 @@ create_summary_report(
       dplyr::filter(type_of_set == "train") %>%
       dplyr::pull(estimated_probabilities),
     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(estimated_probabilities),
-    "Val" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(estimated_probabilities) %>% 
-      sample()
+      dplyr::pull(estimated_probabilities)
   ),
   real = list(
     "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
       dplyr::pull(outcome),
     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(outcome),
-    "Val" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(outcome) %>% 
-      sample()
+      dplyr::pull(outcome)
   ),
   interactive = TRUE,
   output_file = "train_test_val.html"

@@ -94,8 +94,12 @@ tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P
     table_body.hlines.color = "white",
     table.border.bottom.color = "white",
     table.border.bottom.width = gt::px(3)
+  )  %>%
+  gt::cols_align(
+    columns = dplyr::everything(),  
+    align = "center"
   ) 
-  
+   
 
 
 ```

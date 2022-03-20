@@ -41,14 +41,43 @@ style_duo_accent(
   white_color = "#FFFFFF"
 )
 
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+
 ```
 
+```{r metathis, echo=FALSE}
+library(metathis)
+meta() %>%
+  meta_name("github-repo" = "https://github.com/uriahf/rtichoke") %>%
+  meta_social(
+    title = "rtichoke 0.0.3 walkthrough",
+    description = paste(
+      "Quick start with rtichoke 0.0.3"
+    ),
+    url = "https://uriahf.github.io/rtichoke",
+    og_type = "website",
+    og_author = "Uriah Finkel"
+  )
+```
 
 background-image: url("https://idsb.tmgrup.com.tr/ly/uploads/images/2021/07/25/130168.jpg")
 background-position: 50% 50%
 class: center, bottom, inverse
 
 ---
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "rtichoke_003_walkthrough_files/clalit_innovation_logo.jpg"
+)
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+xaringanExtra::use_clipboard()
+```
 
 ## Agenda
 
@@ -127,7 +156,7 @@ tibble::tribble(~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P
                 "Lift"," ", " ", " ", "x", "y", " ", " ",
                 "Gains"," ", "y", " ", "x", " ", " ", " ",
                 "Precision Recall","x", " ", "y", " ", " ", " ", " ",
-                "Decision","x", " ", "y", " ", " ", "y", "x") %>%
+                "Decision"," ", " ", " ", " ", " ", "y", "x") %>%
   gt::gt(rowname_col = "Curve")   %>%
   # 
   # gt::fmt_markdown(columns = c("Sens", "Spec", "PPV", "PPCR", "Lift", "NB", "P. Thr")) %>% 
@@ -317,7 +346,9 @@ plotly::layout(width=400,
 
 ### Models Comparison: 
 
-The user is required to provide one vector of predictions for each model in a list and one vector for the outcomes.
+The user is required to provide: 
+- one vector of predictions for each model (in a list) 
+- one vector for the outcomes.
 
 
 ```r
@@ -327,7 +358,7 @@ create_roc_curve(
     "Bad Model" = example_dat$bad_model,
     "Random Guess" = example_dat$random_guess
   ),
-  real = rtichoke::example_dat$outcome
+  real = example_dat$outcome
 )
 ```
 
@@ -350,7 +381,7 @@ several_models_gt <- example_dat %>%
                 "Bad Model", 
                 "Random Guess",
                 real) %>%
-  dplyr::sample_n(5) %>% 
+  dplyr::sample_n(4) %>% 
   tibble::as_tibble() %>%
   gt::gt() 
 
@@ -363,7 +394,9 @@ several_models_gt
 
 ### Models Comparison: 
 
-The user is required to provide one vector of **predictions** for each model in a list and one vector for the outcomes.
+The user is required to provide: 
+- one vector of **predictions** for each model (in a list) 
+- one vector for the outcomes.
 
 
 ```r
@@ -373,7 +406,7 @@ create_roc_curve(
 *   "Bad Model" = example_dat$bad_model,
 *   "Random Guess" = example_dat$random_guess
   ),
-  real = rtichoke::example_dat$outcome
+  real = example_dat$outcome
 )
 ```
 
@@ -400,7 +433,9 @@ several_models_gt %>%
 
 ### Models Comparison: 
 
-The user is required to provide one vector of predictions for each model in a list and one vector for the **outcomes**.
+The user is required to provide: 
+- one vector of predictions for each model (in a list) 
+- one vector for the **outcomes**.
 
 ```r
 create_roc_curve(
@@ -409,7 +444,7 @@ create_roc_curve(
     "Bad Model" = example_dat$bad_model,
     "Random Guess" = example_dat$random_guess
   ),
-* real = rtichoke::example_dat$outcome
+* real = example_dat$outcome
 )
 ```
 
@@ -431,7 +466,9 @@ several_models_gt %>%
 
 ### Models Comparison: 
 
-The user is required to provide one vector of predictions for each model in a list and one vector for the outcomes.
+The user is required to provide: 
+- one vector of predictions for each model (in a list) 
+- one vector for the outcomes.
 
 <style>
 
@@ -470,7 +507,10 @@ plotly::layout(width=400,
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
+
 
 ```r
 create_roc_curve(
@@ -493,8 +533,9 @@ create_roc_curve(
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
-
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
 
 ```r
 create_roc_curve(
@@ -517,7 +558,9 @@ create_roc_curve(
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
 
 ```r
 create_roc_curve(
@@ -539,7 +582,9 @@ create_roc_curve(
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
 
 ```{r echo=FALSE}
 
@@ -565,7 +610,9 @@ several_populations_gt
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
 
 ```{r echo=FALSE}
 
@@ -587,7 +634,9 @@ several_populations_gt %>%
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
+The user is required to provide: 
+- One vector of predictions for each population (in a list) 
+- One vector for each outcome of the population (in a list).
 
 
 ```{r echo=FALSE}
@@ -609,10 +658,7 @@ several_populations_gt %>%
 
 ### Population Comparison: 
 
-The user is required to provide one vector of predictions for each population in a list and one vector for each outcome of the population in another list.
-
 .center2[
-
 ```{r echo=FALSE}
 create_roc_curve(
   probs = list(
@@ -642,4 +688,8 @@ plotly::layout(width=400,
 
 ### Time for live coding
 
+[© Allison Horst](https://www.allisonhorst.com/)
 
+```{r echo=FALSE, out.width = '75%'}
+knitr::include_graphics("rtichoke_003_walkthrough_files/live_coding.jpg")
+```
