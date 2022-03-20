@@ -1,11 +1,26 @@
 library(rtichoke)
 
+# create_roc_curve(
+#   probs = example_dat$estimated_probabilities,
+#   real = example_dat$outcome, 
+#   interactive = TRUE
+# ) 
+# 
+# 
+# prepare_performance_data(
+#   probs = example_dat$estimated_probabilities,
+#   real = example_dat$outcome
+# ) %>% 
+#   plot_roc_curve(interactive = TRUE)
+
+
+
 
 create_summary_report(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome,
   interactive = TRUE,
-  output_file = "one_model.html"
+  output_file = "singel_model.html"
 )
 
 
@@ -17,7 +32,7 @@ create_summary_report(
   ),
   real = example_dat$outcome,
   interactive = TRUE,
-  output_file = "several_models.html"
+  output_file = "three_models.html"
 )
 
 
@@ -36,5 +51,5 @@ create_summary_report(
       dplyr::pull(outcome)
   ),
   interactive = TRUE,
-  output_file = "train_test_val.html"
+  output_file = "train_and_test.html"
 )
