@@ -7,11 +7,8 @@
 create_table_for_auc(probs, real)
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
-
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 }
 \description{
 Create Table for AUC

@@ -6,17 +6,16 @@
 \usage{
 prepare_performance_data(
   probs,
-  real,
+  reals,
   by = 0.01,
   stratified_by = "probability_threshold"
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
@@ -48,31 +47,23 @@ only this time each row will represent some rounded percentile.
 # You can prepare Performance Data for one model
 
 prepare_performance_data(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
 )
 
-# And you can prepare Performance Data for more than one model
+
+# Several Models
+
 prepare_performance_data(
   probs = list(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome
+  real = list(example_dat$outcome)
 )
 
-# Notice that once you've put a list in the probs parameter you'll
-# receive a new
-# column in the Performance Data named "Model". If it's a named list
-# (like in our
-# example) the Model column will mention the names of each element
-# in the probs-list
-# as the name of the model, if it's unnamed list the Models will count
-# "Model 1",
-# "Model 2", etc.. according to the order of the estimated-probabilities
-# vector in the
-# list.
 
+# Several Populations
 
 prepare_performance_data(
   probs = list(

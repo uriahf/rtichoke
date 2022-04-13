@@ -5,7 +5,7 @@ test_that("Performance Table names are correct", {
         "First Model" = example_dat$estimated_probabilities,
         "Second Model" = example_dat$random_guess
       ),
-      real = example_dat$outcome
+      reals = list(example_dat$outcome)
     )),
     c(
       "model", "threshold", "TP", "TN", "FN", "FP", "sensitivity",
@@ -16,8 +16,8 @@ test_that("Performance Table names are correct", {
 
   expect_equal(
     names(prepare_performance_data(
-      probs = example_dat$estimated_probabilities,
-      real = example_dat$outcome
+      probs = list(example_dat$estimated_probabilities),
+      reals = list(example_dat$outcome)
     )),
     c(
       "threshold", "TP", "TN", "FN", "FP", "sensitivity",

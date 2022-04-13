@@ -7,8 +7,8 @@
 check_probs_input(probs)
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 }
 \description{
 Check probs input

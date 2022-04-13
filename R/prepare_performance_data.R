@@ -20,10 +20,9 @@
 #' only this time each row will represent some rounded percentile.
 #'
 #'
-#' @param probs a vector of estimated probabilities or a list of vectors of that
-#' kind (one for each model)
-#' @param real a vector of binary outcomes or a list of vectors of that
-#' kind (one for each population)
+#' @param probs a list of vectors of estimated probabilities 
+#' (one for each model or one for each population)
+#' @param reals a list of vectors of binary outcomes (one for each population)
 #' @param by number: increment of the sequence.
 #' @param stratified_by Performance Metrics can be stratified by Probability
 #' Threshold or alternatively by Predicted Positives Condition Rate
@@ -32,31 +31,23 @@
 #' # You can prepare Performance Data for one model
 #'
 #' prepare_performance_data(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
 #' )
 #'
-#' # And you can prepare Performance Data for more than one model
+#'
+#' # Several Models
+#'
 #' prepare_performance_data(
 #'   probs = list(
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
-#'   real = example_dat$outcome
+#'   real = list(example_dat$outcome)
 #' )
 #'
-#' # Notice that once you've put a list in the probs parameter you'll
-#' # receive a new
-#' # column in the Performance Data named "Model". If it's a named list
-#' # (like in our
-#' # example) the Model column will mention the names of each element
-#' # in the probs-list
-#' # as the name of the model, if it's unnamed list the Models will count
-#' # "Model 1",
-#' # "Model 2", etc.. according to the order of the estimated-probabilities
-#' # vector in the
-#' # list.
 #'
+#' # Several Populations
 #'
 #' prepare_performance_data(
 #'   probs = list(
@@ -74,40 +65,46 @@
 #'   )
 #' )
 #' @export
-prepare_performance_data <- function(probs, real, by = 0.01,
+prepare_performance_data <- function(probs, reals, by = 0.01,
                                      stratified_by = "probability_threshold") {
   . <- threshold <- NULL
 
   check_probs_input(probs)
-  check_real_input(real)
+  # check_real_input(reals)
 
+  match.arg(stratified_by, c("probability_threshold", "ppcr"))
 
   if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
     stop("Probabilities mustn't be greater than one ")
   }
 
-  if (is.list(probs) & !is.list(real)) {
+  if ((length(probs) > 1) & (length(reals) == 1)) {
     if (is.null(names(probs))) {
       names(probs) <- paste("model", seq_len(length(probs)))
     }
-    return(probs %>%
-      purrr::map(~ prepare_performance_data(
-        probs = .,
-        real = real,
+    
+    return(
+    probs %>%
+      purrr::map(
+        ~ prepare_performance_data(
+        probs = list(.),
+        reals = reals,
         by = by,
         stratified_by = stratified_by
       )) %>%
       dplyr::bind_rows(.id = "model"))
   }
 
-  if (is.list(probs) & is.list(real)) {
-    if (is.null(names(probs)) & is.null(names(real))) {
+  if ((length(probs) > 1) & (length(reals) > 1)) {
+    if (is.null(names(probs)) & is.null(names(reals))) {
       names(probs) <- paste("population", seq_len(length(probs)))
-      names(real) <- paste("population", seq_len(length(real)))
+      names(reals) <- paste("population", seq_len(length(reals)))
     }
     return(purrr::map2_dfr(probs,
-      real,
-      ~ prepare_performance_data(.x, .y,
+                           reals,
+      ~ prepare_performance_data(
+        list(.x), 
+        list(.y),
         by = by,
         stratified_by = stratified_by
       ),
@@ -116,11 +113,11 @@ prepare_performance_data <- function(probs, real, by = 0.01,
   }
 
   N <- TP <- TN <- FP <- FN <- NULL
-  N <- length(probs)
+  N <- length(probs[[1]])
 
   tibble::tibble(
     threshold = if (stratified_by != "probability_threshold") {
-      stats::quantile(probs,
+      stats::quantile(probs[[1]],
         probs = rev(seq(0, 1, by = by))
       )
     } else {
@@ -133,16 +130,19 @@ prepare_performance_data <- function(probs, real, by = 0.01,
     {
       if (stratified_by != "probability_threshold") {
         dplyr::mutate(.,
-          ppcr = round(seq(0, 1, by = by), digits = nchar(format(by, scientific = FALSE)))
+          ppcr = round(seq(0, 1, by = by), 
+                       digits = nchar(format(by, scientific = FALSE)))
         )
       } else {
         .
       }
     } %>%
     dplyr::mutate(
-      TP = lapply(threshold, function(x) sum(probs[real == 1] > x)) %>%
+      TP = lapply(threshold, 
+                  function(x) sum(probs[[1]][reals[[1]] == 1] > x)) %>%
         unlist(),
-      TN = lapply(threshold, function(x) sum(probs[real == 0] <= x)) %>%
+      TN = lapply(threshold, 
+                  function(x) sum(probs[[1]][reals[[1]] == 0] <= x)) %>%
         unlist()
     ) %>%
     {
@@ -156,8 +156,8 @@ prepare_performance_data <- function(probs, real, by = 0.01,
       }
     } %>%
     dplyr::mutate(
-      FN = sum(real) - TP,
-      FP = N - sum(real) - TN,
+      FN = sum(reals[[1]]) - TP,
+      FP = N - sum(reals[[1]]) - TN,
       sensitivity = TP / (TP + FN),
       FPR = FP / (FP + TN),
       specificity = TN / (TN + FP),
