@@ -24,14 +24,14 @@ Arrange estimated probabilities to long format
 deciles_dat <- purrr::map_df(list(
   "Model 1" = example_dat$estimated_probabilities
 ),
-~ make_deciles_dat(.x, example_dat$outcome),
+~ make_deciles_dat(.x, list(example_dat$outcome)),
 .id = "model"
 ) \%>\%
   mutate(model = forcats::fct_inorder(factor(model)))
 
 create_dat_for_smooth_calibration(
   list("Model 1" = example_dat$estimated_probabilities),
-  real = example_dat$outcome,
+  real = list(example_dat$outcome),
   deciles_dat
 )
 

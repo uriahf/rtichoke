@@ -8,26 +8,20 @@
 #' @examples
 #' \dontrun{
 #' create_calibration_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome, type = "discrete"
-#' )
-#'
-#' create_calibration_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome, type = "discrete",
-#'   interactive = TRUE
-#' )
-#'
-#'
-#' create_calibration_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome, type = "smooth"
+#'   probs = list(example_dat$estimated_probabilities),
+#'   real = list(example_dat$outcome), type = "discrete"
 #' )
 #'
 #' create_calibration_curve(
 #'   probs = list(example_dat$estimated_probabilities),
-#'   real = example_dat$outcome, type = "smooth",
+#'   real = list(example_dat$outcome), type = "discrete",
 #'   interactive = TRUE
+#' )
+#'
+#'
+#' create_calibration_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   real = list(example_dat$outcome), type = "smooth"
 #' )
 #'
 #' # Several Models
@@ -37,16 +31,17 @@
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
-#'   real = example_dat$outcome, type = "discrete"
+#'   real = list(example_dat$outcome), 
+#'   type = "discrete"
 #' )
 #'
 #'
 #' create_calibration_curve(
 #'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
+#'     "First Model" = list(example_dat$estimated_probabilities),
+#'     "Second Model" = list(example_dat$random_guess)
 #'   ),
-#'   real = example_dat$outcome,
+#'   real = list(example_dat$outcome),
 #'   interactive = TRUE,
 #'   type = "discrete"
 #' )
@@ -54,10 +49,10 @@
 #'
 #' create_calibration_curve(
 #'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
+#'     "First Model" = list(example_dat$estimated_probabilities),
+#'     "Second Model" = list(example_dat$random_guess)
 #'   ),
-#'   real = example_dat$outcome,
+#'   real = list(example_dat$outcome),
 #'   interactive = FALSE,
 #'   type = "smooth"
 #' )
@@ -68,7 +63,7 @@
 #'     "Second Model" = example_dat$random_guess,
 #'     "Third Model" = sample(example_dat$random_guess, replace = TRUE)
 #'   ),
-#'   real = example_dat$outcome,
+#'   real = list(example_dat$outcome),
 #'   interactive = TRUE,
 #'   type = "smooth"
 #' )
@@ -82,7 +77,8 @@
 #'     "Fourth Model" = sample(example_dat$random_guess, replace = TRUE),
 #'     "Fifth Model" = sample(example_dat$random_guess, replace = TRUE)
 #'   ),
-#'   real = example_dat$outcome, type = "smooth",
+#'   real = list(example_dat$outcome), 
+#'   type = "smooth",
 #'   interactive = TRUE
 #' )
 #'
@@ -130,7 +126,7 @@
 #' }
 create_calibration_curve <- function(probs,
                                      real,
-                                     interactive = FALSE,
+                                     interactive = TRUE,
                                      col_values = c(
                                        "#5BC0BE",
                                        "#FC8D62",
@@ -138,7 +134,6 @@ create_calibration_curve <- function(probs,
                                        "#E78AC3",
                                        "#A4243B"
                                      ),
-                                     title_included = FALSE,
                                      type = "discrete",
                                      size = NULL) {
   quintile <- phatx <- phaty <- gam <- NULL
@@ -147,13 +142,13 @@ create_calibration_curve <- function(probs,
   check_real_input(real)
 
 
-  if (!is.list(probs)) {
+  if (length(probs) == 1) {
     probs <- list("model 1" = probs)
   }
 
   col_values <- col_values[seq_len(length(probs))]
 
-  if (is.list(probs) & !is.list(real)) {
+  if (length(probs) > 1 & length(real) == 1) {
     deciles_dat <- tibble::tribble(
       ~model, ~quintile, ~phaty, ~phatx,
       "reference", NA, 0, 0,
@@ -169,7 +164,7 @@ create_calibration_curve <- function(probs,
   }
 
 
-  if (is.list(probs) & is.list(real)) {
+  if (length(probs) > 1 & length(real) > 1) {
     if (is.null(names(probs)) & is.null(names(real))) {
       names(probs) <- paste("population", seq_len(length(probs)))
       names(real) <- paste("population", seq_len(length(real)))
@@ -827,14 +822,14 @@ arrange_estimated_probabilities_to_long_format <- function(probs) {
 #' deciles_dat <- purrr::map_df(list(
 #'   "Model 1" = example_dat$estimated_probabilities
 #' ),
-#' ~ make_deciles_dat(.x, example_dat$outcome),
+#' ~ make_deciles_dat(.x, list(example_dat$outcome)),
 #' .id = "model"
 #' ) %>%
 #'   mutate(model = forcats::fct_inorder(factor(model)))
 #'
 #' create_dat_for_smooth_calibration(
 #'   list("Model 1" = example_dat$estimated_probabilities),
-#'   real = example_dat$outcome,
+#'   real = list(example_dat$outcome),
 #'   deciles_dat
 #' )
 #'
@@ -878,7 +873,7 @@ arrange_estimated_probabilities_to_long_format <- function(probs) {
 create_dat_for_smooth_calibration <- function(probs,
                                               real,
                                               deciles_dat) {
-  if (is.list(probs) & !is.list(real)) {
+  if (length(probs) > 1 & length(real) == 1) {
     smooth_dat <- tibble::tribble(
       ~model, ~x, ~y,
       "reference", 0, 0,
@@ -898,7 +893,7 @@ create_dat_for_smooth_calibration <- function(probs,
       na.omit()
   }
 
-  if (is.list(probs) & is.list(real)) {
+  if (length(probs) > 1 & length(real) > 1) {
     smooth_dat <- tibble::tribble(
       ~population, ~x, ~y,
       "reference", 0, 0,
