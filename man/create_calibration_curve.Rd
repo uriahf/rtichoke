@@ -65,7 +65,7 @@ create_calibration_curve(
 )
 
 
-# several populations
+# Several Populations
 
 
 create_calibration_curve(

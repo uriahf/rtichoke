@@ -41,7 +41,7 @@
 #' )
 #'
 #'
-#' # several populations
+#' # Several Populations
 #'
 #'
 #' create_calibration_curve(
@@ -108,21 +108,6 @@ create_calibration_curve <- function(probs,
 
   if (length(probs) >= 1 & length(reals) == 1) {
     
-    print("The probs object:")
-    print(probs)
-    print(glue::glue("probs length: {length(probs)}"))
-    print("The reals object:")
-    print(reals)
-    print(glue::glue("reals length: {length(reals)}"))
-    
-
-    print(
-      purrr::map_df(probs,
-                    ~ make_deciles_dat(.x, reals[[1]]),
-                    .id = "model"
-      )
-    )
-    
     
     deciles_dat <- tibble::tribble(
       ~model, ~quintile, ~phaty, ~phatx,
@@ -165,7 +150,6 @@ create_calibration_curve <- function(probs,
 
   if (type == "smooth") {
 
-    # print(reals)
     smooth_dat <- create_dat_for_smooth_calibration(
       probs,
       reals = reals,
@@ -173,7 +157,7 @@ create_calibration_curve <- function(probs,
     )
 
     if (interactive == FALSE) {
-      if ((length(probs) == 1) & !is.list(reals)) {
+      if ((length(probs) == 1) & (length(reals) == 1)) {
         cal_plot <- ggplot2::ggplot(
           smooth_dat,
           ggplot2::aes(
@@ -202,7 +186,7 @@ create_calibration_curve <- function(probs,
           ggplot2::theme(legend.position = "none")
       }
 
-      if ((length(probs) > 1) & !is.list(reals)) {
+      if ((length(probs) > 1) & (length(reals) == 1)) {
         # print(head(smooth_dat))
         # print(col_values)
         #
@@ -232,8 +216,34 @@ create_calibration_curve <- function(probs,
           ggplot2::scale_color_manual(values = c("grey", unname(col_values)))
       }
 
-      if ((length(probs) > 1) & is.list(reals)) {
-        # print(smooth_dat)
+      if ((length(probs) > 1) & (length(reals) > 1)) {
+        
+        cal_plot <- ggplot2::ggplot(
+          smooth_dat
+        ) +
+          ggplot2::geom_line(ggplot2::aes(
+            x = x,
+            y = y,
+            color = population
+          ),
+          size = 1
+          ) +
+          ggplot2::ylab("Observed") +
+          ggplot2::theme_classic() +
+          ggplot2::theme(
+            axis.title.x = ggplot2::element_blank(),
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+          ) +
+          ggplot2::coord_cartesian(
+            xlim = limits,
+            ylim = limits,
+            expand = FALSE
+          ) +
+          ggplot2::scale_color_manual(values = c("grey", unname(col_values)))
+        
+        print(cal_plot)
+        
       }
     }
 
@@ -369,9 +379,11 @@ create_calibration_curve <- function(probs,
             ylim = limits, expand = FALSE
           ) +
           ggplot2::labs(x = "Predicted")
+        
+
       }
 
-      if ((length(probs) > 1) & (!is.list(reals))) {
+      if ((length(probs) > 1) & (length(reals) == 1)) {
         cal_plot <- ggplot2::ggplot(
           deciles_dat %>%
             dplyr::filter(model != "reference"),
@@ -403,7 +415,7 @@ create_calibration_curve <- function(probs,
         ggplot2::theme(legend.position = "none")
       }
 
-      if ((length(probs) > 1) & (is.list(reals))) {
+      if ((length(probs) > 1) & (length(reals) > 1)) {
         cal_plot <- ggplot2::ggplot(
           deciles_dat %>%
             dplyr::filter(population != "reference"),
@@ -630,7 +642,7 @@ create_calibration_curve <- function(probs,
 
 
   if (interactive == FALSE) {
-    if ((length(probs) == 1) & (is.list(probs))) {
+    if ((length(probs) == 1) & (length(reals) == 1)) {
 
       # print("one population")
 
@@ -649,7 +661,7 @@ create_calibration_curve <- function(probs,
         ggplot2::scale_color_manual(values = col_values)
     }
 
-    if ((is.list(probs) & (length(probs) > 1)) & (!is.list(reals))) {
+    if ((length(probs) > 1) & (length(reals) == 1)) {
 
       # print("several models")
       # print(make_histogram_for_calibration(probs, deciles_dat))
@@ -673,7 +685,7 @@ create_calibration_curve <- function(probs,
         ggplot2::scale_fill_manual(values = unname(col_values))
     }
 
-    if ((is.list(probs)) & (is.list(reals))) {
+    if ((length(probs) > 1) & (length(reals) > 1)) {
       # print((is.list(probs)) & ( is.list(real)) )
       # print("several populations")
 
