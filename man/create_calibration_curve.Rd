@@ -17,6 +17,8 @@ create_calibration_curve(
 \item{probs}{a list of vectors of estimated probabilities
 (one for each model or one for each population)}
 
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
+
 \item{interactive}{whether the plot should be interactive
 plots}
 

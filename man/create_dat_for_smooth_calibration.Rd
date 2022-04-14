@@ -10,6 +10,8 @@ create_dat_for_smooth_calibration(probs, reals, deciles_dat)
 \item{probs}{a list of vectors of estimated probabilities
 (one for each model or one for each population)}
 
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
+
 \item{deciles_dat}{data of deciles}
 }
 \description{
