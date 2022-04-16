@@ -22,7 +22,7 @@
 #'     "First Model" = list(example_dat$estimated_probabilities),
 #'     "Second Model" = list(example_dat$random_guess)
 #'   ),
-#'   real = list(example_dat$outcome)
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_precision_recall_curve(
@@ -33,7 +33,7 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
-#'   real = list(
+#'   reals = list(
 #'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
 #'       dplyr::pull(outcome),
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%

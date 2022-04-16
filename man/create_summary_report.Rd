@@ -30,9 +30,6 @@ If a path is provided with a filename in \code{output_file} the directory
 specified here will take precedence. Please note that any directory path
 provided will create any necessary directories if they do not exist.}
 }
-\value{
-
-}
 \description{
 Create a summary report
 }
@@ -48,7 +45,7 @@ create_summary_report(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = list(example_dat$outcome)
+  reals = list(example_dat$outcome)
 )
 
 create_summary_report(
@@ -59,7 +56,7 @@ create_summary_report(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%

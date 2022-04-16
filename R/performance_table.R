@@ -14,7 +14,7 @@ create_performance_table <- function(probs, reals, by = 0.01,
                                      output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
-    real = reals,
+    reals = reals,
     by = by,
     stratified_by = stratified_by
   ) %>%
