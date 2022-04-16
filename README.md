@@ -47,15 +47,15 @@ devtools::install_github("uriahf/rtichoke")
 In order to use `rtichoke` you need to have
 
 -   `probs`: Estimated Probabilities as predictions.
--   `real`: Binary Outcomes.
+-   `reals`: Binary Outcomes.
 
 There are 3 different cases and for each one of them rtichoke requires a
 different kind of input:
 
 ### Singel Model:
 
-The user is required to provide one vector for the predictions and one
-vector for the outcomes.
+The user is required to provide a list with one vector for the
+predictions and a list with one vector for the outcomes.
 
 <!-- ```{r echo=FALSE} -->
 <!-- library(rtichoke) -->
@@ -74,17 +74,8 @@ vector for the outcomes.
 <!-- ``` -->
 
 ``` r
-create_roc_curve(probs = example_dat$bad_model,
-                 real = example_dat$outcome,
-                 interactive = TRUE)
-```
-
-Alternatively the vector of the model predictions can be in a list:
-
-``` r
-create_roc_curve(probs = list("Bad Model" = example_dat$bad_model),
-                 real = example_dat$outcome,
-                 interactive = TRUE)
+create_roc_curve(probs = list(example_dat$bad_model),
+                 reals = list(example_dat$outcome))
 ```
 
 ### Models Comparison:
@@ -92,8 +83,9 @@ create_roc_curve(probs = list("Bad Model" = example_dat$bad_model),
 **Why?** In order to compare performance for several different models
 for the same population.
 
-**How?** The user is required to provide one vector of predictions for
-each model in a list and one vector for the outcome of the population.
+**How?** The user is required to provide a list with one vector of
+predictions for each model and a list with one vector for the outcome of
+the population.
 
 <!-- ```{r echo=FALSE} -->
 <!-- library(rtichoke) -->
@@ -118,8 +110,7 @@ create_roc_curve(
     "Bad Model" = example_dat$bad_model,
     "Random Guess" = example_dat$random_guess
   ),
-  real = as.numeric(rtichoke::example_dat$outcome),
-  interactive = TRUE
+  reals = list(rtichoke::example_dat$outcome)
 )
 ```
 
@@ -129,9 +120,9 @@ create_roc_curve(
 in Train / Test split or in order to check the fairness of the
 algorithms.
 
-*How?* The user is required to provide one vector of predictions for
-each population in a list and one vector for each outcome of the
-population in another list.
+*How?* The user is required to provide a list with one vector of
+predictions for each population and a list with one vector of outcomes
+for each population.
 
 <!-- ```{r echo=FALSE} -->
 <!-- library(rtichoke) -->
@@ -177,13 +168,12 @@ create_roc_curve(
     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
       dplyr::pull(outcome),
     "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
       dplyr::pull(outcome)
-  ),
-  interactive = TRUE
+  )
 )
 ```
 
@@ -196,7 +186,7 @@ data and use it as an input: instead of `create_*_curve` use
 
 ``` r
 one_pop_one_model_as_a_vector %>%
-  plot_roc_curve(interactive = TRUE)
+  plot_roc_curve()
 ```
 
 ### Summary Report
