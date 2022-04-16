@@ -10,37 +10,18 @@ BugReports: https://github.com/uriahf/rtichoke/issues
 Depends: 
     R (>= 2.10)
 Imports: 
-    bslib,
-    config (>= 0.3.1),
     crosstalk,
     dplyr,
-    forcats,
-    ggplot2,
-    glue,
     golem (>= 0.3.1),
-    gt,
     htmltools,
-    jsonlite,
-    lazyeval,
     magrittr,
-    patchwork,
-    plotly,
-    pROC,
     processx,
-    purrr,
-    reactable,
     rlang,
-    rmarkdown,
     shiny (>= 1.6.0),
-    shinyWidgets,
-    stats,
-    stringr,
-    tibble
+    stats
 Suggests: 
     knitr,
-    lattice,
-    testthat,
-    thematic
+    rmarkdown
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

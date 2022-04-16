@@ -87,7 +87,8 @@ create_reference_lines_data_frame <- function(curve,
                                               prevalence = NA,
                                               color = NA,
                                               plotly = FALSE,
-                                              multiple_pop = FALSE) {
+                                              multiple_pop = FALSE,
+                                              performance_data = NULL) {
   if (curve == "roc") {
     if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(
@@ -197,23 +198,48 @@ create_reference_lines_data_frame <- function(curve,
   }
 
   if (curve == "decision") {
+    
     if (plotly == FALSE) {
       reference_lines_data_frame <- rbind(
         create_reference_lines_data_frame("decision treat all", prevalence),
         create_reference_lines_data_frame("decision treat none")
       )
     } else {
-      reference_lines_data_frame <- bind_rows(
-        data.frame(
-          population = names(prevalence), x = prevalence, y = 0,
-          row.names = NULL
-        ),
-        data.frame(
-          population = names(prevalence), x = 0, y = prevalence,
-          row.names = NULL
-        ),
-        data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
-      )
+      
+      if (length(prevalence) == 1) {
+        
+        reference_lines_data_frame <- performance_data %>%
+          dplyr::mutate(
+            population = "treat_all",
+            x = threshold, 
+            y = prevalence - (1- prevalence) * 
+              (threshold / (1 - threshold))
+          ) %>% 
+          dplyr::select(population, x, y) %>% 
+          dplyr::bind_rows(
+            data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
+          )
+        
+      } else {
+        
+        reference_lines_data_frame <- performance_data %>%
+          dplyr::left_join(
+            data.frame(prevalence) %>% 
+              tibble::rownames_to_column("population")
+          ) %>% 
+          dplyr::mutate(
+            x = threshold, 
+            y = prevalence - (1- prevalence) * 
+              (threshold / (1 - threshold)),
+            linetype = "solid"
+          ) %>% 
+          dplyr::select(population, x, y, linetype) %>% 
+          dplyr::bind_rows(
+            data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0),
+                       linetype = "dotted")
+          )
+        
+      }
     }
   }
 
@@ -231,6 +257,9 @@ create_reference_lines_data_frame <- function(curve,
       )[seq_len(length(prevalence))]
     }
 
+    
+    
+    
     reference_lines_data_frame <- data.frame(
       x = 0, xend = prevalence, y = prevalence, yend = 0, col = col_values,
       linetype = "dotted"

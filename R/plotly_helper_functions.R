@@ -238,12 +238,16 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #'
 #' @param plotly_object a plotly object
 #' @param curve the required curve
-#' @param max_y_range the maximum value of y range (for lift curve)
+#' @param max_y_range the maximum value of y range (for lift and decision curve)
+#' @param max_y_range the maximum value of y range (for decision curve)
 #' @keywords internal
-set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
+set_styling_for_rtichoke <- function(plotly_object, curve, 
+                                     max_y_range = NA,
+                                     min_y_range = NA) {
   plotly_object %>%
     remove_grid_lines_from_plotly() %>%
-    set_axis_titles(curve, max_y_range = max_y_range) %>%
+    set_axis_titles(curve, max_y_range = max_y_range, 
+                    min_y_range = min_y_range) %>%
     plotly::config(displayModeBar = FALSE)
 }
 
@@ -254,8 +258,10 @@ set_styling_for_rtichoke <- function(plotly_object, curve, max_y_range = NA) {
 #' @param plotly_object a plotly object
 #' @param curve the required curve
 #' @param max_y_range the maximum value for y range
+#' @param min_y_range the minimum value for y range
 #' @keywords internal
-set_axis_titles <- function(plotly_object, curve, max_y_range = NA) {
+set_axis_titles <- function(plotly_object, curve, 
+                            max_y_range = NA, min_y_range = NA) {
   if (curve == "roc") {
     plotly_obj <- plotly_object %>%
       plotly::layout(
@@ -332,6 +338,7 @@ set_axis_titles <- function(plotly_object, curve, max_y_range = NA) {
         ),
         yaxis = list(
           title = "Net Benefit",
+          range = c(min_y_range, max_y_range),
           fixedrange = TRUE
         ),
         showlegend = FALSE
@@ -556,13 +563,16 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               curve,
                                               prevalence = NA,
                                               population_color_vector = NA,
-                                              size = NULL) {
+                                              size = NULL,
+                                              performance_data = NULL) {
+  
   if ((curve %in% c("roc", "lift")) || ((performance_table_type !=
     "several populations"))) {
     if (curve %in% c("gains", "decision")) {
       reference_lines_for_plotly <- create_reference_lines_data_frame(curve,
         plotly = TRUE,
-        prevalence
+        prevalence,
+        performance_data = performance_data
       ) %>%
         plotly::plot_ly(
           x = ~x, y = ~y,
@@ -666,7 +676,8 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       reference_lines_for_plotly <- create_reference_lines_data_frame(
         "decision",
         plotly = TRUE,
-        prevalence
+        prevalence,
+        performance_data = performance_data
       ) %>%
         plotly::plot_ly(
           x = ~x,

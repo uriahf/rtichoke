@@ -190,7 +190,8 @@ plot_decision_curve <- function(performance_data,
         perf_dat_type,
         "decision",
         prevalence = prevalence,
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -206,7 +207,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
 
     if (perf_dat_type == "several models") {
@@ -215,7 +221,8 @@ plot_decision_curve <- function(performance_data,
         "decision",
         prevalence = prevalence[1],
         population_color_vector = col_values[seq_len(length(prevalence))],
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -232,7 +239,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
 
     if (perf_dat_type == "several populations") {
@@ -241,7 +253,8 @@ plot_decision_curve <- function(performance_data,
         prevalence = prevalence,
         population_color_vector =
           col_values[seq_len(length(prevalence))],
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -257,7 +270,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
   }
 
