@@ -4,13 +4,50 @@
 \alias{create_table_for_auc}
 \title{Create Table for AUC}
 \usage{
-create_table_for_auc(probs, real)
+create_table_for_auc(probs, reals)
 }
 \arguments{
 \item{probs}{a list of vectors of estimated probabilities
 (one for each model or one for each population)}
+
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 }
 \description{
 Create Table for AUC
+}
+\examples{
+
+rtichoke:::create_table_for_auc(
+    probs = list(example_dat$estimated_probabilities),
+    reals = list(example_dat$outcome)
+)
+
+
+rtichoke:::create_table_for_auc(
+probs = list(
+"First Model" = example_dat$estimated_probabilities,
+"Second Model" = example_dat$random_guess
+),
+reals = list(example_dat$outcome)
+)
+
+
+rtichoke:::create_table_for_auc(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  )
+) 
+
+
 }
 \keyword{internal}

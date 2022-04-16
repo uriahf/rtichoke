@@ -383,7 +383,9 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         currentvalue = list(prefix = ifelse(main_slider == "threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
-        ))
+        ),
+        xanchor = "left"),
+        pad = list(t = 50)
       )
   }
   if (performance_data_type == "several models") {
@@ -408,7 +410,9 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         currentvalue = list(prefix = ifelse(main_slider == "threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
-        ))
+        ),
+        xanchor = "left"),
+        pad = list(t = 50)
       )
   }
   if (performance_data_type == "several populations") {
@@ -433,7 +437,9 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
         currentvalue = list(prefix = ifelse(main_slider == "threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
-        ))
+        ),
+        xanchor = "left"),
+        pad = list(t = 50)
       )
   }
   plotly_plot

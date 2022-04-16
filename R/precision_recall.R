@@ -10,17 +10,19 @@
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
 #' create_precision_recall_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_precision_recall_curve(
 #'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
+#'     "First Model" = list(example_dat$estimated_probabilities),
+#'     "Second Model" = list(example_dat$random_guess)
 #'   ),
-#'   real = example_dat$outcome
+#'   real = list(example_dat$outcome)
 #' )
 #'
 #' create_precision_recall_curve(
@@ -38,46 +40,14 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' \dontrun{
 #'
-#' create_precision_recall_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_precision_recall_curve(
-#'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
-#'   ),
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_precision_recall_curve(
-#'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(estimated_probabilities)
-#'   ),
-#'   real = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(outcome)
-#'   ),
-#'   interactive = TRUE
-#' )
 #' }
 create_precision_recall_curve <- function(probs,
-                                          real,
+                                          reals,
                                           by = 0.01,
                                           stratified_by = "probability_threshold",
                                           chosen_threshold = NA,
-                                          interactive = FALSE,
+                                          interactive = TRUE,
                                           main_slider = "threshold",
                                           col_values = c(
                                             "#5BC0BE",
@@ -89,7 +59,7 @@ create_precision_recall_curve <- function(probs,
                                           size = NULL) {
   prepare_performance_data(
     probs = probs,
-    real = real,
+    reals = reals,
     by = by,
     stratified_by = stratified_by
   ) %>%

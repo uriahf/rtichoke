@@ -73,8 +73,7 @@ create_gains_curve(
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
-  ),
-  interactive = TRUE
+  )
 )
 }
 }

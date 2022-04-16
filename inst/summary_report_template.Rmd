@@ -5,7 +5,7 @@ output:
     toc: true
 params:
   probs: NA
-  real: NA
+  reals: NA
   interactive: NA
 ---
 
@@ -140,13 +140,13 @@ $\begin{aligned}
 # tibble(
 #   "Model" = c("Test"),
 #   "bs" = c(
-#   sum((params$probs - params$real)^2) / length(params$probs)#,
-#   # sum((params$probs[[2]] - params$real[[2]])^2) / length(params$probs[[1]])
+#   sum((params$probs - params$reals)^2) / length(params$probs)#,
+#   # sum((params$probs[[2]] - params$reals[[2]])^2) / length(params$probs[[1]])
 #   ),
 #   "auc" = c(
-#   pROC::auc(params$real, params$probs)),
-#   # pROC::auc(params$real[[2]], params$probs[[2]])),
-#   "prevalence" = sum(params$real) / length(params$real)  #c(0.29, 0.41)
+#   pROC::auc(params$reals, params$probs)),
+#   # pROC::auc(params$reals[[2]], params$probs[[2]])),
+#   "prevalence" = sum(params$reals) / length(params$reals)  #c(0.29, 0.41)
 #   ) %>% 
 #   mutate(
 #     bs_plot = bs * 100,
@@ -192,7 +192,7 @@ $\begin{aligned}
 
 ```{r message=FALSE, warning=FALSE}
 performance_dat <- prepare_performance_data(probs = params$probs, 
-                         real = params$real)
+                         reals = params$reals)
 ```
 
 ```{r}
@@ -207,7 +207,7 @@ create_table_for_prevalence(performance_dat)
 
 ```{r message=FALSE, warning=FALSE}
 create_calibration_curve(probs = params$probs, 
-                         real = params$real, 
+                         reals = params$reals, 
                          interactive = params$interactive, 
                          type = "smooth", size = 550) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
@@ -216,7 +216,7 @@ create_calibration_curve(probs = params$probs,
 
 <!-- ```{r} -->
 <!-- create_table_for_brier_score(probs = params$probs,  -->
-<!--                          real = params$real) -->
+<!--                          reals = params$reals) -->
 <!-- ``` -->
 
 
@@ -224,7 +224,7 @@ create_calibration_curve(probs = params$probs,
 
 ```{r message=FALSE, warning=FALSE}
 create_calibration_curve(probs = params$probs, 
-                         real = params$real, 
+                         reals = params$reals, 
                          interactive = params$interactive, 
                          size = 550) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
@@ -234,14 +234,15 @@ create_calibration_curve(probs = params$probs,
 
 <!-- ```{r} -->
 <!-- create_table_for_brier_score(probs = params$probs,  -->
-<!--                          real = params$real) -->
+<!--                          reals = params$reals) -->
 <!-- ``` -->
 
 
 # Probability Threshold Dependent Performance Metrics{.tabset}
 
 ```{r}
-create_table_for_auc(probs = params$probs, real = params$real)
+create_table_for_auc(probs = params$probs, 
+                     reals = params$reals)
 ```
 
 
@@ -308,8 +309,8 @@ render_performance_table(performance_dat)
 
 ```{r message=FALSE, warning=FALSE}
 performance_dat_ppcr <- prepare_performance_data(probs = params$probs, 
-                         real = params$real, 
-                         stratified_by = "predicted_positives")
+                         reals = params$reals, 
+                         stratified_by = "ppcr")
 ```
 
 ```{r}
