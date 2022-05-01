@@ -97,7 +97,9 @@ create_reference_lines_data_frame <- function(curve,
         linetype = "solid"
       )
     } else {
-      reference_lines_data_frame <- data.frame(x = c(0, 1), y = c(0, 1))
+      reference_lines_data_frame <- data.frame(x = c(0, 1), 
+                                               y = c(0, 1),
+                                               text = c("Random Guess"))
     }
   }
 
@@ -190,9 +192,18 @@ create_reference_lines_data_frame <- function(curve,
             y = c(0, 1)
           )
         ) %>%
-        arrange(population, x, y) %>%
-        bind_rows(
+        dplyr::arrange(population, x, y) %>%
+        dplyr::bind_rows(
           data.frame(population = "random", x = c(0, 1), y = c(0, 1))
+        )  %>% 
+        dplyr::mutate(
+          text = dplyr::case_when(
+            population != "random" ~ glue::glue(
+            "<b>Sensitivity of Perfect Prediction:</b> \\
+                              {round(y, digits = 3)} <br>\\
+                              <b>PPCR:</b> {round(x, digits = 3)}"),
+            TRUE ~ "<b>Random Guess"
+          )
         )
     }
   }
@@ -218,9 +229,19 @@ create_reference_lines_data_frame <- function(curve,
           dplyr::select(population, x, y) %>% 
           dplyr::bind_rows(
             data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
+          )  %>% 
+          dplyr::mutate(
+            text = dplyr::case_when(
+              population != "treat_none" ~ glue::glue("<b>NB Treat All:</b> \\
+                              {round(y, digits = 3)} <br>\\
+                              <b>Prob. Threshold:</b> \\
+                              {round(x, digits = 3)} "),
+              TRUE ~ "<b>NB Treat None:</b> 0"
+            )
           )
         
       } else {
+        
         
         reference_lines_data_frame <- performance_data %>%
           dplyr::left_join(
@@ -237,6 +258,15 @@ create_reference_lines_data_frame <- function(curve,
           dplyr::bind_rows(
             data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0),
                        linetype = "dotted")
+          ) %>% 
+          dplyr::mutate(
+            text = dplyr::case_when(
+              population != "treat_none" ~ glue::glue("<b>NB Treat All ({population}):</b> \\
+                              {round(y, digits = 3)} <br>\\
+                              <b>Prob. Threshold:</b> \\
+                              {round(x, digits = 3)} "),
+              TRUE ~ "<b>NB Treat None:</b> 0"
+            )
           )
         
       }

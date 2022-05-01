@@ -575,7 +575,8 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         performance_data = performance_data
       ) %>%
         plotly::plot_ly(
-          x = ~x, y = ~y,
+          x = ~x, 
+          y = ~y,
           height = size,
           width = size
         ) %>%
@@ -583,7 +584,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           color = I("grey"),
           colors = population_color_vector,
           line = list(width = 1.75),
-          linetype = ~population
+          linetype = ~population,
+          hoverinfo = "text",
+          text =~ text
         )
     } else {
       reference_lines_for_plotly <- create_reference_lines_data_frame(curve,
@@ -685,7 +688,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           color = ~population,
           colors = population_color_reference_vector,
           height = size,
-          width = size
+          width = size,
+          hoverinfo = "text",
+          text =~ text
         ) %>%
         plotly::add_lines(
           line = list(width = 1.75),
