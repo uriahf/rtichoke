@@ -6,22 +6,21 @@
 \usage{
 create_decision_curve(
   probs,
-  real,
+  reals,
   by = 0.01,
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
-  interactive = FALSE,
+  interactive = TRUE,
   main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   size = NULL
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 
@@ -45,9 +44,10 @@ Create a decision Curve
 }
 \examples{
 
+\dontrun{
 create_decision_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
 )
 
 create_decision_curve(
@@ -55,7 +55,7 @@ create_decision_curve(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome
+  reals = list(example_dat$outcome)
 )
 
 create_decision_curve(
@@ -66,45 +66,13 @@ create_decision_curve(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   )
 )
-\dontrun{
 
-create_decision_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome,
-  interactive = TRUE
-)
-
-create_decision_curve(
-  probs = list(
-    "First Model" = example_dat$estimated_probabilities,
-    "Second Model" = example_dat$random_guess
-  ),
-  real = example_dat$outcome,
-  interactive = TRUE
-)
-
-create_decision_curve(
-  probs = list(
-    "train" = example_dat \%>\%
-      dplyr::filter(type_of_set == "train") \%>\%
-      dplyr::pull(estimated_probabilities),
-    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(estimated_probabilities)
-  ),
-  real = list(
-    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
-      dplyr::pull(outcome),
-    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(outcome)
-  ),
-  interactive = TRUE
-)
 }
 }

@@ -4,14 +4,13 @@
 #' @inheritParams rmarkdown::render
 #' @param output_file The name of the output file
 #'
-#' @return
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' create_summary_report(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_summary_report(
@@ -19,7 +18,7 @@
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
-#'   real = example_dat$outcome
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_summary_report(
@@ -30,7 +29,7 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
-#'   real = list(
+#'   reals = list(
 #'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
 #'       dplyr::pull(outcome),
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
@@ -38,39 +37,8 @@
 #'   )
 #' )
 #'
-#' create_summary_report(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_summary_report(
-#'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
-#'   ),
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_summary_report(
-#'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(estimated_probabilities)
-#'   ),
-#'   real = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(outcome)
-#'   ),
-#'   interactive = TRUE
-#' )
 #' }
-create_summary_report <- function(probs, real, interactive = FALSE,
+create_summary_report <- function(probs, reals, interactive = TRUE,
                                   output_file = "summary_report.html",
                                   output_dir = getwd()) {
   rmarkdown::render(
@@ -80,7 +48,7 @@ create_summary_report <- function(probs, real, interactive = FALSE,
     ),
     params = list(
       probs = probs,
-      real = real,
+      reals = reals,
       interactive = interactive
     ),
     output_file = output_file,

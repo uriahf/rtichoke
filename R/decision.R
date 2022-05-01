@@ -11,10 +11,11 @@
 #' @export
 #'
 #' @examples
-#'
+#' 
+#' \dontrun{
 #' create_decision_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_decision_curve(
@@ -22,7 +23,7 @@
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
-#'   real = example_dat$outcome
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_decision_curve(
@@ -33,51 +34,19 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
-#'   real = list(
+#'   reals = list(
 #'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
 #'       dplyr::pull(outcome),
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' \dontrun{
 #'
-#' create_decision_curve(
-#'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_decision_curve(
-#'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
-#'   ),
-#'   real = example_dat$outcome,
-#'   interactive = TRUE
-#' )
-#'
-#' create_decision_curve(
-#'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(estimated_probabilities)
-#'   ),
-#'   real = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(outcome)
-#'   ),
-#'   interactive = TRUE
-#' )
 #' }
-create_decision_curve <- function(probs, real, by = 0.01,
+create_decision_curve <- function(probs, reals, by = 0.01,
                                   stratified_by = "probability_threshold",
                                   chosen_threshold = NA,
-                                  interactive = FALSE,
+                                  interactive = TRUE,
                                   main_slider = "threshold",
                                   col_values = c(
                                     "#5BC0BE",
@@ -93,7 +62,7 @@ create_decision_curve <- function(probs, real, by = 0.01,
 
   prepare_performance_data(
     probs = probs,
-    real = real,
+    reals = reals,
     by = by,
     stratified_by = stratified_by
   ) %>%
@@ -203,6 +172,24 @@ plot_decision_curve <- function(performance_data,
   )
 
   if (interactive == FALSE) {
+    
+    # print("decision reference lines dataframe")
+    # print(create_reference_lines_data_frame("decision", prevalence))
+    # 
+    print("decision reference lines from plotly")
+    print(create_reference_lines_data_frame("decision",
+                                            plotly = TRUE,
+                                            prevalence,
+                                            performance_data = performance_data
+    ) )
+    # 
+    print("Creating decision curve")
+    print(col_values)
+    print(
+      performance_data %>%
+        create_ggplot_for_performance_metrics("threshold", "NB", col_values)
+    )
+    
     decision_curve <- performance_data %>%
       create_ggplot_for_performance_metrics("threshold", "NB", col_values) %>%
       add_reference_lines_to_ggplot(
@@ -221,7 +208,8 @@ plot_decision_curve <- function(performance_data,
         perf_dat_type,
         "decision",
         prevalence = prevalence,
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -237,7 +225,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
 
     if (perf_dat_type == "several models") {
@@ -246,7 +239,8 @@ plot_decision_curve <- function(performance_data,
         "decision",
         prevalence = prevalence[1],
         population_color_vector = col_values[seq_len(length(prevalence))],
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -263,7 +257,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
 
     if (perf_dat_type == "several populations") {
@@ -272,7 +271,8 @@ plot_decision_curve <- function(performance_data,
         prevalence = prevalence,
         population_color_vector =
           col_values[seq_len(length(prevalence))],
-        size = size
+        size = size,
+        performance_data = performance_data
       ) %>%
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
@@ -288,7 +288,12 @@ plot_decision_curve <- function(performance_data,
           NB,
           main_slider = main_slider
         ) %>%
-        set_styling_for_rtichoke("decision")
+        set_styling_for_rtichoke(
+          "decision", 
+          max_y_range = max(performance_data$NB,
+                            na.rm = TRUE) + 0.1,
+          min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
+                            na.rm = TRUE) - 0.1)
     }
   }
 

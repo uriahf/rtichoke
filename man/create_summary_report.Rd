@@ -6,18 +6,17 @@
 \usage{
 create_summary_report(
   probs,
-  real,
-  interactive = FALSE,
+  reals,
+  interactive = TRUE,
   output_file = "summary_report.html",
   output_dir = getwd()
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{interactive}{whether the plot should be interactive
 plots}
@@ -31,17 +30,14 @@ If a path is provided with a filename in \code{output_file} the directory
 specified here will take precedence. Please note that any directory path
 provided will create any necessary directories if they do not exist.}
 }
-\value{
-
-}
 \description{
 Create a summary report
 }
 \examples{
 \dontrun{
 create_summary_report(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
 )
 
 create_summary_report(
@@ -49,7 +45,7 @@ create_summary_report(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome
+  reals = list(example_dat$outcome)
 )
 
 create_summary_report(
@@ -60,7 +56,7 @@ create_summary_report(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
@@ -68,36 +64,5 @@ create_summary_report(
   )
 )
 
-create_summary_report(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome,
-  interactive = TRUE
-)
-
-create_summary_report(
-  probs = list(
-    "First Model" = example_dat$estimated_probabilities,
-    "Second Model" = example_dat$random_guess
-  ),
-  real = example_dat$outcome,
-  interactive = TRUE
-)
-
-create_summary_report(
-  probs = list(
-    "train" = example_dat \%>\%
-      dplyr::filter(type_of_set == "train") \%>\%
-      dplyr::pull(estimated_probabilities),
-    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(estimated_probabilities)
-  ),
-  real = list(
-    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
-      dplyr::pull(outcome),
-    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(outcome)
-  ),
-  interactive = TRUE
-)
 }
 }

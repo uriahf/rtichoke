@@ -19,15 +19,23 @@ create_ggplot_for_performance_metrics <- function(performance_data,
                                                     "#A4243B"
                                                   )) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
+    print("col values")
     col_values_vec <- "black"
 
+    
     ggplot_for_performance_metrics <- ggplot2::ggplot(
-      performance_data,
-      ggplot2::aes_string(
-        x = x_perf_metric,
-        y = y_perf_metric
-      )
-    )
+    ) +
+      ggplot2::geom_point(data = performance_data,
+                          ggplot2::aes_string(
+                            x = x_perf_metric,
+                            y = y_perf_metric
+                          ), size = 1) +
+      ggplot2::geom_path(data = performance_data,
+                         ggplot2::aes_string(
+                           x = x_perf_metric,
+                           y = y_perf_metric
+                         ), size = 1)
+    
   } else {
     col_values_vec <- col_values[
       seq_len(length(unique(performance_data %>%
@@ -43,22 +51,31 @@ create_ggplot_for_performance_metrics <- function(performance_data,
     }
 
     ggplot_for_performance_metrics <- ggplot2::ggplot(
-      performance_data,
-      ggplot2::aes_string(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        group = names(performance_data)[1],
-        color = names(performance_data)[1]
-      )
-    )
+      ) +
+      ggplot2::geom_point(data = performance_data,
+                          ggplot2::aes_string(
+                            x = x_perf_metric,
+                            y = y_perf_metric,
+                            group = names(performance_data)[1],
+                            color = names(performance_data)[1]
+                          ), size = 1) +
+      ggplot2::geom_path(data = performance_data,
+                         ggplot2::aes_string(
+                           x = x_perf_metric,
+                           y = y_perf_metric,
+                           group = names(performance_data)[1],
+                           color = names(performance_data)[1]
+                         ), size = 1)
+    
+
   }
 
   ggplot_for_performance_metrics +
-    ggplot2::geom_point(size = 1) +
-    ggplot2::geom_path(size = 1) +
     ggplot2::theme_classic() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_color_manual(values = col_values_vec)
+  
+
 }
 
 #' Create plotly for Performance Metrics

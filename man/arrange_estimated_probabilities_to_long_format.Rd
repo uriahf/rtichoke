@@ -7,8 +7,8 @@
 arrange_estimated_probabilities_to_long_format(probs)
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 }
 \description{
 Arrange estimated probabilities to long format

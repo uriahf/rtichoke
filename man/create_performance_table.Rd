@@ -6,18 +6,17 @@
 \usage{
 create_performance_table(
   probs,
-  real,
+  reals,
   by = 0.01,
   stratified_by = "probability_threshold",
   output_type = "reactable"
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{by}{number: increment of the sequence.}
 

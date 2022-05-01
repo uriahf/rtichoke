@@ -6,27 +6,23 @@
 \usage{
 create_calibration_curve(
   probs,
-  real,
-  interactive = FALSE,
+  reals,
+  interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  title_included = FALSE,
   type = "discrete",
   size = NULL
 )
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{interactive}{whether the plot should be interactive
 plots}
 
 \item{col_values}{color palette}
-
-\item{title_included}{add title to the curve}
 
 \item{type}{discrete or smooth}
 
@@ -37,27 +33,16 @@ Create a Calibration Curve
 }
 \examples{
 \dontrun{
-create_calibration_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome, type = "discrete"
-)
-
-create_calibration_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome, type = "discrete",
-  interactive = TRUE
-)
-
-
-create_calibration_curve(
-  probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome, type = "smooth"
-)
 
 create_calibration_curve(
   probs = list(example_dat$estimated_probabilities),
-  real = example_dat$outcome, type = "smooth",
-  interactive = TRUE
+  reals = list(example_dat$outcome), type = "discrete"
+)
+
+
+create_calibration_curve(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome), type = "smooth"
 )
 
 # Several Models
@@ -67,17 +52,7 @@ create_calibration_curve(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome, type = "discrete"
-)
-
-
-create_calibration_curve(
-  probs = list(
-    "First Model" = example_dat$estimated_probabilities,
-    "Second Model" = example_dat$random_guess
-  ),
-  real = example_dat$outcome,
-  interactive = TRUE,
+  reals = list(example_dat$outcome), 
   type = "discrete"
 )
 
@@ -87,37 +62,12 @@ create_calibration_curve(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  real = example_dat$outcome,
-  interactive = FALSE,
-  type = "smooth"
-)
-
-create_calibration_curve(
-  probs = list(
-    "First Model" = example_dat$estimated_probabilities,
-    "Second Model" = example_dat$random_guess,
-    "Third Model" = sample(example_dat$random_guess, replace = TRUE)
-  ),
-  real = example_dat$outcome,
-  interactive = TRUE,
+  reals = list(example_dat$outcome),
   type = "smooth"
 )
 
 
-create_calibration_curve(
-  probs = list(
-    "First Model" = example_dat$estimated_probabilities,
-    "Second Model" = example_dat$random_guess,
-    "Third Model" = sample(example_dat$random_guess, replace = TRUE),
-    "Fourth Model" = sample(example_dat$random_guess, replace = TRUE),
-    "Fifth Model" = sample(example_dat$random_guess, replace = TRUE)
-  ),
-  real = example_dat$outcome, type = "smooth",
-  interactive = TRUE
-)
-
-
-# several populations
+# Several Populations
 
 
 create_calibration_curve(
@@ -128,34 +78,34 @@ create_calibration_curve(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
-  )
+  ), 
+  type = "discrete"
 )
 
 
 create_calibration_curve(
   probs = list(
-    "Train" = example_dat \%>\%
+    "train" = example_dat \%>\%
       dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(estimated_probabilities),
-    "Test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(estimated_probabilities),
-    "Val" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(estimated_probabilities) \%>\%
-      sample(replace = TRUE)
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
   ),
-  real = list(
-    "Train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
-    "Test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
-      dplyr::pull(outcome),
-    "Val" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
-  ), interactive = TRUE,
+  ), 
+  type = "smooth"
 )
+
 }
+
+
 }

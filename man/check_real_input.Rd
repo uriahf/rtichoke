@@ -6,10 +6,6 @@
 \usage{
 check_real_input(real)
 }
-\arguments{
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
-}
 \description{
 Check real input
 }

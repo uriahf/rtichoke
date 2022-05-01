@@ -4,14 +4,13 @@
 \alias{create_dat_for_smooth_calibration}
 \title{Creating dat for smooth calibration}
 \usage{
-create_dat_for_smooth_calibration(probs, real, deciles_dat)
+create_dat_for_smooth_calibration(probs, reals, deciles_dat)
 }
 \arguments{
-\item{probs}{a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{real}{a vector of binary outcomes or a list of vectors of that
-kind (one for each population)}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
 \item{deciles_dat}{data of deciles}
 }
@@ -31,7 +30,7 @@ deciles_dat <- purrr::map_df(list(
 
 create_dat_for_smooth_calibration(
   list("Model 1" = example_dat$estimated_probabilities),
-  real = example_dat$outcome,
+  reals = list(example_dat$outcome),
   deciles_dat
 )
 
@@ -63,7 +62,7 @@ create_dat_for_smooth_calibration(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(estimated_probabilities)
   ),
-  real = list(
+  reals = list(
     "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%

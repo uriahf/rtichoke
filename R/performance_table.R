@@ -9,12 +9,12 @@
 #' @inheritParams create_roc_curve
 #' @param output_type the type of the output table, {gt} as default
 #'
-create_performance_table <- function(probs, real, by = 0.01,
+create_performance_table <- function(probs, reals, by = 0.01,
                                      stratified_by = "probability_threshold",
                                      output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
-    real = real,
+    reals = reals,
     by = by,
     stratified_by = stratified_by
   ) %>%
