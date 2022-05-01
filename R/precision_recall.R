@@ -9,7 +9,6 @@
 #' @export
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' create_precision_recall_curve(
@@ -40,7 +39,6 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#'
 #' }
 create_precision_recall_curve <- function(probs,
                                           reals,
@@ -82,6 +80,8 @@ create_precision_recall_curve <- function(probs,
 #'
 #' @examples
 #'
+#' \dontrun{
+#'
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_precision_recall_curve()
 #'
@@ -105,7 +105,6 @@ create_precision_recall_curve <- function(probs,
 #'
 #' train_and_test_sets_enforced_percentiles_symmetry %>%
 #'   plot_precision_recall_curve(main_slider = "ppcr")
-#' \dontrun{
 #'
 #' one_pop_one_model_as_a_vector %>%
 #'   plot_precision_recall_curve(interactive = TRUE)

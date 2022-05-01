@@ -261,7 +261,8 @@ create_reference_lines_data_frame <- function(curve,
           ) %>% 
           dplyr::mutate(
             text = dplyr::case_when(
-              population != "treat_none" ~ glue::glue("<b>NB Treat All ({population}):</b> \\
+              population != "treat_none" ~ glue::glue(
+              "<b>NB Treat All ({population}):</b> \\
                               {round(y, digits = 3)} <br>\\
                               <b>Prob. Threshold:</b> \\
                               {round(x, digits = 3)} "),
@@ -300,6 +301,12 @@ create_reference_lines_data_frame <- function(curve,
     reference_lines_data_frame <- data.frame(
       x = 0, xend = 1, y = 0, yend = 0, col = "grey",
       linetype = "solid"
+    )
+  }
+  
+  if (curve == "interventions avoided") {
+    reference_lines_data_frame <- data.frame(
+      x = numeric(), y = numeric()
     )
   }
 

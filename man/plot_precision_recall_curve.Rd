@@ -33,6 +33,8 @@ Plot a Precision Recall Curve
 }
 \examples{
 
+\dontrun{
+
 one_pop_one_model_as_a_vector \%>\%
   plot_precision_recall_curve()
 
@@ -56,7 +58,6 @@ train_and_test_sets \%>\%
 
 train_and_test_sets_enforced_percentiles_symmetry \%>\%
   plot_precision_recall_curve(main_slider = "ppcr")
-\dontrun{
 
 one_pop_one_model_as_a_vector \%>\%
   plot_precision_recall_curve(interactive = TRUE)

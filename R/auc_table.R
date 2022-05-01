@@ -41,7 +41,7 @@
 create_table_for_auc <- function(probs, reals) {
   
   if (length(probs) == 1) {
-    names(probs) = "Model 1"
+    names(probs) <- "Model 1"
   }
   
     data_for_auc <- purrr::map2_dbl(
