@@ -115,7 +115,7 @@ check_chosen_threshold_input <- function(chosen_threshold) {
 #' }
 check_performance_data_stratification <- function(performance_data) {
   ifelse(
-    tail(names(performance_data), n = 1) == "ppcr",
+    utils::tail(names(performance_data), n = 1) == "ppcr",
     "probability_threshold",
     "ppcr"
   )

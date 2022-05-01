@@ -9,7 +9,8 @@ create_reference_lines_data_frame(
   prevalence = NA,
   color = NA,
   plotly = FALSE,
-  multiple_pop = FALSE
+  multiple_pop = FALSE,
+  performance_data = NULL
 )
 }
 \arguments{

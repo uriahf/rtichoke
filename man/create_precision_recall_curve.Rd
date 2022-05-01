@@ -43,7 +43,6 @@ or positives}
 Create a Precision Recall Curve
 }
 \examples{
-
 \dontrun{
 
 create_precision_recall_curve(
@@ -74,6 +73,5 @@ create_precision_recall_curve(
       dplyr::pull(outcome)
   )
 )
-
 }
 }

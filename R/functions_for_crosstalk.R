@@ -81,7 +81,7 @@ makeGroupOptions_rtichoke <- function(sharedData, group, allLevels,
       label = labels_values,
       stringsAsFactors = FALSE
     ),
-    map = setNames(vals, lvls_str),
+    map = stats::setNames(vals, lvls_str),
     group = sharedData$groupName()
   )
 

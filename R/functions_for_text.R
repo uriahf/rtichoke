@@ -27,7 +27,12 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 
   if (curve == "decision") {
     text_for_hover <- text_for_hover %>%
-      make_performance_metric_bold("NB")
+      make_two_performance_metrics_bold("NB", "threshold")
+  }
+  if (curve == "interventions avoided") {
+    text_for_hover <- text_for_hover %>% 
+      make_two_performance_metrics_bold("Interventions Avoided", 
+                                        "threshold")
   }
 
   text_for_hover
@@ -40,7 +45,11 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 #'
 #' @keywords internal
 create_text_for_hover <- function(performance_data_type, curve) {
-  text_for_hover <- "Sensitivity: {sensitivity}
+  
+  if (curve != "interventions avoided") {
+  
+  text_for_hover <- "Prob. Threshold: {threshold}
+Sensitivity: {sensitivity}
 1 - Specificity (FPR): {FPR}
 Specificity: {specificity}
 Lift: {lift}
@@ -51,7 +60,16 @@ Predicted Positives: {predicted_positives} ({100 * ppcr}%)
 TP: {TP}
 TN: {TN}
 FP: {FP}
+FN: {FN}" } else {
+  
+  text_for_hover <- "Prob. Threshold: {threshold}
+Interventions Avoided (per 100): {NB_treatment_avoided}
+NB: {NB}
+Predicted Positives: {predicted_positives} ({100 * ppcr}%)
+TN: {TN}
 FN: {FN}"
+  
+}
   text_for_hover <- make_performance_metrics_bold(text_for_hover, curve)
   if (performance_data_type == "several models") {
     text_for_hover <- add_models_for_text_for_hover(text_for_hover)
@@ -147,7 +165,9 @@ add_hover_text_to_performance_data <- function(performance_data,
   text_for_hover <- create_text_for_hover(performance_data_type, curve)
 
   performance_data %>%
-    dplyr::mutate(dplyr::across(where(is.numeric), round, 3),
-      text = glue::glue(text_for_hover)
+    dplyr::mutate(
+      dplyr::across(where(is.numeric), round, 3),
+      text = glue::glue(text_for_hover),
+      text = stringr::str_replace_all(text, pattern = "NaN", "")
     )
 }

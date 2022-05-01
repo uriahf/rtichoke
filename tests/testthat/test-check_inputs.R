@@ -14,8 +14,8 @@ test_that("probs must be in range of [0,1]", {
 
 
 test_that("real must be 0 or 1", {
-  expect_error(check_real_input(c(example_dat$outcome, 0.1)))
-  expect_error(check_real_input(c(example_dat$outcome, 0.9)))
+  expect_error(rtichoke:::check_real_input(c(example_dat$outcome, 0.1)))
+  expect_error(rtichoke:::check_real_input(c(example_dat$outcome, 0.9)))
 
   expect_error(list(
     "train" = example_dat %>%
@@ -24,7 +24,7 @@ test_that("real must be 0 or 1", {
     "test" = c(example_dat %>% dplyr::filter(type_of_set == "test") %>%
       dplyr::pull(outcome), 0.2)
   ) %>%
-    check_real_input())
+    rtichoke:::check_real_input())
 })
 
 

@@ -878,7 +878,7 @@ create_dat_for_smooth_calibration <- function(probs,
           )
       ) %>%
       dplyr::mutate(model = forcats::fct_inorder(factor(model))) %>%
-      na.omit()
+      stats::na.omit()
   }
 
   if (length(probs) > 1 & length(reals) > 1) {
@@ -897,7 +897,7 @@ create_dat_for_smooth_calibration <- function(probs,
         .id = "population"
       )) %>%
       dplyr::mutate(population = forcats::fct_inorder(factor(population))) %>%
-      na.omit()
+      stats::na.omit()
   }
   smooth_dat
 }

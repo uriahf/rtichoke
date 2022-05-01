@@ -344,6 +344,23 @@ set_axis_titles <- function(plotly_object, curve,
         showlegend = FALSE
       )
   }
+  
+  if (curve == "interventions avoided") {
+    plotly_obj <- plotly_object %>%
+      plotly::layout(
+        xaxis = list(
+          title = "Probability Threshold",
+          range = c(-0.1, 1.1),
+          fixedrange = TRUE
+        ),
+        yaxis = list(
+          title = "Interventions Avoided per 100 Cases",
+          range = c(-15, 105),
+          fixedrange = TRUE
+        ),
+        showlegend = FALSE
+      )
+  }
 
   plotly_obj
 }
@@ -356,12 +373,14 @@ set_axis_titles <- function(plotly_object, curve,
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
 #' @keywords internal
-add_interactive_marker_from_performance_data <- function(plotly_object,
-                                                         performance_data,
-                                                         performance_data_type,
-                                                         x_perf_metric,
-                                                         y_perf_metric,
-                                                         main_slider = "threshold") {
+add_interactive_marker_from_performance_data <- function(
+    plotly_object,
+    performance_data,
+    performance_data_type,
+    x_perf_metric,
+    y_perf_metric,
+    main_slider = "threshold") {
+  
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
@@ -466,19 +485,21 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param col_values color palette
 #' @param main_slider the main slider for interactivity
 #' @keywords internal
-add_lines_and_markers_from_performance_data <- function(plotly_object,
-                                                        performance_data,
-                                                        performance_data_type,
-                                                        x_perf_metric,
-                                                        y_perf_metric,
-                                                        col_values = c(
-                                                          "#5BC0BE",
-                                                          "#FC8D62",
-                                                          "#8DA0CB",
-                                                          "#E78AC3",
-                                                          "#A4243B"
-                                                        ),
-                                                        main_slider = "threshold") {
+add_lines_and_markers_from_performance_data <- function(
+    plotly_object,
+    performance_data,
+    performance_data_type,
+    x_perf_metric,
+    y_perf_metric,
+    col_values = c(
+      "#5BC0BE",
+      "#FC8D62",
+      "#8DA0CB",
+      "#E78AC3",
+      "#A4243B"
+      ),
+    main_slider = "threshold") {
+  
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
@@ -553,6 +574,8 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 
 #' Create reference lines plotly as the first stage of interactive plot
 #'
+#' @inheritParams create_roc_curve
+#'
 #' @param performance_table_type the type of the performance table
 #' @param curve the required curve
 #' @param prevalence the prevalence of the population
@@ -575,9 +598,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         performance_data = performance_data
       ) %>%
         plotly::plot_ly(
-          x = ~x, 
-          y = ~y,
-          height = size,
+        x = ~x, 
+        y = ~y,
+        height = size,
           width = size
         ) %>%
         plotly::add_lines(
