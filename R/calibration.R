@@ -43,7 +43,6 @@
 #'
 #' # Several Populations
 #'
-#'
 #' create_calibration_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
