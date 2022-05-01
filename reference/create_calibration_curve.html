@@ -59,10 +59,9 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_calibration_curve</span><span class="op">(</span>
   <span class="va">probs</span>,
-  <span class="va">real</span>,
-  interactive <span class="op">=</span> <span class="cn">FALSE</span>,
+  <span class="va">reals</span>,
+  interactive <span class="op">=</span> <span class="cn">TRUE</span>,
   col_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5BC0BE"</span>, <span class="st">"#FC8D62"</span>, <span class="st">"#8DA0CB"</span>, <span class="st">"#E78AC3"</span>, <span class="st">"#A4243B"</span><span class="op">)</span>,
-  title_included <span class="op">=</span> <span class="cn">FALSE</span>,
   type <span class="op">=</span> <span class="st">"discrete"</span>,
   size <span class="op">=</span> <span class="cn">NULL</span>
 <span class="op">)</span></code></pre></div>
@@ -71,18 +70,15 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>probs</dt>
-<dd><p>a vector of estimated probabilities or a list of vectors of that
-kind (one for each model)</p></dd>
-<dt>real</dt>
-<dd><p>a vector of binary outcomes or a list of vectors of that
-kind (one for each population)</p></dd>
+<dd><p>a list of vectors of estimated probabilities
+(one for each model or one for each population)</p></dd>
+<dt>reals</dt>
+<dd><p>a list of vectors of binary outcomes (one for each population)</p></dd>
 <dt>interactive</dt>
 <dd><p>whether the plot should be interactive
 plots</p></dd>
 <dt>col_values</dt>
 <dd><p>color palette</p></dd>
-<dt>title_included</dt>
-<dd><p>add title to the curve</p></dd>
 <dt>type</dt>
 <dd><p>discrete or smooth</p></dd>
 <dt>size</dt>
@@ -92,27 +88,16 @@ plots</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"discrete"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"discrete"</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"smooth"</span></span>
-<span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
 <span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"smooth"</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"discrete"</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
+<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"smooth"</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Several Models</span></span>
@@ -122,17 +107,7 @@ plots</p></dd>
 <span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
 <span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"discrete"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
-<span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>, </span>
 <span class="r-in">  type <span class="op">=</span> <span class="st">"discrete"</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
@@ -142,37 +117,12 @@ plots</p></dd>
 <span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
 <span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span class="r-in">  type <span class="op">=</span> <span class="st">"smooth"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>,</span>
-<span class="r-in">    <span class="st">"Third Model"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>,</span>
 <span class="r-in">  type <span class="op">=</span> <span class="st">"smooth"</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
-<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
-<span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>,</span>
-<span class="r-in">    <span class="st">"Third Model"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Fourth Model"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Fifth Model"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span>, type <span class="op">=</span> <span class="st">"smooth"</span>,</span>
-<span class="r-in">  interactive <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># several populations</span></span>
+<span class="r-in"><span class="co"># Several Populations</span></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
@@ -183,36 +133,36 @@ plots</p></dd>
 <span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span class="r-in">    <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
 <span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span></span>
+<span class="r-in">  <span class="op">)</span>, </span>
+<span class="r-in">  type <span class="op">=</span> <span class="st">"discrete"</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
 <span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">    <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Val"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">      <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  real <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">    <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"Val"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span>, interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span class="r-in">  <span class="op">)</span>, </span>
+<span class="r-in">  type <span class="op">=</span> <span class="st">"smooth"</span></span>
 <span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
 <span class="r-in"><span class="op">}</span></span>
+<span class="r-in"></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -224,7 +174,7 @@ plots</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>
