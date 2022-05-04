@@ -63,7 +63,8 @@
   interactive <span class="op">=</span> <span class="cn">TRUE</span>,
   col_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5BC0BE"</span>, <span class="st">"#FC8D62"</span>, <span class="st">"#8DA0CB"</span>, <span class="st">"#E78AC3"</span>, <span class="st">"#A4243B"</span><span class="op">)</span>,
   type <span class="op">=</span> <span class="st">"discrete"</span>,
-  size <span class="op">=</span> <span class="cn">NULL</span>
+  size <span class="op">=</span> <span class="cn">NULL</span>,
+  histogram_included <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -83,6 +84,8 @@ plots</p></dd>
 <dd><p>discrete or smooth</p></dd>
 <dt>size</dt>
 <dd><p>the size of the curve</p></dd>
+<dt>histogram_included</dt>
+<dd><p>if TRUE a histogram will be added to the Calibration Curve</p></dd>
 </dl></div>
 
     <div class="section level2">
@@ -123,7 +126,6 @@ plots</p></dd>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Several Populations</span></span>
-<span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_calibration_curve</span><span class="op">(</span></span>
 <span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
