@@ -10,7 +10,8 @@ create_calibration_curve(
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   type = "discrete",
-  size = NULL
+  size = NULL,
+  histogram_included = TRUE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ plots}
 \item{type}{discrete or smooth}
 
 \item{size}{the size of the curve}
+
+\item{histogram_included}{if TRUE a histogram will be added to the Calibration Curve}
 }
 \description{
 Create a Calibration Curve
@@ -68,7 +71,6 @@ create_calibration_curve(
 
 
 # Several Populations
-
 
 create_calibration_curve(
   probs = list(

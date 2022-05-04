@@ -139,10 +139,13 @@ prepare_performance_data <- function(probs, reals, by = 0.01,
     } %>%
     dplyr::mutate(
       TP = lapply(threshold, 
-                  function(x) sum(probs[[1]][reals[[1]] == 1] > x)) %>%
+                  function(x) ifelse(x == 0 ,
+                                     length(probs[[1]][reals[[1]] == 1]),
+                                     sum(probs[[1]][reals[[1]] == 1] > x))) %>%
         unlist(),
       TN = lapply(threshold, 
-                  function(x) sum(probs[[1]][reals[[1]] == 0] <= x)) %>%
+                  function(x) ifelse(x == 0 , as.integer(0) ,
+                                     sum(probs[[1]][reals[[1]] == 0] <= x))) %>%
         unlist()
     ) %>%
     {

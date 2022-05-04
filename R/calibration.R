@@ -2,6 +2,7 @@
 #'
 #' @inheritParams create_roc_curve
 #' @param type discrete or smooth
+#' @param histogram_included if TRUE a histogram will be added to the Calibration Curve
 #'
 #' @export
 #'
@@ -92,7 +93,8 @@ create_calibration_curve <- function(probs,
                                        "#A4243B"
                                      ),
                                      type = "discrete",
-                                     size = NULL) {
+                                     size = NULL,
+                                     histogram_included = TRUE) {
   quintile <- phatx <- phaty <- gam <- NULL
 
   check_probs_input(probs)
@@ -577,6 +579,7 @@ create_calibration_curve <- function(probs,
   }
 
   if (interactive == TRUE) {
+    if ( histogram_included == TRUE ) {
     if ((length(probs) == 1)) {
       # print(make_histogram_for_calibration(probs, deciles_dat))
 
@@ -631,12 +634,21 @@ create_calibration_curve <- function(probs,
       nrows = 2,
       shareX = TRUE,
       heights = c(0.8, 0.2)
-    ) %>%
+    )
+    
+    } else {
+      
+      full_cal_plot <- cal_plot
+      
+    }
+    
+    full_cal_plot <- full_cal_plot %>%
       plotly::layout(
         xaxis = list(title = "Predicted", range = limits),
         yaxis = list(title = "Observed")
       ) %>%
       plotly::config(displayModeBar = FALSE)
+    
   }
 
 
