@@ -236,9 +236,11 @@ plot_decision_curve <- function(performance_data,
         set_styling_for_rtichoke(
           "decision",
           max_y_range = max(performance_data$NB,
-                            na.rm = TRUE) + 0.1,
+                            na.rm = TRUE) + 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
           min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                            na.rm = TRUE) - 0.1)
+                            na.rm = TRUE) - 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
     }
 
     if (perf_dat_type == "several models") {
@@ -266,11 +268,13 @@ plot_decision_curve <- function(performance_data,
           main_slider = main_slider
         ) %>%
         set_styling_for_rtichoke(
-          "decision", 
+          "decision",
           max_y_range = max(performance_data$NB,
-                            na.rm = TRUE) + 0.1,
+                            na.rm = TRUE) + 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
           min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                            na.rm = TRUE) - 0.1)
+                            na.rm = TRUE) - 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
     }
 
     if (perf_dat_type == "several populations") {
@@ -297,11 +301,13 @@ plot_decision_curve <- function(performance_data,
           main_slider = main_slider
         ) %>%
         set_styling_for_rtichoke(
-          "decision", 
+          "decision",
           max_y_range = max(performance_data$NB,
-                            na.rm = TRUE) + 0.1,
+                            na.rm = TRUE) + 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
           min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                            na.rm = TRUE) - 0.1)
+                            na.rm = TRUE) - 
+            diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
     }
   }
   
