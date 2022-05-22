@@ -255,7 +255,7 @@ create_table_for_auc(probs = params$probs,
 
 ```{r}
 plot_roc_curve(performance_dat, interactive = params$interactive, 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
   
 ```
@@ -264,7 +264,7 @@ plot_roc_curve(performance_dat, interactive = params$interactive,
 
 ```{r}
 plot_lift_curve(performance_dat, interactive = params$interactive, 
-                size = 550) %>% 
+                size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -273,7 +273,7 @@ plot_lift_curve(performance_dat, interactive = params$interactive,
 
 ```{r}
 plot_precision_recall_curve(performance_dat, interactive = params$interactive,
-                            size = 550) %>% 
+                            size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -281,7 +281,7 @@ plot_precision_recall_curve(performance_dat, interactive = params$interactive,
 
 ```{r}
 plot_gains_curve(performance_dat, interactive = params$interactive, 
-                 size = 550) %>% 
+                 size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -290,7 +290,7 @@ plot_gains_curve(performance_dat, interactive = params$interactive,
 
 ```{r}
 plot_decision_curve(performance_dat, interactive = params$interactive, 
-                    size = 550) %>% 
+                    size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -316,7 +316,7 @@ performance_dat_ppcr <- prepare_performance_data(probs = params$probs,
 ```{r}
 plot_roc_curve(performance_dat_ppcr, interactive = params$interactive,
                main_slider = "ppcr", 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -325,7 +325,7 @@ plot_roc_curve(performance_dat_ppcr, interactive = params$interactive,
 ```{r}
 plot_lift_curve(performance_dat_ppcr, interactive = params$interactive,
                main_slider = "ppcr", 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -335,7 +335,7 @@ plot_lift_curve(performance_dat_ppcr, interactive = params$interactive,
 ```{r}
 plot_precision_recall_curve(performance_dat_ppcr, interactive = params$interactive,
                main_slider = "ppcr", 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -344,7 +344,7 @@ plot_precision_recall_curve(performance_dat_ppcr, interactive = params$interacti
 ```{r}
 plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
                main_slider = "ppcr", 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
@@ -354,7 +354,7 @@ plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
 ```{r}
 plot_decision_curve(performance_dat_ppcr, interactive = params$interactive,
                main_slider = "ppcr", 
-               size = 550) %>% 
+               size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 

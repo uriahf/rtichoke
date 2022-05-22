@@ -4,24 +4,31 @@ library(htmlwidgets)
 library(xml2)
 library(dplyr)
 
+#* @serializer html
+#* @post /rtichoke/flex_tichoke
 
-
-#* @serializer htmlwidget
-#* @post /rtichoke/roc_tichoke
-function(req, res) {
-  
+function(column, req, res) {
   dat <- tryCatch(jsonlite::fromJSON(req$postBody),
                   error = function(e) NULL)
   
-  # rtichoke::rtichoke(list(dat$probs), dat$real)
-  result <- rtichoke::create_roc_curve(
-    dat$probs,
-    dat$reals,
-    interactive = T)
+  print(dat)
   
-
-  # result <- plotly::plot_ly(x =~ dat$probs,
-  #                           y =~ dat$real)
-  #result
-  print(result)
+  # print("probs")
+  # print(dat$probs)
+  # 
+  # print("reals")
+  # print(dat$probs)
+  # 
+  # # rtichoke::rtichoke(list(dat$probs), dat$real)
+  # rtichoke::create_summary_report(
+  #   probs = dat$probs, 
+  #   reals = dat$reals
+  #   ) 
+  # 
+  # as.character(xml2::read_html("summary_report.html"))
+  
+  # file <- tempfile(fileext=".html")
+  # htmlwidgets::saveWidget(result, file, selfcontained = T)
+  # paste(readLines(file), collapse="")
+  
 }
