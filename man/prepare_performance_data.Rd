@@ -51,6 +51,11 @@ prepare_performance_data(
   reals = list(example_dat$outcome)
 )
 
+prepare_performance_data(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
 
 # Several Models
 
@@ -60,6 +65,15 @@ prepare_performance_data(
     "Second Model" = example_dat$random_guess
   ),
   reals = list(example_dat$outcome)
+)
+
+prepare_performance_data(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
 )
 
 
@@ -80,4 +94,23 @@ prepare_performance_data(
       dplyr::pull(outcome)
   )
 )
+
+prepare_performance_data(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ),
+  stratified_by = "ppcr"
+)
+
+
 }

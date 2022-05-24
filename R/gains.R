@@ -145,7 +145,7 @@ plot_gains_curve <- function(performance_data,
                                "#E78AC3",
                                "#A4243B"
                              ),
-                             size = NULL) {
+                             size = 350) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }

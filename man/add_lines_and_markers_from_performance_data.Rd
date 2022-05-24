@@ -10,8 +10,7 @@ add_lines_and_markers_from_performance_data(
   performance_data_type,
   x_perf_metric,
   y_perf_metric,
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  main_slider = "threshold"
+  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{
@@ -26,8 +25,6 @@ add_lines_and_markers_from_performance_data(
 \item{y_perf_metric}{performance metric for the y axis}
 
 \item{col_values}{color palette}
-
-\item{main_slider}{the main slider for interactivity}
 }
 \description{
 Add lines and markers based on performance data

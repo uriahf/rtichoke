@@ -54,7 +54,7 @@ create_precision_recall_curve <- function(probs,
                                             "#E78AC3",
                                             "#A4243B"
                                           ),
-                                          size = NULL) {
+                                          size = 350) {
   prepare_performance_data(
     probs = probs,
     reals = reals,
@@ -144,7 +144,7 @@ plot_precision_recall_curve <- function(performance_data,
                                           "#E78AC3",
                                           "#A4243B"
                                         ),
-                                        size = NULL) {
+                                        size = 350) {
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(
     performance_data,

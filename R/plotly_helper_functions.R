@@ -394,6 +394,7 @@ set_axis_titles <- function(plotly_object, curve,
 #' Add interactive marker based on performance data
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
+#' @inheritParams create_roc_curve
 #' @keywords internal
 add_interactive_marker_from_performance_data <- function(
     plotly_object,
@@ -401,7 +402,7 @@ add_interactive_marker_from_performance_data <- function(
     performance_data_type,
     x_perf_metric,
     y_perf_metric,
-    main_slider = "threshold") {
+    stratified_by = "probability_threshold") {
   
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -415,7 +416,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         marker = list(
           size = 12,
           line = list(
@@ -428,7 +429,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -443,7 +445,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         color = ~model,
         marker = list(
           size = 12,
@@ -456,7 +458,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -471,7 +474,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         color = ~population,
         marker = list(
           size = 12,
@@ -484,7 +487,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -508,7 +512,6 @@ add_interactive_marker_from_performance_data <- function(
 #' @param x_perf_metric performance metric for the x axis
 #' @param y_perf_metric performance metric for the y axis
 #' @param col_values color palette
-#' @param main_slider the main slider for interactivity
 #' @keywords internal
 add_lines_and_markers_from_performance_data <- function(
     plotly_object,
@@ -522,8 +525,7 @@ add_lines_and_markers_from_performance_data <- function(
       "#8DA0CB",
       "#E78AC3",
       "#A4243B"
-      ),
-    main_slider = "threshold") {
+      )) {
   
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -611,7 +613,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               curve,
                                               prevalence = NA,
                                               population_color_vector = NA,
-                                              size = NULL,
+                                              size = size,
                                               performance_data = NULL) {
   
   if ((curve %in% c("roc", "lift")) || ((performance_table_type !=

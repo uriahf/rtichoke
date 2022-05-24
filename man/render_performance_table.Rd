@@ -19,9 +19,6 @@ render_performance_table(
 
 \item{output_type}{the type of the output table, {gt} as default}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 }
 \description{

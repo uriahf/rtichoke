@@ -8,7 +8,7 @@ test_that("Performance Table names are correct", {
       reals = list(example_dat$outcome)
     )),
     c(
-      "model", "threshold", "TP", "TN", "FN", "FP", "sensitivity",
+      "model", "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
       "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
       "ppcr"
     )
@@ -20,7 +20,7 @@ test_that("Performance Table names are correct", {
       reals = list(example_dat$outcome)
     )),
     c(
-      "threshold", "TP", "TN", "FN", "FP", "sensitivity",
+      "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
       "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
       "ppcr"
     )
@@ -43,7 +43,7 @@ test_that("Performance Table names are correct", {
       )
     )),
     c(
-      "population", "threshold", "TP", "TN", "FN", "FP", "sensitivity",
+      "population", "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
       "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
       "ppcr"
     )

@@ -96,10 +96,10 @@ test_that("input checks should return error", {
       )
   )
 
-  expect_error(
-    train_and_test_sets_enforced_percentiles_symmetry %>%
-      plot_roc_curve(interactive = FALSE)
-  )
+  # expect_error(
+  #   train_and_test_sets_enforced_percentiles_symmetry %>%
+  #     plot_roc_curve(interactive = FALSE)
+  # )
 
   expect_error(
     train_and_test_sets %>%

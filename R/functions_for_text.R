@@ -27,12 +27,12 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 
   if (curve == "decision") {
     text_for_hover <- text_for_hover %>%
-      make_two_performance_metrics_bold("NB", "threshold")
+      make_two_performance_metrics_bold("NB", "probability_threshold")
   }
   if (curve == "interventions avoided") {
     text_for_hover <- text_for_hover %>% 
       make_two_performance_metrics_bold("Interventions Avoided", 
-                                        "threshold")
+                                        "probability_threshold")
   }
 
   text_for_hover
@@ -48,7 +48,7 @@ create_text_for_hover <- function(performance_data_type, curve) {
   
   if (curve != "interventions avoided") {
   
-  text_for_hover <- "Prob. Threshold: {threshold}
+  text_for_hover <- "Prob. Threshold: {probability_threshold}
 Sensitivity: {sensitivity}
 1 - Specificity (FPR): {FPR}
 Specificity: {specificity}
@@ -62,7 +62,7 @@ TN: {TN}
 FP: {FP}
 FN: {FN}" } else {
   
-  text_for_hover <- "Prob. Threshold: {threshold}
+  text_for_hover <- "Prob. Threshold: {probability_threshold}
 Interventions Avoided (per 100): {NB_treatment_avoided}
 NB: {NB}
 Predicted Positives: {predicted_positives} ({100 * ppcr}%)

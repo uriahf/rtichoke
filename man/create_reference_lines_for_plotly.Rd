@@ -9,7 +9,7 @@ create_reference_lines_for_plotly(
   curve,
   prevalence = NA,
   population_color_vector = NA,
-  size = NULL,
+  size = size,
   performance_data = NULL
 )
 }

@@ -10,7 +10,7 @@ add_interactive_marker_from_performance_data(
   performance_data_type,
   x_perf_metric,
   y_perf_metric,
-  main_slider = "threshold"
+  stratified_by = "probability_threshold"
 )
 }
 \arguments{
@@ -24,7 +24,8 @@ add_interactive_marker_from_performance_data(
 
 \item{y_perf_metric}{performance metric for the y axis}
 
-\item{main_slider}{the main slider for interactivity}
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 Add interactive marker based on performance data

@@ -32,9 +32,6 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 
 \item{size}{the size of the curve}

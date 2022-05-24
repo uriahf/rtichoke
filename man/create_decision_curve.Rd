@@ -13,7 +13,7 @@ create_decision_curve(
   interactive = TRUE,
   main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  size = NULL
+  size = 350
 )
 }
 \arguments{
@@ -31,9 +31,6 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 
 \item{interactive}{whether the plot should be interactive
 plots}
-
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
 
 \item{col_values}{color palette}
 
