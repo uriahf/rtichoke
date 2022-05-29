@@ -47,7 +47,6 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                   stratified_by = "probability_threshold",
                                   chosen_threshold = NA,
                                   interactive = TRUE,
-                                  main_slider = "threshold",
                                   col_values = c(
                                     "#5BC0BE",
                                     "#FC8D62",
@@ -55,7 +54,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                     "#E78AC3",
                                     "#A4243B"
                                   ),
-                                  size = 350) {
+                                  size = NULL) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -69,7 +68,6 @@ create_decision_curve <- function(probs, reals, by = 0.01,
     plot_decision_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      main_slider = main_slider,
       col_values = col_values,
       size = size
     )
@@ -140,7 +138,6 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 plot_decision_curve <- function(performance_data,
                                 chosen_threshold = NA,
                                 interactive = TRUE,
-                                main_slider = "threshold",
                                 col_values = c(
                                   "#5BC0BE",
                                   "#FC8D62",
@@ -149,7 +146,7 @@ plot_decision_curve <- function(performance_data,
                                   "#A4243B"
                                 ),
                                 interventions_avoided = FALSE,
-                                size = 350) {
+                                size = NULL) {
   
   if (interventions_avoided == FALSE) {
   
@@ -157,17 +154,9 @@ plot_decision_curve <- function(performance_data,
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-
-  if (((performance_data_stratification == "ppcr") &
-    (main_slider != "ppcr")) |
-    ((performance_data_stratification != "ppcr") &
-      (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
 
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
@@ -222,16 +211,15 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
-          NB,
-          main_slider
+          probability_threshold,
+          NB
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           threshold,
           NB,
-          main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -257,15 +245,14 @@ plot_decision_curve <- function(performance_data,
           performance_data_type = perf_dat_type,
           threshold,
           NB,
-          col_values = col_values,
-          main_slider = main_slider
+          col_values = col_values
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           threshold,
           NB,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -290,15 +277,14 @@ plot_decision_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           threshold,
-          NB,
-          main_slider = main_slider
+          NB
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           threshold,
           NB,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -406,8 +392,7 @@ set_decision_curve_limits <- function(decision_curve) {
 #' @keywords internal
 plot_interventions_avoided <- function(performance_data,
                                        chosen_threshold = NA,
-                                       interactive = FALSE,
-                                       main_slider = "threshold",
+                                       interactive = TRUE,
                                        col_values = c(
                                          "#5BC0BE",
                                          "#FC8D62",
@@ -421,17 +406,9 @@ plot_interventions_avoided <- function(performance_data,
     check_chosen_threshold_input(chosen_threshold)
   }
   
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
-  if (((performance_data_stratification == "ppcr") &
-       (main_slider != "ppcr")) |
-      ((performance_data_stratification != "ppcr") &
-       (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
   
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
@@ -462,15 +439,14 @@ plot_interventions_avoided <- function(performance_data,
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
         threshold,
-        NB_treatment_avoided,
-        main_slider
+        NB_treatment_avoided
       ) %>%
       add_interactive_marker_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
         threshold,
         NB_treatment_avoided,
-        main_slider
+        stratified_by = stratified_by
       ) %>%
       set_styling_for_rtichoke(
         "interventions avoided")

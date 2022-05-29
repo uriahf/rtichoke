@@ -222,9 +222,9 @@ create_reference_lines_data_frame <- function(curve,
         reference_lines_data_frame <- performance_data %>%
           dplyr::mutate(
             population = "treat_all",
-            x = threshold, 
+            x = probability_threshold, 
             y = prevalence - (1- prevalence) * 
-              (threshold / (1 - threshold))
+              (probability_threshold / (1 - probability_threshold))
           ) %>% 
           dplyr::select(population, x, y) %>% 
           dplyr::bind_rows(
@@ -249,9 +249,9 @@ create_reference_lines_data_frame <- function(curve,
               tibble::rownames_to_column("population")
           ) %>% 
           dplyr::mutate(
-            x = threshold, 
+            x = probability_threshold, 
             y = prevalence - (1- prevalence) * 
-              (threshold / (1 - threshold)),
+              (probability_threshold / (1 - probability_threshold)),
             linetype = "solid"
           ) %>% 
           dplyr::select(population, x, y, linetype) %>% 

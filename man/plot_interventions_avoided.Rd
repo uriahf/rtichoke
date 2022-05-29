@@ -7,8 +7,7 @@
 plot_interventions_avoided(
   performance_data,
   chosen_threshold = NA,
-  interactive = FALSE,
-  main_slider = "threshold",
+  interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   size = 350
 )

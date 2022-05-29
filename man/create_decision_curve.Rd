@@ -11,7 +11,6 @@ create_decision_curve(
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
   interactive = TRUE,
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   size = 350
 )

@@ -89,7 +89,6 @@ create_roc_curve <- function(probs, reals, by = 0.01,
                              stratified_by = "probability_threshold",
                              chosen_threshold = NA,
                              interactive = TRUE,
-                             main_slider = "threshold",
                              col_values = c(
                                "#5BC0BE",
                                "#FC8D62",
@@ -98,7 +97,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
                                "#A4243B"
                              ),
                              title_included = FALSE,
-                             size = 350) {
+                             size = NULL) {
   check_probs_input(probs)
   # check_real_input(reals)
 
@@ -164,7 +163,7 @@ plot_roc_curve <- function(performance_data,
                              "#A4243B"
                            ),
                            title_included = FALSE,
-                           size = 350) {
+                           size = NULL) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }

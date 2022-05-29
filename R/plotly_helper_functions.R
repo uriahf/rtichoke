@@ -22,89 +22,6 @@ check_performance_data_type_for_plotly <- function(performance_data) {
 }
 
 
-#' Create basic plotly for Performance Metrics
-#'
-#' Makes a basic plotly for the metrices
-#'
-#' @inheritParams create_ggplot_for_performance_metrics
-#' @param performance_data_type the type of the Performance Data
-#' @param col_values palette
-#' @keywords internal
-
-create_plotly_base <- function(performance_data,
-                               x_perf_metric,
-                               y_perf_metric,
-                               performance_data_type = "one model",
-                               col_values = c(
-                                 "#5BC0BE",
-                                 "#FC8D62",
-                                 "#8DA0CB",
-                                 "#E78AC3",
-                                 "#A4243B"
-                               ),
-                               height = size,
-                               width = size) {
-  if (performance_data_type %in%
-    c("one model", "one model with model column")) {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  if (performance_data_type == "several models") {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        color = ~model,
-        colors = col_values,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  if (performance_data_type == "several populations") {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        color = ~population,
-        colors = col_values,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  plotly_base
-}
-
-
 #' Adding markers and lines to plotly
 #'
 #' @param plotly_object a plotly object
@@ -527,6 +444,7 @@ add_lines_and_markers_from_performance_data <- function(
       "#A4243B"
       )) {
   
+  
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
@@ -544,6 +462,7 @@ add_lines_and_markers_from_performance_data <- function(
     ]
     names(col_values_vec) <- unique(performance_data %>% pull(1))
   }
+  
 
   if (performance_data_type %in% c(
     "one model",
@@ -613,8 +532,11 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               curve,
                                               prevalence = NA,
                                               population_color_vector = NA,
-                                              size = size,
+                                              size = NULL,
                                               performance_data = NULL) {
+  
+  size_height <- switch(is.null(size) +1, size + 50, NULL)
+  
   
   if ((curve %in% c("roc", "lift")) || ((performance_table_type !=
     "several populations"))) {
@@ -627,7 +549,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly::plot_ly(
         x = ~x, 
         y = ~y,
-        height = size + 50,
+        height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -645,7 +567,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       ) %>%
         plotly::plot_ly(
           x = ~x, y = ~y,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -666,7 +588,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_vector,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(line = list(dash = "dash", width = 1.75))
@@ -700,7 +622,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_reference_vector,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -737,7 +659,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_reference_vector,
-          height = size + 50,
+          height = size_height,
           width = size,
           hoverinfo = "text",
           text =~ text

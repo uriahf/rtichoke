@@ -10,7 +10,7 @@ plot_roc_curve(
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   title_included = FALSE,
-  size = 350
+  size = NULL
 )
 }
 \arguments{

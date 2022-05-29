@@ -8,7 +8,6 @@ plot_decision_curve(
   performance_data,
   chosen_threshold = NA,
   interactive = TRUE,
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   interventions_avoided = FALSE,
   size = 350
