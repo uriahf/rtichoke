@@ -100,47 +100,6 @@ add_markers_and_lines_to_plotly <- function(plotly_object,
 }
 
 
-#' Add Interactive Marker to Plotly
-#'
-#' @param plotly_object a plotly plot for performance metrics
-#' @param main_slider what is the main slider - threshold, percent positives or
-#' positives
-#' @keywords internal
-add_interactive_marker_to_plotly <- function(plotly_object,
-                                             main_slider = "threshold") {
-  plotly_object %>%
-    plotly::add_markers(
-      frame = as.formula(paste0("~", main_slider)),
-      marker = list(
-        size = 12,
-        line = list(
-          width = 3,
-          color = I("black")
-        )
-      ),
-      hoverinfo = "text",
-      text = ~ paste(
-        # "Model:", model,
-        "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-        "FPR:", round(FPR, digits = 3), "<br>",
-        "Specificity", round(specificity, digits = 3), "<br>",
-        "Lift", round(lift, digits = 3), "<br>",
-        "PPV", round(PPV, digits = 3), "<br>",
-        "NPV", round(NPV, digits = 3), "<br>",
-        "TP:", TP, "<br>",
-        "TN:", TN, "<br>",
-        "FP:", FP, "<br>",
-        "FN:", FN
-      )
-    ) %>%
-    plotly::animation_slider(
-      currentvalue = list(prefix = ifelse(main_slider == "threshold",
-        "Prob. Threshold: ",
-        "Predicted Positives (Rate): "
-      ))
-    )
-}
-
 
 #' Add Reference Lines to Plotly Object
 #'

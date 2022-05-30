@@ -4,7 +4,10 @@
 \alias{create_conf_mat_list}
 \title{Create a list of confusion matrices}
 \usage{
-create_conf_mat_list(performance_table, main_slider = "threshold")
+create_conf_mat_list(
+  performance_table,
+  stratified_by = "probability_threshold"
+)
 }
 \description{
 Create a list of confusion matrices

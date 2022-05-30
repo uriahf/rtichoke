@@ -37,13 +37,13 @@
 #'   create_conf_mat_list(main_slider = "ppcr")
 #' }
 create_conf_mat_list <- function(performance_table,
-                                 main_slider = "threshold") {
-  if (main_slider != "threshold") {
+                                 stratified_by = "probability_threshold") {
+  if (stratified_by != "probability_threshold") {
     performance_table <- performance_table %>%
       dplyr::arrange(ppcr)
   } else {
     performance_table <- performance_table %>%
-      dplyr::arrange(threshold)
+      dplyr::arrange(probability_threshold)
   }
 
   matrix_list <- performance_table %>%
@@ -55,7 +55,7 @@ create_conf_mat_list <- function(performance_table,
       N = TP + FP + FN + TN
     ) %>%
     dplyr::select(
-      threshold,
+      probability_threshold,
       ppcr,
       TP,
       FP,
@@ -69,7 +69,7 @@ create_conf_mat_list <- function(performance_table,
     ) %>%
     mutate(idx = 1:n()) %>%
     split(f = .["idx"]) %>%
-    purrr::map(~ dplyr::select(., -threshold, -ppcr, -idx)) %>%
+    purrr::map(~ dplyr::select(., -probability_threshold, -ppcr, -idx)) %>%
     purrr::map(~ matrix(., nrow = 3, byrow = TRUE)) %>%
     purrr::map(~ magrittr::set_rownames(., c(
       "Predicted Positive",

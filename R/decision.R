@@ -13,9 +13,17 @@
 #' @examples
 #' 
 #' \dontrun{
+#' 
+#' 
 #' create_decision_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
 #' )
 #'
 #' create_decision_curve(
@@ -25,6 +33,17 @@
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
+#'
+#'
+#' create_decision_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
 #'
 #' create_decision_curve(
 #'   probs = list(
@@ -40,6 +59,23 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(outcome)
 #'   )
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
 #' )
 #'
 #' }
@@ -85,53 +121,27 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #'
 #' @examples
 #' \dontrun{
-#' one_pop_one_model_as_a_vector %>%
+#' 
+#' 
+#' one_pop_one_model %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   plot_decision_curve()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
+#' multiple_populations %>%
+#'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   plot_decision_curve()
+#'   
+#'   
 #' }
 #' @export
 
@@ -217,7 +227,7 @@ plot_decision_curve <- function(performance_data,
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
           stratified_by = stratified_by
         ) %>%
@@ -243,14 +253,14 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
           col_values = col_values
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
           stratified_by = stratified_by
         ) %>%
@@ -276,13 +286,13 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
           stratified_by = stratified_by
         ) %>%
@@ -422,9 +432,9 @@ plot_interventions_avoided <- function(performance_data,
       N = TP +TN  + FP + FN,
       prevalence = (TP + FN) / N,
       NB_intervention_all =   prevalence - (1- prevalence) * 
-        (threshold) / (1 - threshold),
+        (probability_threshold) / (1 - probability_threshold),
       NB_treatment_avoided = 100 * (NB - NB_intervention_all) * 
-        ( (1 - threshold) / threshold )
+        ( (1 - probability_threshold) / probability_threshold )
     ) %>% 
     add_hover_text_to_performance_data(perf_dat_type, 
                                        curve = "interventions avoided")
@@ -438,13 +448,13 @@ plot_interventions_avoided <- function(performance_data,
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
-        threshold,
+        probability_threshold,
         NB_treatment_avoided
       ) %>%
       add_interactive_marker_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
-        threshold,
+        probability_threshold,
         NB_treatment_avoided,
         stratified_by = stratified_by
       ) %>%

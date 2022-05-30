@@ -92,7 +92,7 @@ test_that("input checks should return error", {
     train_and_test_sets %>%
       plot_roc_curve(
         interactive = FALSE,
-        main_slider = "ppcr"
+        stratified_by = "ppcr"
       )
   )
 
@@ -105,13 +105,8 @@ test_that("input checks should return error", {
     train_and_test_sets %>%
       plot_lift_curve(
         interactive = FALSE,
-        main_slider = "ppcr"
+        stratified_by = "ppcr"
       )
-  )
-
-  expect_error(
-    train_and_test_sets_enforced_percentiles_symmetry %>%
-      plot_lift_curve(interactive = FALSE)
   )
 
   expect_error(
@@ -122,10 +117,6 @@ test_that("input checks should return error", {
       )
   )
 
-  expect_error(
-    train_and_test_sets_enforced_percentiles_symmetry %>%
-      plot_precision_recall_curve(interactive = FALSE)
-  )
 
 
   expect_error(
@@ -138,7 +129,7 @@ test_that("input checks should return error", {
 
   expect_error(
     train_and_test_sets_enforced_percentiles_symmetry %>%
-      plot_gains_curve(interactive = FALSE)
+      plot_gains_curve(stratified_by = "ppcr")
   )
 
 
