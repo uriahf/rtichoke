@@ -23,8 +23,78 @@ create_performance_table(
 \item{stratified_by}{Performance Metrics can be stratified by Probability
 Threshold or alternatively by Predicted Positives Condition Rate}
 
-\item{output_type}{the type of the output table, {gt} as default}
+\item{output_type}{the type of the output table}
 }
 \description{
 Create a Performance Table
+}
+\examples{
+
+\dontrun{
+
+
+create_performance_table(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
+)
+
+create_performance_table(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
+
+create_performance_table(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome)
+)
+
+
+create_performance_table(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
+
+
+create_performance_table(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  )
+)
+
+create_performance_table(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ),
+  stratified_by = "ppcr"
+)
+
+}
 }

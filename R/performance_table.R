@@ -7,8 +7,79 @@
 #' Create a Performance Table
 #'
 #' @inheritParams create_roc_curve
-#' @param output_type the type of the output table, {gt} as default
+#' @param output_type the type of the output table
 #'
+#' @export
+#'
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' 
+#' create_performance_table(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
+#' )
+#' 
+#' create_performance_table(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome)
+#' )
+#'
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' create_performance_table(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#' }
 create_performance_table <- function(probs, reals, by = 0.01,
                                      stratified_by = "probability_threshold",
                                      output_type = "reactable") {
@@ -32,29 +103,24 @@ create_performance_table <- function(probs, reals, by = 0.01,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model_as_a_vector %>%
+#' one_pop_one_model %>%
 #'   render_performance_table()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   render_performance_table()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   render_performance_table()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   render_performance_table()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
+#' multiple_populations %>%
+#'   render_performance_table()
+#'
+#' multiple_populations_by_ppcr %>%
+#'   render_performance_table()
+#'
 #' }
 #'
 #' @export
