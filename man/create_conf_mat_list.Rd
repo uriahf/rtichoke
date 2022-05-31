@@ -4,46 +4,34 @@
 \alias{create_conf_mat_list}
 \title{Create a list of confusion matrices}
 \usage{
-create_conf_mat_list(performance_table, main_slider = "threshold")
-}
-\arguments{
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
+create_conf_mat_list(
+  performance_table,
+  stratified_by = "probability_threshold"
+)
 }
 \description{
 Create a list of confusion matrices
 }
 \examples{
 \dontrun{
-one_pop_one_model_as_a_vector \%>\%
+
+one_pop_one_model \%>\%
   create_conf_mat_list()
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  create_conf_mat_list(main_slider = "ppcr")
-
-one_pop_one_model_as_a_list \%>\%
+one_pop_one_model_by_ppcr \%>\%
   create_conf_mat_list()
 
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  create_conf_mat_list(main_slider = "ppcr")
-
-one_pop_three_models \%>\%
+multiple_models \%>\%
   create_conf_mat_list()
 
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  create_conf_mat_list(main_slider = "ppcr")
-
-train_and_test_sets \%>\%
+multiple_models_by_ppcr \%>\%
   create_conf_mat_list()
 
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  create_conf_mat_list(main_slider = "ppcr")
-
-one_pop_one_model_as_a_vector \%>\%
+multiple_populations \%>\%
   create_conf_mat_list()
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  create_conf_mat_list(main_slider = "ppcr")
+multiple_populations_by_ppcr \%>\%
+  create_conf_mat_list()
 }
 }
 \keyword{internal}

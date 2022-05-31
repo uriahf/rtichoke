@@ -17,6 +17,12 @@
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
+#' 
+#' create_gains_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
 #'
 #' create_gains_curve(
 #'   probs = list(
@@ -25,6 +31,17 @@
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
+#'
+#'
+#' create_gains_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
 #'
 #' create_gains_curve(
 #'   probs = list(
@@ -41,12 +58,29 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' 
+#' create_gains_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#' 
 #' }
 create_gains_curve <- function(probs, reals, by = 0.01,
                                stratified_by = "probability_threshold",
                                chosen_threshold = NA,
                                interactive = TRUE,
-                               main_slider = "threshold",
                                col_values = c(
                                  "#5BC0BE",
                                  "#FC8D62",
@@ -68,7 +102,6 @@ create_gains_curve <- function(probs, reals, by = 0.01,
     plot_gains_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      main_slider = main_slider,
       col_values = col_values,
       size = size
     )
@@ -81,63 +114,33 @@ create_gains_curve <- function(probs, reals, by = 0.01,
 #' @inheritParams plot_roc_curve
 #'
 #' @examples
-#'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_gains_curve()
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_gains_curve()
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
-#'   plot_gains_curve()
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_gains_curve()
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(main_slider = "ppcr")
 #' \dontrun{
+#' 
+#' one_pop_one_model %>%
+#'   plot_gains_curve()
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_gains_curve(interactive = TRUE)
+#' one_pop_one_model_by_ppcr %>%
+#'   plot_gains_curve()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_models %>%
+#'   plot_gains_curve()
 #'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_gains_curve(interactive = TRUE)
+#' multiple_models_by_ppcr %>%
+#'   plot_gains_curve()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations %>%
+#'   plot_gains_curve()
 #'
-#' one_pop_three_models %>%
-#'   plot_gains_curve(interactive = TRUE)
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_gains_curve(interactive = TRUE)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_gains_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   plot_gains_curve()
+#'   
 #' }
 #'
 #' @export
 
 plot_gains_curve <- function(performance_data,
                              chosen_threshold = NA,
-                             interactive = FALSE,
-                             main_slider = "threshold",
+                             interactive = TRUE,
                              col_values = c(
                                "#5BC0BE",
                                "#FC8D62",
@@ -150,17 +153,9 @@ plot_gains_curve <- function(performance_data,
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-
-  if (((performance_data_stratification == "ppcr") &
-    (main_slider != "ppcr")) |
-    ((performance_data_stratification != "ppcr") &
-      (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
 
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
@@ -198,15 +193,14 @@ plot_gains_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
-          sensitivity,
-          main_slider
+          sensitivity
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           sensitivity,
-          main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("gains")
     }
@@ -224,15 +218,14 @@ plot_gains_curve <- function(performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           sensitivity,
-          col_values = col_values,
-          main_slider = main_slider
+          col_values = col_values
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           sensitivity,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("gains")
     }
@@ -249,15 +242,14 @@ plot_gains_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
-          sensitivity,
-          main_slider = main_slider
+          sensitivity
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           sensitivity,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("gains")
     }

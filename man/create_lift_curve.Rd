@@ -11,7 +11,6 @@ create_lift_curve(
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
   interactive = TRUE,
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   size = NULL
 )
@@ -32,9 +31,6 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 
 \item{size}{the size of the curve}
@@ -45,9 +41,16 @@ Create a Lift Curve
 \examples{
 
 \dontrun{
+
 create_lift_curve(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome)
+)
+
+create_lift_curve(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
 )
 
 create_lift_curve(
@@ -57,6 +60,17 @@ create_lift_curve(
   ),
   reals = list(example_dat$outcome)
 )
+
+
+create_lift_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
+
 
 create_lift_curve(
   probs = list(
@@ -72,6 +86,23 @@ create_lift_curve(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   )
+)
+
+create_lift_curve(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ),
+  stratified_by = "ppcr"
 )
 
 }

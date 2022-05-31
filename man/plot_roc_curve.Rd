@@ -7,8 +7,7 @@
 plot_roc_curve(
   performance_data,
   chosen_threshold = NA,
-  interactive = FALSE,
-  main_slider = "threshold",
+  interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   title_included = FALSE,
   size = NULL
@@ -22,9 +21,6 @@ plot_roc_curve(
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 
 \item{title_included}{add title to the curve}
@@ -36,54 +32,25 @@ Plot a ROC Curve
 }
 \examples{
 
-one_pop_one_model_as_a_vector \%>\%
-  plot_roc_curve()
-
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(main_slider = "ppcr")
-
-one_pop_one_model_as_a_list \%>\%
-  plot_roc_curve()
-
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(main_slider = "ppcr")
-
-one_pop_three_models \%>\%
-  plot_roc_curve()
-
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(main_slider = "ppcr")
-
-train_and_test_sets \%>\%
-  plot_roc_curve()
-
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(main_slider = "ppcr")
 \dontrun{
 
-one_pop_one_model_as_a_vector \%>\%
-  plot_roc_curve(interactive = TRUE)
+one_pop_one_model \%>\%
+  plot_roc_curve()
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
+one_pop_one_model_by_ppcr \%>\%
+  plot_roc_curve()
 
-one_pop_one_model_as_a_list \%>\%
-  plot_roc_curve(interactive = TRUE)
+multiple_models \%>\%
+  plot_roc_curve()
 
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
+multiple_models_by_ppcr \%>\%
+  plot_roc_curve()
 
-one_pop_three_models \%>\%
-  plot_roc_curve(interactive = TRUE)
+multiple_populations \%>\%
+  plot_roc_curve()
 
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
-
-train_and_test_sets \%>\%
-  plot_roc_curve(interactive = TRUE)
-
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_roc_curve(interactive = TRUE, main_slider = "ppcr")
+multiple_populations_by_ppcr \%>\%
+  plot_roc_curve()
 }
 
 }

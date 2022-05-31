@@ -8,7 +8,6 @@ render_performance_table(
   performance_data,
   chosen_threshold = NA,
   output_type = "reactable",
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
@@ -17,10 +16,7 @@ render_performance_table(
 
 \item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
 
-\item{output_type}{the type of the output table, {gt} as default}
-
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
+\item{output_type}{the type of the output table}
 
 \item{col_values}{color palette}
 }
@@ -30,29 +26,24 @@ Create a Performance Table
 \examples{
 \dontrun{
 
-one_pop_one_model_as_a_vector \%>\%
+one_pop_one_model \%>\%
   render_performance_table()
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  render_performance_table(main_slider = "ppcr")
-
-one_pop_one_model_as_a_list \%>\%
+one_pop_one_model_by_ppcr \%>\%
   render_performance_table()
 
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  render_performance_table(main_slider = "ppcr")
-
-one_pop_three_models \%>\%
+multiple_models \%>\%
   render_performance_table()
 
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  render_performance_table(main_slider = "ppcr")
-
-train_and_test_sets \%>\%
+multiple_models_by_ppcr \%>\%
   render_performance_table()
 
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  render_performance_table(main_slider = "ppcr")
+multiple_populations \%>\%
+  render_performance_table()
+
+multiple_populations_by_ppcr \%>\%
+  render_performance_table()
+
 }
 
 }

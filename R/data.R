@@ -76,3 +76,52 @@
 #'
 #' @format A data frame with 202 rows and 15 variables:
 "train_and_test_sets_enforced_percentiles_symmetry"
+
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains multiple models
+#'
+#' @format A data frame with 202 rows and 15 variables:
+"multiple_models"
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains multiple models 
+#' stratified by ppcr
+#'
+#' @format A data frame with 202 rows and 15 variables:
+"multiple_models_by_ppcr"
+
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains multiple populations
+#'
+#' @format A data frame with 202 rows and 15 variables:
+"multiple_populations"
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains multiple populations 
+#' stratified by ppcr
+#'
+#' @format A data frame with 202 rows and 15 variables:
+"multiple_populations_by_ppcr"
+
+
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains one model
+#'
+#' @format A data frame with 101 rows and 14 variables:
+"one_pop_one_model"
+
+#' Example Performance Data
+#'
+#' An example Performance Data that contains one model stratified by ppcr
+#'
+#' @format A data frame with 101 rows and 14 variables:
+"one_pop_one_model_by_ppcr"
+

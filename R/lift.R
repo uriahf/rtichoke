@@ -11,9 +11,16 @@
 #' @examples
 #'
 #' \dontrun{
+#' 
 #' create_lift_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
+#' )
+#' 
+#' create_lift_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
 #' )
 #'
 #' create_lift_curve(
@@ -23,6 +30,17 @@
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
+#'
+#'
+#' create_lift_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
 #'
 #' create_lift_curve(
 #'   probs = list(
@@ -39,13 +57,29 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#'
+#' 
+#' create_lift_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#' 
 #' }
 create_lift_curve <- function(probs, reals, by = 0.01,
                               stratified_by = "probability_threshold",
                               chosen_threshold = NA,
                               interactive = TRUE,
-                              main_slider = "threshold",
                               col_values = c(
                                 "#5BC0BE",
                                 "#FC8D62",
@@ -67,7 +101,6 @@ create_lift_curve <- function(probs, reals, by = 0.01,
     plot_lift_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      main_slider = main_slider,
       col_values = col_values,
       size = size
     )
@@ -82,61 +115,31 @@ create_lift_curve <- function(probs, reals, by = 0.01,
 #'
 #' @examples
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_lift_curve()
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_lift_curve()
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
-#'   plot_lift_curve()
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_lift_curve()
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(main_slider = "ppcr")
 #' \dontrun{
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_lift_curve(interactive = TRUE)
+#' one_pop_one_model %>%
+#'   plot_lift_curve()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
+#' one_pop_one_model_by_ppcr %>%
+#'   plot_lift_curve()
 #'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_lift_curve(interactive = TRUE)
+#' multiple_models %>%
+#'   plot_lift_curve()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_models_by_ppcr %>%
+#'   plot_lift_curve()
 #'
-#' one_pop_three_models %>%
-#'   plot_lift_curve(interactive = TRUE)
+#' multiple_populations %>%
+#'   plot_lift_curve()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_lift_curve(interactive = TRUE)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_lift_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   plot_lift_curve()
 #' }
 #'
 #' @export
 plot_lift_curve <- function(performance_data,
                             chosen_threshold = NA,
-                            interactive = FALSE,
-                            main_slider = "threshold",
+                            interactive = TRUE,
                             col_values = c(
                               "#5BC0BE",
                               "#FC8D62",
@@ -149,17 +152,9 @@ plot_lift_curve <- function(performance_data,
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-
-  if (((performance_data_stratification == "ppcr") &
-    (main_slider != "ppcr")) |
-    ((performance_data_stratification != "ppcr") &
-      (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
 
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data =
@@ -189,7 +184,7 @@ plot_lift_curve <- function(performance_data,
 
     performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type, curve = "lift")
-
+    
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift",
         size = size
@@ -198,15 +193,14 @@ plot_lift_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
-          lift,
-          main_slider
+          lift
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           fake_lift,
-          main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("lift",
           max_y_range = max(performance_data$lift,
@@ -216,6 +210,7 @@ plot_lift_curve <- function(performance_data,
     }
 
     if (perf_dat_type == "several models") {
+      
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
         "lift",
         population_color_vector =
@@ -227,15 +222,13 @@ plot_lift_curve <- function(performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           lift,
-          col_values = col_values,
-          main_slider = main_slider
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           fake_lift,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("lift",
           max_y_range = max(performance_data$lift,
@@ -255,15 +248,14 @@ plot_lift_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
-          lift,
-          main_slider = main_slider
+          lift
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           ppcr,
           fake_lift,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("lift",
           max_y_range = max(performance_data$lift,

@@ -7,8 +7,79 @@
 #' Create a Performance Table
 #'
 #' @inheritParams create_roc_curve
-#' @param output_type the type of the output table, {gt} as default
+#' @param output_type the type of the output table
 #'
+#' @export
+#'
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' 
+#' create_performance_table(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome)
+#' )
+#' 
+#' create_performance_table(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome)
+#' )
+#'
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#'
+#' create_performance_table(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   )
+#' )
+#' 
+#' create_performance_table(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#'
+#' }
 create_performance_table <- function(probs, reals, by = 0.01,
                                      stratified_by = "probability_threshold",
                                      output_type = "reactable") {
@@ -32,36 +103,30 @@ create_performance_table <- function(probs, reals, by = 0.01,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model_as_a_vector %>%
+#' one_pop_one_model %>%
 #'   render_performance_table()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   render_performance_table()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   render_performance_table()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   render_performance_table()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   render_performance_table(main_slider = "ppcr")
+#' multiple_populations %>%
+#'   render_performance_table()
+#'
+#' multiple_populations_by_ppcr %>%
+#'   render_performance_table()
+#'
 #' }
 #'
 #' @export
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
                                      output_type = "reactable",
-                                     main_slider = "threshold",
                                      col_values = c(
                                        "#5BC0BE",
                                        "#FC8D62",
@@ -71,21 +136,14 @@ render_performance_table <- function(performance_data,
                                      )) {
   
   
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
-  if (((performance_data_stratification == "ppcr") &
-       (main_slider != "ppcr")) |
-      ((performance_data_stratification != "ppcr") &
-       (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
   
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
+  
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
@@ -100,18 +158,18 @@ render_performance_table <- function(performance_data,
     performance_data_reactable <- performance_data %>%
       dplyr::select(any_of(
         c(
-          "threshold", "model", "population", "sensitivity", "specificity",
+          "probability_threshold", "model", "population", "sensitivity", "specificity",
           "PPV", "NPV", "lift", "predicted_positives", "NB", "ppcr"
         )
       )) %>%
       dplyr::rename(any_of(c(
         "Model" = "model",
         "Population" = "population",
-        "Threshold" = "threshold"
+        "Threshold" = "probability_threshold"
       )))
 
 
-    if (main_slider != "threshold") {
+    if (stratified_by != "probability_threshold") {
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::relocate(predicted_positives,
           ppcr,
@@ -171,7 +229,7 @@ render_performance_table <- function(performance_data,
     }
 
     confusion_matrix_list <- performance_data %>%
-      create_conf_mat_list(main_slider = main_slider)
+      create_conf_mat_list(stratified_by = stratified_by)
 
     interactive_data <- SharedData$new(performance_data_reactable)
 
@@ -332,7 +390,7 @@ render_performance_table <- function(performance_data,
         }
       )
 
-    if (main_slider != "threshold") {
+    if (stratified_by != "probability_threshold") {
       slider_filter_strata <- as.formula(
         paste0("~", "ppcr")
       )
@@ -402,13 +460,13 @@ prepare_performance_data_for_gt <- function(performance_data,
     dplyr::rename(any_of(c(
       "Model" = "model",
       "Population" = "population",
-      "Threshold" = "threshold"
+      "Threshold" = "probability_threshold"
     ))) %>%
     add_colors_to_performance_dat()
 
 
 
-  if (main_slider != "threshold") {
+  if (stratified_by != "probability_threshold") {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
       dplyr::relocate(plot_predicted_positives,
         .after = Threshold
@@ -528,7 +586,7 @@ add_zebra_colors_to_gt_table <- function(performance_table,
 #' @keywords internal
 #' @inheritParams plot_roc_curve
 creating_title_for_gt <- function(main_slider) {
-  if (main_slider == "threshold") {
+  if (main_slider == "probability_threshold") {
     gt::md("**Performanc Metrics for Different Thresholds**")
   } else {
     gt::md("**Performanc Metrics by Predicted Positives Rate**")

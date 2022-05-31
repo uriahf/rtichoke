@@ -8,7 +8,6 @@ plot_decision_curve(
   performance_data,
   chosen_threshold = NA,
   interactive = TRUE,
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   interventions_avoided = FALSE,
   size = NULL
@@ -22,9 +21,6 @@ plot_decision_curve(
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 
 \item{interventions_avoided}{should one use interventions avoided curve}
@@ -36,52 +32,26 @@ Plot a Precision decision Curve
 }
 \examples{
 \dontrun{
-one_pop_one_model_as_a_vector \%>\%
+
+
+one_pop_one_model \%>\%
   plot_decision_curve()
 
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(main_slider = "ppcr")
-
-one_pop_one_model_as_a_list \%>\%
+one_pop_one_model_by_ppcr \%>\%
   plot_decision_curve()
 
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(main_slider = "ppcr")
-
-one_pop_three_models \%>\%
+multiple_models \%>\%
   plot_decision_curve()
 
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(main_slider = "ppcr")
-
-train_and_test_sets \%>\%
+multiple_models_by_ppcr \%>\%
   plot_decision_curve()
 
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(main_slider = "ppcr")
+multiple_populations \%>\%
+  plot_decision_curve()
 
-one_pop_one_model_as_a_vector \%>\%
-  plot_decision_curve(interactive = TRUE)
-
-one_pop_one_model_as_a_vector_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-
-one_pop_one_model_as_a_list \%>\%
-  plot_decision_curve(interactive = TRUE)
-
-one_pop_one_model_as_a_list_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-
-one_pop_three_models \%>\%
-  plot_decision_curve(interactive = TRUE)
-
-one_pop_three_models_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-
-train_and_test_sets \%>\%
-  plot_decision_curve(interactive = TRUE)
-
-train_and_test_sets_enforced_percentiles_symmetry \%>\%
-  plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
+multiple_populations_by_ppcr \%>\%
+  plot_decision_curve()
+  
+  
 }
 }

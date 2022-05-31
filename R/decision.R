@@ -13,9 +13,17 @@
 #' @examples
 #' 
 #' \dontrun{
+#' 
+#' 
 #' create_decision_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
+#' )
+#' 
+#' create_decision_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
 #' )
 #'
 #' create_decision_curve(
@@ -25,6 +33,17 @@
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
+#'
+#'
+#' create_decision_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
 #'
 #' create_decision_curve(
 #'   probs = list(
@@ -41,13 +60,29 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' 
+#' create_decision_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
 #'
 #' }
 create_decision_curve <- function(probs, reals, by = 0.01,
                                   stratified_by = "probability_threshold",
                                   chosen_threshold = NA,
                                   interactive = TRUE,
-                                  main_slider = "threshold",
                                   col_values = c(
                                     "#5BC0BE",
                                     "#FC8D62",
@@ -69,7 +104,6 @@ create_decision_curve <- function(probs, reals, by = 0.01,
     plot_decision_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      main_slider = main_slider,
       col_values = col_values,
       size = size
     )
@@ -87,60 +121,33 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #'
 #' @examples
 #' \dontrun{
-#' one_pop_one_model_as_a_vector %>%
+#' 
+#' 
+#' one_pop_one_model %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   plot_decision_curve()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(main_slider = "ppcr")
+#' multiple_populations %>%
+#'   plot_decision_curve()
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_decision_curve(interactive = TRUE)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_decision_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   plot_decision_curve()
+#'   
+#'   
 #' }
 #' @export
 
 plot_decision_curve <- function(performance_data,
                                 chosen_threshold = NA,
                                 interactive = TRUE,
-                                main_slider = "threshold",
                                 col_values = c(
                                   "#5BC0BE",
                                   "#FC8D62",
@@ -157,17 +164,9 @@ plot_decision_curve <- function(performance_data,
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-
-  if (((performance_data_stratification == "ppcr") &
-    (main_slider != "ppcr")) |
-    ((performance_data_stratification != "ppcr") &
-      (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
 
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
@@ -222,16 +221,15 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
-          NB,
-          main_slider
+          probability_threshold,
+          NB
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
-          main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -255,17 +253,16 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
-          col_values = col_values,
-          main_slider = main_slider
+          col_values = col_values
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -289,16 +286,15 @@ plot_decision_curve <- function(performance_data,
         add_lines_and_markers_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
-          NB,
-          main_slider = main_slider
+          probability_threshold,
+          NB
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
-          threshold,
+          probability_threshold,
           NB,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke(
           "decision",
@@ -406,8 +402,7 @@ set_decision_curve_limits <- function(decision_curve) {
 #' @keywords internal
 plot_interventions_avoided <- function(performance_data,
                                        chosen_threshold = NA,
-                                       interactive = FALSE,
-                                       main_slider = "threshold",
+                                       interactive = TRUE,
                                        col_values = c(
                                          "#5BC0BE",
                                          "#FC8D62",
@@ -415,23 +410,15 @@ plot_interventions_avoided <- function(performance_data,
                                          "#E78AC3",
                                          "#A4243B"
                                        ),
-                                       size = NULL){
+                                       size = 350){
   
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
   
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
-  if (((performance_data_stratification == "ppcr") &
-       (main_slider != "ppcr")) |
-      ((performance_data_stratification != "ppcr") &
-       (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
   
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
@@ -445,9 +432,9 @@ plot_interventions_avoided <- function(performance_data,
       N = TP +TN  + FP + FN,
       prevalence = (TP + FN) / N,
       NB_intervention_all =   prevalence - (1- prevalence) * 
-        (threshold) / (1 - threshold),
+        (probability_threshold) / (1 - probability_threshold),
       NB_treatment_avoided = 100 * (NB - NB_intervention_all) * 
-        ( (1 - threshold) / threshold )
+        ( (1 - probability_threshold) / probability_threshold )
     ) %>% 
     add_hover_text_to_performance_data(perf_dat_type, 
                                        curve = "interventions avoided")
@@ -461,16 +448,15 @@ plot_interventions_avoided <- function(performance_data,
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
-        threshold,
-        NB_treatment_avoided,
-        main_slider
+        probability_threshold,
+        NB_treatment_avoided
       ) %>%
       add_interactive_marker_from_performance_data(
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
-        threshold,
+        probability_threshold,
         NB_treatment_avoided,
-        main_slider
+        stratified_by = stratified_by
       ) %>%
       set_styling_for_rtichoke(
         "interventions avoided")

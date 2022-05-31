@@ -10,19 +10,36 @@
 #'
 #' @examples
 #' \dontrun{
-#'
+#' 
 #' create_precision_recall_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
 #'
 #' create_precision_recall_curve(
 #'   probs = list(
-#'     "First Model" = list(example_dat$estimated_probabilities),
-#'     "Second Model" = list(example_dat$random_guess)
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
+#'
+#'
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
+#'
 #'
 #' create_precision_recall_curve(
 #'   probs = list(
@@ -39,6 +56,25 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' 
+#' create_precision_recall_curve(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#' 
+#'
 #' }
 create_precision_recall_curve <- function(probs,
                                           reals,
@@ -46,7 +82,6 @@ create_precision_recall_curve <- function(probs,
                                           stratified_by = "probability_threshold",
                                           chosen_threshold = NA,
                                           interactive = TRUE,
-                                          main_slider = "threshold",
                                           col_values = c(
                                             "#5BC0BE",
                                             "#FC8D62",
@@ -64,7 +99,6 @@ create_precision_recall_curve <- function(probs,
     plot_precision_recall_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      main_slider = main_slider,
       col_values = col_values,
       size = size
     )
@@ -82,53 +116,23 @@ create_precision_recall_curve <- function(probs,
 #'
 #' \dontrun{
 #'
-#' one_pop_one_model_as_a_vector %>%
+#' one_pop_one_model %>%
 #'   plot_precision_recall_curve()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   plot_precision_recall_curve()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   plot_precision_recall_curve()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   plot_precision_recall_curve()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(main_slider = "ppcr")
+#' multiple_populations %>%
+#'   plot_precision_recall_curve()
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_precision_recall_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_precision_recall_curve(interactive = TRUE)
-#'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
-#'   plot_precision_recall_curve(interactive = TRUE)
-#'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(interactive = TRUE, main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_precision_recall_curve(interactive = TRUE)
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_precision_recall_curve(interactive = TRUE, main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   plot_precision_recall_curve()
 #' }
 #'
 #' @export
@@ -136,7 +140,6 @@ create_precision_recall_curve <- function(probs,
 plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
                                         interactive = FALSE,
-                                        main_slider = "threshold",
                                         col_values = c(
                                           "#5BC0BE",
                                           "#FC8D62",
@@ -151,17 +154,10 @@ plot_precision_recall_curve <- function(performance_data,
     perf_dat_type
   )
 
-  performance_data_stratification <- check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
 
-  if (((performance_data_stratification == "ppcr") &
-    (main_slider != "ppcr")) |
-    ((performance_data_stratification != "ppcr") &
-      (main_slider == "ppcr"))
-  ) {
-    stop("Performance data and Main Slider are not consistent")
-  }
 
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame(
@@ -199,15 +195,14 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
-          PPV,
-          main_slider
+          PPV
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
           fake_PPV,
-          main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("precision recall")
     }
@@ -225,15 +220,14 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
           PPV,
-          col_values = col_values,
-          main_slider = main_slider
+          col_values = col_values
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
           fake_PPV,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("precision recall")
     }
@@ -249,15 +243,14 @@ plot_precision_recall_curve <- function(performance_data,
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
-          PPV,
-          main_slider = main_slider
+          PPV
         ) %>%
         add_interactive_marker_from_performance_data(
           performance_data = performance_data,
           performance_data_type = perf_dat_type,
           sensitivity,
           fake_PPV,
-          main_slider = main_slider
+          stratified_by = stratified_by
         ) %>%
         set_styling_for_rtichoke("precision recall")
     }

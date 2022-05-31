@@ -11,7 +11,6 @@ create_roc_curve(
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
   interactive = TRUE,
-  main_slider = "threshold",
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   title_included = FALSE,
   size = NULL
@@ -33,9 +32,6 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{main_slider}{what is the main slider - threshold, percent positives
-or positives}
-
 \item{col_values}{color palette}
 
 \item{title_included}{add title to the curve}
@@ -54,12 +50,29 @@ create_roc_curve(
 )
 
 create_roc_curve(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
+
+create_roc_curve(
   probs = list(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
   reals = list(example_dat$outcome)
 )
+
+
+create_roc_curve(
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome),
+  stratified_by = "ppcr"
+)
+
 
 create_roc_curve(
   probs = list(
@@ -76,6 +89,24 @@ create_roc_curve(
       dplyr::pull(outcome)
   )
 )
+
+create_roc_curve(
+  probs = list(
+    "train" = example_dat \%>\%
+      dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(estimated_probabilities)
+  ),
+  reals = list(
+    "train" = example_dat \%>\% dplyr::filter(type_of_set == "train") \%>\%
+      dplyr::pull(outcome),
+    "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
+      dplyr::pull(outcome)
+  ),
+  stratified_by = "ppcr"
+)
+
 
 }
 }

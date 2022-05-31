@@ -22,89 +22,6 @@ check_performance_data_type_for_plotly <- function(performance_data) {
 }
 
 
-#' Create basic plotly for Performance Metrics
-#'
-#' Makes a basic plotly for the metrices
-#'
-#' @inheritParams create_ggplot_for_performance_metrics
-#' @param performance_data_type the type of the Performance Data
-#' @param col_values palette
-#' @keywords internal
-
-create_plotly_base <- function(performance_data,
-                               x_perf_metric,
-                               y_perf_metric,
-                               performance_data_type = "one model",
-                               col_values = c(
-                                 "#5BC0BE",
-                                 "#FC8D62",
-                                 "#8DA0CB",
-                                 "#E78AC3",
-                                 "#A4243B"
-                               ),
-                               height = size,
-                               width = size) {
-  if (performance_data_type %in%
-    c("one model", "one model with model column")) {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  if (performance_data_type == "several models") {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        color = ~model,
-        colors = col_values,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  if (performance_data_type == "several populations") {
-    
-    print("height")
-    print(size + 50)
-    
-    print("width")
-    print(size)
-    
-    plotly_base <- performance_data %>%
-      plotly::plot_ly(
-        x = x_perf_metric,
-        y = y_perf_metric,
-        color = ~population,
-        colors = col_values,
-        height = size + 50,
-        width = size
-      )
-  }
-
-  plotly_base
-}
-
-
 #' Adding markers and lines to plotly
 #'
 #' @param plotly_object a plotly object
@@ -182,47 +99,6 @@ add_markers_and_lines_to_plotly <- function(plotly_object,
   plotly_with_markers_and_lines
 }
 
-
-#' Add Interactive Marker to Plotly
-#'
-#' @param plotly_object a plotly plot for performance metrics
-#' @param main_slider what is the main slider - threshold, percent positives or
-#' positives
-#' @keywords internal
-add_interactive_marker_to_plotly <- function(plotly_object,
-                                             main_slider = "threshold") {
-  plotly_object %>%
-    plotly::add_markers(
-      frame = as.formula(paste0("~", main_slider)),
-      marker = list(
-        size = 12,
-        line = list(
-          width = 3,
-          color = I("black")
-        )
-      ),
-      hoverinfo = "text",
-      text = ~ paste(
-        # "Model:", model,
-        "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-        "FPR:", round(FPR, digits = 3), "<br>",
-        "Specificity", round(specificity, digits = 3), "<br>",
-        "Lift", round(lift, digits = 3), "<br>",
-        "PPV", round(PPV, digits = 3), "<br>",
-        "NPV", round(NPV, digits = 3), "<br>",
-        "TP:", TP, "<br>",
-        "TN:", TN, "<br>",
-        "FP:", FP, "<br>",
-        "FN:", FN
-      )
-    ) %>%
-    plotly::animation_slider(
-      currentvalue = list(prefix = ifelse(main_slider == "threshold",
-        "Prob. Threshold: ",
-        "Predicted Positives (Rate): "
-      ))
-    )
-}
 
 
 #' Add Reference Lines to Plotly Object
@@ -394,6 +270,7 @@ set_axis_titles <- function(plotly_object, curve,
 #' Add interactive marker based on performance data
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
+#' @inheritParams create_roc_curve
 #' @keywords internal
 add_interactive_marker_from_performance_data <- function(
     plotly_object,
@@ -401,7 +278,7 @@ add_interactive_marker_from_performance_data <- function(
     performance_data_type,
     x_perf_metric,
     y_perf_metric,
-    main_slider = "threshold") {
+    stratified_by = "probability_threshold") {
   
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -415,7 +292,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         marker = list(
           size = 12,
           line = list(
@@ -428,7 +305,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -443,7 +321,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         color = ~model,
         marker = list(
           size = 12,
@@ -456,7 +334,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -471,7 +350,7 @@ add_interactive_marker_from_performance_data <- function(
         data = performance_data,
         x = x_perf_metric,
         y = y_perf_metric,
-        frame = as.formula(paste0("~", main_slider)),
+        frame = as.formula(paste0("~", stratified_by)),
         color = ~population,
         marker = list(
           size = 12,
@@ -484,7 +363,8 @@ add_interactive_marker_from_performance_data <- function(
         text = ~text
       ) %>%
       plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(main_slider == "threshold",
+        currentvalue = list(prefix = ifelse(
+          stratified_by == "probability_threshold",
           "Prob. Threshold: ",
           "Predicted Positives (Rate): "
         ),
@@ -508,7 +388,6 @@ add_interactive_marker_from_performance_data <- function(
 #' @param x_perf_metric performance metric for the x axis
 #' @param y_perf_metric performance metric for the y axis
 #' @param col_values color palette
-#' @param main_slider the main slider for interactivity
 #' @keywords internal
 add_lines_and_markers_from_performance_data <- function(
     plotly_object,
@@ -522,8 +401,8 @@ add_lines_and_markers_from_performance_data <- function(
       "#8DA0CB",
       "#E78AC3",
       "#A4243B"
-      ),
-    main_slider = "threshold") {
+      )) {
+  
   
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
@@ -542,6 +421,7 @@ add_lines_and_markers_from_performance_data <- function(
     ]
     names(col_values_vec) <- unique(performance_data %>% pull(1))
   }
+  
 
   if (performance_data_type %in% c(
     "one model",
@@ -614,6 +494,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               size = NULL,
                                               performance_data = NULL) {
   
+  size_height <- switch(is.null(size) +1, size + 50, NULL)
+  
+  
   if ((curve %in% c("roc", "lift")) || ((performance_table_type !=
     "several populations"))) {
     if (curve %in% c("gains", "decision")) {
@@ -625,7 +508,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly::plot_ly(
         x = ~x, 
         y = ~y,
-        height = size + 50,
+        height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -643,7 +526,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       ) %>%
         plotly::plot_ly(
           x = ~x, y = ~y,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -664,7 +547,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_vector,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(line = list(dash = "dash", width = 1.75))
@@ -698,7 +581,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_reference_vector,
-          height = size + 50,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -735,7 +618,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           y = ~y,
           color = ~population,
           colors = population_color_reference_vector,
-          height = size + 50,
+          height = size_height,
           width = size,
           hoverinfo = "text",
           text =~ text

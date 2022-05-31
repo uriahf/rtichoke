@@ -34,7 +34,12 @@
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#'
+#' 
+#' prepare_performance_data(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
+#' )
 #'
 #' # Several Models
 #'
@@ -44,6 +49,15 @@
 #'     "Second Model" = example_dat$random_guess
 #'   ),
 #'   reals = list(example_dat$outcome)
+#' )
+#'
+#' prepare_performance_data(
+#'   probs = list(
+#'     "First Model" = example_dat$estimated_probabilities,
+#'     "Second Model" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   stratified_by = "ppcr"
 #' )
 #'
 #'
@@ -64,10 +78,31 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
+#' 
+#' prepare_performance_data(
+#'   probs = list(
+#'     "train" = example_dat %>%
+#'       dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(estimated_probabilities),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(estimated_probabilities)
+#'   ),
+#'   reals = list(
+#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'       dplyr::pull(outcome),
+#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'       dplyr::pull(outcome)
+#'   ),
+#'   stratified_by = "ppcr"
+#' )
+#' 
+#' 
 #' @export
-prepare_performance_data <- function(probs, reals, by = 0.01,
+prepare_performance_data <- function(probs, 
+                                     reals, 
+                                     by = 0.01,
                                      stratified_by = "probability_threshold") {
-  . <- threshold <- NULL
+  . <- probability_threshold <- NULL
 
   check_probs_input(probs)
   # check_real_input(reals)
@@ -116,7 +151,7 @@ prepare_performance_data <- function(probs, reals, by = 0.01,
   N <- length(probs[[1]])
 
   tibble::tibble(
-    threshold = if (stratified_by != "probability_threshold") {
+    probability_threshold = if (stratified_by != "probability_threshold") {
       stats::quantile(probs[[1]],
         probs = rev(seq(0, 1, by = by))
       )
@@ -138,12 +173,12 @@ prepare_performance_data <- function(probs, reals, by = 0.01,
       }
     } %>%
     dplyr::mutate(
-      TP = lapply(threshold, 
+      TP = lapply(probability_threshold, 
                   function(x) ifelse(x == 0 ,
                                      length(probs[[1]][reals[[1]] == 1]),
                                      sum(probs[[1]][reals[[1]] == 1] > x))) %>%
         unlist(),
-      TN = lapply(threshold, 
+      TN = lapply(probability_threshold, 
                   function(x) ifelse(x == 0 , as.integer(0) ,
                                      sum(probs[[1]][reals[[1]] == 0] <= x))) %>%
         unlist()
@@ -168,7 +203,8 @@ prepare_performance_data <- function(probs, reals, by = 0.01,
       NPV = TN / (TN + FN),
       lift = (TP / (TP + FN)) / ((TP + FP) / N),
       predicted_positives = TP + FP,
-      NB = TP / N - (FP / N) * (threshold / (1 - threshold))
+      NB = TP / N - (FP / N) * (
+        probability_threshold / (1 - probability_threshold))
     ) %>%
     {
       if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
