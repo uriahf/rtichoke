@@ -6,35 +6,24 @@
 #'
 #' @examples
 #' \dontrun{
-#' one_pop_one_model_as_a_vector %>%
+#' 
+#' one_pop_one_model %>%
 #'   create_conf_mat_list()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   create_conf_mat_list(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_list %>%
+#' one_pop_one_model_by_ppcr %>%
 #'   create_conf_mat_list()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   create_conf_mat_list(main_slider = "ppcr")
-#'
-#' one_pop_three_models %>%
+#' multiple_models %>%
 #'   create_conf_mat_list()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   create_conf_mat_list(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
+#' multiple_models_by_ppcr %>%
 #'   create_conf_mat_list()
 #'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   create_conf_mat_list(main_slider = "ppcr")
-#'
-#' one_pop_one_model_as_a_vector %>%
+#' multiple_populations %>%
 #'   create_conf_mat_list()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   create_conf_mat_list(main_slider = "ppcr")
+#' multiple_populations_by_ppcr %>%
+#'   create_conf_mat_list()
 #' }
 create_conf_mat_list <- function(performance_table,
                                  stratified_by = "probability_threshold") {
