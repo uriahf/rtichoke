@@ -64,7 +64,6 @@
   stratified_by <span class="op">=</span> <span class="st">"probability_threshold"</span>,
   chosen_threshold <span class="op">=</span> <span class="cn">NA</span>,
   interactive <span class="op">=</span> <span class="cn">TRUE</span>,
-  main_slider <span class="op">=</span> <span class="st">"threshold"</span>,
   col_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5BC0BE"</span>, <span class="st">"#FC8D62"</span>, <span class="st">"#8DA0CB"</span>, <span class="st">"#E78AC3"</span>, <span class="st">"#A4243B"</span><span class="op">)</span>,
   title_included <span class="op">=</span> <span class="cn">FALSE</span>,
   size <span class="op">=</span> <span class="cn">NULL</span>
@@ -88,9 +87,6 @@ Threshold or alternatively by Predicted Positives Condition Rate</p></dd>
 <dt>interactive</dt>
 <dd><p>whether the plot should be interactive
 plots</p></dd>
-<dt>main_slider</dt>
-<dd><p>what is the main slider - threshold, percent positives
-or positives</p></dd>
 <dt>col_values</dt>
 <dd><p>color palette</p></dd>
 <dt>title_included</dt>
@@ -109,12 +105,29 @@ or positives</p></dd>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_roc_curve</span><span class="op">(</span></span>
+<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>,</span>
+<span class="r-in">  stratified_by <span class="op">=</span> <span class="st">"ppcr"</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">create_roc_curve</span><span class="op">(</span></span>
 <span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
 <span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
 <span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">create_roc_curve</span><span class="op">(</span></span>
+<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">    <span class="st">"First Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
+<span class="r-in">    <span class="st">"Second Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
+<span class="r-in">  <span class="op">)</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>,</span>
+<span class="r-in">  stratified_by <span class="op">=</span> <span class="st">"ppcr"</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">create_roc_curve</span><span class="op">(</span></span>
 <span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -131,6 +144,24 @@ or positives</p></dd>
 <span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">create_roc_curve</span><span class="op">(</span></span>
+<span class="r-in">  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">    <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
+<span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span></span>
+<span class="r-in">  <span class="op">)</span>,</span>
+<span class="r-in">  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">    <span class="st">"train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
+<span class="r-in">    <span class="st">"test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
+<span class="r-in">  <span class="op">)</span>,</span>
+<span class="r-in">  stratified_by <span class="op">=</span> <span class="st">"ppcr"</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
