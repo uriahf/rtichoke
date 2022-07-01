@@ -206,6 +206,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
 
@@ -234,6 +244,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
 
@@ -261,6 +281,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
   }

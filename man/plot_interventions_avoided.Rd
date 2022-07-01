@@ -20,22 +20,22 @@ Plot interventions Avoided
 \dontrun{
 
 one_pop_one_model \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
 
 one_pop_one_model_by_ppcr \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
 
 multiple_models \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
 
 multiple_models_by_ppcr \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
 
 multiple_populations \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
 
 multiple_populations_by_ppcr \%>\%
-  plot_interventions_avoided()
+  rtichoke:::plot_interventions_avoided()
   
 }
 }

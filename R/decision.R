@@ -457,8 +457,7 @@ plot_interventions_avoided <- function(performance_data,
         NB_treatment_avoided,
         stratified_by = stratified_by
       ) %>%
-      set_styling_for_rtichoke(
-        "interventions avoided")
+      set_styling_for_rtichoke("interventions avoided")
   }
   
   if (perf_dat_type == "several models") {
