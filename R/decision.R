@@ -7,6 +7,9 @@
 #' Create a decision Curve
 #'
 #' @inheritParams create_roc_curve
+#' @param type What type of Decision Curve, default choice is "conventional". 
+#' Alternatives are "interventions avoided" and "combined" for both 
+#' "conventional" and "interventions avoided" on the same view. 
 #'
 #' @export
 #'
@@ -90,7 +93,8 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                     "#E78AC3",
                                     "#A4243B"
                                   ),
-                                  size = NULL) {
+                                  size = NULL,
+                                  type = "conventional") {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -116,7 +120,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #' Plot a Precision decision Curve
 #'
 #' @inheritParams plot_roc_curve
-#' 
+#' @inheritParams create_decision_curve
 #' @param interventions_avoided should one use interventions avoided curve
 #'
 #' @examples
@@ -156,9 +160,10 @@ plot_decision_curve <- function(performance_data,
                                   "#A4243B"
                                 ),
                                 interventions_avoided = FALSE,
-                                size = NULL) {
+                                size = NULL,
+                                type = "conventional") {
   
-  if (interventions_avoided == FALSE) {
+  if (type == "conventional") {
   
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -208,7 +213,7 @@ plot_decision_curve <- function(performance_data,
     performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type, 
                                          curve = "decision") #%>% 
-      # dplyr::filter(threshold > 0 & threshold < 1)
+      # dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       decision_curve <- create_reference_lines_for_plotly(
@@ -374,30 +379,24 @@ set_decision_curve_limits <- function(decision_curve) {
 #'
 #' \dontrun{
 #'
-#' one_pop_one_model_as_a_vector %>%
-#'   plot_interventions_avoided()
+#' one_pop_one_model %>%
+#'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_one_model_as_a_vector_enforced_percentiles_symmetry %>%
-#'   plot_interventions_avoided(main_slider = "ppcr")
+#' one_pop_one_model_by_ppcr %>%
+#'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_one_model_as_a_list %>%
-#'   plot_interventions_avoided()
+#' multiple_models %>%
+#'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_one_model_as_a_list_enforced_percentiles_symmetry %>%
-#'   plot_interventions_avoided(main_slider = "ppcr")
+#' multiple_models_by_ppcr %>%
+#'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_three_models %>%
-#'   plot_interventions_avoided()
+#' multiple_populations %>%
+#'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_three_models_enforced_percentiles_symmetry %>%
-#'   plot_interventions_avoided(main_slider = "ppcr")
-#'
-#' train_and_test_sets %>%
-#'   plot_interventions_avoided()
-#'
-#' train_and_test_sets_enforced_percentiles_symmetry %>%
-#'   plot_interventions_avoided(main_slider = "ppcr")
-
+#' multiple_populations_by_ppcr %>%
+#'   rtichoke:::plot_interventions_avoided()
+#'   
 #' }
 #' @keywords internal
 plot_interventions_avoided <- function(performance_data,
@@ -443,7 +442,7 @@ plot_interventions_avoided <- function(performance_data,
   if (perf_dat_type %in% c("one model with model column", "one model")) {
     interventions_avoided <- create_reference_lines_for_plotly(
       perf_dat_type,
-      "interventions avoided",
+      "interventions avoided"
     ) %>%
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
@@ -461,7 +460,30 @@ plot_interventions_avoided <- function(performance_data,
       set_styling_for_rtichoke(
         "interventions avoided")
   }
-    
+  
+  if (perf_dat_type == "several models") {
+    interventions_avoided <- create_reference_lines_for_plotly(
+      perf_dat_type,
+      "interventions avoided"
+    ) %>%
+      add_lines_and_markers_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        probability_threshold,
+        NB_treatment_avoided,
+        col_values = col_values
+      ) # %>%
+      # add_interactive_marker_from_performance_data(
+      #   performance_data = performance_data,
+      #   performance_data_type = perf_dat_type,
+      #   probability_threshold,
+      #   NB_treatment_avoided,
+      #   stratified_by = stratified_by
+      # ) %>%
+      # set_styling_for_rtichoke(
+      #   "interventions avoided")
+  }
+  
   return(interventions_avoided)
   
 }

@@ -12,7 +12,8 @@ create_decision_curve(
   chosen_threshold = NA,
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  size = NULL
+  size = NULL,
+  type = "conventional"
 )
 }
 \arguments{
@@ -34,6 +35,10 @@ plots}
 \item{col_values}{color palette}
 
 \item{size}{the size of the curve}
+
+\item{type}{What type of Decision Curve, default choice is "conventional".
+Alternatives are "interventions avoided" and "combined" for both
+"conventional" and "interventions avoided" on the same view.}
 }
 \description{
 Create a decision Curve

@@ -252,7 +252,7 @@ set_axis_titles <- function(plotly_object, curve,
           fixedrange = TRUE
         ),
         yaxis = list(
-          title = "Interventions Avoided per 100 Cases",
+          title = "Interventions Avoided (per 100)",
           range = c(-15, 105),
           fixedrange = TRUE
         ),
@@ -441,6 +441,37 @@ add_lines_and_markers_from_performance_data <- function(
   }
 
   if (performance_data_type == "several models") {
+    print(names(performance_data))
+    
+    # print(plotly_object %>%
+    #                 plotly::add_trace(
+    #                   data = performance_data,
+    #                   x =~ probability_threshold,
+    #                   y =~ probability_threshold,
+    #                   color = ~model
+    #                 )
+    print(plotly::plot_ly() %>%
+                    plotly::add_trace(
+                      data = performance_data,
+                      x =~ probability_threshold,
+                      y =~ probability_threshold,
+                      color = ~model
+                    )
+    
+    )
+    # print(plotly_object %>%
+    #         plotly::add_trace(
+    #           data = performance_data,
+    #           x = x_perf_metric,
+    #           y = y_perf_metric),
+              # type = "scatter",
+              # mode = "markers+lines",
+              # color = ~model#,
+              # colors = col_values_vec,
+              # hoverinfo = "text",
+              # text = ~text
+            # )
+    
     plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
@@ -453,6 +484,7 @@ add_lines_and_markers_from_performance_data <- function(
         hoverinfo = "text",
         text = ~text
       )
+    
   }
 
   if (performance_data_type == "several populations") {
