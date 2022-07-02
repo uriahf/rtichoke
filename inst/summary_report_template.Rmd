@@ -232,7 +232,8 @@ plot_precision_recall_curve(performance_dat_ppcr, interactive = params$interacti
 #### Gains
 
 ```{r}
-plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
+plot_gains_curve(performance_dat_ppcr, 
+                 interactive = params$interactive,
                size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
@@ -240,7 +241,9 @@ plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
 # Utility (Decision Curve)
 
 ```{r}
-plot_decision_curve(performance_dat, interactive = params$interactive, 
+plot_decision_curve(performance_dat, 
+                    interactive = params$interactive, 
+                    type = "combined",
                     size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```

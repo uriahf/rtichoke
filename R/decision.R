@@ -169,20 +169,26 @@ plot_decision_curve <- function(performance_data,
     
     if (type == "conventional") {
     
-      decision_curve <- plot_conventional_decision(performance_data)
+      decision_curve <- plot_conventional_decision(
+        performance_data,
+        col_values = col_values,
+        size = size)
     
     }
     
     if (type == "interventions avoided") {
       
-      decision_curve <- plot_interventions_avoided(performance_data)
+      decision_curve <- plot_interventions_avoided(
+        performance_data,
+        col_values = col_values,
+        size = size)
       
     }
     
     if (type == "combined") {
       
       interventions_avoided_annotation <- list(
-        text = "Interventions Avoided",
+        text = "Interventions Avoided (per 100)",
         font = list(
           size = 18,
           color = "black"),
@@ -214,10 +220,12 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- plotly::subplot(
         performance_data %>%
-          plot_interventions_avoided() %>%
+          plot_interventions_avoided(col_values = col_values,
+                                     size = size) %>%
           plotly::layout(annotations = interventions_avoided_annotation),
         performance_data %>%
-          rtichoke:::plot_conventional_decision() %>%
+          rtichoke:::plot_conventional_decision(col_values = col_values,
+                                                size = size) %>%
           plotly::layout(annotations = conventional_decision_annotation), 
         nrows = 2,
         shareX = TRUE,
