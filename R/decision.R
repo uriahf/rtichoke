@@ -412,15 +412,13 @@ plot_interventions_avoided <- function(performance_data,
         NB_treatment_avoided,
         stratified_by = stratified_by
       ) %>%
-      set_styling_for_rtichoke("interventions avoided") %>%
-      plotly::layout(
-        yaxis = list(
-          range = list(
-            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
-            max(performance_data$NB_treatment_avoided) + 10
-          )
-        )
-      ) 
+      set_styling_for_rtichoke(
+        "interventions avoided",
+        min_y_range = 
+          min(-10, min(performance_data$NB_treatment_avoided) - 10),
+        max_y_range = 
+          max(performance_data$NB_treatment_avoided) + 10  
+      )
   }
   
   if (perf_dat_type == "several models") {
@@ -441,14 +439,11 @@ plot_interventions_avoided <- function(performance_data,
         NB_treatment_avoided
       ) %>%
       set_styling_for_rtichoke(
-        "interventions avoided")  %>%
-      plotly::layout(
-        yaxis = list(
-          range = list(
-            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
-            max(performance_data$NB_treatment_avoided) + 10
-          )
-        )
+        "interventions avoided",
+        min_y_range = 
+          min(-10, min(performance_data$NB_treatment_avoided) - 10),
+        max_y_range = 
+          max(performance_data$NB_treatment_avoided) + 10  
       )
   }
   
@@ -472,14 +467,11 @@ plot_interventions_avoided <- function(performance_data,
         NB_treatment_avoided
       )  %>%
       set_styling_for_rtichoke(
-        "interventions avoided")  %>%
-      plotly::layout(
-        yaxis = list(
-          range = list(
-            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
-            max(performance_data$NB_treatment_avoided) + 10
-          )
-        )
+        "interventions avoided",
+        min_y_range = 
+          min(-10, min(performance_data$NB_treatment_avoided) - 10),
+        max_y_range = 
+          max(performance_data$NB_treatment_avoided) + 10  
       )
   }
 

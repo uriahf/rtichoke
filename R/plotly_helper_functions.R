@@ -253,7 +253,7 @@ set_axis_titles <- function(plotly_object, curve,
         ),
         yaxis = list(
           title = "Interventions Avoided (per 100)",
-          range = c(-15, 105),
+          range = c(min_y_range, max_y_range),
           fixedrange = TRUE
         ),
         showlegend = FALSE
