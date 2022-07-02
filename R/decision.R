@@ -163,7 +163,6 @@ plot_decision_curve <- function(performance_data,
                                 size = NULL,
                                 type = "conventional") {
   
-  if (type == "conventional") {
   
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -176,9 +175,22 @@ plot_decision_curve <- function(performance_data,
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
+  
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
+  
+  performance_data <- performance_data %>%
+    add_hover_text_to_performance_data(perf_dat_type, 
+                                       curve = "decision")
+  
+  if (type != "conventional") { 
+    
+    performance_data <- performance_data %>%
+      dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
+    
+  }
+  
   
   if (interactive == FALSE) {
     
@@ -212,8 +224,7 @@ plot_decision_curve <- function(performance_data,
     
     performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "decision") #%>% 
-      # dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
+                                         curve = "decision")
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       decision_curve <- create_reference_lines_for_plotly(
@@ -310,9 +321,9 @@ plot_decision_curve <- function(performance_data,
                             na.rm = TRUE) - 
             diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
     }
-  }
   
-  } else {
+    
+    
     
     # performance_data <- performance_data  %>%
     #   dplyr::mutate(
@@ -471,14 +482,14 @@ plot_interventions_avoided <- function(performance_data,
         probability_threshold,
         NB_treatment_avoided,
         col_values = col_values
-      ) # %>%
-      # add_interactive_marker_from_performance_data(
-      #   performance_data = performance_data,
-      #   performance_data_type = perf_dat_type,
-      #   probability_threshold,
-      #   NB_treatment_avoided,
-      #   stratified_by = stratified_by
-      # ) %>%
+      )  %>%
+      add_interactive_marker_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        probability_threshold,
+        NB_treatment_avoided,
+        stratified_by = stratified_by
+      ) #%>%
       # set_styling_for_rtichoke(
       #   "interventions avoided")
   }

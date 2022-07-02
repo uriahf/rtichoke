@@ -415,7 +415,7 @@ add_lines_and_markers_from_performance_data <- function(
   }
 
   if (performance_data_type == "several models") {
-    print(names(performance_data))
+    # print(names(performance_data))
     
     # print(plotly_object %>%
     #                 plotly::add_trace(
@@ -424,15 +424,15 @@ add_lines_and_markers_from_performance_data <- function(
     #                   y =~ probability_threshold,
     #                   color = ~model
     #                 )
-    print(plotly::plot_ly() %>%
-                    plotly::add_trace(
-                      data = performance_data,
-                      x =~ probability_threshold,
-                      y =~ probability_threshold,
-                      color = ~model
-                    )
-    
-    )
+    # print(plotly::plot_ly() %>%
+    #                 plotly::add_trace(
+    #                   data = performance_data,
+    #                   x =~ probability_threshold,
+    #                   y =~ probability_threshold,
+    #                   color = ~model
+    #                 )
+    # 
+    # )
     # print(plotly_object %>%
     #         plotly::add_trace(
     #           data = performance_data,
