@@ -9,6 +9,7 @@ params:
   interactive: NA
 ---
 
+```{=html}
 <style type="text/css">
 .main-container {
   max-width: 1040px;
@@ -16,8 +17,7 @@ params:
   margin-right: auto;
 }
 </style>
-
-
+```
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = FALSE,
@@ -28,13 +28,16 @@ library(rtichoke)
 library(dplyr)
 ```
 
-
-
 <details>
-  <summary>Performance Metrics Cheat Sheet</summary>
-  
-<br>  
-    
+
+<summary>
+
+Performance Metrics Cheat Sheet
+
+</summary>
+
+<br>
+
 ```{r}
 tibble::tribble(
   ~"type", ~"predicted_positive", ~"predicted_negative",
@@ -81,114 +84,41 @@ tibble::tribble(
   )
 ```
 
+<br> <br> $\begin{aligned} {\text{Prevalence}} = \frac{\text{TP + FN}}{\text{TP + FP + TN + FN}} \end{aligned}$
+
 <br>
+
+$\begin{aligned} {\text{PPCR (Predicted Positives Condition Rate)}} = \frac{\text{TP + FP}}{\text{TP + FP + TN + FN}} \end{aligned}$
+
 <br>
-$\begin{aligned}
-{\text{Prevalence}} = \frac{\text{TP + FN}}{\text{TP + FP + TN + FN}}
-\end{aligned}$
 
-<br>  
+$\begin{aligned} \text{Sensitivity (Recall, True Positive Rate)} = \frac{\text{TP}}{\text{TP + FN}} = \frac{\text{TP}}{\text{Real Positives}} = \text{Prob( Predicted Positive | Real Positive )} \end{aligned}$
 
-$\begin{aligned}
-{\text{PPCR (Predicted Positives Condition Rate)}} = \frac{\text{TP + FP}}{\text{TP + FP + TN + FN}}
-\end{aligned}$
+<br>
 
-<br>  
+$\begin{aligned} \text{Specificity (True Negative Rate)} = \frac{\text{TN}}{\text{TN + FP}} = \frac{\text{TN}}{\text{Real Negatives}} = \text{Prob( Predicted Negative | Real Negative )} \end{aligned}$
 
-$\begin{aligned}
-\text{Sensitivity (Recall, True Positive Rate)} = \frac{\text{TP}}{\text{TP + FN}} = \frac{\text{TP}}{\text{Real Positives}} = \text{Prob( Predicted Positive | Real Positive )}
-\end{aligned}$
+<br>
 
-<br>  
+$\begin{aligned}  \text{PPV (Precision)} = \frac{\text{TP}}{\text{TP + FP}} = \frac{\text{TP}}{\text{Predicted Positives}} = \text{Prob( Real Positive | Predicted Positive )} \end{aligned}$
 
-$\begin{aligned}
-\text{Specificity (True Negative Rate)} = \frac{\text{TN}}{\text{TN + FP}} = \frac{\text{TN}}{\text{Real Negatives}} = \text{Prob( Predicted Negative | Real Negative )}
-\end{aligned}$
+<br>
 
-<br>  
+$\begin{aligned}  \text{NPV} = \frac{\text{TN}}{\text{TN + FN}} = \frac{\text{TN}}{\text{Predicted Negatives}} = \text{Prob( Real Negative | Predicted Negative )} \end{aligned}$
 
-$\begin{aligned}
-    \text{PPV (Precision)} = \frac{\text{TP}}{\text{TP + FP}} = \frac{\text{TP}}{\text{Predicted Positives}} = \text{Prob( Real Positive | Predicted Positive )}
-\end{aligned}$
-  
-<br>  
+<br>
 
-$\begin{aligned}
-    \text{NPV} = \frac{\text{TN}}{\text{TN + FN}} = \frac{\text{TN}}{\text{Predicted Negatives}} = \text{Prob( Real Negative | Predicted Negative )}
-\end{aligned}$
-  
-<br>  
+$\begin{aligned} \text{Lift} = \frac{\text{PPV}}{\text{Prevalence}} = \frac{\cfrac{\text{TP}}{\text{TP + FP}}}{\cfrac{\text{TP + FN}}{\text{TP + FP + TN + FN}}} \end{aligned}$
 
-$\begin{aligned}
-\text{Lift} = \frac{\text{PPV}}{\text{Prevalence}} = \frac{\cfrac{\text{TP}}{\text{TP + FP}}}{\cfrac{\text{TP + FN}}{\text{TP + FP + TN + FN}}} 
-\end{aligned}$
-  
-<br>  
+<br>
 
-$\begin{aligned}
-\text{Net Benefit} = \frac{\text{TP}}{\text{TP + FP + TN + FN}} - \frac{\text{FP}}{\text{TP + FP + TN + FN}} * {\frac{{p_{t}}}{{1 - p_{t}}}}
-\end{aligned}$
-  
-<br>  
+$\begin{aligned} \text{Net Benefit} = \frac{\text{TP}}{\text{TP + FP + TN + FN}} - \frac{\text{FP}}{\text{TP + FP + TN + FN}} * {\frac{{p_{t}}}{{1 - p_{t}}}} \end{aligned}$
+
+<br>
 
 </details>
 
-<br>
-<br>
-
-```{r echo=FALSE}
-# tibble(
-#   "Model" = c("Test"),
-#   "bs" = c(
-#   sum((params$probs - params$reals)^2) / length(params$probs)#,
-#   # sum((params$probs[[2]] - params$reals[[2]])^2) / length(params$probs[[1]])
-#   ),
-#   "auc" = c(
-#   pROC::auc(params$reals, params$probs)),
-#   # pROC::auc(params$reals[[2]], params$probs[[2]])),
-#   "prevalence" = sum(params$reals) / length(params$reals)  #c(0.29, 0.41)
-#   ) %>% 
-#   mutate(
-#     bs_plot = bs * 100,
-#     bs_plot = purrr::map2(
-#       bs_plot, bs, 
-#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "pink", digits = 2))
-#   ) %>% 
-#   mutate(
-#     auc_plot = auc * 100,
-#     auc_plot = purrr::map2(
-#       auc_plot, auc, 
-#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "lightgreen", digits = 2))
-#   ) %>% 
-#   mutate(
-#     prevalence_plot = prevalence * 100,
-#     prevalence_plot = purrr::map2(
-#       prevalence_plot, prevalence, 
-#       .f = ~rtichoke:::bar_chart(value = .x, display = .y, color = "lightgrey", digits = 2))
-#   ) %>% 
-#   select(Model, bs_plot, auc_plot, prevalence_plot) %>% 
-#   gt::gt() %>% 
-#   gt::cols_align(
-#     align = "left",
-#     columns = gt::everything()
-#   ) %>% 
-#   gt::cols_width(
-#     everything()~gt::px(100)
-#   ) %>%
-#   gt::cols_label(
-#     bs_plot = "Brier Score",
-#     auc_plot = "AUROC",
-#     prevalence_plot = "Prevalence"
-#   ) %>%
-#   gt::tab_options(
-#     table.align = "left",
-#     # column_labels.hidden = TRUE,
-#     table_body.border.bottom.color = "white",
-#     table_body.border.top.color = "white",
-#   )
-
-```
-
+<br> <br>
 
 ```{r message=FALSE, warning=FALSE}
 performance_dat <- prepare_performance_data(probs = params$probs, 
@@ -198,8 +128,6 @@ performance_dat <- prepare_performance_data(probs = params$probs,
 ```{r}
 create_table_for_prevalence(performance_dat)
 ```
-
-
 
 # Calibration {.tabset}
 
@@ -213,13 +141,6 @@ create_calibration_curve(probs = params$probs,
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
-
-<!-- ```{r} -->
-<!-- create_table_for_brier_score(probs = params$probs,  -->
-<!--                          reals = params$reals) -->
-<!-- ``` -->
-
-
 ## Discrete
 
 ```{r message=FALSE, warning=FALSE}
@@ -230,28 +151,18 @@ create_calibration_curve(probs = params$probs,
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
-
-
-<!-- ```{r} -->
-<!-- create_table_for_brier_score(probs = params$probs,  -->
-<!--                          reals = params$reals) -->
-<!-- ``` -->
-
-
-# Probability Threshold Dependent Performance Metrics{.tabset}
+# Discrimination {.tabset}
 
 ```{r}
 create_table_for_auc(probs = params$probs, 
                      reals = params$reals)
 ```
 
-
 ## By Probability Threshold
 
 ### Performance Metrics Curves {.tabset}
 
 #### ROC
-
 
 ```{r}
 plot_roc_curve(performance_dat, interactive = params$interactive, 
@@ -268,7 +179,6 @@ plot_lift_curve(performance_dat, interactive = params$interactive,
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
-
 #### Precision Recall
 
 ```{r}
@@ -283,22 +193,6 @@ plot_precision_recall_curve(performance_dat, interactive = params$interactive,
 plot_gains_curve(performance_dat, interactive = params$interactive, 
                  size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
-```
-
-
-#### Decision
-
-```{r}
-plot_decision_curve(performance_dat, interactive = params$interactive, 
-                    size = 500) %>% 
-  {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
-```
-
-
-### Performance Table
-
-```{r}
-render_performance_table(performance_dat) 
 ```
 
 ## By Predicted Positives Condition Rate (PPCR)
@@ -327,7 +221,6 @@ plot_lift_curve(performance_dat_ppcr, interactive = params$interactive,
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
-
 #### Precision Recall
 
 ```{r}
@@ -344,23 +237,27 @@ plot_gains_curve(performance_dat_ppcr, interactive = params$interactive,
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
-
-#### Decision
+# Utility (Decision Curve)
 
 ```{r}
-plot_decision_curve(performance_dat_ppcr, interactive = params$interactive,
-               size = 500) %>% 
+plot_decision_curve(performance_dat, interactive = params$interactive, 
+                    size = 500) %>% 
   {if(params$interactive == TRUE) plotly::partial_bundle(.) else .}
 ```
 
+# Performance Table {.tabset}
 
-### Performance Table
+## By Probability Threshold
+
+```{r}
+render_performance_table(performance_dat) 
+```
+
+## By Predicted Positives Condition Rate (PPCR)
 
 ```{r}
 render_performance_table(performance_dat_ppcr)
 ```
-
-
 
 ```{css echo=FALSE}
 
