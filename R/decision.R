@@ -420,7 +420,7 @@ plot_interventions_avoided <- function(performance_data,
                                          "#E78AC3",
                                          "#A4243B"
                                        ),
-                                       size = 350){
+                                       size = NULL){
   
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -447,13 +447,16 @@ plot_interventions_avoided <- function(performance_data,
         ( (1 - probability_threshold) / probability_threshold )
     ) %>% 
     add_hover_text_to_performance_data(perf_dat_type, 
-                                       curve = "interventions avoided")
+                                       curve = "interventions avoided") %>%
+    dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
   
   
   if (perf_dat_type %in% c("one model with model column", "one model")) {
-    interventions_avoided <- create_reference_lines_for_plotly(
-      perf_dat_type,
-      "interventions avoided"
+
+    
+    interventions_avoided <- plotly::plot_ly(
+      height = size,
+      width = size
     ) %>%
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
@@ -468,13 +471,51 @@ plot_interventions_avoided <- function(performance_data,
         NB_treatment_avoided,
         stratified_by = stratified_by
       ) %>%
-      set_styling_for_rtichoke("interventions avoided")
+      set_styling_for_rtichoke("interventions avoided") %>%
+      plotly::layout(
+        yaxis = list(
+          range = list(
+            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
+            max(performance_data$NB_treatment_avoided) + 10
+          )
+        )
+      ) 
   }
   
   if (perf_dat_type == "several models") {
-    interventions_avoided <- create_reference_lines_for_plotly(
-      perf_dat_type,
-      "interventions avoided"
+    interventions_avoided <- plotly::plot_ly(
+      height = size,
+      width = size
+    ) %>%
+      add_lines_and_markers_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        probability_threshold,
+        NB_treatment_avoided
+      )  %>%
+      add_interactive_marker_from_performance_data(
+        performance_data = performance_data,
+        performance_data_type = perf_dat_type,
+        probability_threshold,
+        NB_treatment_avoided
+      ) %>%
+      set_styling_for_rtichoke(
+        "interventions avoided")  %>%
+      plotly::layout(
+        yaxis = list(
+          range = list(
+            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
+            max(performance_data$NB_treatment_avoided) + 10
+          )
+        )
+      )
+  }
+  
+  if (perf_dat_type == "several populations") {
+    
+    interventions_avoided <- plotly::plot_ly(
+      height = size,
+      width = size
     ) %>%
       add_lines_and_markers_from_performance_data(
         performance_data = performance_data,
@@ -487,12 +528,20 @@ plot_interventions_avoided <- function(performance_data,
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
         probability_threshold,
-        NB_treatment_avoided,
-        stratified_by = stratified_by
-      ) #%>%
-      # set_styling_for_rtichoke(
-      #   "interventions avoided")
+        NB_treatment_avoided
+      )  %>%
+      set_styling_for_rtichoke(
+        "interventions avoided")  %>%
+      plotly::layout(
+        yaxis = list(
+          range = list(
+            min(-10, min(performance_data$NB_treatment_avoided) - 10), 
+            max(performance_data$NB_treatment_avoided) + 10
+          )
+        )
+      )
   }
+
   
   return(interventions_avoided)
   

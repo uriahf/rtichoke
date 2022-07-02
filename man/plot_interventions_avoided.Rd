@@ -9,7 +9,7 @@ plot_interventions_avoided(
   chosen_threshold = NA,
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  size = 350
+  size = NULL
 )
 }
 \description{
