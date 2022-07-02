@@ -34,19 +34,10 @@ Plot interventions Avoided
 one_pop_one_model \%>\%
   rtichoke:::plot_interventions_avoided()
 
-one_pop_one_model_by_ppcr \%>\%
-  rtichoke:::plot_interventions_avoided()
-
 multiple_models \%>\%
   rtichoke:::plot_interventions_avoided()
 
-multiple_models_by_ppcr \%>\%
-  rtichoke:::plot_interventions_avoided()
-
 multiple_populations \%>\%
-  rtichoke:::plot_interventions_avoided()
-
-multiple_populations_by_ppcr \%>\%
   rtichoke:::plot_interventions_avoided()
   
 }

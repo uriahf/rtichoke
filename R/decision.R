@@ -22,12 +22,6 @@
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
-#' create_decision_curve(
-#'   probs = list(example_dat$estimated_probabilities),
-#'   reals = list(example_dat$outcome),
-#'   stratified_by = "ppcr"
-#' )
 #'
 #' create_decision_curve(
 #'   probs = list(
@@ -36,17 +30,6 @@
 #'   ),
 #'   reals = list(example_dat$outcome)
 #' )
-#'
-#'
-#' create_decision_curve(
-#'   probs = list(
-#'     "First Model" = example_dat$estimated_probabilities,
-#'     "Second Model" = example_dat$random_guess
-#'   ),
-#'   reals = list(example_dat$outcome),
-#'   stratified_by = "ppcr"
-#' )
-#'
 #'
 #' create_decision_curve(
 #'   probs = list(
@@ -62,23 +45,6 @@
 #'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
 #'       dplyr::pull(outcome)
 #'   )
-#' )
-#' 
-#' create_decision_curve(
-#'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(estimated_probabilities)
-#'   ),
-#'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-#'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-#'       dplyr::pull(outcome)
-#'   ),
-#'   stratified_by = "ppcr"
 #' )
 #'
 #' }
@@ -130,21 +96,11 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #' one_pop_one_model %>%
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model_by_ppcr %>%
-#'   plot_decision_curve()
-#'
 #' multiple_models %>%
-#'   plot_decision_curve()
-#'
-#' multiple_models_by_ppcr %>%
 #'   plot_decision_curve()
 #'
 #' multiple_populations %>%
 #'   plot_decision_curve()
-#'
-#' multiple_populations_by_ppcr %>%
-#'   plot_decision_curve()
-#'   
 #'   
 #' }
 #' @export
@@ -353,19 +309,10 @@ set_decision_curve_limits <- function(decision_curve) {
 #' one_pop_one_model %>%
 #'   rtichoke:::plot_interventions_avoided()
 #'
-#' one_pop_one_model_by_ppcr %>%
-#'   rtichoke:::plot_interventions_avoided()
-#'
 #' multiple_models %>%
 #'   rtichoke:::plot_interventions_avoided()
 #'
-#' multiple_models_by_ppcr %>%
-#'   rtichoke:::plot_interventions_avoided()
-#'
 #' multiple_populations %>%
-#'   rtichoke:::plot_interventions_avoided()
-#'
-#' multiple_populations_by_ppcr %>%
 #'   rtichoke:::plot_interventions_avoided()
 #'   
 #' }
@@ -524,19 +471,10 @@ plot_interventions_avoided <- function(performance_data,
 #' one_pop_one_model %>%
 #'   rtichoke:::plot_conventional_decision()
 #'
-#' one_pop_one_model_by_ppcr %>%
-#'   rtichoke:::plot_conventional_decision()
-#'
 #' multiple_models %>%
 #'   rtichoke:::plot_conventional_decision()
 #'
-#' multiple_models_by_ppcr %>%
-#'   rtichoke:::plot_conventional_decision()
-#'
 #' multiple_populations %>%
-#'   rtichoke:::plot_conventional_decision()
-#'
-#' multiple_populations_by_ppcr %>%
 #'   rtichoke:::plot_conventional_decision()
 #'   
 #' }

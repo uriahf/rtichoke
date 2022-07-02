@@ -34,19 +34,10 @@ Plot Conventional Decision Curve
 one_pop_one_model \%>\%
   rtichoke:::plot_conventional_decision()
 
-one_pop_one_model_by_ppcr \%>\%
-  rtichoke:::plot_conventional_decision()
-
 multiple_models \%>\%
   rtichoke:::plot_conventional_decision()
 
-multiple_models_by_ppcr \%>\%
-  rtichoke:::plot_conventional_decision()
-
 multiple_populations \%>\%
-  rtichoke:::plot_conventional_decision()
-
-multiple_populations_by_ppcr \%>\%
   rtichoke:::plot_conventional_decision()
   
 }
