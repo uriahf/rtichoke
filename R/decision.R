@@ -61,6 +61,10 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                   ),
                                   size = NULL,
                                   type = "conventional") {
+  
+  match.arg(arg = type,
+            choices = c("conventional", "interventions avoided", "combined"))
+  
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
