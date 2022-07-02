@@ -181,7 +181,9 @@ plot_gains_curve <- function(performance_data,
 
   if (interactive == TRUE) {
     performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, curve = "gains")
+      add_hover_text_to_performance_data(perf_dat_type, 
+                                         curve = "gains",
+                                         stratified_by = stratified_by)
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       gains_curve <- create_reference_lines_for_plotly(perf_dat_type,

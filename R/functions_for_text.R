@@ -42,25 +42,33 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 #'
 #' @param performance_data_type performance data type
 #' @param curve curve type
+#' 
+#' @inheritParams create_roc_curve
 #'
 #' @keywords internal
-create_text_for_hover <- function(performance_data_type, curve) {
+create_text_for_hover <- function(performance_data_type, 
+                                  curve,
+                                  stratified_by = "probability_threshold") {
   
   if (curve != "interventions avoided") {
   
-  text_for_hover <- "Prob. Threshold: {probability_threshold}
+  text_for_hover <- paste0(
+    "Prob. Threshold: {probability_threshold}
 Sensitivity: {sensitivity}
 1 - Specificity (FPR): {FPR}
 Specificity: {specificity}
 Lift: {lift}
 PPV: {PPV}
-NPV: {NPV}
-NB: {NB}
-Predicted Positives: {predicted_positives} ({100 * ppcr}%)
+NPV: {NPV}\n",
+    ifelse ( stratified_by == "probability_threshold", 
+             "", 
+             "NB: {NB}\n" ),
+    "Predicted Positives: {predicted_positives} ({100 * ppcr}%)
 TP: {TP}
 TN: {TN}
 FP: {FP}
-FN: {FN}" } else {
+FN: {FN}"
+  ) } else {
   
   text_for_hover <- "Prob. Threshold: {probability_threshold}
 Interventions Avoided (per 100): {NB_treatment_avoided}
@@ -157,11 +165,16 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
 #' @param performance_data perf dat
 #' @param performance_data_type perf dat type
 #' @param curve curve
+#' 
+#' @inheritParams create_roc_curve
 #'
 #' @keywords internal
-add_hover_text_to_performance_data <- function(performance_data,
-                                               performance_data_type,
-                                               curve) {
+add_hover_text_to_performance_data <- function(
+    performance_data,
+    performance_data_type,
+    curve,
+    stratified_by = "probability_threshold") {
+  
   text_for_hover <- create_text_for_hover(performance_data_type, curve)
 
   performance_data %>%

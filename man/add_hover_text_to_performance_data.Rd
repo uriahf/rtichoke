@@ -7,7 +7,8 @@
 add_hover_text_to_performance_data(
   performance_data,
   performance_data_type,
-  curve
+  curve,
+  stratified_by = "probability_threshold"
 )
 }
 \arguments{
@@ -16,6 +17,9 @@ add_hover_text_to_performance_data(
 \item{performance_data_type}{perf dat type}
 
 \item{curve}{curve}
+
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 Adding hover text to performance data

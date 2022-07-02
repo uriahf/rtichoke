@@ -373,12 +373,19 @@ render_performance_table <- function(performance_data,
         columnGroups = list(
           reactable::colGroup(
             name = "Performance Metrics",
-            columns = c(
+            columns = ( if(
+              stratified_by == "probability_threshold"
+            ) c(
               "sensitivity",
               "specificity",
               "PPV", "NPV",
               "lift", "NB"
-            )
+            ) else c(
+              "sensitivity",
+              "specificity",
+              "PPV", "NPV",
+              "lift"
+            ) )
           )
         ),
         details = function(index) {

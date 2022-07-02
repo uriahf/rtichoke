@@ -182,7 +182,8 @@ plot_decision_curve <- function(performance_data,
   
   performance_data <- performance_data %>%
     add_hover_text_to_performance_data(perf_dat_type, 
-                                       curve = "decision")
+                                       curve = "decision",
+                                       stratified_by = stratified_by)
   
   if (type != "conventional") { 
     
@@ -221,7 +222,8 @@ plot_decision_curve <- function(performance_data,
     
     performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "decision")
+                                         curve = "decision",
+                                         stratified_by = stratified_by)
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       decision_curve <- create_reference_lines_for_plotly(
@@ -405,7 +407,8 @@ plot_interventions_avoided <- function(performance_data,
         ( (1 - probability_threshold) / probability_threshold )
     ) %>% 
     add_hover_text_to_performance_data(perf_dat_type, 
-                                       curve = "interventions avoided") %>%
+                                       curve = "interventions avoided",
+                                       stratified_by = stratified_by) %>%
     dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
   
   
@@ -564,7 +567,8 @@ plot_conventional_decision <- function(performance_data,
   
   performance_data <- performance_data %>%
     add_hover_text_to_performance_data(perf_dat_type, 
-                                       curve = "decision") %>%
+                                       curve = "decision",
+                                       stratified_by = stratified_by) %>%
     dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
   
   

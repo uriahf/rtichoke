@@ -4,12 +4,19 @@
 \alias{create_text_for_hover}
 \title{Creating text to hover}
 \usage{
-create_text_for_hover(performance_data_type, curve)
+create_text_for_hover(
+  performance_data_type,
+  curve,
+  stratified_by = "probability_threshold"
+)
 }
 \arguments{
 \item{performance_data_type}{performance data type}
 
 \item{curve}{curve type}
+
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 Creating text to hover
