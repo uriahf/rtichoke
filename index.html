@@ -75,8 +75,8 @@
 </h2>
 <!-- You can install the released version of rtichoke from [CRAN](https://CRAN.R-project.org) with: --><!-- ``` r --><!-- install.packages("rtichoke") --><!-- ``` --><p>You can install rtichoke from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"uriahf/rtichoke"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"uriahf/rtichoke"</span><span class="op">)</span></span></code></pre></div>
 <!-- TODO change to good model, bad model and random guess -->
 </div>
 <div class="section level2">
@@ -105,8 +105,8 @@
 </h3>
 <p>The user is required to provide a list with one vector for the predictions and a list with one vector for the outcomes.</p>
 <!-- ```{r echo=FALSE} --><!-- library(rtichoke) --><!-- set.seed(123) --><!-- predictions_and_outcomes <- tibble::tibble( --><!--   probs = example_dat$bad_model, --><!--   real = as.numeric( --><!--     rtichoke::example_dat$outcome) --><!--   )  --><!-- predictions_and_outcomes %>%  --><!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  --><!--   gt::gt() %>%  --><!--   gt::cols_align(align = "center") %>%  --><!--   gt::fmt_number(columns = probs, --><!--                  decimals  = 2)  --><!-- ``` --><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">bad_model</span><span class="op">)</span>,
-                 reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">bad_model</span><span class="op">)</span>,</span>
+<span>                 reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="models-comparison">Models Comparison:<a class="anchor" aria-label="anchor" href="#models-comparison"></a>
@@ -114,14 +114,14 @@
 <p><strong>Why?</strong> In order to compare performance for several different models for the same population.</p>
 <p><strong>How?</strong> The user is required to provide a list with one vector of predictions for each model and a list with one vector for the outcome of the population.</p>
 <!-- ```{r echo=FALSE} --><!-- library(rtichoke) --><!-- set.seed(42) --><!-- predictions_and_outcomes <- tibble::tibble( --><!--     "Good Model" = example_dat$estimated_probabilities, --><!--     "Bad Model" = example_dat$bad_model, --><!--     "Random Guess" = example_dat$random_guess, --><!--   real = as.numeric(rtichoke::example_dat$outcome))  --><!-- predictions_and_outcomes %>%  --><!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  --><!--   gt::gt() %>%  --><!--   gt::cols_align(align = "center") %>%  --><!--   gt::fmt_number(columns = 1:3, --><!--                  decimals  = 2) --><!-- ``` --><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>
-  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    <span class="st">"Good Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,
-    <span class="st">"Bad Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">bad_model</span>,
-    <span class="st">"Random Guess"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span>
-  <span class="op">)</span>,
-  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu">rtichoke</span><span class="fu">::</span><span class="va"><a href="reference/example_dat.html">example_dat</a></span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span></span>
+<span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Good Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span>,</span>
+<span>    <span class="st">"Bad Model"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">bad_model</span>,</span>
+<span>    <span class="st">"Random Guess"</span> <span class="op">=</span> <span class="va">example_dat</span><span class="op">$</span><span class="va">random_guess</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu">rtichoke</span><span class="fu">::</span><span class="va"><a href="reference/example_dat.html">example_dat</a></span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="several-populations">Several Populations<a class="anchor" aria-label="anchor" href="#several-populations"></a>
@@ -129,21 +129,21 @@
 <p><em>Why?</em> In order to compare performance for different populations, like in Train / Test split or in order to check the fairness of the algorithms.</p>
 <p><em>How?</em> The user is required to provide a list with one vector of predictions for each population and a list with one vector of outcomes for each population.</p>
 <!-- ```{r echo=FALSE} --><!-- library(rtichoke) --><!-- set.seed(42) --><!-- predictions_and_outcomes_train <- tibble::tibble( --><!--     "probs" = example_dat %>% --><!--       dplyr::filter(type_of_set == "train") %>% --><!--       dplyr::pull(estimated_probabilities), --><!--   real = example_dat %>% dplyr::filter(type_of_set == "train") %>% --><!--       dplyr::pull(outcome) %>%  --><!--     as.numeric())   --><!-- predictions_and_outcomes_test <- tibble::tibble( --><!--     "probs" = example_dat %>% --><!--       dplyr::filter(type_of_set == "test") %>% --><!--       dplyr::pull(estimated_probabilities), --><!--   real = example_dat %>% dplyr::filter(type_of_set == "test") %>% --><!--       dplyr::pull(outcome) %>%  --><!--     as.numeric())   --><!-- predictions_and_outcomes_train %>%  --><!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  --><!--   gt::gt() %>% --><!--   gt::tab_header( --><!--     title = gt::md("**Train Set**") --><!--   )  %>%  --><!--   gt::fmt_number(columns = probs, --><!--                  decimals  = 2) --><!-- predictions_and_outcomes_test %>%  --><!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  --><!--   gt::gt() %>% --><!--   gt::tab_header( --><!--     title = gt::md("**Test Set**") --><!--   )%>%  --><!--   gt::fmt_number(columns = probs, --><!--                  decimals  = 2) --><!-- ``` --><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span>
-  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,
-    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>
-  <span class="op">)</span>,
-  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,
-    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>
-  <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span></span>
+<span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
+<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -151,8 +151,8 @@
 </h2>
 <p>For some outputs in rtichoke you can alternatively prepare a performance data and use it as an input: instead of <code>create_*_curve</code> use <code>plot_*_curve</code> and instead of <code>create_performance_table</code> use <code>render_performance_table</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">one_pop_one_model_as_a_vector</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="reference/plot_roc_curve.html">plot_roc_curve</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">one_pop_one_model_as_a_vector</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/plot_roc_curve.html">plot_roc_curve</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="summary-report">Summary Report<a class="anchor" aria-label="anchor" href="#summary-report"></a>
 </h3>
@@ -223,7 +223,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer>
