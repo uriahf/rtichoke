@@ -183,7 +183,9 @@ plot_lift_curve <- function(performance_data,
     perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
 
     performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, curve = "lift")
+      add_hover_text_to_performance_data(perf_dat_type, 
+                                         curve = "lift",
+                                         stratified_by = stratified_by)
     
     if (perf_dat_type %in% c("one model with model column", "one model")) {
       lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift",
@@ -206,6 +208,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
 
@@ -234,6 +246,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
 
@@ -261,6 +283,16 @@ plot_lift_curve <- function(performance_data,
           max_y_range = max(performance_data$lift,
             na.rm = TRUE
           ) + 0.1
+        ) %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
         )
     }
   }

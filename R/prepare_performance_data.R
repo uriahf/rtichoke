@@ -202,10 +202,16 @@ prepare_performance_data <- function(probs,
       PPV = TP / (TP + FP),
       NPV = TN / (TN + FN),
       lift = (TP / (TP + FN)) / ((TP + FP) / N),
-      predicted_positives = TP + FP,
-      NB = TP / N - (FP / N) * (
-        probability_threshold / (1 - probability_threshold))
+      predicted_positives = TP + FP
     ) %>%
+    {
+      if (stratified_by == "probability_threshold") {
+        dplyr::mutate(., NB = TP / N - (FP / N) * (
+          probability_threshold / (1 - probability_threshold)))
+      } else {
+        .
+      }
+    } %>% 
     {
       if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
     }

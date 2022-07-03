@@ -9,8 +9,8 @@ plot_decision_curve(
   chosen_threshold = NA,
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  interventions_avoided = FALSE,
-  size = NULL
+  size = NULL,
+  type = "conventional"
 )
 }
 \arguments{
@@ -23,9 +23,11 @@ plots}
 
 \item{col_values}{color palette}
 
-\item{interventions_avoided}{should one use interventions avoided curve}
-
 \item{size}{the size of the curve}
+
+\item{type}{What type of Decision Curve, default choice is "conventional".
+Alternatives are "interventions avoided" and "combined" for both
+"conventional" and "interventions avoided" on the same view.}
 }
 \description{
 Plot a Precision decision Curve
@@ -36,22 +38,30 @@ Plot a Precision decision Curve
 
 one_pop_one_model \%>\%
   plot_decision_curve()
-
-one_pop_one_model_by_ppcr \%>\%
-  plot_decision_curve()
+  
+one_pop_one_model \%>\%
+  plot_decision_curve(type = "interventions avoided")
+  
+one_pop_one_model \%>\%
+  plot_decision_curve(type = "combined")
 
 multiple_models \%>\%
   plot_decision_curve()
-
-multiple_models_by_ppcr \%>\%
-  plot_decision_curve()
+  
+multiple_models \%>\%
+  plot_decision_curve(type = "interventions avoided")
+  
+multiple_models \%>\%
+  plot_decision_curve(type = "combined")
 
 multiple_populations \%>\%
   plot_decision_curve()
-
-multiple_populations_by_ppcr \%>\%
-  plot_decision_curve()
   
+multiple_populations \%>\%
+  plot_decision_curve(type = "interventions avoided")
+  
+multiple_populations \%>\%
+  plot_decision_curve(type = "combined")
   
 }
 }

@@ -182,7 +182,8 @@ plot_precision_recall_curve <- function(performance_data,
 
     performance_data <- performance_data %>%
       add_hover_text_to_performance_data(perf_dat_type,
-        curve = "precision recall"
+        curve = "precision recall",
+        stratified_by = stratified_by
       )
 
     if (perf_dat_type %in% c("one model with model column", "one model")) {
@@ -204,7 +205,17 @@ plot_precision_recall_curve <- function(performance_data,
           fake_PPV,
           stratified_by = stratified_by
         ) %>%
-        set_styling_for_rtichoke("precision recall")
+        set_styling_for_rtichoke("precision recall") %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
+        )
     }
 
     if (perf_dat_type == "several models") {
@@ -229,7 +240,17 @@ plot_precision_recall_curve <- function(performance_data,
           fake_PPV,
           stratified_by = stratified_by
         ) %>%
-        set_styling_for_rtichoke("precision recall")
+        set_styling_for_rtichoke("precision recall") %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
+        )
     }
 
     if (perf_dat_type == "several populations") {
@@ -252,7 +273,17 @@ plot_precision_recall_curve <- function(performance_data,
           fake_PPV,
           stratified_by = stratified_by
         ) %>%
-        set_styling_for_rtichoke("precision recall")
+        set_styling_for_rtichoke("precision recall") %>% 
+        plotly::animation_slider(
+          currentvalue = list(prefix = ifelse(
+            stratified_by == "probability_threshold",
+            "Prob. Threshold: ",
+            "Predicted Positives (Rate): "
+          ),
+          font = list(color="black"),
+          xanchor = "left"),
+          pad = list(t = 50)
+        )
     }
   }
   return(precision_recall_curve)

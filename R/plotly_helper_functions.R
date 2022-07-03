@@ -252,8 +252,8 @@ set_axis_titles <- function(plotly_object, curve,
           fixedrange = TRUE
         ),
         yaxis = list(
-          title = "Interventions Avoided per 100 Cases",
-          range = c(-15, 105),
+          title = "Interventions Avoided (per 100)",
+          range = c(min_y_range, max_y_range),
           fixedrange = TRUE
         ),
         showlegend = FALSE
@@ -303,18 +303,9 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) %>%
-      plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(
-          stratified_by == "probability_threshold",
-          "Prob. Threshold: ",
-          "Predicted Positives (Rate): "
-        ),
-        font = list(color="black"),
-        xanchor = "left"),
-        pad = list(t = 50)
-      )
+      ) 
   }
+  
   if (performance_data_type == "several models") {
     plotly_plot <- plotly_object %>%
       plotly::add_markers(
@@ -332,18 +323,10 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) %>%
-      plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(
-          stratified_by == "probability_threshold",
-          "Prob. Threshold: ",
-          "Predicted Positives (Rate): "
-        ),
-        font = list(color="black"),
-        xanchor = "left"),
-        pad = list(t = 50)
-      )
+      ) 
+    
   }
+  
   if (performance_data_type == "several populations") {
     plotly_plot <- plotly_object %>%
       plotly::add_markers(
@@ -361,18 +344,9 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) %>%
-      plotly::animation_slider(
-        currentvalue = list(prefix = ifelse(
-          stratified_by == "probability_threshold",
-          "Prob. Threshold: ",
-          "Predicted Positives (Rate): "
-        ),
-        font = list(color="black"),
-        xanchor = "left"),
-        pad = list(t = 50)
-      )
+      ) 
   }
+  
   plotly_plot
 }
 
@@ -441,6 +415,37 @@ add_lines_and_markers_from_performance_data <- function(
   }
 
   if (performance_data_type == "several models") {
+    # print(names(performance_data))
+    
+    # print(plotly_object %>%
+    #                 plotly::add_trace(
+    #                   data = performance_data,
+    #                   x =~ probability_threshold,
+    #                   y =~ probability_threshold,
+    #                   color = ~model
+    #                 )
+    # print(plotly::plot_ly() %>%
+    #                 plotly::add_trace(
+    #                   data = performance_data,
+    #                   x =~ probability_threshold,
+    #                   y =~ probability_threshold,
+    #                   color = ~model
+    #                 )
+    # 
+    # )
+    # print(plotly_object %>%
+    #         plotly::add_trace(
+    #           data = performance_data,
+    #           x = x_perf_metric,
+    #           y = y_perf_metric),
+              # type = "scatter",
+              # mode = "markers+lines",
+              # color = ~model#,
+              # colors = col_values_vec,
+              # hoverinfo = "text",
+              # text = ~text
+            # )
+    
     plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
@@ -453,6 +458,7 @@ add_lines_and_markers_from_performance_data <- function(
         hoverinfo = "text",
         text = ~text
       )
+    
   }
 
   if (performance_data_type == "several populations") {
