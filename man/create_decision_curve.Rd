@@ -13,7 +13,9 @@ create_decision_curve(
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
   size = NULL,
-  type = "conventional"
+  type = "conventional",
+  min_p_threshold = 0,
+  max_p_threshold = 1
 )
 }
 \arguments{
@@ -39,6 +41,12 @@ plots}
 \item{type}{What type of Decision Curve, default choice is "conventional".
 Alternatives are "interventions avoided" and "combined" for both
 "conventional" and "interventions avoided" on the same view.}
+
+\item{min_p_threshold}{The minimum Probability Threshold value to be
+displayed}
+
+\item{max_p_threshold}{The maximum Probability Threshold value to be
+displayed}
 }
 \description{
 Create a decision Curve

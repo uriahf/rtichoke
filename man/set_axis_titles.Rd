@@ -4,16 +4,27 @@
 \alias{set_axis_titles}
 \title{Set Titles for x and y axis in plotly objects}
 \usage{
-set_axis_titles(plotly_object, curve, max_y_range = NA, min_y_range = NA)
+set_axis_titles(
+  plotly_object,
+  curve,
+  max_y_range = NA,
+  min_y_range = NA,
+  min_x_range = NA,
+  max_x_range = NA
+)
 }
 \arguments{
 \item{plotly_object}{a plotly object}
 
 \item{curve}{the required curve}
 
-\item{max_y_range}{the maximum value for y range}
+\item{max_y_range}{the maximum value of y range (for lift and decision curve)}
 
-\item{min_y_range}{the minimum value for y range}
+\item{min_y_range}{the minimum value of y range (for decision curve)}
+
+\item{min_x_range}{the minimum value of x range (for decision curve)}
+
+\item{max_x_range}{the maximum value of x range (for decision curve)}
 }
 \description{
 Set Titles for x and y axis in plotly objects

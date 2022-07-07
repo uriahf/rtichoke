@@ -10,6 +10,10 @@
 #' @param type What type of Decision Curve, default choice is "conventional". 
 #' Alternatives are "interventions avoided" and "combined" for both 
 #' "conventional" and "interventions avoided" on the same view. 
+#' @param min_p_threshold The minimum Probability Threshold value to be 
+#' displayed
+#' @param max_p_threshold The maximum Probability Threshold value to be 
+#' displayed 
 #'
 #' @export
 #'
@@ -125,7 +129,9 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                     "#A4243B"
                                   ),
                                   size = NULL,
-                                  type = "conventional") {
+                                  type = "conventional",
+                                  min_p_threshold = 0,
+                                  max_p_threshold = 1) {
   
   match.arg(arg = type,
             choices = c("conventional", "interventions avoided", "combined"))
@@ -145,7 +151,9 @@ create_decision_curve <- function(probs, reals, by = 0.01,
       interactive = interactive,
       col_values = col_values,
       size = size,
-      type = type
+      type = type,
+      min_p_threshold = min_p_threshold,
+      max_p_threshold = max_p_threshold
     )
 }
 
@@ -202,7 +210,9 @@ plot_decision_curve <- function(performance_data,
                                   "#E78AC3",
                                   "#A4243B"
                                 ),size = NULL,
-                                type = "conventional") {
+                                type = "conventional",
+                                min_p_threshold = 0,
+                                max_p_threshold = 1) {
   
   
   if (!is.na(chosen_threshold)) {
@@ -241,7 +251,9 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- plot_conventional_decision(
         performance_data,
         col_values = col_values,
-        size = size)
+        size = size,
+        min_p_threshold = min_p_threshold,
+        max_p_threshold = max_p_threshold)
     
     }
     
@@ -250,7 +262,9 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- plot_interventions_avoided(
         performance_data,
         col_values = col_values,
-        size = size)
+        size = size,
+        min_p_threshold = min_p_threshold,
+        max_p_threshold = max_p_threshold)
       
     }
     
@@ -334,6 +348,7 @@ set_decision_curve_limits <- function(decision_curve) {
 #' Plot interventions Avoided
 #'
 #' @inheritParams plot_roc_curve
+#' @inheritParams create_decision_curve
 #'
 #' @examples
 #'
@@ -360,7 +375,9 @@ plot_interventions_avoided <- function(performance_data,
                                          "#E78AC3",
                                          "#A4243B"
                                        ),
-                                       size = NULL){
+                                       size = NULL,
+                                       min_p_threshold = 0,
+                                       max_p_threshold = 1){
   
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -388,8 +405,11 @@ plot_interventions_avoided <- function(performance_data,
     ) %>% 
     add_hover_text_to_performance_data(perf_dat_type, 
                                        curve = "interventions avoided",
-                                       stratified_by = stratified_by) %>%
-    dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
+                                       stratified_by = stratified_by)  %>%
+    dplyr::filter(probability_threshold > 0 & 
+                    probability_threshold < 1) %>%
+    dplyr::filter(probability_threshold >= min_p_threshold & 
+                    probability_threshold <= max_p_threshold)
   
   
   if (perf_dat_type %in% c("one model with model column", "one model")) {
@@ -417,8 +437,11 @@ plot_interventions_avoided <- function(performance_data,
         min_y_range = 
           min(-10, min(performance_data$NB_treatment_avoided) - 10),
         max_y_range = 
-          max(performance_data$NB_treatment_avoided) + 10  
-      )
+          max(performance_data$NB_treatment_avoided) + 10,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
   }
   
   if (perf_dat_type == "several models") {
@@ -430,7 +453,8 @@ plot_interventions_avoided <- function(performance_data,
         performance_data = performance_data,
         performance_data_type = perf_dat_type,
         probability_threshold,
-        NB_treatment_avoided
+        NB_treatment_avoided, 
+        col_values = col_values
       )  %>%
       add_interactive_marker_from_performance_data(
         performance_data = performance_data,
@@ -443,8 +467,11 @@ plot_interventions_avoided <- function(performance_data,
         min_y_range = 
           min(-10, min(performance_data$NB_treatment_avoided) - 10),
         max_y_range = 
-          max(performance_data$NB_treatment_avoided) + 10  
-      )
+          max(performance_data$NB_treatment_avoided) + 10,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
   }
   
   if (perf_dat_type == "several populations") {
@@ -471,8 +498,11 @@ plot_interventions_avoided <- function(performance_data,
         min_y_range = 
           min(-10, min(performance_data$NB_treatment_avoided) - 10),
         max_y_range = 
-          max(performance_data$NB_treatment_avoided) + 10  
-      )
+          max(performance_data$NB_treatment_avoided) + 10,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
   }
 
   
@@ -488,6 +518,7 @@ plot_interventions_avoided <- function(performance_data,
 #' Plot Conventional Decision Curve
 #'
 #' @inheritParams plot_roc_curve
+#' @inheritParams create_decision_curve
 #'
 #' @examples
 #'
@@ -514,7 +545,9 @@ plot_conventional_decision <- function(performance_data,
                                          "#E78AC3",
                                          "#A4243B"
                                        ),
-                                       size = NULL){
+                                       size = NULL,
+                                       min_p_threshold = 0,
+                                       max_p_threshold = 1){
   
   
   stratified_by <- check_performance_data_stratification(
@@ -532,7 +565,10 @@ plot_conventional_decision <- function(performance_data,
     add_hover_text_to_performance_data(perf_dat_type, 
                                        curve = "decision",
                                        stratified_by = stratified_by) %>%
-    dplyr::filter(probability_threshold > 0 & probability_threshold < 1)
+    dplyr::filter(probability_threshold > 0 & 
+                    probability_threshold < 1) %>%
+    dplyr::filter(probability_threshold >= min_p_threshold & 
+                    probability_threshold <= max_p_threshold)
   
   
   
@@ -563,10 +599,15 @@ plot_conventional_decision <- function(performance_data,
         "decision",
         max_y_range = max(performance_data$NB,
                           na.rm = TRUE) + 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
-        min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                          na.rm = TRUE) - 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        min_y_range = 
+          min(min(performance_data$NB[performance_data$NB != -Inf],
+                  na.rm = TRUE), 0) - 
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
     
   }
   
@@ -598,10 +639,15 @@ plot_conventional_decision <- function(performance_data,
         "decision",
         max_y_range = max(performance_data$NB,
                           na.rm = TRUE) + 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
-        min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                          na.rm = TRUE) - 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        min_y_range = 
+          min(min(performance_data$NB[performance_data$NB != -Inf],
+                          na.rm = TRUE), 0) - 
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
     
   }
   
@@ -632,10 +678,15 @@ plot_conventional_decision <- function(performance_data,
         "decision",
         max_y_range = max(performance_data$NB,
                           na.rm = TRUE) + 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1,
-        min_y_range = min(performance_data$NB[performance_data$NB != -Inf],
-                          na.rm = TRUE) - 
-          diff(range(performance_data$NB, na.rm = TRUE)) * 0.1)
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        min_y_range = 
+          min(min(performance_data$NB[performance_data$NB != -Inf],
+                  na.rm = TRUE), 0) - 
+          diff(range(performance_data$NB, na.rm = TRUE)) * 0.25,
+        max_x_range = max_p_threshold + 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1,
+        min_x_range = min_p_threshold - 
+          diff(c(min_p_threshold, max_p_threshold), na.rm = TRUE) * 0.1)
   }
   
   

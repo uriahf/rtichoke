@@ -136,16 +136,23 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #'
 #' @param plotly_object a plotly object
 #' @param curve the required curve
+#' @param min_y_range the minimum value of y range (for decision curve)
 #' @param max_y_range the maximum value of y range (for lift and decision curve)
-#' @param max_y_range the maximum value of y range (for decision curve)
+#' @param min_x_range the minimum value of x range (for decision curve)
+#' @param max_x_range the maximum value of x range (for decision curve)
 #' @keywords internal
-set_styling_for_rtichoke <- function(plotly_object, curve, 
+set_styling_for_rtichoke <- function(plotly_object, 
+                                     curve, 
+                                     min_y_range = NA,
                                      max_y_range = NA,
-                                     min_y_range = NA) {
+                                     min_x_range = NA,
+                                     max_x_range = NA) {
   plotly_object %>%
     remove_grid_lines_from_plotly() %>%
     set_axis_titles(curve, max_y_range = max_y_range, 
-                    min_y_range = min_y_range) %>%
+                    min_y_range = min_y_range,
+                    min_x_range = min_x_range,
+                    max_x_range = max_x_range) %>%
     plotly::config(displayModeBar = FALSE)
 }
 
@@ -153,13 +160,14 @@ set_styling_for_rtichoke <- function(plotly_object, curve,
 
 #' Set Titles for x and y axis in plotly objects
 #'
-#' @param plotly_object a plotly object
-#' @param curve the required curve
-#' @param max_y_range the maximum value for y range
-#' @param min_y_range the minimum value for y range
+#' @inheritParams set_styling_for_rtichoke
 #' @keywords internal
-set_axis_titles <- function(plotly_object, curve, 
-                            max_y_range = NA, min_y_range = NA) {
+set_axis_titles <- function(plotly_object, 
+                            curve, 
+                            max_y_range = NA, 
+                            min_y_range = NA,
+                            min_x_range = NA,
+                            max_x_range = NA) {
   if (curve == "roc") {
     plotly_obj <- plotly_object %>%
       plotly::layout(
@@ -231,7 +239,7 @@ set_axis_titles <- function(plotly_object, curve,
       plotly::layout(
         xaxis = list(
           title = "Probability Threshold",
-          range = c(-0.1, 1.1),
+          range = c(min_x_range, max_x_range),
           fixedrange = TRUE
         ),
         yaxis = list(
@@ -248,7 +256,7 @@ set_axis_titles <- function(plotly_object, curve,
       plotly::layout(
         xaxis = list(
           title = "Probability Threshold",
-          range = c(-0.1, 1.1),
+          range = c(min_x_range, max_x_range),
           fixedrange = TRUE
         ),
         yaxis = list(

@@ -61,14 +61,16 @@ Lift: {lift}
 PPV: {PPV}
 NPV: {NPV}\n",
     ifelse ( stratified_by == "probability_threshold", 
-             "", 
-             "NB: {NB}\n" ),
+             "NB: {NB}\n", 
+             "" ),
     "Predicted Positives: {predicted_positives} ({100 * ppcr}%)
 TP: {TP}
 TN: {TN}
 FP: {FP}
 FN: {FN}"
-  ) } else {
+  ) 
+  
+  } else {
   
   text_for_hover <- "Prob. Threshold: {probability_threshold}
 Interventions Avoided (per 100): {NB_treatment_avoided}
