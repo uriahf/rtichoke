@@ -66,7 +66,9 @@
 <span>  interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  col_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5BC0BE"</span>, <span class="st">"#FC8D62"</span>, <span class="st">"#8DA0CB"</span>, <span class="st">"#E78AC3"</span>, <span class="st">"#A4243B"</span><span class="op">)</span>,</span>
 <span>  size <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"conventional"</span></span>
+<span>  type <span class="op">=</span> <span class="st">"conventional"</span>,</span>
+<span>  min_p_threshold <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  max_p_threshold <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -111,6 +113,16 @@ plots</p></dd>
 <dd><p>What type of Decision Curve, default choice is "conventional".
 Alternatives are "interventions avoided" and "combined" for both
 "conventional" and "interventions avoided" on the same view.</p></dd>
+
+
+<dt>min_p_threshold</dt>
+<dd><p>The minimum Probability Threshold value to be
+displayed</p></dd>
+
+
+<dt>max_p_threshold</dt>
+<dd><p>The maximum Probability Threshold value to be
+displayed</p></dd>
 
 </dl></div>
 

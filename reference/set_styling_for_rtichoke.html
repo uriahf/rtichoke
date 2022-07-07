@@ -60,8 +60,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set_styling_for_rtichoke</span><span class="op">(</span></span>
 <span>  <span class="va">plotly_object</span>,</span>
 <span>  <span class="va">curve</span>,</span>
+<span>  min_y_range <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  max_y_range <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  min_y_range <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  min_x_range <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  max_x_range <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -75,8 +77,20 @@
 <dd><p>the required curve</p></dd>
 
 
+<dt>min_y_range</dt>
+<dd><p>the minimum value of y range (for decision curve)</p></dd>
+
+
 <dt>max_y_range</dt>
-<dd><p>the maximum value of y range (for decision curve)</p></dd>
+<dd><p>the maximum value of y range (for lift and decision curve)</p></dd>
+
+
+<dt>min_x_range</dt>
+<dd><p>the minimum value of x range (for decision curve)</p></dd>
+
+
+<dt>max_x_range</dt>
+<dd><p>the maximum value of x range (for decision curve)</p></dd>
 
 </dl></div>
 
