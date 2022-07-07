@@ -7,8 +7,10 @@
 set_styling_for_rtichoke(
   plotly_object,
   curve,
+  min_y_range = NA,
   max_y_range = NA,
-  min_y_range = NA
+  min_x_range = NA,
+  max_x_range = NA
 )
 }
 \arguments{
@@ -16,7 +18,13 @@ set_styling_for_rtichoke(
 
 \item{curve}{the required curve}
 
-\item{max_y_range}{the maximum value of y range (for decision curve)}
+\item{min_y_range}{the minimum value of y range (for decision curve)}
+
+\item{max_y_range}{the maximum value of y range (for lift and decision curve)}
+
+\item{min_x_range}{the minimum value of x range (for decision curve)}
+
+\item{max_x_range}{the maximum value of x range (for decision curve)}
 }
 \description{
 Set styling for rtichoke plotly

@@ -9,7 +9,9 @@ plot_conventional_decision(
   chosen_threshold = NA,
   interactive = TRUE,
   col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B"),
-  size = NULL
+  size = NULL,
+  min_p_threshold = 0,
+  max_p_threshold = 1
 )
 }
 \arguments{
@@ -23,6 +25,12 @@ plots}
 \item{col_values}{color palette}
 
 \item{size}{the size of the curve}
+
+\item{min_p_threshold}{The minimum Probability Threshold value to be
+displayed}
+
+\item{max_p_threshold}{The maximum Probability Threshold value to be
+displayed}
 }
 \description{
 Plot Conventional Decision Curve
