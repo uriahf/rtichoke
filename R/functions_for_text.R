@@ -51,7 +51,7 @@ create_text_for_hover <- function(performance_data_type,
                                   stratified_by = "probability_threshold") {
   
   if (curve != "interventions avoided") {
-  
+    
   text_for_hover <- paste0(
     "Prob. Threshold: {probability_threshold}
 Sensitivity: {sensitivity}
@@ -177,7 +177,9 @@ add_hover_text_to_performance_data <- function(
     curve,
     stratified_by = "probability_threshold") {
   
-  text_for_hover <- create_text_for_hover(performance_data_type, curve)
+  text_for_hover <- create_text_for_hover(performance_data_type, 
+                                          curve,
+                                          stratified_by)
 
   performance_data %>%
     dplyr::mutate(
