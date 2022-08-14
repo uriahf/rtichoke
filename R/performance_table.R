@@ -197,11 +197,11 @@ render_performance_table <- function(performance_data,
             ),
           key_values =
             factor(key_values,
-              labels =
-                c("1", "2", "3", "4", "5")[
-                  seq_len(length(unique(performance_data_reactable %>%
-                    dplyr::pull(Model))))
-                ]
+              labels = as.character(seq_len(
+                length(unique(performance_data_reactable %>%
+                                dplyr::pull(Model)))
+              )
+              )
             )
         )
     }
@@ -218,12 +218,11 @@ render_performance_table <- function(performance_data,
             ),
           key_values =
             factor(key_values,
-              labels = c("1", "2", "3", "4", "5")[
-                seq_len(
+              labels =  as.character(seq_len(
                   length(unique(performance_data_reactable %>%
                     dplyr::pull(Population)))
                 )
-              ]
+              )
             )
         )
     }
