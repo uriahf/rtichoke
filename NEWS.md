@@ -1,3 +1,5 @@
-# rtichoke 0.0.0.9000
+# rtichoke 0.0.4
 
-* Added a `NEWS.md` file to track changes to the package.
+-   Remove main_slider argument from \`plot\_\*\_curve()\` and from \`render_performance_table()\` [#47](https://github.com/uriahf/rtichoke/issues/47)
+-   Add Interventions Avoided option to Decision Curve [#61](https://github.com/uriahf/rtichoke/issues/61)
+-   Support more than 5 populations [\@filbert42](https://github.com/filbert42) [#70](https://github.com/uriahf/rtichoke/issues/70)
