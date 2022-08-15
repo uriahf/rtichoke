@@ -80,8 +80,20 @@
 #' )
 #'
 #' }
-create_performance_table <- function(probs, reals, by = 0.01,
+create_performance_table <- function(probs, 
+                                     reals, 
+                                     by = 0.01,
                                      stratified_by = "probability_threshold",
+                                     col_values = c("#1b9e77", "#d95f02", 
+                                                    "#7570b3", "#e7298a", 
+                                                    "#07004D", "#E6AB02", 
+                                                    "#FE5F55", "#54494B", 
+                                                    "#006E90" , "#BC96E6",
+                                                    "#52050A", "#1F271B", 
+                                                    "#BE7C4D", "#63768D", 
+                                                    "#08A045", "#320A28", 
+                                                    "#82FF9E", "#2176FF", 
+                                                    "#D1603D", "#585123"),
                                      output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
@@ -89,7 +101,8 @@ create_performance_table <- function(probs, reals, by = 0.01,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    render_performance_table(output_type = output_type)
+    render_performance_table(col_values = col_values,
+                             output_type = output_type)
 }
 
 
@@ -127,13 +140,16 @@ create_performance_table <- function(probs, reals, by = 0.01,
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
                                      output_type = "reactable",
-                                     col_values = c(
-                                       "#5BC0BE",
-                                       "#FC8D62",
-                                       "#8DA0CB",
-                                       "#E78AC3",
-                                       "#A4243B"
-                                     )) {
+                                     col_values = c("#1b9e77", "#d95f02", 
+                                                    "#7570b3", "#e7298a", 
+                                                    "#07004D", "#E6AB02", 
+                                                    "#FE5F55", "#54494B", 
+                                                    "#006E90" , "#BC96E6",
+                                                    "#52050A", "#1F271B", 
+                                                    "#BE7C4D", "#63768D", 
+                                                    "#08A045", "#320A28", 
+                                                    "#82FF9E", "#2176FF", 
+                                                    "#D1603D", "#585123")) {
   
   
   stratified_by <- check_performance_data_stratification(
@@ -331,11 +347,26 @@ render_performance_table <- function(performance_data,
               key_num <- as.character(key_num)
 
               color <- switch(as.character(key_num),
-                "1" = "#5BC0BE",
-                "2" = "#FC8D62",
-                "3" = "#8DA0CB",
-                "4" = "#E78AC3",
-                "5" = "#A4243B"
+                "1" = col_values[1],
+                "2" = col_values[2],
+                "3" = col_values[3],
+                "4" = col_values[4],
+                "5" = col_values[5],
+                "6" = col_values[6],
+                "7" = col_values[7],
+                "8" = col_values[8],
+                "9" = col_values[9],
+                "10" = col_values[10],
+                "11" = col_values[11],
+                "12" = col_values[12],
+                "13" = col_values[13],
+                "14" = col_values[14],
+                "15" = col_values[15],
+                "16" = col_values[16],
+                "17" = col_values[17],
+                "18" = col_values[18],
+                "19" = col_values[19],
+                "20" = col_values[20]
               )
 
               badge <- status_badge(color = color)
@@ -354,11 +385,26 @@ render_performance_table <- function(performance_data,
               key_num <- as.character(key_num)
 
               color <- switch(as.character(key_num),
-                "1" = "#5BC0BE",
-                "2" = "#FC8D62",
-                "3" = "#8DA0CB",
-                "4" = "#E78AC3",
-                "5" = "#A4243B"
+                "1" = col_values[1],
+                "2" = col_values[2],
+                "3" = col_values[3],
+                "4" = col_values[4],
+                "5" = col_values[5],
+                "6" = col_values[6],
+                "7" = col_values[7],
+                "8" = col_values[8],
+                "9" = col_values[9],
+                "10" = col_values[10],
+                "11" = col_values[11],
+                "12" = col_values[12],
+                "13" = col_values[13],
+                "14" = col_values[14],
+                "15" = col_values[15],
+                "16" = col_values[16],
+                "17" = col_values[17],
+                "18" = col_values[18],
+                "19" = col_values[19],
+                "20" = col_values[20]
               )
 
               badge <- status_badge(color = color)
