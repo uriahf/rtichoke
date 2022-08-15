@@ -4,13 +4,21 @@
 \alias{create_table_for_auc}
 \title{Create Table for AUC}
 \usage{
-create_table_for_auc(probs, reals)
+create_table_for_auc(
+  probs,
+  reals,
+  col_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
+    "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
+    "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123")
+)
 }
 \arguments{
 \item{probs}{a list of vectors of estimated probabilities
 (one for each model or one for each population)}
 
 \item{reals}{a list of vectors of binary outcomes (one for each population)}
+
+\item{col_values}{color palette}
 }
 \description{
 Create Table for AUC
