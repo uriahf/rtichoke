@@ -300,7 +300,7 @@ input[type="checkbox"][value="1"]::before {
   width: 0.65em;
   height: 0.65em;
   transform: scale(0);
-  box-shadow: inset 1em 1em #5BC0BE;
+  box-shadow: inset 1em 1em #1b9e77;
   background-color: CanvasText;
 }
 
@@ -310,7 +310,7 @@ input[type="checkbox"][value="2"]::before {
   width: 0.65em;
   height: 0.65em;
   transform: scale(0);
-  box-shadow: inset 1em 1em #FC8D62;
+  box-shadow: inset 1em 1em #d95f02;
   background-color: CanvasText;
 }
 
@@ -319,7 +319,7 @@ input[type="checkbox"][value="3"]::before {
   width: 0.65em;
   height: 0.65em;
   transform: scale(0);
-  box-shadow: inset 1em 1em #8DA0CB;
+  box-shadow: inset 1em 1em #7570b3;
   background-color: CanvasText;
 }
 
@@ -328,7 +328,7 @@ input[type="checkbox"][value="4"]::before {
   width: 0.65em;
   height: 0.65em;
   transform: scale(0);
-  box-shadow: inset 1em 1em #E78AC3;
+  box-shadow: inset 1em 1em #e7298a;
   background-color: CanvasText;
 }
 
@@ -337,7 +337,142 @@ input[type="checkbox"][value="5"]::before {
   width: 0.65em;
   height: 0.65em;
   transform: scale(0);
-  box-shadow: inset 1em 1em #A4243B;
+  box-shadow: inset 1em 1em #07004D;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="6"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #E6AB02;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="7"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #FE5F55;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="8"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #54494B;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="9"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #006E90;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="10"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #BC96E6;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="11"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #52050A;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="12"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #1F271B;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="13"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #BE7C4D;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="14"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #63768D;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="15"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #08A045;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="16"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #320A28;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="17"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #82FF9E;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="18"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #2176FF;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="19"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #D1603D;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"][value="20"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  box-shadow: inset 1em 1em #585123;
   background-color: CanvasText;
 }
 
