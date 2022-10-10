@@ -20,9 +20,16 @@ decision_example <- performance_data |>
   plot_rtichoke_curve("decision")
 
 performance_data |>
-  create_rtichoke_curve_list("gains") |> 
+  create_rtichoke_curve_list("roc") |> 
   create_plotly_curve()
 
+performance_data |>
+  create_rtichoke_curve_list("gains") |> 
+  jsonlite::toJSON(auto_unbox = TRUE) |> 
+  write("C:/Users/CRI_user/Documents/rtichoke_curve_json_array.json")
+
+
+#####
 
 json_obj <- plotly::plotly_json(decision_example)
 

@@ -28,7 +28,8 @@ create_rtichoke_curve_list <- function(performance_data,
   rtichoke_curve_list$perf_dat_type <- rtichoke:::check_performance_data_type_for_plotly(
     performance_data = performance_data)
   
-  rtichoke_curve_list$reference_group_colors <- performance_data |>
+  
+  rtichoke_curve_list$group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(rtichoke_curve_list$perf_dat_type) |>
     create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, col_values = c(
       "#1b9e77", "#d95f02",
@@ -41,9 +42,11 @@ create_rtichoke_curve_list <- function(performance_data,
       "#08A045", "#320A28",
       "#82FF9E", "#2176FF",
       "#D1603D", "#585123"
-    ))
+    )) |> 
+    as.list()
   
-  prevalence_from_performance_data <- rtichoke:::get_prevalence_from_performance_data(performance_data)
+  prevalence_from_performance_data <- rtichoke:::get_prevalence_from_performance_data(performance_data) |> 
+    as.list()
   
   rtichoke_curve_list$reference_data <- create_reference_lines_data(
     curve, 
@@ -113,7 +116,8 @@ create_rtichoke_curve_list <- function(performance_data,
   rtichoke_curve_list$axes_ranges <- extract_axes_ranges(rtichoke_curve_list$performance_data_ready_for_curve, 
                                      curve,
                                      min_p_threshold = min_p_threshold,
-                                     max_p_threshold = max_p_threshold)
+                                     max_p_threshold = max_p_threshold) |> 
+    as.list()
   
   rtichoke_curve_list
   
@@ -149,32 +153,32 @@ create_plotly_curve <- function(rtichoke_curve_list){
     hoverinfo = "text",
     text = ~text,
     color = ~reference_group,
-    colors = rtichoke_curve_list$reference_group_colors
+    colors = unlist(rtichoke_curve_list$group_colors_vec)
   ) |>
     plotly::add_lines(
       data = rtichoke_curve_list$reference_data,
       line = list(
         dash = "dot"
       )
-    ) |> 
+    ) |>
     plotly::add_trace(
       data = rtichoke_curve_list$performance_data_ready_for_curve,
       type = 'scatter',
       mode = 'lines+markers',
       line = list(dash = 'solid')
-    ) |> 
+    ) |>
     plotly::add_markers(
       data = rtichoke_curve_list$performance_data_ready_for_curve,
       frame =~ stratified_by,
       marker = interactive_marker
-    ) |> 
+    ) |>
     plotly::layout(
-      xaxis = list(showgrid = FALSE, fixedrange = TRUE, 
+      xaxis = list(showgrid = FALSE, fixedrange = TRUE,
                    range = rtichoke_curve_list$axes_ranges$xaxis, title = rtichoke_curve_list$axes_labels$xaxis),
-      yaxis = list(showgrid = FALSE, fixedrange = TRUE, 
+      yaxis = list(showgrid = FALSE, fixedrange = TRUE,
                    range = rtichoke_curve_list$axes_ranges$yaxis, title = rtichoke_curve_list$axes_labels$xaxis),
       showlegend = FALSE
-    ) |> 
+    ) |>
     plotly::config(displayModeBar = FALSE)
   
 }
