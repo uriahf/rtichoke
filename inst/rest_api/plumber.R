@@ -4,31 +4,20 @@ library(htmlwidgets)
 library(xml2)
 library(dplyr)
 
-#* @serializer html
-#* @post /rtichoke/flex_tichoke
 
+#* @serializer html
+#* @post /rtichoke/create_summary_report
 function(column, req, res) {
-  dat <- tryCatch(jsonlite::fromJSON(req$postBody),
+  dat <- tryCatch(jsonlite::fromJSON(req$postBody, simplifyMatrix=FALSE),
                   error = function(e) NULL)
   
-  print(dat)
+  print(dat$probs)
+  print(dat$real)
   
-  # print("probs")
-  # print(dat$probs)
-  # 
-  # print("reals")
-  # print(dat$probs)
-  # 
-  # # rtichoke::rtichoke(list(dat$probs), dat$real)
-  # rtichoke::create_summary_report(
-  #   probs = dat$probs, 
-  #   reals = dat$reals
-  #   ) 
-  # 
-  # as.character(xml2::read_html("summary_report.html"))
+  print("creating summary report")
   
-  # file <- tempfile(fileext=".html")
-  # htmlwidgets::saveWidget(result, file, selfcontained = T)
-  # paste(readLines(file), collapse="")
+  rtichoke::create_summary_report(dat$probs,
+                                  dat$real)
   
+  as.character(xml2::read_html("summary_report.html"))
 }
