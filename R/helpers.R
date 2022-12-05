@@ -774,6 +774,8 @@ create_reference_group_color_vector <- function(reference_groups,
     "#BEBEBE", 
     "#BEBEBE",
     "#BEBEBE",
+    "#BEBEBE",
+    col_values[1:length(reference_groups)],
     col_values[1:length(reference_groups)], 
     col_values[1:length(reference_groups)], # fix to grey when one population
     col_values[1:length(reference_groups)]
@@ -782,7 +784,9 @@ create_reference_group_color_vector <- function(reference_groups,
   names(reference_group_color_vector) <- c(
     "reference_line",
     "reference_line_perfect_model",
+    "reference_line_treat_none",
     "reference_line_treat_all",
+    paste0("reference_line_treat_none_", reference_groups),
     paste0("reference_line_treat_all_", reference_groups),
     paste0("reference_line_perfect_model_", reference_groups),
     reference_groups
@@ -1147,9 +1151,10 @@ create_reference_lines_data <- function(curve, prevalence,
     
     if (perf_dat_type == "several populations") {
       
-      reference_group <- rep(c("reference_line", 
-                               paste0("reference_line_perfect_model_", names(prevalence))), 
-                             each = 100)
+      reference_group <- rep(c(
+        "reference_line", 
+        paste0("reference_line_treat_all_", names(prevalence))),
+        each = 100)
       reference_line_x_values <- rep(seq(0, 0.99, by = 0.01), times = (length(prevalence) + 1) )
       reference_line_y_values <- c(
         rep(0, 100),
@@ -1181,7 +1186,7 @@ create_reference_lines_data <- function(curve, prevalence,
       dplyr::mutate(text = dplyr::case_when(
         reference_group == "reference_line" ~ glue::glue(hover_text_treat_none),
         TRUE ~ glue::glue(hover_text_treat_all)),
-        text = stringr::str_replace(text, "reference_line_perfect_model_", "")) |> 
+        text = stringr::str_replace(text, "reference_line_treat_all_", "")) |> 
       dplyr::filter(x >= min_p_threshold, x<= max_p_threshold)
     
     
@@ -1189,11 +1194,44 @@ create_reference_lines_data <- function(curve, prevalence,
   
   if (curve == "interventions avoided") {
     
+    if (perf_dat_type == "several populations") {
+      
+      reference_group <- rep(c(
+        "reference_line", 
+        paste0("reference_line_treat_none_", names(prevalence))),
+        each = 99)
+      reference_line_x_values <- rep(seq(0.01, 0.99, by = 0.01), times = (length(prevalence) + 1) )
+      reference_line_y_values <- 100 * c(
+        rep(0, 99),
+        prevalence |> 
+          purrr::map(~return_treat_none_y_values(.x)) |>
+          unlist())
+      
+      hover_text_treat_none <- "<b>Treat None ({reference_group})</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}"
+      
+      
+    } else {
+      
+      reference_group <- rep(c("reference_line", "reference_line_treat_none"), each = 99)
+      reference_line_x_values <- rep(seq(0.01, 0.99, by = 0.01), times = 2)
+      reference_line_y_values <- 100 * c(rep(0, 99), c(1 - unique(unlist(prevalence)) - unique(unlist(prevalence)) * 
+                                                    (1 - seq(0.01, 0.99, by = 0.01))  / (seq(0.01, 0.99, by = 0.01) )))
+      hover_text_treat_none <- "<b>Treat None</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}"
+    }
+    
+    hover_text_treat_all <- "<b>Treat All</b><br>Interventions Avoided (per 100): 0<br>Probability Threshold: {x}"
+    
     reference_lines_data <- data.frame(
-      x = NA, 
-      y = NA, 
-      reference_group = NA,
-      text = NA)
+      reference_group = reference_group,
+      x = reference_line_x_values,
+      y = reference_line_y_values
+    ) |> 
+      dplyr::mutate(text = dplyr::case_when(
+        reference_group == "reference_line" ~ glue::glue(hover_text_treat_all),
+        TRUE ~ glue::glue(hover_text_treat_none)),
+        text = stringr::str_replace(text, "reference_line_treat_none_", "")) |> 
+      dplyr::filter(x >= min_p_threshold, x<= max_p_threshold)
+    
   }
   
   
@@ -1264,5 +1302,12 @@ return_treat_all_y_values <- function(prevalence) {
   
   c(prevalence - (1 - unique(prevalence)) * 
       (seq(0, 0.99, by = 0.01))  / (1 - seq(0, 0.99, by = 0.01) ))
+  
+}
+
+return_treat_none_y_values <- function(prevalence) {
+  
+  c(1 - prevalence - (unique(prevalence)) * 
+      (1 - seq(0.01, 0.99, by = 0.01))  / (seq(0.01, 0.99, by = 0.01) ))
   
 }

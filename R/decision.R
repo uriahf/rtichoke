@@ -254,7 +254,8 @@ plot_decision_curve <- function(performance_data,
       
       decision_curve <- decision_curve <- performance_data |> 
         create_rtichoke_curve_list(
-          "interventions avoided", size = size, col_values = col_values,
+          "interventions avoided", 
+          size = size, col_values = col_values,
           min_p_threshold = min_p_threshold,
           max_p_threshold = max_p_threshold) |>
         create_plotly_curve()
@@ -359,6 +360,18 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list){
     height = size_height,
     width = rtichoke_decision_combined_curve_list$size
   ) |>
+    plotly::add_lines(
+      data = rtichoke_decision_combined_curve_list$reference_data$`interventions avoided`,
+      x = ~x,
+      y = ~y,
+      text = ~text,
+      line = list(
+        dash = "dot"
+      ),
+      hoverinfo = "text",
+      color = ~reference_group,
+      colors = unlist(rtichoke_decision_combined_curve_list$group_colors_vec)
+    ) |>
     plotly::add_trace(
       x = ~x_interventions_avoided ,
       y = ~y_interventions_avoided,
@@ -480,7 +493,8 @@ unify_decision_curve_lists_for_combined_decision_curve_list <- function(
   rtichoke_decision_combined_curve_list$size <- rtichoke_decision_curve_lists$conventional$size
   
   rtichoke_decision_combined_curve_list$reference_data <- list(
-    "conventional" = rtichoke_decision_curve_lists$conventional$reference_data
+    "conventional" = rtichoke_decision_curve_lists$conventional$reference_data,
+    "interventions avoided" = rtichoke_decision_curve_lists$`interventions avoided`$reference_data
   )
   
   rtichoke_decision_combined_curve_list$axes_labels <- list(
