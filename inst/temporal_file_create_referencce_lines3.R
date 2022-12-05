@@ -1,32 +1,66 @@
 library(plotly)
+library(magrittr)
 
-performance_data <- prepare_performance_data(
-  probs = list(
-    "train" = example_dat %>%
-      dplyr::filter(type_of_set == "train") %>%
-      dplyr::pull(estimated_probabilities),
-    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(estimated_probabilities)
-  ),
-  reals = list(
-    "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
-      dplyr::pull(outcome),
-    "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
-      dplyr::pull(outcome)
-  )
-)
+one_pop_one_model |> 
+  plot_roc_curve()
 
-decision_example <- performance_data |> 
-  plot_rtichoke_curve("decision")
-
-performance_data |>
-  create_rtichoke_curve_list("roc") |> 
+one_pop_one_model   |>
+  create_rtichoke_curve_list("roc") |>
   create_plotly_curve()
 
-performance_data |>
-  create_rtichoke_curve_list("gains") |> 
+one_pop_one_model   |>
+  create_rtichoke_curve_list("interventions avoided") |>
+  create_plotly_curve()
+
+
+# bla <- multiple_models |>
+#   create_rtichoke_curve_list("gains") #%>%
+#   
+# bla$reference_data
+
+
+# TODO: Take care of invisible marker:
+# copy pyhon the same way I do in R
+
+# TODO: Take care of combined decision curves
+
+multiple_populations |>
+  create_rtichoke_curve_list("interventions avoided") |> 
   jsonlite::toJSON(auto_unbox = TRUE) |> 
   write("C:/Users/CRI_user/Documents/rtichoke_curve_json_array.json")
+
+lift_list <- one_pop_one_model_by_ppcr |>
+  create_rtichoke_curve_list("lift")
+
+View(lift_list$performance_data_ready_for_curve)
+
+
+lift_list$performance_data_ready_for_curve$y[is.nan(lift_list$performance_data_ready_for_curve$y)] <- -1 
+
+lift_list$performance_data_ready_for_curve <- lift_list$performance_data_ready_for_curve |> 
+  dplyr::filter(!is.nan(y))
+
+lift_list |> 
+  jsonlite::toJSON(auto_unbox = TRUE) |> 
+  write("C:/Users/CRI_user/Documents/rtichoke_curve_json_array.json")
+
+
+View(lift_list$reference_data)
+
+plotly::subplot(
+  multiple_populations |>
+    create_rtichoke_curve_list("interventions avoided", 
+                               min_p_threshold = 0.01, max_p_threshold = 0.99) |> 
+    create_plotly_curve(),
+  multiple_populations |>
+    create_rtichoke_curve_list("decision", 
+                               min_p_threshold = 0.01, max_p_threshold = 0.99) |> 
+    create_plotly_curve(), 
+  nrows = 2,
+  shareX = TRUE,
+  shareY = FALSE, heights = c(0.5, 0.5)
+)
+
 
 
 #####
@@ -165,7 +199,9 @@ jsonlite::toJSON(as.list(reference_group_colors_vec),
 
 library(plotly)
 
-plotly_build_obj <- plotly_build(roc_example)$x
+plotly_build_obj <- plotly_build(multiple_populations_by_ppcr     |>
+                                   create_rtichoke_curve_list("precision recall") |> 
+                                   create_plotly_curve())$x
 plotly_build_obj$data[1]
 
 plotly_build_obj$data[3]
@@ -247,7 +283,7 @@ attr(plotly_build_obj$frames[[2]]$data[[1]]$textfont$color, "class") <- NULL
 attr(plotly_build_obj$frames[[2]]$data[[1]]$error_y$color, "class") <- NULL
 attr(plotly_build_obj$frames[[2]]$data[[1]]$error_x$line$color, "class") <- NULL
 attr(plotly_build_obj$frames[[2]]$data[[1]]$error_x$color, "class") <- NULL
-attr(plotly_build_obj$frames[[2]]$data[[1]]$line$color, "class") <- NULL
+attr(plotly_build_obj$frames[[2]]$data[[1]]$leaine$color, "class") <- NULL
 
 
 attr(plotly_build_obj$frames[[3]]$data[[1]]$x, "apiSrc") <- NULL

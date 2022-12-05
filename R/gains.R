@@ -155,6 +155,10 @@ plot_gains_curve <- function(performance_data,
                                             "#82FF9E", "#2176FF", 
                                             "#D1603D", "#585123"),
                              size = NULL) {
+  
+  rtichoke_curve_list <- performance_data |>
+    create_rtichoke_curve_list("gains", size = size, col_values = col_values)
+  
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -186,111 +190,10 @@ plot_gains_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-    performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "gains",
-                                         stratified_by = stratified_by)
+    
+    gains_curve <- rtichoke_curve_list |>
+      create_plotly_curve()
 
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      gains_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "gains",
-        prevalence = prevalence,
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("gains") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several models") {
-      gains_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "gains",
-        prevalence = prevalence[1],
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity,
-          col_values = col_values
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("gains") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several populations") {
-      gains_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "gains",
-        prevalence = prevalence,
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          sensitivity,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("gains") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
   }
 
   return(gains_curve)

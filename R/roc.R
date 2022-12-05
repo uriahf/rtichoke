@@ -170,6 +170,10 @@ plot_roc_curve <- function(performance_data,
                                           "#D1603D", "#585123"),
                            title_included = FALSE,
                            size = NULL) {
+  
+  rtichoke_curve_list <- performance_data |>
+    create_rtichoke_curve_list("roc", size = size, col_values = col_values)
+  
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -200,118 +204,12 @@ plot_roc_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-    perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
-
-    performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "roc",
-                                         stratified_by = stratified_by)
-
-
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      roc_curve <- create_reference_lines_for_plotly(
-        perf_dat_type, "roc",
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several models") {
-      performance_data <- performance_data %>%
-        mutate(model = forcats::fct_inorder(factor(model)))
-
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "roc",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          col_values = col_values
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several populations") {
-      performance_data <- performance_data %>%
-        mutate(population = forcats::fct_inorder(factor(population)))
-
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "roc",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
+    
+    roc_curve <- rtichoke_curve_list |>
+      create_plotly_curve()
+    
   }
 
   return(roc_curve)
+  
 }

@@ -11,19 +11,38 @@ check_stratified_by_input <- function(stratified_by) {
 }
 
 
+# TODO fix interventions avoided hover text
+
 # Plot Curve
 
 create_rtichoke_curve_list <- function(performance_data,
                                        curve, 
                                        min_p_threshold = 0, 
                                        max_p_threshold = 1, 
-                                       size = NULL){
+                                       size = NULL, col_values = c(
+                                         "#1b9e77", "#d95f02",
+                                         "#7570b3", "#e7298a",
+                                         "#07004D", "#E6AB02",
+                                         "#FE5F55", "#54494B",
+                                         "#006E90", "#BC96E6",
+                                         "#52050A", "#1F271B",
+                                         "#BE7C4D", "#63768D",
+                                         "#08A045", "#320A28",
+                                         "#82FF9E", "#2176FF",
+                                         "#D1603D", "#585123"
+                                       )){
   
   rtichoke_curve_list <- list()
+  
+  rtichoke_curve_list$size <- size
   
   stratified_by <- rtichoke:::check_performance_data_stratification(
     performance_data
   )
+  
+  rtichoke_curve_list$animation_slider_prefix <- ifelse(stratified_by == "probability_threshold",
+                                                        "Prob. Threshold: ",
+                                                        "Predicted Positives (Rate):")
   
   rtichoke_curve_list$perf_dat_type <- rtichoke:::check_performance_data_type_for_plotly(
     performance_data = performance_data)
@@ -31,18 +50,7 @@ create_rtichoke_curve_list <- function(performance_data,
   
   rtichoke_curve_list$group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(rtichoke_curve_list$perf_dat_type) |>
-    create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, col_values = c(
-      "#1b9e77", "#d95f02",
-      "#7570b3", "#e7298a",
-      "#07004D", "#E6AB02",
-      "#FE5F55", "#54494B",
-      "#006E90", "#BC96E6",
-      "#52050A", "#1F271B",
-      "#BE7C4D", "#63768D",
-      "#08A045", "#320A28",
-      "#82FF9E", "#2176FF",
-      "#D1603D", "#585123"
-    )) |> 
+    create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, col_values = col_values) |> 
     as.list()
   
   prevalence_from_performance_data <- rtichoke:::get_prevalence_from_performance_data(performance_data) |> 
@@ -97,8 +105,9 @@ create_rtichoke_curve_list <- function(performance_data,
     
   } else if (curve == "interventions avoided") {
     
+    
     x_performance_metric <- "probability_threshold"
-    y_performance_metric <- "NB_treatment_avoided"
+    y_performance_metric <- "NB_interventions_avoided"
     
     rtichoke_curve_list$axes_labels$xaxis <- "Probability Threshold"
     rtichoke_curve_list$axes_labels$yaxis <- "Interventions Avoided (per 100)"
@@ -110,8 +119,11 @@ create_rtichoke_curve_list <- function(performance_data,
       x_performance_metric,
       y_performance_metric,
       stratified_by,
-      rtichoke_curve_list$perf_dat_type, 
+      rtichoke_curve_list$perf_dat_type,
+      min_p_threshold = min_p_threshold,
+      max_p_threshold = max_p_threshold
     )
+  
   
   rtichoke_curve_list$axes_ranges <- extract_axes_ranges(rtichoke_curve_list$performance_data_ready_for_curve, 
                                      curve,
@@ -145,6 +157,9 @@ create_plotly_curve <- function(rtichoke_curve_list){
     
   }
   
+  performance_data_for_interactive_marker <- rtichoke_curve_list$performance_data_ready_for_curve
+  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
+  
   plotly::plot_ly(
     x = ~x,
     y = ~y,
@@ -168,18 +183,29 @@ create_plotly_curve <- function(rtichoke_curve_list){
       line = list(dash = 'solid')
     ) |>
     plotly::add_markers(
-      data = rtichoke_curve_list$performance_data_ready_for_curve,
+      data = performance_data_for_interactive_marker,
       frame =~ stratified_by,
       marker = interactive_marker
     ) |>
     plotly::layout(
       xaxis = list(showgrid = FALSE, fixedrange = TRUE,
-                   range = rtichoke_curve_list$axes_ranges$xaxis, title = rtichoke_curve_list$axes_labels$xaxis),
+                   range = rtichoke_curve_list$axes_ranges$xaxis, 
+                   title = rtichoke_curve_list$axes_labels$xaxis),
       yaxis = list(showgrid = FALSE, fixedrange = TRUE,
-                   range = rtichoke_curve_list$axes_ranges$yaxis, title = rtichoke_curve_list$axes_labels$xaxis),
+                   range = rtichoke_curve_list$axes_ranges$yaxis, 
+                   title = rtichoke_curve_list$axes_labels$xaxis),
       showlegend = FALSE
     ) |>
-    plotly::config(displayModeBar = FALSE)
+    plotly::animation_slider(
+      currentvalue = list(
+        prefix = rtichoke_curve_list$animation_slider_prefix,
+        font = list(color = "black"),
+        xanchor = "left"
+      ),
+      pad = list(t = 50)
+    ) |>
+    plotly::config(displayModeBar = FALSE) |>  
+    plotly::animation_button(visible=FALSE)
   
 }
 
@@ -209,12 +235,6 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
     extract_reference_groups_from_performance_data(perf_dat_type) |>
     create_reference_group_color_vector(perf_dat_type, col_values = col_values)
   
-  print(paste("reference_group_color_vector", 
-              reference_group_colors_vec))
-  
-
-  print(reference_group_colors_vec)
-  
   if (curve == "roc") {
     x_performance_metric <- "FPR"
     y_performance_metric <- "sensitivity"
@@ -232,7 +252,7 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
     y_performance_metric <- "NB"
   } else if (curve == "interventions avoided") {
     x_performance_metric <- "probability_threshold"
-    y_performance_metric <- "NB_treatment_avoided"
+    y_performance_metric <- "NB_interventions_avoided"
   }
   
   
@@ -250,8 +270,6 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
                                      curve,
                                      min_p_threshold,
                                      max_p_threshold)
-  
-  print(axis_ranges)
   
   create_reference_lines_for_plotly_new(
     curve,
@@ -325,13 +343,9 @@ create_reference_group_color_vector <- function(reference_groups,
     reference_groups
   )
 
-  print(paste(
-    "reference_group_color_vector:", reference_group_color_vector))
   
   reference_group_color_vector
 }
-
-# TODO check with blog examples interventions avoided
 
 
 prepare_performance_data_for_curve <- function(
@@ -344,14 +358,15 @@ prepare_performance_data_for_curve <- function(
     max_p_threshold = 1){
   
   
+  
   performance_data %>%
     {
-      if (y_performance_metric == "NB_treatment_avoided") {
+      if (y_performance_metric == "NB_interventions_avoided") {
         dplyr::mutate(., N = TP +TN  + FP + FN,
                       prevalence = (TP + FN) / N,
                       NB_intervention_all =   prevalence - (1- prevalence) * 
                         (probability_threshold) / (1 - probability_threshold),
-                      NB_treatment_avoided = 100 * (NB - NB_intervention_all) * 
+                      NB_interventions_avoided = 100 * (NB - NB_intervention_all) * 
                         ( (1 - probability_threshold) / probability_threshold ))
       } else {
         .
@@ -371,10 +386,22 @@ prepare_performance_data_for_curve <- function(
       x_performance_metric, 
       y_performance_metric, 
       stratified_by, 
-      perf_dat_type) |> 
-    dplyr::filter(!is.nan(y))  
+      perf_dat_type) %>%
+    {
+      if (y_performance_metric %in% c("NB", "NB_interventions_avoided")) {
+        dplyr::filter(., !is.nan(y))  
+      } else {
+        .
+      }
+    }
   
 }
+
+
+
+
+# 
+# performance_data_for_curve
 
 
 add_hover_text_to_performance_data_new <- function(
@@ -386,26 +413,24 @@ add_hover_text_to_performance_data_new <- function(
   
   hover_text <- create_hover_text(
     stratified_by = stratified_by,
-    interventions_avoided = (performance_metric_x == "NB_treatment_avoided")) |> 
+    interventions_avoided = (performance_metric_y == "NB_interventions_avoided")) |> 
     rtichoke:::make_two_performance_metrics_bold(
       performance_metric_x, 
       performance_metric_y) %>% 
     {
       if (perf_dat_type == "several models") {
-        rtichoke:::add_models_for_text_for_hover(.)
+        add_models_for_text_for_hover_new(.)
       } else {
         .
       }
     } %>% 
     {
       if (perf_dat_type == "several populations") {
-        rtichoke:::add_population_for_text_for_hover(.)
+        add_population_for_text_for_hover_new(.)
       } else {
         .
       }
     }
-  
-  print(hover_text)
   
   performance_data %>%
     dplyr::mutate(
@@ -415,6 +440,21 @@ add_hover_text_to_performance_data_new <- function(
     )
   
 }
+
+add_models_for_text_for_hover_new <- function(text_for_hover) {
+  paste("<b>Model: {model}</b>",
+        text_for_hover,
+        sep = "<br>"
+  )
+}
+
+add_population_for_text_for_hover_new <- function(text_for_hover) {
+  paste("<b>Population: {population}</b>",
+        text_for_hover,
+        sep = "<br>"
+  )
+}
+
 
 create_hover_text <- function(stratified_by, interventions_avoided = FALSE) {
   
@@ -431,7 +471,7 @@ NPV: {NPV}<br>",
       ifelse ( stratified_by == "probability_threshold", 
                "NB: {NB}<br>", 
                "" ),
-      "Predicted Positives: {predicted_positives} ({100 * ppcr}%)
+      "Predicted Positives: {predicted_positives} ({100 * ppcr}%)<br>\\
 TP: {TP}<br>\\
 TN: {TN}<br>\\
 FP: {FP}<br>\\
@@ -440,8 +480,8 @@ FN: {FN}"
     
   } else {
     
-    text_for_hover <- "Prob. Threshold: {probability_threshold}
-Interventions Avoided (per 100): {NB_treatment_avoided}<br>\\
+    text_for_hover <- "Prob. Threshold: {probability_threshold}<br>\\
+Interventions Avoided (per 100): {NB_interventions_avoided}<br>\\
 NB: {NB}<br>\\
 Predicted Positives: {predicted_positives} ({100 * ppcr}%)<br>\\
 TN: {TN}<br>\\
@@ -602,7 +642,7 @@ create_reference_lines_data <- function(curve, prevalence,
       
       reference_group <- rep(names(prevalence), each = 100)
       reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = length(prevalence))
-      reference_line_y_values <- rep(prevalence, each = 100)
+      reference_line_y_values <- rep(unlist(prevalence), each = 100)
       hover_text <- "<b>Random Guess ({reference_group})</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
       
       
@@ -610,7 +650,7 @@ create_reference_lines_data <- function(curve, prevalence,
       
       reference_group <- "reference_line"
       reference_line_x_values <- seq(0.01, 1, by = 0.01)
-      reference_line_y_values <- rep(unique(prevalence), 100)
+      reference_line_y_values <- rep(unique(unlist(prevalence)), 100)
       hover_text <- "<b>Random Guess</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
       
     }
@@ -622,8 +662,6 @@ create_reference_lines_data <- function(curve, prevalence,
       y = reference_line_y_values
     ) |> 
       dplyr::mutate(text = glue::glue(hover_text))
-    
-    print(reference_lines_data)
     
   }
   
@@ -649,7 +687,7 @@ create_reference_lines_data <- function(curve, prevalence,
       reference_line_x_values <- rep(seq(0, 1, by = 0.01), times = 2)
       reference_line_y_values <- c(
           seq(0, 1, by = 0.01),
-          return_perfect_prediction_gains_y_values(unique(prevalence))
+          return_perfect_prediction_gains_y_values(unique(unlist(prevalence)))
         )
       
       hover_text_perfect <- "<b>Perfect Prediction</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
@@ -689,7 +727,7 @@ create_reference_lines_data <- function(curve, prevalence,
       
       reference_group <- rep(c("reference_line", "reference_line_treat_all"), each = 100)
       reference_line_x_values <- rep(seq(0, 0.99, by = 0.01), times = 2)
-      reference_line_y_values <- c(rep(0, 100), c(unique(prevalence) - (1 - unique(prevalence)) * 
+      reference_line_y_values <- c(rep(0, 100), c(unique(unlist(prevalence)) - (1 - unique(unlist(prevalence))) * 
                                                     (seq(0, 0.99, by = 0.01))  / (1 - seq(0, 0.99, by = 0.01) )))
       hover_text_treat_all <- "<b>Treat All</b><br>NB: {round(y, digits = 3)}<br>Probability Threshold: {x}"
       
@@ -744,7 +782,7 @@ extract_axes_ranges <- function(performance_data_ready, curve,
 
   if (curve %in% c("lift", "decision", "interventions avoided")) {
     
-    max_y_range <- max(performance_data_ready$y)
+    max_y_range <- max(performance_data_ready$y, na.rm = TRUE)
     
   }
   

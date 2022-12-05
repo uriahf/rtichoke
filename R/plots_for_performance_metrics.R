@@ -19,7 +19,7 @@ create_ggplot_for_performance_metrics <- function(performance_data,
                                                     "#A4243B"
                                                   )) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
-    print("col values")
+
     col_values_vec <- "black"
 
     

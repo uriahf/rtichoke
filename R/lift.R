@@ -91,6 +91,8 @@ create_lift_curve <- function(probs, reals, by = 0.01,
                                              "#82FF9E", "#2176FF", 
                                              "#D1603D", "#585123"),
                               size = NULL) {
+  
+  
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -154,6 +156,10 @@ plot_lift_curve <- function(performance_data,
                                            "#82FF9E", "#2176FF", 
                                            "#D1603D", "#585123"),
                             size = NULL) {
+  
+  rtichoke_curve_list <- performance_data |>
+    create_rtichoke_curve_list("lift", size = size, col_values = col_values)
+  
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -183,127 +189,14 @@ plot_lift_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-    performance_data$fake_lift <- performance_data$lift
-    performance_data$fake_lift[is.nan(performance_data$lift)] <- -1
-
-    perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
-
-    performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "lift",
-                                         stratified_by = stratified_by)
+   
+    lift_curve <- rtichoke_curve_list |>
+      create_plotly_curve()
     
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type, "lift",
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          lift
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          fake_lift,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("lift",
-          max_y_range = max(performance_data$lift,
-            na.rm = TRUE
-          ) + 0.1
-        ) %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several models") {
-      
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "lift",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          lift,
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          fake_lift,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("lift",
-          max_y_range = max(performance_data$lift,
-            na.rm = TRUE
-          ) + 0.1
-        ) %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several populations") {
-      lift_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "lift",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          lift
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          ppcr,
-          fake_lift,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("lift",
-          max_y_range = max(performance_data$lift,
-            na.rm = TRUE
-          ) + 0.1
-        ) %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
   }
 
   return(lift_curve)
+  
 }
 
 

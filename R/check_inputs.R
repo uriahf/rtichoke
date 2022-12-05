@@ -120,3 +120,35 @@ check_performance_data_stratification <- function(performance_data) {
     "ppcr"
   )
 }
+
+
+#' Check curve input
+#'
+#' @param curve discrimination curve
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#' check_curve_input("roc")
+#' check_curve_input("lift")
+#' }
+check_curve_input <- function(curve) {
+  rlang::arg_match(curve, c(
+    "roc", "lift", "precision recall", "gains",
+    "decision", "interventions avoided"
+  ))
+}
+
+
+#' Check stratified_by input
+#'
+#' @param stratified_by stratified by probability threshold or ppcr
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#' check_curve_input("probability_threshold")
+#' check_curve_input("ppcr")
+#' }
+check_stratified_by_input <- function(stratified_by) {
+  rlang::arg_match(stratified_by, c("probability_threshold", "ppcr"))
+}
+

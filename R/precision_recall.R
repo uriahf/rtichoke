@@ -142,7 +142,7 @@ create_precision_recall_curve <- function(probs,
 
 plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
-                                        interactive = FALSE,
+                                        interactive = TRUE,
                                         col_values = c("#1b9e77", "#d95f02", 
                                                        "#7570b3", "#e7298a", 
                                                        "#07004D", "#E6AB02", 
@@ -154,6 +154,11 @@ plot_precision_recall_curve <- function(performance_data,
                                                        "#82FF9E", "#2176FF", 
                                                        "#D1603D", "#585123"),
                                         size = NULL) {
+  
+  rtichoke_curve_list <- performance_data |>
+    create_rtichoke_curve_list("precision recall", size = size, col_values = col_values)
+  
+  
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(
     performance_data,
@@ -183,114 +188,10 @@ plot_precision_recall_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-    performance_data$fake_PPV <- performance_data$PPV
-    performance_data$fake_PPV[is.nan(performance_data$PPV)] <- -1
 
-    performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type,
-        curve = "precision recall",
-        stratified_by = stratified_by
-      )
+    precision_recall_curve <- rtichoke_curve_list |>
+      create_plotly_curve()
 
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "precision recall",
-        prevalence = prevalence,
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          PPV
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          fake_PPV,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("precision recall") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several models") {
-      precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "precision recall",
-        prevalence = prevalence[1],
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          PPV,
-          col_values = col_values
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          fake_PPV,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("precision recall") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several populations") {
-      precision_recall_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "precision recall",
-        prevalence = prevalence,
-        population_color_vector = col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          PPV
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          sensitivity,
-          fake_PPV,
-          stratified_by = stratified_by
-        ) %>%
-        set_styling_for_rtichoke("precision recall") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
   }
   return(precision_recall_curve)
 }
