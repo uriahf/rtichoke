@@ -265,6 +265,9 @@ create_rtichoke_combined_decision_curve_list <- function(
 }
 
 create_rtichoke_combined_decision_curve_list(one_pop_one_model)
+
+
+
 create_rtichoke_combined_decision_curve_list(multiple_populations)
 
 
@@ -272,7 +275,9 @@ rtichoke_decision_curve_lists <- c("decision", "interventions avoided") |>
   purrr::map(~create_rtichoke_curve_list(multiple_models , .x, 
                                          min_p_threshold = 0.01, 
                                          max_p_threshold = 0.99)) |> 
-  purrr::set_names("conventional", "interventions avoided")
+  purrr::set_names("conventional", "interventions avoided") |> 
+  unify_decision_curve_lists_for_combined_decision_curve_list() |> 
+  plot_decision_combined_curve()
 
 rtichoke_decision_curve_lists
 

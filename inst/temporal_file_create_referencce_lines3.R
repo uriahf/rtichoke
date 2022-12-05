@@ -5,7 +5,7 @@ one_pop_one_model |>
   plot_roc_curve()
 
 one_pop_one_model   |>
-  create_rtichoke_curve_list("roc") |>
+  create_rtichoke_curve_list("decision") |>
   create_plotly_curve()
 
 one_pop_one_model   |>
@@ -29,8 +29,8 @@ multiple_populations |>
   jsonlite::toJSON(auto_unbox = TRUE) |> 
   write("C:/Users/CRI_user/Documents/rtichoke_curve_json_array.json")
 
-lift_list <- one_pop_one_model_by_ppcr |>
-  create_rtichoke_curve_list("lift")
+decision_list <- one_pop_one_model |>
+  create_rtichoke_curve_list("decision")
 
 View(lift_list$performance_data_ready_for_curve)
 
