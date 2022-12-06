@@ -836,7 +836,7 @@ prepare_performance_data_for_curve <- function(
       perf_dat_type) %>%
     {
       if (y_performance_metric %in% c("NB", "NB_interventions_avoided")) {
-        dplyr::filter(., !is.nan(y))  
+        dplyr::filter(., !is.nan(y))
       } else {
         .
       }
@@ -910,7 +910,8 @@ Lift: {lift}<br>\\
 PPV: {PPV}<br>\\
 NPV: {NPV}<br>",
       ifelse ( stratified_by == "probability_threshold", 
-               "NB: {NB}<br>", 
+               "NB: {NB}<br>\\
+Odds of Prob. Threshold: 1:{round((1 - probability_threshold) / probability_threshold, digits = 2)}<br>",
                "" ),
       "Predicted Positives: {predicted_positives} ({100 * ppcr}%)<br>\\
 TP: {TP}<br>\\
@@ -922,6 +923,7 @@ FN: {FN}"
   } else {
     
     text_for_hover <- "Prob. Threshold: {probability_threshold}<br>\\
+Odds of Prob. Threshold: 1:{round((1 - probability_threshold) / probability_threshold, digits = 2)}<br>\\
 Interventions Avoided (per 100): {NB_interventions_avoided}<br>\\
 NB: {NB}<br>\\
 Predicted Positives: {predicted_positives} ({100 * ppcr}%)<br>\\
@@ -1162,7 +1164,7 @@ create_reference_lines_data <- function(curve, prevalence,
           purrr::map(~return_treat_all_y_values(.x)) |>
           unlist())
       
-      hover_text_treat_all <- "<b>Treat All ({reference_group})</b><br>NB: {round(y, digits = 3)}<br>Probability Threshold: {x}"
+      hover_text_treat_all <- "<b>Treat All ({reference_group})</b><br>NB: {round(y, digits = 3)}<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
       
       
     } else {
@@ -1171,11 +1173,11 @@ create_reference_lines_data <- function(curve, prevalence,
       reference_line_x_values <- rep(seq(0, 0.99, by = 0.01), times = 2)
       reference_line_y_values <- c(rep(0, 100), c(unique(unlist(prevalence)) - (1 - unique(unlist(prevalence))) * 
                                                     (seq(0, 0.99, by = 0.01))  / (1 - seq(0, 0.99, by = 0.01) )))
-      hover_text_treat_all <- "<b>Treat All</b><br>NB: {round(y, digits = 3)}<br>Probability Threshold: {x}"
+      hover_text_treat_all <- "<b>Treat All</b><br>NB: {round(y, digits = 3)}<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
       
     }
     
-    hover_text_treat_none <- "<b>Treat None</b><br>NB: 0<br>Probability Threshold: {x}"
+    hover_text_treat_none <- "<b>Treat None</b><br>NB: 0<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
     
     
     reference_lines_data <- data.frame(
@@ -1207,7 +1209,7 @@ create_reference_lines_data <- function(curve, prevalence,
           purrr::map(~return_treat_none_y_values(.x)) |>
           unlist())
       
-      hover_text_treat_none <- "<b>Treat None ({reference_group})</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}"
+      hover_text_treat_none <- "<b>Treat None ({reference_group})</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
       
       
     } else {
@@ -1216,10 +1218,10 @@ create_reference_lines_data <- function(curve, prevalence,
       reference_line_x_values <- rep(seq(0.01, 0.99, by = 0.01), times = 2)
       reference_line_y_values <- 100 * c(rep(0, 99), c(1 - unique(unlist(prevalence)) - unique(unlist(prevalence)) * 
                                                     (1 - seq(0.01, 0.99, by = 0.01))  / (seq(0.01, 0.99, by = 0.01) )))
-      hover_text_treat_none <- "<b>Treat None</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}"
+      hover_text_treat_none <- "<b>Treat None</b><br>Interventions Avoided (per 100): {round(y, digits = 3)}<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
     }
     
-    hover_text_treat_all <- "<b>Treat All</b><br>Interventions Avoided (per 100): 0<br>Probability Threshold: {x}"
+    hover_text_treat_all <- "<b>Treat All</b><br>Interventions Avoided (per 100): 0<br>Probability Threshold: {x}<br>Odds of Prob. Threshold: 1:{round((1 - x) / x, digits = 2)}"
     
     reference_lines_data <- data.frame(
       reference_group = reference_group,
