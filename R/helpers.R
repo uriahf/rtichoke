@@ -608,7 +608,7 @@ create_plotly_curve <- function(rtichoke_curve_list){
                    title = rtichoke_curve_list$axes_labels$xaxis),
       yaxis = list(showgrid = FALSE, fixedrange = TRUE,
                    range = rtichoke_curve_list$axes_ranges$yaxis, 
-                   title = rtichoke_curve_list$axes_labels$xaxis),
+                   title = rtichoke_curve_list$axes_labels$yaxis),
       showlegend = FALSE,
       plot_bgcolor = "rgba(0, 0, 0, 0)", 
       paper_bgcolor= "rgba(0, 0, 0, 0)"
