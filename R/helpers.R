@@ -1145,7 +1145,7 @@ create_reference_lines_data <- function(curve, prevalence,
       dplyr::mutate(text = dplyr::case_when(
         reference_group == "reference_line" ~ glue::glue(hover_text_random),
         TRUE ~ glue::glue(hover_text_perfect)),
-        text = stringr::str_replace(text, "reference_line_perfect_model_", ""))
+        text = stringr::str_replace(.data$text, "reference_line_perfect_model_", ""))
     
   }
   
@@ -1188,7 +1188,7 @@ create_reference_lines_data <- function(curve, prevalence,
       dplyr::mutate(text = dplyr::case_when(
         reference_group == "reference_line" ~ glue::glue(hover_text_treat_none),
         TRUE ~ glue::glue(hover_text_treat_all)),
-        text = stringr::str_replace(text, "reference_line_treat_all_", "")) |> 
+        text = stringr::str_replace(.data$text, "reference_line_treat_all_", "")) |> 
       dplyr::filter(x >= min_p_threshold, x<= max_p_threshold)
     
     
@@ -1231,8 +1231,8 @@ create_reference_lines_data <- function(curve, prevalence,
       dplyr::mutate(text = dplyr::case_when(
         reference_group == "reference_line" ~ glue::glue(hover_text_treat_all),
         TRUE ~ glue::glue(hover_text_treat_none)),
-        text = stringr::str_replace(text, "reference_line_treat_none_", "")) |> 
-      dplyr::filter(x >= min_p_threshold, x<= max_p_threshold)
+        text = stringr::str_replace(.data$text, "reference_line_treat_none_", "")) |> 
+      dplyr::filter(.data$x >= min_p_threshold, .data$x<= max_p_threshold)
     
   }
   
