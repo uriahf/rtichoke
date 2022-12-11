@@ -6,18 +6,37 @@ library(dplyr)
 
 
 #* @serializer html
-#* @post /rtichoke/create_summary_report
-function(column, req, res) {
-  dat <- tryCatch(jsonlite::fromJSON(req$postBody, simplifyMatrix=FALSE),
-                  error = function(e) NULL)
+#* @post /create_summary_report
+function(req, res) {
   
-  print(dat$probs)
-  print(dat$real)
+  print(req$body)
   
-  print("creating summary report")
+  print("probs")
+  print(typeof(req$body$probs))
+  print(str(req$body$probs))
+  print(is.list(req$body$probs))
   
-  rtichoke::create_summary_report(dat$probs,
-                                  dat$real)
+  print("reals")
+  print(typeof(req$body$reals))
+  print(str(req$body$reals))
+  print(is.list(req$body$reals))
   
+  create_summary_report(
+    probs = req$body$probs,
+    reals = req$body$reals
+  )
   as.character(xml2::read_html("summary_report.html"))
+  
+}
+
+#* @post /roc_curve_list
+#* @serializer json
+function(req, res){
+
+  prepare_performance_data(
+    probs = list(example_dat$estimated_probabilities),
+    reals = list(example_dat$outcome)
+   ) |>
+    rtichoke:::create_rtichoke_curve_list("roc")
+  
 }
