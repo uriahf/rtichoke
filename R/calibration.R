@@ -214,7 +214,7 @@ create_calibration_curve_list <- function(probs,
                                             "#D1603D", "#585123"
                                           ),
                                           size = NULL) {
-  rtichoke:::check_probs_input(probs)
+  check_probs_input(probs)
   # check_real_input(real)
 
   if (is.null(names(probs))) {
@@ -225,7 +225,7 @@ create_calibration_curve_list <- function(probs,
 
   calibration_curve_list <- list()
 
-  calibration_curve_list$performance_type <- rtichoke:::check_performance_type_by_probs_and_reals(probs, reals)
+  calibration_curve_list$performance_type <- check_performance_type_by_probs_and_reals(probs, reals)
 
   calibration_curve_list$size <- size
   

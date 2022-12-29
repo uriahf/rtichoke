@@ -419,7 +419,7 @@ create_rtichoke_curve_list <- function(performance_data,
 
   rtichoke_curve_list$size <- size
 
-  stratified_by <- rtichoke:::check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
 
@@ -428,7 +428,7 @@ create_rtichoke_curve_list <- function(performance_data,
     "Predicted Positives (Rate):"
   )
 
-  rtichoke_curve_list$perf_dat_type <- rtichoke:::check_performance_data_type_for_plotly(
+  rtichoke_curve_list$perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
 
@@ -438,7 +438,7 @@ create_rtichoke_curve_list <- function(performance_data,
     create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, col_values = col_values) |>
     as.list()
 
-  prevalence_from_performance_data <- rtichoke:::get_prevalence_from_performance_data(performance_data) |>
+  prevalence_from_performance_data <- get_prevalence_from_performance_data(performance_data) |>
     as.list()
 
   rtichoke_curve_list$reference_data <- create_reference_lines_data(
@@ -658,12 +658,12 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
                                 ), min_p_threshold = 0, max_p_threshold = 1, size = NULL) {
   check_curve_input(curve)
 
-  stratified_by <- rtichoke:::check_performance_data_stratification(
+  stratified_by <- check_performance_data_stratification(
     performance_data
   )
 
-  prevalence_from_performance_data <- rtichoke:::get_prevalence_from_performance_data(performance_data)
-  perf_dat_type <- rtichoke:::check_performance_data_type_for_plotly(performance_data = performance_data)
+  prevalence_from_performance_data <- get_prevalence_from_performance_data(performance_data)
+  perf_dat_type <- check_performance_data_type_for_plotly(performance_data = performance_data)
 
   reference_group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(perf_dat_type) |>
@@ -719,7 +719,7 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
     add_markers_and_lines_for_plotly_reference_object(
       performance_data_ready_for_curve, perf_dat_type
     ) |>
-    rtichoke:::set_styling_for_rtichoke(curve,
+    set_styling_for_rtichoke(curve,
       min_x_range = axis_ranges$xaxis[1],
       max_x_range = axis_ranges$xaxis[2],
       min_y_range = axis_ranges$yaxis[1],
@@ -867,7 +867,7 @@ add_hover_text_to_performance_data_new <- function(performance_data,
     stratified_by = stratified_by,
     interventions_avoided = (performance_metric_y == "NB_interventions_avoided")
   ) |>
-    rtichoke:::make_two_performance_metrics_bold(
+    make_two_performance_metrics_bold(
       performance_metric_x,
       performance_metric_y
     ) %>%
