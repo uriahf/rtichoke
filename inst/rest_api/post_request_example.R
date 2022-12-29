@@ -46,9 +46,54 @@ r <- POST("http://127.0.0.1:7644/create_summary_report",
           encode = "json")
 
 
+r <- POST("http://127.0.0.1:7644/roc_curve_list") |> 
+  content()
+
+r
+
+r <- POST("http://127.0.0.1:6706/roc_curve_list", 
+          body = jsonlite::toJSON(
+            list(
+              probs = list(
+                "First Model" = example_dat$estimated_probabilities,
+                "Second Model" = example_dat$bad_model),
+              reals = list(
+                example_dat$outcome))), encode = "json") |> 
+  content()
+
+install.packages("tidyverse")
+library(tidyverse)
+
+# Performance Data
+
+r |> 
+  tibble() |> 
+  unnest_wider(r) 
+
+# rtichoke curve list
+
+r |> 
+  tibble() |> 
+  View()
+
+r$perf_dat_type
+r$animation_slider_prefix
+
+library(purrr)
+
+r$animation_slider_prefix
+
+r$group_colors_vec
+  
+  reference_data |> 
+  purrr::map_df(~.x[c("reference_group", "x", "y", "text")])
+
+r$performance_data_ready_for_curve |> 
+  purrr::map_df(~.x[c("reference_group", "x", "y", "text")])
 
 
-r <- POST("http://127.0.0.1:7644/roc_curve_list", 
+
+r2 <- POST("http://127.0.0.1:7644/roc_curve_list2", 
           body = jsonlite::toJSON(
             list(
               probs = list("First Model" = example_dat$estimated_probabilities),
@@ -57,6 +102,15 @@ r <- POST("http://127.0.0.1:7644/roc_curve_list",
           encode = "json") |> 
   content()
 
+
+
+r$performance_data_ready_for_curve
+r2$performance_data_ready_for_curve
+
+
+
+r$reference_data |> 
+  as.data.frame()
 
 r$reference_data |> 
   rtichoke:::create_plotly_curve()

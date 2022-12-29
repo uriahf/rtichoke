@@ -2,6 +2,7 @@
 
 export("%>%")
 export(create_calibration_curve)
+export(create_calibration_curve_list)
 export(create_decision_curve)
 export(create_gains_curve)
 export(create_lift_curve)

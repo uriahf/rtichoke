@@ -12,15 +12,14 @@
 #' @export
 #'
 #' @examples
-#' 
 #' \dontrun{
-#' 
-#' 
+#'
+#'
 #' create_performance_table(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
+#'
 #' create_performance_table(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
@@ -61,7 +60,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
+#'
 #' create_performance_table(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -78,22 +77,23 @@
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
-#'
 #' }
-create_performance_table <- function(probs, 
-                                     reals, 
+create_performance_table <- function(probs,
+                                     reals,
                                      by = 0.01,
                                      stratified_by = "probability_threshold",
-                                     col_values = c("#1b9e77", "#d95f02", 
-                                                    "#7570b3", "#e7298a", 
-                                                    "#07004D", "#E6AB02", 
-                                                    "#FE5F55", "#54494B", 
-                                                    "#006E90" , "#BC96E6",
-                                                    "#52050A", "#1F271B", 
-                                                    "#BE7C4D", "#63768D", 
-                                                    "#08A045", "#320A28", 
-                                                    "#82FF9E", "#2176FF", 
-                                                    "#D1603D", "#585123"),
+                                     col_values = c(
+                                       "#1b9e77", "#d95f02",
+                                       "#7570b3", "#e7298a",
+                                       "#07004D", "#E6AB02",
+                                       "#FE5F55", "#54494B",
+                                       "#006E90", "#BC96E6",
+                                       "#52050A", "#1F271B",
+                                       "#BE7C4D", "#63768D",
+                                       "#08A045", "#320A28",
+                                       "#82FF9E", "#2176FF",
+                                       "#D1603D", "#585123"
+                                     ),
                                      output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
@@ -101,8 +101,10 @@ create_performance_table <- function(probs,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    render_performance_table(col_values = col_values,
-                             output_type = output_type)
+    render_performance_table(
+      col_values = col_values,
+      output_type = output_type
+    )
 }
 
 
@@ -133,33 +135,32 @@ create_performance_table <- function(probs,
 #'
 #' multiple_populations_by_ppcr %>%
 #'   render_performance_table()
-#'
 #' }
 #'
 #' @export
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
                                      output_type = "reactable",
-                                     col_values = c("#1b9e77", "#d95f02", 
-                                                    "#7570b3", "#e7298a", 
-                                                    "#07004D", "#E6AB02", 
-                                                    "#FE5F55", "#54494B", 
-                                                    "#006E90" , "#BC96E6",
-                                                    "#52050A", "#1F271B", 
-                                                    "#BE7C4D", "#63768D", 
-                                                    "#08A045", "#320A28", 
-                                                    "#82FF9E", "#2176FF", 
-                                                    "#D1603D", "#585123")) {
-  
-  
+                                     col_values = c(
+                                       "#1b9e77", "#d95f02",
+                                       "#7570b3", "#e7298a",
+                                       "#07004D", "#E6AB02",
+                                       "#FE5F55", "#54494B",
+                                       "#006E90", "#BC96E6",
+                                       "#52050A", "#1F271B",
+                                       "#BE7C4D", "#63768D",
+                                       "#08A045", "#320A28",
+                                       "#82FF9E", "#2176FF",
+                                       "#D1603D", "#585123"
+                                     )) {
   stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
+
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
-  
+
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
@@ -215,9 +216,8 @@ render_performance_table <- function(performance_data,
             factor(key_values,
               labels = as.character(seq_len(
                 length(unique(performance_data_reactable %>%
-                                dplyr::pull(Model)))
-              )
-              )
+                  dplyr::pull(Model)))
+              ))
             )
         )
     }
@@ -234,11 +234,10 @@ render_performance_table <- function(performance_data,
             ),
           key_values =
             factor(key_values,
-              labels =  as.character(seq_len(
-                  length(unique(performance_data_reactable %>%
-                    dplyr::pull(Population)))
-                )
-              )
+              labels = as.character(seq_len(
+                length(unique(performance_data_reactable %>%
+                  dplyr::pull(Population)))
+              ))
             )
         )
     }
@@ -418,19 +417,23 @@ render_performance_table <- function(performance_data,
         columnGroups = list(
           reactable::colGroup(
             name = "Performance Metrics",
-            columns = ( if(
+            columns = (if (
               stratified_by == "probability_threshold"
-            ) c(
-              "sensitivity",
-              "specificity",
-              "PPV", "NPV",
-              "lift", "NB"
-            ) else c(
-              "sensitivity",
-              "specificity",
-              "PPV", "NPV",
-              "lift"
-            ) )
+            ) {
+              c(
+                "sensitivity",
+                "specificity",
+                "PPV", "NPV",
+                "lift", "NB"
+              )
+            } else {
+              c(
+                "sensitivity",
+                "specificity",
+                "PPV", "NPV",
+                "lift"
+              )
+            })
           )
         ),
         details = function(index) {

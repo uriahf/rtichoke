@@ -105,7 +105,5 @@ create_precision_recall_curve(
   ),
   stratified_by = "ppcr"
 )
-
-
 }
 }

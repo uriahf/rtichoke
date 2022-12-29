@@ -12,8 +12,7 @@ create_calibration_curve(
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   type = "discrete",
-  size = NULL,
-  histogram_included = TRUE
+  size = NULL
 )
 }
 \arguments{
@@ -30,8 +29,6 @@ plots}
 \item{type}{discrete or smooth}
 
 \item{size}{the size of the curve}
-
-\item{histogram_included}{if TRUE a histogram will be added to the Calibration Curve}
 }
 \description{
 Create a Calibration Curve
@@ -57,7 +54,7 @@ create_calibration_curve(
     "First Model" = example_dat$estimated_probabilities,
     "Second Model" = example_dat$random_guess
   ),
-  reals = list(example_dat$outcome), 
+  reals = list(example_dat$outcome),
   type = "discrete"
 )
 
@@ -87,7 +84,7 @@ create_calibration_curve(
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
-  ), 
+  ),
   type = "discrete"
 )
 
@@ -105,11 +102,9 @@ create_calibration_curve(
       dplyr::pull(outcome),
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
-  ), 
+  ),
   type = "smooth"
 )
-
 }
-
 
 }

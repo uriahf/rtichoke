@@ -108,7 +108,5 @@ create_roc_curve(
   ),
   stratified_by = "ppcr"
 )
-
-
 }
 }

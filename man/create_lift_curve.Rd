@@ -41,7 +41,6 @@ plots}
 Create a Lift Curve
 }
 \examples{
-
 \dontrun{
 
 create_lift_curve(
@@ -106,6 +105,5 @@ create_lift_curve(
   ),
   stratified_by = "ppcr"
 )
-
 }
 }

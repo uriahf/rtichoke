@@ -5,7 +5,8 @@ test_that("test deciles dat", {
   )
 
   expect_identical(deciles_dat$quintile, 1:10)
-  expect_identical(names(deciles_dat), c("quintile", "phaty", "phatx"))
+  expect_identical(names(deciles_dat), 
+                   c("quintile", "y", "x", "sum_reals", "total_obs"))
 })
 
 
@@ -19,13 +20,6 @@ test_that("limits of calibration curve", {
   expect_equal(length(limits_calibration_curve), 2)
 })
 
-test_that("limits of calibration curve", {
-  probs_long_format <- rtichoke:::arrange_estimated_probabilities_to_long_format(
-    probs = list("First Model" = example_dat$estimated_probabilities)
-  )
-
-  expect_identical(names(probs_long_format), c("model", "probs"))
-})
 
 test_that("checking probs and real inputs", {
   expect_error(

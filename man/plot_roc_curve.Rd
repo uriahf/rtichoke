@@ -33,7 +33,6 @@ plots}
 Plot a ROC Curve
 }
 \examples{
-
 \dontrun{
 
 one_pop_one_model \%>\%

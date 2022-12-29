@@ -41,8 +41,6 @@ plots}
 Create a Gains Curve
 }
 \examples{
-
-
 \dontrun{
 
 create_gains_curve(
@@ -107,6 +105,5 @@ create_gains_curve(
   ),
   stratified_by = "ppcr"
 )
-
 }
 }

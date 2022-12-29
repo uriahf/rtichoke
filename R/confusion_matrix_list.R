@@ -6,7 +6,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' 
+#'
 #' one_pop_one_model %>%
 #'   create_conf_mat_list()
 #'

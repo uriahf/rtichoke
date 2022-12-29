@@ -87,7 +87,7 @@
 
 #' Example Performance Data
 #'
-#' An example Performance Data that contains multiple models 
+#' An example Performance Data that contains multiple models
 #' stratified by ppcr
 #'
 #' @format A data frame with 202 rows and 15 variables:
@@ -103,7 +103,7 @@
 
 #' Example Performance Data
 #'
-#' An example Performance Data that contains multiple populations 
+#' An example Performance Data that contains multiple populations
 #' stratified by ppcr
 #'
 #' @format A data frame with 202 rows and 15 variables:
@@ -124,4 +124,3 @@
 #'
 #' @format A data frame with 101 rows and 14 variables:
 "one_pop_one_model_by_ppcr"
-

@@ -30,7 +30,6 @@ plots}
 Plot a Precision Recall Curve
 }
 \examples{
-
 \dontrun{
 
 one_pop_one_model \%>\%

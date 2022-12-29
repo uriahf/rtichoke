@@ -49,7 +49,6 @@ multiple_populations \%>\%
 
 multiple_populations_by_ppcr \%>\%
   plot_gains_curve()
-  
 }
 
 }

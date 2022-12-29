@@ -141,18 +141,20 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #' @param min_x_range the minimum value of x range (for decision curve)
 #' @param max_x_range the maximum value of x range (for decision curve)
 #' @keywords internal
-set_styling_for_rtichoke <- function(plotly_object, 
-                                     curve, 
+set_styling_for_rtichoke <- function(plotly_object,
+                                     curve,
                                      min_y_range = NA,
                                      max_y_range = NA,
                                      min_x_range = NA,
                                      max_x_range = NA) {
   plotly_object %>%
     remove_grid_lines_from_plotly() %>%
-    set_axis_titles(curve, max_y_range = max_y_range, 
-                    min_y_range = min_y_range,
-                    min_x_range = min_x_range,
-                    max_x_range = max_x_range) %>%
+    set_axis_titles(curve,
+      max_y_range = max_y_range,
+      min_y_range = min_y_range,
+      min_x_range = min_x_range,
+      max_x_range = max_x_range
+    ) %>%
     plotly::config(displayModeBar = FALSE)
 }
 
@@ -162,9 +164,9 @@ set_styling_for_rtichoke <- function(plotly_object,
 #'
 #' @inheritParams set_styling_for_rtichoke
 #' @keywords internal
-set_axis_titles <- function(plotly_object, 
-                            curve, 
-                            max_y_range = NA, 
+set_axis_titles <- function(plotly_object,
+                            curve,
+                            max_y_range = NA,
                             min_y_range = NA,
                             min_x_range = NA,
                             max_x_range = NA) {
@@ -250,7 +252,7 @@ set_axis_titles <- function(plotly_object,
         showlegend = FALSE
       )
   }
-  
+
   if (curve == "interventions avoided") {
     plotly_obj <- plotly_object %>%
       plotly::layout(
@@ -280,14 +282,12 @@ set_axis_titles <- function(plotly_object,
 #' @inheritParams add_lines_and_markers_from_performance_data
 #' @inheritParams create_roc_curve
 #' @keywords internal
-add_interactive_marker_from_performance_data <- function(
-    plotly_object,
-    performance_data,
-    performance_data_type,
-    x_perf_metric,
-    y_perf_metric,
-    stratified_by = "probability_threshold") {
-  
+add_interactive_marker_from_performance_data <- function(plotly_object,
+                                                         performance_data,
+                                                         performance_data_type,
+                                                         x_perf_metric,
+                                                         y_perf_metric,
+                                                         stratified_by = "probability_threshold") {
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
@@ -311,9 +311,9 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) 
+      )
   }
-  
+
   if (performance_data_type == "several models") {
     plotly_plot <- plotly_object %>%
       plotly::add_markers(
@@ -331,10 +331,9 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) 
-    
+      )
   }
-  
+
   if (performance_data_type == "several populations") {
     plotly_plot <- plotly_object %>%
       plotly::add_markers(
@@ -352,9 +351,9 @@ add_interactive_marker_from_performance_data <- function(
         ),
         hoverinfo = "text",
         text = ~text
-      ) 
+      )
   }
-  
+
   plotly_plot
 }
 
@@ -371,21 +370,18 @@ add_interactive_marker_from_performance_data <- function(
 #' @param y_perf_metric performance metric for the y axis
 #' @param col_values color palette
 #' @keywords internal
-add_lines_and_markers_from_performance_data <- function(
-    plotly_object,
-    performance_data,
-    performance_data_type,
-    x_perf_metric,
-    y_perf_metric,
-    col_values = c(
-      "#5BC0BE",
-      "#FC8D62",
-      "#8DA0CB",
-      "#E78AC3",
-      "#A4243B"
-      )) {
-  
-  
+add_lines_and_markers_from_performance_data <- function(plotly_object,
+                                                        performance_data,
+                                                        performance_data_type,
+                                                        x_perf_metric,
+                                                        y_perf_metric,
+                                                        col_values = c(
+                                                          "#5BC0BE",
+                                                          "#FC8D62",
+                                                          "#8DA0CB",
+                                                          "#E78AC3",
+                                                          "#A4243B"
+                                                        )) {
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
@@ -403,7 +399,7 @@ add_lines_and_markers_from_performance_data <- function(
     ]
     names(col_values_vec) <- unique(performance_data %>% pull(1))
   }
-  
+
 
   if (performance_data_type %in% c(
     "one model",
@@ -423,7 +419,6 @@ add_lines_and_markers_from_performance_data <- function(
   }
 
   if (performance_data_type == "several models") {
-    
     plotly_base <- plotly_object %>%
       plotly::add_trace(
         data = performance_data,
@@ -436,7 +431,6 @@ add_lines_and_markers_from_performance_data <- function(
         hoverinfo = "text",
         text = ~text
       )
-    
   }
 
   if (performance_data_type == "several populations") {
@@ -477,10 +471,12 @@ create_reference_lines_for_plotly <- function(performance_table_type,
                                               population_color_vector = NA,
                                               size = NULL,
                                               performance_data = NULL) {
-  
-  size_height <- switch(is.null(size) +1, size + 50, NULL)
-  
-  
+  size_height <- switch(is.null(size) + 1,
+    size + 50,
+    NULL
+  )
+
+
   if ((curve %in% c("roc", "lift")) || ((performance_table_type !=
     "several populations"))) {
     if (curve %in% c("gains", "decision")) {
@@ -490,9 +486,9 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         performance_data = performance_data
       ) %>%
         plotly::plot_ly(
-        x = ~x, 
-        y = ~y,
-        height = size_height,
+          x = ~x,
+          y = ~y,
+          height = size_height,
           width = size
         ) %>%
         plotly::add_lines(
@@ -501,7 +497,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           line = list(width = 1.75),
           linetype = ~population,
           hoverinfo = "text",
-          text =~ text
+          text = ~text
         )
     } else {
       reference_lines_for_plotly <- create_reference_lines_data_frame(curve,
@@ -605,7 +601,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           height = size_height,
           width = size,
           hoverinfo = "text",
-          text =~ text
+          text = ~text
         ) %>%
         plotly::add_lines(
           line = list(width = 1.75),

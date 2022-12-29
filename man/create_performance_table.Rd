@@ -34,7 +34,6 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 Create a Performance Table
 }
 \examples{
-
 \dontrun{
 
 
@@ -100,6 +99,5 @@ create_performance_table(
   ),
   stratified_by = "ppcr"
 )
-
 }
 }

@@ -302,7 +302,8 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
 
 ##  helpers
 
-extract_reference_groups_from_performance_data <- function(performance_data, perf_data_type) {
+extract_reference_groups_from_performance_data <- function(
+    performance_data, perf_data_type) {
   if (perf_data_type == "several models") {
     reference_groups <- unique(performance_data$model)
   } else if (perf_data_type == "several populations") {

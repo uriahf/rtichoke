@@ -34,24 +34,23 @@ Plot rtichoke curve
 \examples{
 \dontrun{
 
-one_pop_one_model |> 
+one_pop_one_model |>
   plot_rtichoke_curve("roc")
-  
-one_pop_one_model_by_ppcr |> 
+
+one_pop_one_model_by_ppcr |>
   plot_rtichoke_curve("roc")
-  
-multiple_models |> 
+
+multiple_models |>
   plot_rtichoke_curve("roc")
-  
-multiple_models_by_ppcr |> 
+
+multiple_models_by_ppcr |>
   plot_rtichoke_curve("roc")
-  
-multiple_populations |> 
+
+multiple_populations |>
   plot_rtichoke_curve("roc")
-  
-multiple_populations_by_ppcr |> 
+
+multiple_populations_by_ppcr |>
   plot_rtichoke_curve("roc")
-  
 }
 }
 \keyword{internal}

@@ -64,4 +64,3 @@ test_that("Outcomes are 1 or 0", {
   #   )
   # )
 })
-

@@ -45,7 +45,6 @@ multiple_populations \%>\%
 
 multiple_populations_by_ppcr \%>\%
   render_performance_table()
-
 }
 
 }

@@ -10,12 +10,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' 
+#'
 #' create_precision_recall_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
+#'
 #' create_precision_recall_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
@@ -56,7 +56,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
+#'
 #' create_precision_recall_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -73,8 +73,6 @@
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
-#' 
-#'
 #' }
 create_precision_recall_curve <- function(probs,
                                           reals,
@@ -82,16 +80,18 @@ create_precision_recall_curve <- function(probs,
                                           stratified_by = "probability_threshold",
                                           chosen_threshold = NA,
                                           interactive = TRUE,
-                                          col_values = c("#1b9e77", "#d95f02", 
-                                                         "#7570b3", "#e7298a", 
-                                                         "#07004D", "#E6AB02", 
-                                                         "#FE5F55", "#54494B", 
-                                                         "#006E90" , "#BC96E6",
-                                                         "#52050A", "#1F271B", 
-                                                         "#BE7C4D", "#63768D", 
-                                                         "#08A045", "#320A28", 
-                                                         "#82FF9E", "#2176FF", 
-                                                         "#D1603D", "#585123"),
+                                          col_values = c(
+                                            "#1b9e77", "#d95f02",
+                                            "#7570b3", "#e7298a",
+                                            "#07004D", "#E6AB02",
+                                            "#FE5F55", "#54494B",
+                                            "#006E90", "#BC96E6",
+                                            "#52050A", "#1F271B",
+                                            "#BE7C4D", "#63768D",
+                                            "#08A045", "#320A28",
+                                            "#82FF9E", "#2176FF",
+                                            "#D1603D", "#585123"
+                                          ),
                                           size = NULL) {
   prepare_performance_data(
     probs = probs,
@@ -116,7 +116,6 @@ create_precision_recall_curve <- function(probs,
 #' @inheritParams plot_roc_curve
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' one_pop_one_model %>%
@@ -143,22 +142,23 @@ create_precision_recall_curve <- function(probs,
 plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
                                         interactive = TRUE,
-                                        col_values = c("#1b9e77", "#d95f02", 
-                                                       "#7570b3", "#e7298a", 
-                                                       "#07004D", "#E6AB02", 
-                                                       "#FE5F55", "#54494B", 
-                                                       "#006E90" , "#BC96E6",
-                                                       "#52050A", "#1F271B", 
-                                                       "#BE7C4D", "#63768D", 
-                                                       "#08A045", "#320A28", 
-                                                       "#82FF9E", "#2176FF", 
-                                                       "#D1603D", "#585123"),
+                                        col_values = c(
+                                          "#1b9e77", "#d95f02",
+                                          "#7570b3", "#e7298a",
+                                          "#07004D", "#E6AB02",
+                                          "#FE5F55", "#54494B",
+                                          "#006E90", "#BC96E6",
+                                          "#52050A", "#1F271B",
+                                          "#BE7C4D", "#63768D",
+                                          "#08A045", "#320A28",
+                                          "#82FF9E", "#2176FF",
+                                          "#D1603D", "#585123"
+                                        ),
                                         size = NULL) {
-  
   rtichoke_curve_list <- performance_data |>
     create_rtichoke_curve_list("precision recall", size = size, col_values = col_values)
-  
-  
+
+
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(
     performance_data,
@@ -188,10 +188,8 @@ plot_precision_recall_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-
     precision_recall_curve <- rtichoke_curve_list |>
       create_plotly_curve()
-
   }
   return(precision_recall_curve)
 }

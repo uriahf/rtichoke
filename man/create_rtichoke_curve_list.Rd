@@ -36,24 +36,23 @@ Creating rtichoke curve list
 \examples{
 \dontrun{
 
-one_pop_one_model |> 
+one_pop_one_model |>
   create_rtichoke_curve_list("roc")
-  
-one_pop_one_model_by_ppcr |> 
+
+one_pop_one_model_by_ppcr |>
   create_rtichoke_curve_list("roc")
-  
-multiple_models |> 
+
+multiple_models |>
   create_rtichoke_curve_list("roc")
-  
-multiple_models_by_ppcr |> 
+
+multiple_models_by_ppcr |>
   create_rtichoke_curve_list("roc")
-  
-multiple_populations |> 
+
+multiple_populations |>
   create_rtichoke_curve_list("roc")
-  
-multiple_populations_by_ppcr |> 
+
+multiple_populations_by_ppcr |>
   create_rtichoke_curve_list("roc")
-  
 }
 }
 \keyword{internal}

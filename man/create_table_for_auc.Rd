@@ -26,17 +26,17 @@ Create Table for AUC
 \examples{
 
 rtichoke:::create_table_for_auc(
-    probs = list(example_dat$estimated_probabilities),
-    reals = list(example_dat$outcome)
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
 )
 
 
 rtichoke:::create_table_for_auc(
-probs = list(
-"First Model" = example_dat$estimated_probabilities,
-"Second Model" = example_dat$random_guess
-),
-reals = list(example_dat$outcome)
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome)
 )
 
 
@@ -54,8 +54,7 @@ rtichoke:::create_table_for_auc(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   )
-) 
-
+)
 
 }
 \keyword{internal}

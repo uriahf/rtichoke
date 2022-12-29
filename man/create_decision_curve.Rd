@@ -54,7 +54,6 @@ displayed}
 Create a decision Curve
 }
 \examples{
-
 \dontrun{
 
 
@@ -66,13 +65,15 @@ create_decision_curve(
 create_decision_curve(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome,
-  type = "interventions avoided")
+    type = "interventions avoided"
+  )
 )
 
 create_decision_curve(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome,
-  type = "combined")
+    type = "combined"
+  )
 )
 
 create_decision_curve(
@@ -151,6 +152,5 @@ create_decision_curve(
   ),
   type = "combined"
 )
-
 }
 }

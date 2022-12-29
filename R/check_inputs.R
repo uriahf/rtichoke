@@ -151,4 +151,3 @@ check_curve_input <- function(curve) {
 check_stratified_by_input <- function(stratified_by) {
   rlang::arg_match(stratified_by, c("probability_threshold", "ppcr"))
 }
-

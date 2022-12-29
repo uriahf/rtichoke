@@ -48,30 +48,29 @@ Plot a Precision decision Curve
 
 one_pop_one_model \%>\%
   plot_decision_curve()
-  
+
 one_pop_one_model \%>\%
   plot_decision_curve(type = "interventions avoided")
-  
+
 one_pop_one_model \%>\%
   plot_decision_curve(type = "combined")
 
 multiple_models \%>\%
   plot_decision_curve()
-  
+
 multiple_models \%>\%
   plot_decision_curve(type = "interventions avoided")
-  
+
 multiple_models \%>\%
   plot_decision_curve(type = "combined")
 
 multiple_populations \%>\%
   plot_decision_curve()
-  
+
 multiple_populations \%>\%
   plot_decision_curve(type = "interventions avoided")
-  
+
 multiple_populations \%>\%
   plot_decision_curve(type = "combined")
-  
 }
 }
