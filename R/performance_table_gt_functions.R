@@ -75,7 +75,7 @@ add_color_to_confusion_metric <- function(performance_dat,
                                           color) {
   performance_dat %>%
     dplyr::mutate(
-      metric_plot = 100 * {{ metric }} / n_obs,
+      metric_plot = 100 * {{ metric }} / .data$n_obs,
       metric_plot = purrr::map2(
         metric_plot, {{ metric }},
         .f = ~ bar_chart(
@@ -86,8 +86,8 @@ add_color_to_confusion_metric <- function(performance_dat,
         )
       )
     ) %>%
-    dplyr::mutate({{ metric }} := metric_plot) %>%
-    dplyr::select(-metric_plot)
+    dplyr::mutate({{ metric }} := .data$metric_plot) %>%
+    dplyr::select(-.data$metric_plot)
 }
 
 
@@ -141,7 +141,7 @@ add_color_to_lift <- function(performance_dat,
         )
       )
     ) %>%
-    dplyr::mutate({{ metric }} := metric_plot) %>%
+    dplyr::mutate({{ metric }} := .data$metric_plot) %>%
     dplyr::select(-metric_plot)
 }
 
@@ -150,7 +150,7 @@ add_color_to_predicted_positives <- function(performance_dat) {
     mutate(
       display_predicted_postivies =
         glue::glue("{predicted_positives} ({round(ppcr  * 100, digits = 1)}%)"),
-      plot_predicted_positives = 100 * ppcr,
+      plot_predicted_positives = 100 * .data$ppcr,
       plot_predicted_positives = purrr::map2(
         plot_predicted_positives, display_predicted_postivies,
         .f = ~ bar_chart(
@@ -171,14 +171,14 @@ add_color_to_predicted_positives <- function(performance_dat) {
 add_color_to_net_benifit <- function(performance_data) {
   performance_data %>%
     dplyr::mutate(
-      NB_plot = NB,
+      NB_plot = .data$NB,
       NB_plot = purrr::map2(
         NB_plot, NB,
         .f = ~ bar_style_nb(width = .x, display = .y)
       )
     ) %>%
-    dplyr::mutate(NB = NB_plot) %>%
-    dplyr::select(-NB_plot)
+    dplyr::mutate(NB = .data$NB_plot) %>%
+    dplyr::select(-.data$NB_plot)
 }
 
 
@@ -212,17 +212,17 @@ add_colors_to_performance_dat <- function(performance_dat) {
   performance_dat %>%
     dplyr::mutate(key = "key") %>%
     dplyr::left_join(n_obs_dat %>% mutate(key = "key")) %>%
-    dplyr::select(-key) %>%
-    add_color_to_confusion_metric(TP, "lightgreen") %>%
-    add_color_to_confusion_metric(TN, "lightgreen") %>%
-    add_color_to_confusion_metric(FP, "pink") %>%
-    add_color_to_confusion_metric(FN, "pink") %>%
-    select(-n_obs) %>%
-    add_color_to_performance_metric(sensitivity, "lightgreen") %>%
-    add_color_to_lift(lift, "lightgreen") %>%
+    dplyr::select(-.data$key) %>%
+    add_color_to_confusion_metric(.data$TP, "lightgreen") %>%
+    add_color_to_confusion_metric(.data$TN, "lightgreen") %>%
+    add_color_to_confusion_metric(.data$FP, "pink") %>%
+    add_color_to_confusion_metric(.data$FN, "pink") %>%
+    select(-.data$n_obs) %>%
+    add_color_to_performance_metric(.data$sensitivity, "lightgreen") %>%
+    add_color_to_lift(.data$lift, "lightgreen") %>%
     add_color_to_predicted_positives() %>%
-    add_color_to_performance_metric(specificity, "lightgreen") %>%
-    add_color_to_performance_metric(PPV, "lightgreen") %>%
-    add_color_to_performance_metric(NPV, "lightgreen") %>%
+    add_color_to_performance_metric(.data$specificity, "lightgreen") %>%
+    add_color_to_performance_metric(.data$PPV, "lightgreen") %>%
+    add_color_to_performance_metric(.data$NPV, "lightgreen") %>%
     add_color_to_net_benifit()
 }

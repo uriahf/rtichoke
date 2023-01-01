@@ -188,17 +188,17 @@ render_performance_table <- function(performance_data,
 
     if (stratified_by != "probability_threshold") {
       performance_data_reactable <- performance_data_reactable %>%
-        dplyr::relocate(predicted_positives,
-          ppcr,
+        dplyr::relocate(.data$predicted_positives,
+                        .data$ppcr,
           .after = Threshold
         ) %>%
-        dplyr::arrange(ppcr) %>%
-        dplyr::select(-Threshold) %>%
-        mutate(rank = dplyr::dense_rank(ppcr))
+        dplyr::arrange(.data$ppcr) %>%
+        dplyr::select(-.data$Threshold) %>%
+        mutate(rank = dplyr::dense_rank(.data$ppcr))
     } else {
       performance_data_reactable <- performance_data_reactable %>%
-        dplyr::arrange(Threshold) %>%
-        mutate(rank = dplyr::dense_rank(Threshold))
+        dplyr::arrange(.data$Threshold) %>%
+        mutate(rank = dplyr::dense_rank(.data$Threshold))
     }
 
 
@@ -206,14 +206,14 @@ render_performance_table <- function(performance_data,
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::mutate(
           Model = forcats::fct_inorder(
-            factor(Model)
+            factor(.data$Model)
           ),
           key_values =
             forcats::fct_inorder(
-              factor(Model)
+              factor(.data$Model)
             ),
           key_values =
-            factor(key_values,
+            factor(.data$key_values,
               labels = as.character(seq_len(
                 length(unique(performance_data_reactable %>%
                   dplyr::pull(Model)))
@@ -226,14 +226,14 @@ render_performance_table <- function(performance_data,
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::mutate(
           Population = forcats::fct_inorder(
-            factor(Population)
+            factor(.data$Population)
           ),
           key_values =
             forcats::fct_inorder(
-              factor(Population)
+              factor(.data$Population)
             ),
           key_values =
-            factor(key_values,
+            factor(.data$key_values,
               labels = as.character(seq_len(
                 length(unique(performance_data_reactable %>%
                   dplyr::pull(Population)))
@@ -523,12 +523,12 @@ prepare_performance_data_for_gt <- function(performance_data,
 
   if (stratified_by != "probability_threshold") {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
-      dplyr::relocate(plot_predicted_positives,
-        .after = Threshold
+      dplyr::relocate(.data$plot_predicted_positives,
+        .after = .data$Threshold
       ) %>%
-      dplyr::arrange(ppcr) %>%
-      dplyr::select(-Threshold) %>%
-      mutate(rank = dplyr::dense_rank(ppcr))
+      dplyr::arrange(.data$ppcr) %>%
+      dplyr::select(-.data$Threshold) %>%
+      mutate(rank = dplyr::dense_rank(.data$ppcr))
   } else {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
       dplyr::arrange(Threshold) %>%
@@ -537,10 +537,10 @@ prepare_performance_data_for_gt <- function(performance_data,
 
   performance_data_ready_for_gt %>%
     dplyr::select(-c(
-      ppcr,
-      predicted_positives,
-      display_predicted_postivies,
-      FPR
+      .data$ppcr,
+      .data$predicted_positives,
+      .data$display_predicted_postivies,
+      .data$FPR
     ))
 }
 

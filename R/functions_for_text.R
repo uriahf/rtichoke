@@ -183,6 +183,6 @@ add_hover_text_to_performance_data <- function(performance_data,
     dplyr::mutate(
       dplyr::across(where(is.numeric), round, 3),
       text = glue::glue(text_for_hover),
-      text = stringr::str_replace_all(text, pattern = "NaN", "")
+      text = stringr::str_replace_all(.data$text, pattern = "NaN", "")
     )
 }

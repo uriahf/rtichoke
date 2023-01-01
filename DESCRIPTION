@@ -15,6 +15,7 @@ Imports:
     forcats,
     ggplot2,
     glue,
+    graphics,
     gt,
     htmltools,
     jsonlite,

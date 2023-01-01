@@ -29,36 +29,36 @@ create_conf_mat_list <- function(performance_table,
                                  stratified_by = "probability_threshold") {
   if (stratified_by != "probability_threshold") {
     performance_table <- performance_table %>%
-      dplyr::arrange(ppcr)
+      dplyr::arrange(.data$ppcr)
   } else {
     performance_table <- performance_table %>%
-      dplyr::arrange(probability_threshold)
+      dplyr::arrange(.data$probability_threshold)
   }
 
   matrix_list <- performance_table %>%
-    dplyr::mutate(Predicted_Positive = predicted_positives) %>%
+    dplyr::mutate(Predicted_Positive = .data$predicted_positives) %>%
     dplyr::mutate(
-      Predicted_Negative = FN + TN,
-      Real_Positive = TP + FN,
-      Real_Negative = TN + FP,
-      N = TP + FP + FN + TN
+      Predicted_Negative = .data$FN + .data$TN,
+      Real_Positive = .data$TP + .data$FN,
+      Real_Negative = .data$TN +.data$ FP,
+      N = .data$TP + .data$FP + .data$FN + .data$TN
     ) %>%
     dplyr::select(
-      probability_threshold,
-      ppcr,
-      TP,
-      FP,
-      Predicted_Positive,
-      FN,
-      TN,
-      Predicted_Negative,
-      Real_Positive,
-      Real_Negative,
-      N
+      .data$probability_threshold,
+      .data$ppcr,
+      .data$TP,
+      .data$FP,
+      .data$Predicted_Positive,
+      .data$FN,
+      .data$TN,
+      .data$Predicted_Negative,
+      .data$Real_Positive,
+      .data$Real_Negative,
+      .data$N
     ) %>%
     mutate(idx = 1:n()) %>%
     split(f = .["idx"]) %>%
-    purrr::map(~ dplyr::select(., -probability_threshold, -ppcr, -idx)) %>%
+    purrr::map(~ dplyr::select(., -.data$probability_threshold, -.data$ppcr, -.data$idx)) %>%
     purrr::map(~ matrix(., nrow = 3, byrow = TRUE)) %>%
     purrr::map(~ magrittr::set_rownames(., c(
       "Predicted Positive",

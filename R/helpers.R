@@ -992,13 +992,13 @@ add_markers_and_lines_for_plotly_reference_object <- function(plotly_object,
   }
 
   plotly_object |>
-    add_trace(
+    plotly::add_trace(
       data = performance_data_ready,
       type = "scatter",
       mode = "lines+markers",
       line = list(dash = "solid")
     ) |>
-    add_markers(
+    plotly::add_markers(
       data = performance_data_ready,
       frame = ~stratified_by,
       marker = interactive_marker
@@ -1027,7 +1027,7 @@ create_reference_lines_for_plotly_new <- function(curve,
     color = ~reference_group,
     colors = reference_group_colors
   ) |>
-    add_lines(
+    plotly::add_lines(
       data = create_reference_lines_data(
         curve, prevalence,
         perf_dat_type,
