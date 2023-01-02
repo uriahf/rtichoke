@@ -144,13 +144,24 @@ create_calibration_curve <- function(probs,
 #'   define_limits_for_calibration_plot()
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
-  l <- max(0, min(deciles_dat$x, deciles_dat$y))
-  u <- max(deciles_dat$x, deciles_dat$y)
+  
+  if (nrow(deciles_dat == 1)) {
+  
+    l <- 0
+    u <- 1
+    
+  } else {
+  
+    l <- max(0, min(deciles_dat$x, deciles_dat$y))
+    u <- max(deciles_dat$x, deciles_dat$y)
+  
+  }
+  
   limits <- list(
     lower = l - (u - l) * 0.05,
     upper = u + (u - l) * 0.05
   )
-
+  
   limits
 }
 
@@ -166,7 +177,7 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #'
 #' create_calibration_curve_list(
 #'   probs = list(example_dat$estimated_probabilities),
-#'   reals = list(example_dat$outcome), type = "discrete"
+#'   reals = list(example_dat$outcome)
 #' )
 #'
 #' # Several Models
@@ -249,11 +260,19 @@ create_calibration_curve_list <- function(probs,
     calibration_curve_list$smooth_dat <- purrr::map2_dfr(
       probs,
       reals,
-      ~ lowess(.x, .y, iter = 0) %>%
-        approx(
-          xout = seq(0, 1, by = 0.01),
-          ties = mean
-        ),
+      function(x, y) {
+        if (length(unique(x)) == 1) {
+          
+          list("x" = unique(x), y = mean(y))
+          
+        } else {
+          lowess(x, y, iter = 0) %>%
+            approx(
+              xout = seq(0, 1, by = 0.01),
+              ties = mean
+            )
+        }
+      },
       .id = "reference_group"
     ) |>
       stats::na.omit()
@@ -264,18 +283,27 @@ create_calibration_curve_list <- function(probs,
       .id = "reference_group"
     )
 
-    calibration_curve_list$smooth_dat <- probs |>
-      purrr::map_df(
-        ~ lowess(., reals[[1]], iter = 0) %>%
-          approx(
-            xout = seq(0, 1, by = 0.01),
-            ties = mean
-          ),
-        .id = "reference_group"
-      )
+    calibration_curve_list$smooth_dat <- purrr::map_df(
+      probs, reals = reals,
+      function(x, reals) {
+        if (length(unique(x)) == 1) {
+          
+          list("x" = unique(x), y = mean(reals[[1]]))
+          
+        } else {
+          
+          lowess(x, reals[[1]], iter = 0) %>%
+            approx(
+              xout = seq(0, 1, by = 0.01),
+              ties = mean
+            )}
+        
+      },
+      .id = "reference_group"
+    )
   }
 
-  hover_text_for_discrete_calibration <- "Predicted: {round(y, digits = 3)}<br>Observed: {round(x, digits = 3)}"
+  hover_text_for_discrete_calibration <- "Predicted: {round(x, digits = 3)}<br>Observed: {round(y, digits = 3)}"
 
   if (calibration_curve_list$performance_type != "one model") {
     hover_text_for_discrete_calibration <- paste0(
@@ -311,7 +339,7 @@ create_calibration_curve_list <- function(probs,
     dplyr::mutate(
       text =
         glue::glue(
-          "<b>Perfectly Calibrated</b><br>Predicted: {y}<br>Observed: {x}"
+          "<b>Perfectly Calibrated</b><br>Predicted: {x}<br>Observed: {y}"
         )
     )
 
@@ -362,6 +390,9 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
         data = calibration_curve_list$deciles_dat,
         type = "scatter",
         mode = "markers+lines",
+        marker = list(
+          size = 10
+        ),
         showlegend = calibration_curve_list$calibration_curve_list$performance_type != "one model"
       )
   } else {
@@ -526,9 +557,25 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
 
 
 make_deciles_dat <- function(probs, reals) {
-  data.frame(probs, reals) %>%
-    dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
-    dplyr::group_by(quintile) %>%
-    dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) %>%
-    dplyr::ungroup()
+  
+  if ( length(unique(probs)) == 1 ) {
+    
+    tibble::tibble(
+      quintile = 1,
+      x = unique(probs),
+      y = mean(reals),
+      sum_reals = sum(reals),
+      total_obs = length(reals)
+    )
+    
+  } else {
+    
+    data.frame(probs, reals) %>%
+      dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
+      dplyr::group_by(quintile) %>%
+      dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) %>%
+      dplyr::ungroup()
+    
+  }
+  
 }
