@@ -422,7 +422,7 @@ create_rtichoke_curve_list <- function(performance_data,
   stratified_by <- check_performance_data_stratification(
     performance_data
   )
-
+  
   rtichoke_curve_list$animation_slider_prefix <- ifelse(stratified_by == "probability_threshold",
     "Prob. Threshold: ",
     "Predicted Positives (Rate):"
@@ -496,6 +496,11 @@ create_rtichoke_curve_list <- function(performance_data,
       min_p_threshold = min_p_threshold,
       max_p_threshold = max_p_threshold
     )
+  
+  
+  rtichoke_curve_list$performance_data_for_interactive_marker <- prepare_performance_data_for_interactive_marker(
+    rtichoke_curve_list$performance_data_ready_for_curve,
+    rtichoke_curve_list$perf_dat_type)
 
 
   rtichoke_curve_list$axes_ranges <- extract_axes_ranges(rtichoke_curve_list$performance_data_ready_for_curve,
@@ -557,10 +562,9 @@ create_plotly_curve <- function(rtichoke_curve_list) {
   if (!(rtichoke_curve_list$perf_dat_type %in% c("several models", "several populations"))) {
     interactive_marker$color <- "#f6e3be"
   }
-
-  performance_data_for_interactive_marker <- rtichoke_curve_list$performance_data_ready_for_curve
-  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
-
+  
+  print(rtichoke_curve_list$performance_data_for_interactive_marker)
+  
   plotly::plot_ly(
     x = ~x,
     y = ~y,
@@ -584,7 +588,7 @@ create_plotly_curve <- function(rtichoke_curve_list) {
       line = list(dash = "solid")
     ) |>
     plotly::add_markers(
-      data = performance_data_for_interactive_marker,
+      data = rtichoke_curve_list$performance_data_for_interactive_marker,
       frame = ~stratified_by,
       marker = interactive_marker
     ) |>
@@ -1306,4 +1310,55 @@ return_treat_all_y_values <- function(prevalence) {
 return_treat_none_y_values <- function(prevalence) {
   c(1 - prevalence - (unique(prevalence)) *
     (1 - seq(0.01, 0.99, by = 0.01)) / (seq(0.01, 0.99, by = 0.01)))
+}
+
+
+prepare_performance_data_for_interactive_marker <- function(
+    performance_data_ready_for_curve, perf_dat_type) {
+  
+  performance_data_for_interactive_marker <- performance_data_ready_for_curve
+  
+  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
+  
+  if ( perf_dat_type %in% c("several models", "several populations") ) {
+    
+    performance_data_for_interactive_marker |> 
+      split(~reference_group) |> 
+      purrr::map_df(check_zero_variance_for_sub_population)
+    
+  } else {
+    
+    performance_data_for_interactive_marker
+    
+  }
+  
+}
+
+
+check_zero_variance_for_sub_population <- function(performance_data_sup_population) {
+  
+  if ( nrow(performance_data_sup_population) == 2 ) {
+    
+    dplyr::bind_rows(
+      performance_data_sup_population[1, ],
+      data.frame(
+        reference_group = rep(
+          unique(performance_data_sup_population$reference_group), 
+          1 / 0.01 - 1),
+        x = seq(0 + 0.01, 1 - 0.01, by = 0.01),
+        y = rep(-1, 1 / 0.01 - 1)
+      ) |> 
+        dplyr::mutate(
+          stratified_by = x,
+          text = NA
+        ),
+      performance_data_sup_population[2, ]
+    )
+    
+  } else {
+    
+    performance_data_sup_population
+    
+  }
+  
 }

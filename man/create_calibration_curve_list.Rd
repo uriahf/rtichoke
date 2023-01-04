@@ -31,7 +31,7 @@ Create a Calibration Curve List
 
 create_calibration_curve_list(
   probs = list(example_dat$estimated_probabilities),
-  reals = list(example_dat$outcome), type = "discrete"
+  reals = list(example_dat$outcome)
 )
 
 # Several Models

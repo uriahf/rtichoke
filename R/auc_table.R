@@ -97,7 +97,7 @@ create_table_for_auc <- function(probs,
           minWidth = 300,
           cell = function(value, index) {
             n_levels <- length(levels(value))
-
+            
             key_num <- index %% n_levels
             if (key_num == 0) {
               key_num <- n_levels
