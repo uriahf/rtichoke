@@ -1317,6 +1317,7 @@ prepare_performance_data_for_interactive_marker <- function(
   performance_data_for_interactive_marker <- performance_data_ready_for_curve
   
   performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
+  performance_data_for_interactive_marker$x[is.nan(performance_data_for_interactive_marker$x)] <- -1
   
   if ( perf_dat_type %in% c("several models", "several populations") ) {
     
