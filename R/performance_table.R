@@ -164,7 +164,14 @@ render_performance_table <- function(performance_data,
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
-
+  
+  group_colors_vec <- performance_data |>
+    extract_reference_groups_from_performance_data(perf_dat_type)  |>
+    create_reference_group_color_vector(
+      perf_dat_type, col_values = col_values) |> 
+    unlist()
+  
+  
   if (output_type == "gt") {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%
@@ -336,37 +343,9 @@ render_performance_table <- function(performance_data,
           ),
           Population = reactable::colDef(
             show = TRUE,
-            cell = function(value, index) {
-              n_levels <- length(levels(value))
+            cell = function(value) {
 
-              key_num <- index %% n_levels
-              if (key_num == 0) {
-                key_num <- n_levels
-              }
-              key_num <- as.character(key_num)
-
-              color <- switch(as.character(key_num),
-                "1" = col_values[1],
-                "2" = col_values[2],
-                "3" = col_values[3],
-                "4" = col_values[4],
-                "5" = col_values[5],
-                "6" = col_values[6],
-                "7" = col_values[7],
-                "8" = col_values[8],
-                "9" = col_values[9],
-                "10" = col_values[10],
-                "11" = col_values[11],
-                "12" = col_values[12],
-                "13" = col_values[13],
-                "14" = col_values[14],
-                "15" = col_values[15],
-                "16" = col_values[16],
-                "17" = col_values[17],
-                "18" = col_values[18],
-                "19" = col_values[19],
-                "20" = col_values[20]
-              )
+              color <- group_colors_vec[[as.character(value)]]
 
               badge <- status_badge(color = color)
               tagList(badge, value)
@@ -374,38 +353,10 @@ render_performance_table <- function(performance_data,
           ),
           Model = reactable::colDef(
             show = TRUE,
-            cell = function(value, index) {
-              n_levels <- length(levels(value))
-
-              key_num <- index %% n_levels
-              if (key_num == 0) {
-                key_num <- n_levels
-              }
-              key_num <- as.character(key_num)
-
-              color <- switch(as.character(key_num),
-                "1" = col_values[1],
-                "2" = col_values[2],
-                "3" = col_values[3],
-                "4" = col_values[4],
-                "5" = col_values[5],
-                "6" = col_values[6],
-                "7" = col_values[7],
-                "8" = col_values[8],
-                "9" = col_values[9],
-                "10" = col_values[10],
-                "11" = col_values[11],
-                "12" = col_values[12],
-                "13" = col_values[13],
-                "14" = col_values[14],
-                "15" = col_values[15],
-                "16" = col_values[16],
-                "17" = col_values[17],
-                "18" = col_values[18],
-                "19" = col_values[19],
-                "20" = col_values[20]
-              )
-
+            cell = function(value) {
+              
+              color <- group_colors_vec[[as.character(value)]]
+              
               badge <- status_badge(color = color)
               tagList(badge, value)
             }

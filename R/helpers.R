@@ -563,8 +563,6 @@ create_plotly_curve <- function(rtichoke_curve_list) {
     interactive_marker$color <- "#f6e3be"
   }
   
-  print(rtichoke_curve_list$performance_data_for_interactive_marker)
-  
   plotly::plot_ly(
     x = ~x,
     y = ~y,
