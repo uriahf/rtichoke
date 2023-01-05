@@ -1241,7 +1241,7 @@ extract_axes_ranges <- function(performance_data_ready, curve,
                                 min_p_threshold,
                                 max_p_threshold) {
   if (curve %in% c("lift", "decision", "interventions avoided")) {
-    max_y_range <- max(performance_data_ready$y, na.rm = TRUE)
+    max_y_range <- max(c(1, performance_data_ready$y), na.rm = TRUE)
   }
 
   if (curve %in% c("decision", "interventions avoided")) {
@@ -1258,6 +1258,7 @@ extract_axes_ranges <- function(performance_data_ready, curve,
   }
   if (curve == "lift") {
     curve_axis_range <- list(xaxis = c(0, 1), yaxis = c(0, max_y_range))
+    
   }
   if (curve == "precision recall") {
     curve_axis_range <- list(xaxis = c(0, 1), yaxis = c(0, 1))

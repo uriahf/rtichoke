@@ -54,15 +54,22 @@ create_table_for_auc <- function(probs,
   if (length(probs) == 1) {
     names(probs) <- "Model 1"
   }
-
+  
   data_for_auc <- purrr::map2_dbl(
     .x = reals,
     .y = probs,
-    .f = ~ as.numeric(
-      pROC::auc(
-        .x, .y
-      )
-    )
+    function(x, y) {
+      if ( length(unique(x)) == 1 ) {
+        
+        NA
+        
+      } else {
+        as.numeric(
+          pROC::auc(
+            x, y
+          )
+        )}
+    }
   ) %>%
     tibble::tibble(
       population = names(probs),
@@ -80,11 +87,23 @@ create_table_for_auc <- function(probs,
           minWidth = 300,
           align = "left",
           cell = function(value) {
-            width <- paste0(value * 100, "%")
+            
+            if (is.na(value)) {
+            
+              width <- "0%"
+              label <- "    "
+              
+              
+            } else {
+              
+              width <- paste0(value * 100, "%")
+              label <- format(round(value, digits = 2),  nsmall = 2)
+              
+            }
+            
+            
             bar_chart_with_background(
-              format(round(value, digits = 2),
-                nsmall = 2
-              ),
+              label = label,
               width = width,
               fill = "green",
               background = "#e1e1e1"
