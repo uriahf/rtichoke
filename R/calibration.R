@@ -145,7 +145,7 @@ create_calibration_curve <- function(probs,
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
   
-  if (nrow(deciles_dat == 1)) {
+  if (nrow(deciles_dat) == 1) {
   
     l <- 0
     u <- 1
@@ -384,6 +384,7 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
       )
     )
 
+
   if (type == "discrete") {
     calibration_curve <- calibration_curve |>
       plotly::add_trace(
@@ -393,7 +394,7 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
         marker = list(
           size = 10
         ),
-        showlegend = calibration_curve_list$calibration_curve_list$performance_type != "one model"
+        showlegend = calibration_curve_list$performance_type != "one model"
       )
   } else {
     calibration_curve <- calibration_curve |>
@@ -401,7 +402,7 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
         data = calibration_curve_list$smooth_dat,
         type = "scatter",
         mode = "lines",
-        showlegend = calibration_curve_list$calibration_curve_list$performance_type != "one model"
+        showlegend = calibration_curve_list$performance_type != "one model"
       )
   }
 
