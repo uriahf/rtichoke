@@ -329,7 +329,7 @@ create_calibration_curve_list <- function(probs,
 
   limits <- define_limits_for_calibration_plot(calibration_curve_list$deciles_dat)
 
-  calibration_curve_list$curve_axis_range <- list(xaxis = limits, yaxis = limits)
+  calibration_curve_list$axes_ranges <- list(xaxis = limits, yaxis = limits)
 
   calibration_curve_list$reference_data <- data.frame(
     reference_group = "reference_line",
@@ -440,12 +440,12 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
     plotly::layout(
       xaxis = list(
         title = "Predicted",
-        range = unlist(calibration_curve_list$curve_axis_range$xaxis),
+        range = unlist(calibration_curve_list$axes_ranges$xaxis),
         showgrid = FALSE
       ),
       yaxis = list(
         title = "Observed",
-        range = unlist(calibration_curve_list$curve_axis_range$yaxis),
+        range = unlist(calibration_curve_list$axes_ranges$yaxis),
         showgrid = FALSE
       ),
       legend = list(
@@ -486,8 +486,8 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
         axis.ticks.x = ggplot2::element_blank()
       ) +
       ggplot2::coord_cartesian(
-        xlim = unlist(calibration_curve_list$curve_axis_range$xaxis),
-        ylim = unlist(calibration_curve_list$curve_axis_range$yaxis),
+        xlim = unlist(calibration_curve_list$axes_ranges$xaxis),
+        ylim = unlist(calibration_curve_list$axes_ranges$yaxis),
         expand = FALSE
       ) +
       ggplot2::theme(legend.position = "none") +
@@ -517,8 +517,8 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
         axis.ticks.x = ggplot2::element_blank()
       ) +
       ggplot2::coord_cartesian(
-        xlim = unlist(calibration_curve_list$curve_axis_range$xaxis),
-        ylim = unlist(calibration_curve_list$curve_axis_range$yaxis),
+        xlim = unlist(calibration_curve_list$axes_ranges$xaxis),
+        ylim = unlist(calibration_curve_list$axes_ranges$yaxis),
         expand = FALSE
       ) +
       ggplot2::theme(legend.position = "none") +
@@ -535,7 +535,7 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
     ) +
     ggplot2::theme_classic() +
     ggplot2::coord_cartesian(
-      xlim = unlist(calibration_curve_list$curve_axis_range$xaxis),
+      xlim = unlist(calibration_curve_list$axes_ranges$xaxis),
       expand = FALSE
     ) +
     ggplot2::labs(x = "Predicted") +
