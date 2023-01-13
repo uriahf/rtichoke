@@ -420,7 +420,8 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
       legendgroup = ~reference_group,
       colors = unlist(calibration_curve_list$group_colors_vec),
       text = ~text,
-      hoverinfo = "text"
+      hoverinfo = "text",
+      textposition = "none"
     ) %>%
     plotly::layout(
       barmode = "overlay",
