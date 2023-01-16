@@ -417,7 +417,7 @@ create_rtichoke_curve_list <- function(performance_data,
                                        )) {
   rtichoke_curve_list <- list()
 
-  rtichoke_curve_list$size <- size
+  rtichoke_curve_list$size <- list(size)
 
   stratified_by <- check_performance_data_stratification(
     performance_data
@@ -546,8 +546,8 @@ create_rtichoke_curve_list <- function(performance_data,
 #'   create_plotly_curve()
 #' }
 create_plotly_curve <- function(rtichoke_curve_list) {
-  size_height <- switch(is.null(rtichoke_curve_list$size) + 1,
-    rtichoke_curve_list$size + 50,
+  size_height <- switch(is.null(rtichoke_curve_list$size[[1]]) + 1,
+    rtichoke_curve_list$size[[1]] + 50,
     NULL
   )
 
@@ -567,7 +567,7 @@ create_plotly_curve <- function(rtichoke_curve_list) {
     x = ~x,
     y = ~y,
     height = size_height,
-    width = rtichoke_curve_list$size,
+    width = rtichoke_curve_list$size[[1]],
     hoverinfo = "text",
     text = ~text,
     color = ~reference_group,

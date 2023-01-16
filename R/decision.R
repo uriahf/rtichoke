@@ -296,15 +296,15 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
       suffix = c("_conventional", "_interventions_avoided")
     )
 
-  size_height <- switch(is.null(rtichoke_decision_combined_curve_list$size) + 1,
-    1.25 * rtichoke_decision_combined_curve_list$size + 50,
+  size_height <- switch(is.null(rtichoke_decision_combined_curve_list$size[[1]]) + 1,
+    1.25 * rtichoke_decision_combined_curve_list$size[[1]] + 50,
     NULL
   )
 
 
   conventional_decision_curve <- plotly::plot_ly(
     height = size_height,
-    width = rtichoke_decision_combined_curve_list$size
+    width = rtichoke_decision_combined_curve_list$size[[1]]
   ) |>
     plotly::add_lines(
       data = rtichoke_decision_combined_curve_list$reference_data$conventional,
@@ -356,7 +356,7 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
 
   interventions_avoided_curve <- plotly::plot_ly(
     height = size_height,
-    width = rtichoke_decision_combined_curve_list$size
+    width = rtichoke_decision_combined_curve_list$size[[1]]
   ) |>
     plotly::add_lines(
       data = rtichoke_decision_combined_curve_list$reference_data$`interventions avoided`,

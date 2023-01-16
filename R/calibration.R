@@ -108,20 +108,10 @@ create_calibration_curve <- function(probs,
 
 
   if (interactive == TRUE) {
-    calibration_curve <- create_calibration_curve_list(
-      probs = probs,
-      reals = reals,
-      color_values = color_values,
-      size = size
-    ) |>
+    calibration_curve <- calibration_curve_list |>
       create_plotly_curve_from_calibration_curve_list(type = type)
   } else {
-    calibration_curve <- create_calibration_curve_list(
-      probs = probs,
-      reals = reals,
-      color_values = color_values,
-      size = size
-    ) |>
+    calibration_curve <- calibration_curve_list |>
       create_ggplot_curve_from_calibration_curve_list(type = type)
   }
 
@@ -238,7 +228,7 @@ create_calibration_curve_list <- function(probs,
 
   calibration_curve_list$performance_type <- check_performance_type_by_probs_and_reals(probs, reals)
 
-  calibration_curve_list$size <- size
+  calibration_curve_list$size <- list(size)
   
   group_colors_vec <- create_reference_group_color_vector(
     reference_groups, calibration_curve_list$performance_type, color_values
@@ -323,8 +313,6 @@ create_calibration_curve_list <- function(probs,
         glue::glue(hover_text_for_discrete_calibration)
     )
 
-  # calibration_curve_list$size <- size
-
   calibration_curve_list$group_colors_vec <- group_colors_vec
 
   limits <- define_limits_for_calibration_plot(calibration_curve_list$deciles_dat)
@@ -368,8 +356,8 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
   calibration_curve <- plotly::plot_ly(
     x = ~x,
     y = ~y,
-    width = calibration_curve_list$size,
-    height = calibration_curve_list$size,
+    width = calibration_curve_list$size[[1]],
+    height = calibration_curve_list$size[[1]],
     hoverinfo = "text",
     text = ~text,
     color = ~reference_group,
