@@ -82,7 +82,7 @@
 create_calibration_curve <- function(probs,
                                      reals,
                                      interactive = TRUE,
-                                     col_values = c(
+                                     color_values = c(
                                        "#1b9e77", "#d95f02",
                                        "#7570b3", "#e7298a",
                                        "#07004D", "#E6AB02",
@@ -102,7 +102,7 @@ create_calibration_curve <- function(probs,
   calibration_curve_list <- create_calibration_curve_list(
     probs = probs,
     reals = reals,
-    col_values = col_values,
+    color_values = color_values,
     size = size
   )
 
@@ -111,7 +111,7 @@ create_calibration_curve <- function(probs,
     calibration_curve <- create_calibration_curve_list(
       probs = probs,
       reals = reals,
-      col_values = col_values,
+      color_values = color_values,
       size = size
     ) |>
       create_plotly_curve_from_calibration_curve_list(type = type)
@@ -119,7 +119,7 @@ create_calibration_curve <- function(probs,
     calibration_curve <- create_calibration_curve_list(
       probs = probs,
       reals = reals,
-      col_values = col_values,
+      color_values = color_values,
       size = size
     ) |>
       create_ggplot_curve_from_calibration_curve_list(type = type)
@@ -212,7 +212,7 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #' }
 create_calibration_curve_list <- function(probs,
                                           reals,
-                                          col_values = c(
+                                          color_values = c(
                                             "#1b9e77", "#d95f02",
                                             "#7570b3", "#e7298a",
                                             "#07004D", "#E6AB02",
@@ -241,7 +241,7 @@ create_calibration_curve_list <- function(probs,
   calibration_curve_list$size <- size
   
   group_colors_vec <- create_reference_group_color_vector(
-    reference_groups, calibration_curve_list$performance_type, col_values
+    reference_groups, calibration_curve_list$performance_type, color_values
   ) |>
     as.list()
 

@@ -82,7 +82,7 @@ create_performance_table <- function(probs,
                                      reals,
                                      by = 0.01,
                                      stratified_by = "probability_threshold",
-                                     col_values = c(
+                                     color_values = c(
                                        "#1b9e77", "#d95f02",
                                        "#7570b3", "#e7298a",
                                        "#07004D", "#E6AB02",
@@ -102,7 +102,7 @@ create_performance_table <- function(probs,
     stratified_by = stratified_by
   ) %>%
     render_performance_table(
-      col_values = col_values,
+      color_values = color_values,
       output_type = output_type
     )
 }
@@ -141,7 +141,7 @@ create_performance_table <- function(probs,
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
                                      output_type = "reactable",
-                                     col_values = c(
+                                     color_values = c(
                                        "#1b9e77", "#d95f02",
                                        "#7570b3", "#e7298a",
                                        "#07004D", "#E6AB02",
@@ -168,14 +168,14 @@ render_performance_table <- function(performance_data,
   group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(perf_dat_type)  |>
     create_reference_group_color_vector(
-      perf_dat_type, col_values = col_values) |> 
+      perf_dat_type, color_values = color_values) |> 
     unlist()
   
   
   if (output_type == "gt") {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%
-      render_and_format_gt(main_slider, perf_dat_type, prevalence, col_values)
+      render_and_format_gt(main_slider, perf_dat_type, prevalence, color_values)
   }
 
   if (output_type == "reactable") {
@@ -506,7 +506,7 @@ render_and_format_gt <- function(performance_data,
                                  main_slider,
                                  perf_dat_type,
                                  prevalence,
-                                 col_values) {
+                                 color_values) {
   performance_data %>%
     gt::gt() %>%
     gt::cols_hide(rank) %>%
@@ -557,7 +557,7 @@ render_and_format_gt <- function(performance_data,
     #   title = gt::md(creating_title_for_gt(main_slider)),
     #   subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
     #                                       prevalence = prevalence,
-    #                                       col_values = col_values))
+    #                                       color_values = color_values))
     # ) %>%
     add_zebra_colors_to_gt_table(perf_dat_type %in% c(
       "several models",
@@ -607,7 +607,7 @@ creating_title_for_gt <- function(main_slider) {
 #' @inheritParams plot_roc_curve
 #' @param models_names the names of the different models
 creating_subtitle_for_gt <- function(perf_dat_type,
-                                     col_values = NA,
+                                     color_values = NA,
                                      prevalence = NA) {
   if (perf_dat_type == "one model") {
     subtitle_for_gt <- glue::glue("Prevalence: {round(prevalence, digits = 2)}")
@@ -621,22 +621,22 @@ creating_subtitle_for_gt <- function(perf_dat_type,
   }
 
   if (perf_dat_type == "several models") {
-    col_values <- col_values[seq_len(length(prevalence))]
+    color_values <- color_values[seq_len(length(prevalence))]
 
     subtitle_for_gt <- prevalence %>%
       names() %>%
-      purrr::map2(col_values, add_html_color_to_model_for_subtitle) %>%
+      purrr::map2(color_values, add_html_color_to_model_for_subtitle) %>%
       glue::glue_collapse(", ", last = " and ") %>%
       glue::glue(" (Prevalnce: {round(prevalence[1], digits = 2)})")
   }
 
   if (perf_dat_type == "several populations") {
-    col_values <- col_values[seq_len(length(prevalence))]
+    color_values <- color_values[seq_len(length(prevalence))]
 
     subtitle_for_gt <- purrr::pmap(
       list(
         names(prevalence),
-        col_values,
+        color_values,
         prevalence
       ),
       create_subtitle_for_one_population

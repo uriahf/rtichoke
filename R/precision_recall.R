@@ -80,7 +80,7 @@ create_precision_recall_curve <- function(probs,
                                           stratified_by = "probability_threshold",
                                           chosen_threshold = NA,
                                           interactive = TRUE,
-                                          col_values = c(
+                                          color_values = c(
                                             "#1b9e77", "#d95f02",
                                             "#7570b3", "#e7298a",
                                             "#07004D", "#E6AB02",
@@ -102,7 +102,7 @@ create_precision_recall_curve <- function(probs,
     plot_precision_recall_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       size = size
     )
 }
@@ -142,7 +142,7 @@ create_precision_recall_curve <- function(probs,
 plot_precision_recall_curve <- function(performance_data,
                                         chosen_threshold = NA,
                                         interactive = TRUE,
-                                        col_values = c(
+                                        color_values = c(
                                           "#1b9e77", "#d95f02",
                                           "#7570b3", "#e7298a",
                                           "#07004D", "#E6AB02",
@@ -156,7 +156,7 @@ plot_precision_recall_curve <- function(performance_data,
                                         ),
                                         size = NULL) {
   rtichoke_curve_list <- performance_data |>
-    create_rtichoke_curve_list("precision recall", size = size, col_values = col_values)
+    create_rtichoke_curve_list("precision recall", size = size, color_values = color_values)
 
 
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
@@ -179,7 +179,7 @@ plot_precision_recall_curve <- function(performance_data,
     precision_recall_curve <- performance_data %>%
       create_ggplot_for_performance_metrics(
         "sensitivity", "PPV",
-        col_values
+        color_values
       ) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_precision_recall_curve_limits() +

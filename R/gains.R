@@ -78,7 +78,7 @@ create_gains_curve <- function(probs, reals, by = 0.01,
                                stratified_by = "probability_threshold",
                                chosen_threshold = NA,
                                interactive = TRUE,
-                               col_values = c(
+                               color_values = c(
                                  "#1b9e77", "#d95f02",
                                  "#7570b3", "#e7298a",
                                  "#07004D", "#E6AB02",
@@ -104,7 +104,7 @@ create_gains_curve <- function(probs, reals, by = 0.01,
     plot_gains_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       size = size
     )
 }
@@ -142,7 +142,7 @@ create_gains_curve <- function(probs, reals, by = 0.01,
 plot_gains_curve <- function(performance_data,
                              chosen_threshold = NA,
                              interactive = TRUE,
-                             col_values = c(
+                             color_values = c(
                                "#1b9e77", "#d95f02",
                                "#7570b3", "#e7298a",
                                "#07004D", "#E6AB02",
@@ -156,7 +156,7 @@ plot_gains_curve <- function(performance_data,
                              ),
                              size = NULL) {
   rtichoke_curve_list <- performance_data |>
-    create_rtichoke_curve_list("gains", size = size, col_values = col_values)
+    create_rtichoke_curve_list("gains", size = size, color_values = color_values)
 
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -180,7 +180,7 @@ plot_gains_curve <- function(performance_data,
     gains_curve <- performance_data %>%
       create_ggplot_for_performance_metrics(
         "ppcr", "sensitivity",
-        col_values
+        color_values
       ) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_gains_curve_limits() +

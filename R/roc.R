@@ -6,11 +6,11 @@
 #' Create a ROC Curve
 #'
 #' @inheritParams prepare_performance_data
-#' @param col_values color palette
+#' @param color_values color palette
 #' @param chosen_threshold a chosen threshold to display (for non-interactive)
 #' @param interactive whether the plot should be interactive
 #' plots
-#' @param col_values color palette
+#' @param color_values color palette
 #' @param title_included add title to the curve
 #' @param size the size of the curve
 #'
@@ -87,7 +87,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
                              stratified_by = "probability_threshold",
                              chosen_threshold = NA,
                              interactive = TRUE,
-                             col_values = c(
+                             color_values = c(
                                "#1b9e77", "#d95f02",
                                "#7570b3", "#e7298a",
                                "#07004D", "#E6AB02",
@@ -117,7 +117,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
     plot_roc_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       title_included = FALSE,
       size = size
     )
@@ -157,7 +157,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
 plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = TRUE,
-                           col_values = c(
+                           color_values = c(
                              "#1b9e77", "#d95f02",
                              "#7570b3", "#e7298a",
                              "#07004D", "#E6AB02",
@@ -172,7 +172,7 @@ plot_roc_curve <- function(performance_data,
                            title_included = FALSE,
                            size = NULL) {
   rtichoke_curve_list <- performance_data |>
-    create_rtichoke_curve_list("roc", size = size, col_values = col_values)
+    create_rtichoke_curve_list("roc", size = size, color_values = color_values)
 
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -196,7 +196,7 @@ plot_roc_curve <- function(performance_data,
     roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics(
         "FPR",
-        "sensitivity", col_values
+        "sensitivity", color_values
       ) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +

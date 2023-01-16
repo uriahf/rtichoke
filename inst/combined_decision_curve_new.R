@@ -236,7 +236,7 @@ create_rtichoke_combined_decision_curve_list <- function(
     min_p_threshold = 0.01, 
     max_p_threshold = 0.99, 
     size = NULL, 
-    col_values = c(
+    color_values = c(
                              "#1b9e77", "#d95f02",
                              "#7570b3", "#e7298a",
                              "#07004D", "#E6AB02",
@@ -254,7 +254,7 @@ create_rtichoke_combined_decision_curve_list <- function(
                                            min_p_threshold = min_p_threshold, 
                                            max_p_threshold = max_p_threshold, 
                                            size = size, 
-                                           col_values = col_values)) |> 
+                                           color_values = color_values)) |> 
     purrr::set_names("conventional", "interventions avoided")
                              
   

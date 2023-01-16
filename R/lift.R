@@ -78,7 +78,7 @@ create_lift_curve <- function(probs, reals, by = 0.01,
                               stratified_by = "probability_threshold",
                               chosen_threshold = NA,
                               interactive = TRUE,
-                              col_values = c(
+                              color_values = c(
                                 "#1b9e77", "#d95f02",
                                 "#7570b3", "#e7298a",
                                 "#07004D", "#E6AB02",
@@ -104,7 +104,7 @@ create_lift_curve <- function(probs, reals, by = 0.01,
     plot_lift_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       size = size
     )
 }
@@ -142,7 +142,7 @@ create_lift_curve <- function(probs, reals, by = 0.01,
 plot_lift_curve <- function(performance_data,
                             chosen_threshold = NA,
                             interactive = TRUE,
-                            col_values = c(
+                            color_values = c(
                               "#1b9e77", "#d95f02",
                               "#7570b3", "#e7298a",
                               "#07004D", "#E6AB02",
@@ -156,7 +156,7 @@ plot_lift_curve <- function(performance_data,
                             ),
                             size = NULL) {
   rtichoke_curve_list <- performance_data |>
-    create_rtichoke_curve_list("lift", size = size, col_values = col_values)
+    create_rtichoke_curve_list("lift", size = size, color_values = color_values)
 
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
@@ -179,7 +179,7 @@ plot_lift_curve <- function(performance_data,
     reference_lines <- create_reference_lines_data_frame("lift")
 
     lift_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("ppcr", "lift", col_values) %>%
+      create_ggplot_for_performance_metrics("ppcr", "lift", color_values) %>%
       add_reference_lines_to_ggplot(reference_lines) %>%
       set_lift_curve_limits() +
       ggplot2::xlab("Predicted Positives (Rate)") +

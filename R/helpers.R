@@ -120,10 +120,10 @@ create_reference_lines_data_frame <- function(curve,
 
   if (curve == "precision recall") {
     if (length(prevalence) == 1) {
-      col_values <- "grey"
+      color_values <- "grey"
     }
     if (length(prevalence) > 1) {
-      col_values <- c(
+      color_values <- c(
         "#5BC0BE",
         "#FC8D62",
         "#8DA0CB",
@@ -133,7 +133,7 @@ create_reference_lines_data_frame <- function(curve,
     }
     if (plotly == FALSE) {
       reference_lines_data_frame <- data.frame(
-        x = 0, xend = 1, y = prevalence, yend = prevalence, col = col_values,
+        x = 0, xend = 1, y = prevalence, yend = prevalence, col = color_values,
         linetype = "dotted"
       )
     } else {
@@ -147,10 +147,10 @@ create_reference_lines_data_frame <- function(curve,
 
   if (curve == "gains") {
     if (length(prevalence) == 1) {
-      col_values <- "grey"
+      color_values <- "grey"
     }
     if (length(prevalence) > 1) {
-      col_values <- c(
+      color_values <- c(
         "#5BC0BE",
         "#FC8D62",
         "#8DA0CB",
@@ -162,7 +162,7 @@ create_reference_lines_data_frame <- function(curve,
     if (plotly == FALSE) {
       reference_lines_data_frame <- purrr::map2_df(
         prevalence,
-        col_values,
+        color_values,
         function(x, y) {
           data.frame(
             x = c(0, x),
@@ -275,10 +275,10 @@ create_reference_lines_data_frame <- function(curve,
 
   if (curve == "decision treat all") {
     if (length(prevalence) == 1) {
-      col_values <- "grey"
+      color_values <- "grey"
     }
     if (length(prevalence) > 1) {
-      col_values <- c(
+      color_values <- c(
         "#5BC0BE",
         "#FC8D62",
         "#8DA0CB",
@@ -291,7 +291,7 @@ create_reference_lines_data_frame <- function(curve,
 
 
     reference_lines_data_frame <- data.frame(
-      x = 0, xend = prevalence, y = prevalence, yend = 0, col = col_values,
+      x = 0, xend = prevalence, y = prevalence, yend = 0, col = color_values,
       linetype = "dotted"
     )
   }
@@ -356,7 +356,7 @@ add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
 #'   )
 #' )
 #' }
-create_subtitle_for_ggplot <- function(probs_names, col_values = c(
+create_subtitle_for_ggplot <- function(probs_names, color_values = c(
                                          "#5BC0BE",
                                          "#FC8D62",
                                          "#8DA0CB",
@@ -364,7 +364,7 @@ create_subtitle_for_ggplot <- function(probs_names, col_values = c(
                                          "#A4243B"
                                        )) {
   subtitle <- glue::glue("{probs_names},
-                         {col_values[1:length(probs_names)]}")
+                         {color_values[1:length(probs_names)]}")
   subtitle
 }
 
@@ -403,7 +403,7 @@ create_rtichoke_curve_list <- function(performance_data,
                                        curve,
                                        min_p_threshold = 0,
                                        max_p_threshold = 1,
-                                       size = NULL, col_values = c(
+                                       size = NULL, color_values = c(
                                          "#1b9e77", "#d95f02",
                                          "#7570b3", "#e7298a",
                                          "#07004D", "#E6AB02",
@@ -435,7 +435,7 @@ create_rtichoke_curve_list <- function(performance_data,
 
   rtichoke_curve_list$group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(rtichoke_curve_list$perf_dat_type) |>
-    create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, col_values = col_values) |>
+    create_reference_group_color_vector(rtichoke_curve_list$perf_dat_type, color_values = color_values) |>
     as.list()
 
   prevalence_from_performance_data <- get_prevalence_from_performance_data(performance_data) |>
@@ -646,7 +646,7 @@ create_plotly_curve <- function(rtichoke_curve_list) {
 #' multiple_populations_by_ppcr |>
 #'   plot_rtichoke_curve("roc")
 #' }
-plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
+plot_rtichoke_curve <- function(performance_data, curve, color_values = c(
                                   "#1b9e77", "#d95f02",
                                   "#7570b3", "#e7298a",
                                   "#07004D", "#E6AB02",
@@ -669,7 +669,7 @@ plot_rtichoke_curve <- function(performance_data, curve, col_values = c(
 
   reference_group_colors_vec <- performance_data |>
     extract_reference_groups_from_performance_data(perf_dat_type) |>
-    create_reference_group_color_vector(perf_dat_type, col_values = col_values)
+    create_reference_group_color_vector(perf_dat_type, color_values = color_values)
 
   if (curve == "roc") {
     x_performance_metric <- "FPR"
@@ -781,9 +781,9 @@ make_deciles_dat_new <- function(probs, reals) {
 
 create_reference_group_color_vector <- function(reference_groups,
                                                 perf_dat_type,
-                                                col_values) {
+                                                color_values) {
   if (!(perf_dat_type %in% c("several populations", "several models"))) {
-    col_values <- "black"
+    color_values <- "black"
   }
 
   reference_group_color_vector <- c(
@@ -791,10 +791,10 @@ create_reference_group_color_vector <- function(reference_groups,
     "#BEBEBE",
     "#BEBEBE",
     "#BEBEBE",
-    col_values[1:length(reference_groups)],
-    col_values[1:length(reference_groups)],
-    col_values[1:length(reference_groups)], # fix to grey when one population
-    col_values[1:length(reference_groups)]
+    color_values[1:length(reference_groups)],
+    color_values[1:length(reference_groups)],
+    color_values[1:length(reference_groups)], # fix to grey when one population
+    color_values[1:length(reference_groups)]
   )
 
   names(reference_group_color_vector) <- c(

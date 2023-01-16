@@ -121,7 +121,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
                                   stratified_by = "probability_threshold",
                                   chosen_threshold = NA,
                                   interactive = TRUE,
-                                  col_values = c(
+                                  color_values = c(
                                     "#1b9e77", "#d95f02",
                                     "#7570b3", "#e7298a",
                                     "#07004D", "#E6AB02",
@@ -155,7 +155,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
     plot_decision_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       size = size,
       type = type,
       min_p_threshold = min_p_threshold,
@@ -208,7 +208,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 plot_decision_curve <- function(performance_data,
                                 chosen_threshold = NA,
                                 interactive = TRUE,
-                                col_values = c(
+                                color_values = c(
                                   "#1b9e77", "#d95f02",
                                   "#7570b3", "#e7298a",
                                   "#07004D", "#E6AB02",
@@ -230,7 +230,7 @@ plot_decision_curve <- function(performance_data,
 
   if (interactive == FALSE) {
     decision_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("threshold", "NB", col_values) %>%
+      create_ggplot_for_performance_metrics("threshold", "NB", color_values) %>%
       add_reference_lines_to_ggplot(
         create_reference_lines_data_frame("decision", prevalence)
       ) %>%
@@ -243,7 +243,7 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- performance_data |>
         create_rtichoke_curve_list(
           "decision",
-          size = size, col_values = col_values,
+          size = size, color_values = color_values,
           min_p_threshold = min_p_threshold,
           max_p_threshold = max_p_threshold
         ) |>
@@ -254,7 +254,7 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- decision_curve <- performance_data |>
         create_rtichoke_curve_list(
           "interventions avoided",
-          size = size, col_values = col_values,
+          size = size, color_values = color_values,
           min_p_threshold = min_p_threshold,
           max_p_threshold = max_p_threshold
         ) |>
@@ -265,7 +265,7 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- create_rtichoke_combined_decision_curve_list(
         performance_data = performance_data,
         size = size,
-        col_values = col_values,
+        color_values = color_values,
         min_p_threshold = min_p_threshold,
         max_p_threshold = max_p_threshold
       )
@@ -521,7 +521,7 @@ create_rtichoke_combined_decision_curve_list <- function(performance_data,
                                                          min_p_threshold = 0.01,
                                                          max_p_threshold = 0.99,
                                                          size = NULL,
-                                                         col_values = c(
+                                                         color_values = c(
                                                            "#1b9e77", "#d95f02",
                                                            "#7570b3", "#e7298a",
                                                            "#07004D", "#E6AB02",
@@ -539,7 +539,7 @@ create_rtichoke_combined_decision_curve_list <- function(performance_data,
       min_p_threshold = min_p_threshold,
       max_p_threshold = max_p_threshold,
       size = size,
-      col_values = col_values
+      color_values = color_values
     )) |>
     purrr::set_names("conventional", "interventions avoided")
 

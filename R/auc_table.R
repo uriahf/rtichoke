@@ -39,7 +39,7 @@
 #' @keywords internal
 create_table_for_auc <- function(probs,
                                  reals,
-                                 col_values = c(
+                                 color_values = c(
                                    "#1b9e77", "#d95f02",
                                    "#7570b3", "#e7298a",
                                    "#07004D", "#E6AB02",
@@ -124,26 +124,26 @@ create_table_for_auc <- function(probs,
             key_num <- as.character(key_num)
 
             color <- switch(as.character(key_num),
-              "1" = col_values[1],
-              "2" = col_values[2],
-              "3" = col_values[3],
-              "4" = col_values[4],
-              "5" = col_values[5],
-              "6" = col_values[6],
-              "7" = col_values[7],
-              "8" = col_values[8],
-              "9" = col_values[9],
-              "10" = col_values[10],
-              "11" = col_values[11],
-              "12" = col_values[12],
-              "13" = col_values[13],
-              "14" = col_values[14],
-              "15" = col_values[15],
-              "16" = col_values[16],
-              "17" = col_values[17],
-              "18" = col_values[18],
-              "19" = col_values[19],
-              "20" = col_values[20]
+              "1" = color_values[1],
+              "2" = color_values[2],
+              "3" = color_values[3],
+              "4" = color_values[4],
+              "5" = color_values[5],
+              "6" = color_values[6],
+              "7" = color_values[7],
+              "8" = color_values[8],
+              "9" = color_values[9],
+              "10" = color_values[10],
+              "11" = color_values[11],
+              "12" = color_values[12],
+              "13" = color_values[13],
+              "14" = color_values[14],
+              "15" = color_values[15],
+              "16" = color_values[16],
+              "17" = color_values[17],
+              "18" = color_values[18],
+              "19" = color_values[19],
+              "20" = color_values[20]
             )
 
             badge <- status_badge(color = color)

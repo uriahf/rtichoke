@@ -368,14 +368,14 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param performance_data_type the type of the performance data
 #' @param x_perf_metric performance metric for the x axis
 #' @param y_perf_metric performance metric for the y axis
-#' @param col_values color palette
+#' @param color_values color palette
 #' @keywords internal
 add_lines_and_markers_from_performance_data <- function(plotly_object,
                                                         performance_data,
                                                         performance_data_type,
                                                         x_perf_metric,
                                                         y_perf_metric,
-                                                        col_values = c(
+                                                        color_values = c(
                                                           "#5BC0BE",
                                                           "#FC8D62",
                                                           "#8DA0CB",
@@ -389,15 +389,15 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
     "one model",
     "one model with model column"
   )) {
-    col_values_vec <- "black"
+    color_values_vec <- "black"
   } else {
-    col_values_vec <- col_values[
+    color_values_vec <- color_values[
       seq_len(
         length(unique(performance_data %>%
           pull(1)))
       )
     ]
-    names(col_values_vec) <- unique(performance_data %>% pull(1))
+    names(color_values_vec) <- unique(performance_data %>% pull(1))
   }
 
 
@@ -427,7 +427,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
         type = "scatter",
         mode = "markers+lines",
         color = ~model,
-        colors = col_values_vec,
+        colors = color_values_vec,
         hoverinfo = "text",
         text = ~text
       )
@@ -442,7 +442,7 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
         type = "scatter",
         mode = "markers+lines",
         color = ~population,
-        colors = col_values_vec,
+        colors = color_values_vec,
         hoverinfo = "text",
         text = ~text
       )
@@ -535,19 +535,19 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 
     if (curve == "gains") {
       if (length(prevalence) == 1) {
-        col_values <- "grey"
+        color_values <- "grey"
       }
       if (length(prevalence) > 1) {
-        col_values <- population_color_vector[seq_len(length(prevalence))]
+        color_values <- population_color_vector[seq_len(length(prevalence))]
       }
 
-      names(col_values) <- names(prevalence)
+      names(color_values) <- names(prevalence)
 
-      population_color_reference_vector <- col_values %>%
+      population_color_reference_vector <- color_values %>%
         create_color_reference_lines_vector("gains")
 
 
-      population_linetype_reference_vector <- col_values %>%
+      population_linetype_reference_vector <- color_values %>%
         create_linetype_reference_vector("gains")
 
 
@@ -555,7 +555,7 @@ create_reference_lines_for_plotly <- function(performance_table_type,
         plotly = TRUE,
         prevalence
       ) %>%
-        # dplyr::left_join(col_values_dat) %>%
+        # dplyr::left_join(color_values_dat) %>%
         plotly::plot_ly(
           x = ~x,
           y = ~y,
@@ -573,18 +573,18 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 
     if (curve == "decision") {
       if (length(prevalence) == 1) {
-        col_values <- "grey"
+        color_values <- "grey"
       }
       if (length(prevalence) > 1) {
-        col_values <- population_color_vector[seq_len(length(prevalence))]
+        color_values <- population_color_vector[seq_len(length(prevalence))]
       }
 
-      names(col_values) <- names(prevalence)
+      names(color_values) <- names(prevalence)
 
-      population_color_reference_vector <- col_values %>%
+      population_color_reference_vector <- color_values %>%
         create_color_reference_lines_vector("decision")
 
-      population_linetype_reference_vector <- col_values %>%
+      population_linetype_reference_vector <- color_values %>%
         create_linetype_reference_vector("decision")
 
       reference_lines_for_plotly <- create_reference_lines_data_frame(
