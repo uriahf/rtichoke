@@ -219,6 +219,16 @@ prepare_performance_data <- function(probs,
         .
       }
     } %>%
+    {
+      if (stratified_by != "probability_threshold") {
+        dplyr::mutate(., TP = dplyr::case_when(
+          ppcr != 1 ~ TP,
+          TRUE ~ as.integer(sum(reals[[1]]))
+        ))
+      } else {
+        .
+      }
+    } %>%
     dplyr::mutate(
       FN = sum(reals[[1]]) - TP,
       FP = N - sum(reals[[1]]) - TN,

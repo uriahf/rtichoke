@@ -4,10 +4,10 @@
 \alias{creating_subtitle_for_gt}
 \title{Creating Subtitle for gt performance table}
 \usage{
-creating_subtitle_for_gt(perf_dat_type, col_values = NA, prevalence = NA)
+creating_subtitle_for_gt(perf_dat_type, color_values = NA, prevalence = NA)
 }
 \arguments{
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 
 \item{models_names}{the names of the different models}
 }

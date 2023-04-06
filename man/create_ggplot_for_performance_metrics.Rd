@@ -8,7 +8,7 @@ create_ggplot_for_performance_metrics(
   performance_data,
   x_perf_metric,
   y_perf_metric,
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
+  color_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ create_ggplot_for_performance_metrics(
 
 \item{y_perf_metric}{a performance metrice for the y axis}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 }
 \description{
 Makes a ggplot for the metrices
