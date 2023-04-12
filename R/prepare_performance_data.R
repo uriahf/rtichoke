@@ -20,7 +20,7 @@
 #' only this time each row will represent some rounded percentile.
 #'
 #'
-#' @param probs a list of vectors of estimated probabilities 
+#' @param probs a list of vectors of estimated probabilities
 #' (one for each model or one for each population)
 #' @param reals a list of vectors of binary outcomes (one for each population)
 #' @param by number: increment of the sequence.
@@ -34,7 +34,7 @@
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
+#'
 #' prepare_performance_data(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
@@ -78,7 +78,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
+#'
 #' prepare_performance_data(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -95,11 +95,10 @@
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
-#' 
-#' 
+#'
 #' @export
-prepare_performance_data <- function(probs, 
-                                     reals, 
+prepare_performance_data <- function(probs,
+                                     reals,
                                      by = 0.01,
                                      stratified_by = "probability_threshold") {
   . <- probability_threshold <- NULL
@@ -117,17 +116,19 @@ prepare_performance_data <- function(probs,
     if (is.null(names(probs))) {
       names(probs) <- paste("model", seq_len(length(probs)))
     }
-    
+
     return(
-    probs %>%
-      purrr::map(
-        ~ prepare_performance_data(
-        probs = list(.),
-        reals = reals,
-        by = by,
-        stratified_by = stratified_by
-      )) %>%
-      dplyr::bind_rows(.id = "model"))
+      probs %>%
+        purrr::map(
+          ~ prepare_performance_data(
+            probs = list(.),
+            reals = reals,
+            by = by,
+            stratified_by = stratified_by
+          )
+        ) %>%
+        dplyr::bind_rows(.id = "model")
+    )
   }
 
   if ((length(probs) > 1) & (length(reals) > 1)) {
@@ -136,9 +137,9 @@ prepare_performance_data <- function(probs,
       names(reals) <- paste("population", seq_len(length(reals)))
     }
     return(purrr::map2_dfr(probs,
-                           reals,
+      reals,
       ~ prepare_performance_data(
-        list(.x), 
+        list(.x),
         list(.y),
         by = by,
         stratified_by = stratified_by
@@ -151,10 +152,16 @@ prepare_performance_data <- function(probs,
   N <- length(probs[[1]])
 
   tibble::tibble(
-    probability_threshold = if (stratified_by != "probability_threshold") {
+    probability_threshold = if (stratified_by != "probability_threshold" &
+                                length(unique(probs[[1]])) != 1) {
       stats::quantile(probs[[1]],
         probs = rev(seq(0, 1, by = by))
       )
+    } else if (stratified_by != "probability_threshold" &
+               length(unique(probs[[1]])) == 1) {
+      
+      c(0, 1)
+      
     } else {
       round(
         seq(0, 1, by = by),
@@ -163,24 +170,43 @@ prepare_performance_data <- function(probs,
     }
   ) %>%
     {
-      if (stratified_by != "probability_threshold") {
+      if (stratified_by != "probability_threshold" &
+          length(unique(probs[[1]])) != 1) {
         dplyr::mutate(.,
-          ppcr = round(seq(0, 1, by = by), 
-                       digits = nchar(format(by, scientific = FALSE)))
+          ppcr = round(seq(0, 1, by = by),
+            digits = nchar(format(by, scientific = FALSE))
+          )
         )
+      } else if (stratified_by != "probability_threshold" &
+                 length(unique(probs[[1]])) == 1) {
+        
+        dplyr::mutate(.,
+                      ppcr = c(1, 0)
+        )
+        
       } else {
         .
       }
     } %>%
     dplyr::mutate(
-      TP = lapply(probability_threshold, 
-                  function(x) ifelse(x == 0 ,
-                                     length(probs[[1]][reals[[1]] == 1]),
-                                     sum(probs[[1]][reals[[1]] == 1] > x))) %>%
+      TP = lapply(
+        probability_threshold,
+        function(x) {
+          ifelse(x == 0,
+            length(probs[[1]][reals[[1]] == 1]),
+            sum(probs[[1]][reals[[1]] == 1] > x)
+          )
+        }
+      ) %>%
         unlist(),
-      TN = lapply(probability_threshold, 
-                  function(x) ifelse(x == 0 , as.integer(0) ,
-                                     sum(probs[[1]][reals[[1]] == 0] <= x))) %>%
+      TN = lapply(
+        probability_threshold,
+        function(x) {
+          ifelse(x == 0, as.integer(0),
+            sum(probs[[1]][reals[[1]] == 0] <= x)
+          )
+        }
+      ) %>%
         unlist()
     ) %>%
     {
@@ -188,6 +214,16 @@ prepare_performance_data <- function(probs,
         dplyr::mutate(., TN = dplyr::case_when(
           ppcr != 1 ~ TN,
           TRUE ~ as.integer(0)
+        ))
+      } else {
+        .
+      }
+    } %>%
+    {
+      if (stratified_by != "probability_threshold") {
+        dplyr::mutate(., TP = dplyr::case_when(
+          ppcr != 1 ~ TP,
+          TRUE ~ as.integer(sum(reals[[1]]))
         ))
       } else {
         .
@@ -211,7 +247,7 @@ prepare_performance_data <- function(probs,
       } else {
         .
       }
-    } %>% 
+    } %>%
     {
       if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
     }

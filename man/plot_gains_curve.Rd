@@ -8,7 +8,7 @@ plot_gains_curve(
   performance_data,
   chosen_threshold = NA,
   interactive = TRUE,
-  col_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
+  color_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   size = NULL
@@ -22,7 +22,7 @@ plot_gains_curve(
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 
 \item{size}{the size of the curve}
 }
@@ -49,7 +49,6 @@ multiple_populations \%>\%
 
 multiple_populations_by_ppcr \%>\%
   plot_gains_curve()
-  
 }
 
 }

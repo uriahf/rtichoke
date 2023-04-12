@@ -112,5 +112,4 @@ prepare_performance_data(
   stratified_by = "ppcr"
 )
 
-
 }

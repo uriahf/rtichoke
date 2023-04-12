@@ -6,11 +6,11 @@
 #' Create a ROC Curve
 #'
 #' @inheritParams prepare_performance_data
-#' @param col_values color palette
+#' @param color_values color palette
 #' @param chosen_threshold a chosen threshold to display (for non-interactive)
 #' @param interactive whether the plot should be interactive
 #' plots
-#' @param col_values color palette
+#' @param color_values color palette
 #' @param title_included add title to the curve
 #' @param size the size of the curve
 #'
@@ -19,12 +19,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
@@ -65,7 +65,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
+#'
 #' create_roc_curve(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -82,23 +82,23 @@
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
-#' 
-#'
 #' }
 create_roc_curve <- function(probs, reals, by = 0.01,
                              stratified_by = "probability_threshold",
                              chosen_threshold = NA,
                              interactive = TRUE,
-                             col_values = c("#1b9e77", "#d95f02", 
-                                            "#7570b3", "#e7298a", 
-                                            "#07004D", "#E6AB02", 
-                                            "#FE5F55", "#54494B", 
-                                            "#006E90" , "#BC96E6",
-                                            "#52050A", "#1F271B", 
-                                            "#BE7C4D", "#63768D", 
-                                            "#08A045", "#320A28", 
-                                            "#82FF9E", "#2176FF", 
-                                            "#D1603D", "#585123"),
+                             color_values = c(
+                               "#1b9e77", "#d95f02",
+                               "#7570b3", "#e7298a",
+                               "#07004D", "#E6AB02",
+                               "#FE5F55", "#54494B",
+                               "#006E90", "#BC96E6",
+                               "#52050A", "#1F271B",
+                               "#BE7C4D", "#63768D",
+                               "#08A045", "#320A28",
+                               "#82FF9E", "#2176FF",
+                               "#D1603D", "#585123"
+                             ),
                              title_included = FALSE,
                              size = NULL) {
   check_probs_input(probs)
@@ -117,7 +117,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
     plot_roc_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
-      col_values = col_values,
+      color_values = color_values,
       title_included = FALSE,
       size = size
     )
@@ -132,7 +132,6 @@ create_roc_curve <- function(probs, reals, by = 0.01,
 #' @param performance_data an rtichoke Performance Data
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' one_pop_one_model %>%
@@ -158,18 +157,23 @@ create_roc_curve <- function(probs, reals, by = 0.01,
 plot_roc_curve <- function(performance_data,
                            chosen_threshold = NA,
                            interactive = TRUE,
-                           col_values = c("#1b9e77", "#d95f02", 
-                                          "#7570b3", "#e7298a", 
-                                          "#07004D", "#E6AB02", 
-                                          "#FE5F55", "#54494B", 
-                                          "#006E90" , "#BC96E6",
-                                          "#52050A", "#1F271B", 
-                                          "#BE7C4D", "#63768D", 
-                                          "#08A045", "#320A28", 
-                                          "#82FF9E", "#2176FF", 
-                                          "#D1603D", "#585123"),
+                           color_values = c(
+                             "#1b9e77", "#d95f02",
+                             "#7570b3", "#e7298a",
+                             "#07004D", "#E6AB02",
+                             "#FE5F55", "#54494B",
+                             "#006E90", "#BC96E6",
+                             "#52050A", "#1F271B",
+                             "#BE7C4D", "#63768D",
+                             "#08A045", "#320A28",
+                             "#82FF9E", "#2176FF",
+                             "#D1603D", "#585123"
+                           ),
                            title_included = FALSE,
                            size = NULL) {
+  rtichoke_curve_list <- performance_data |>
+    create_rtichoke_curve_list("roc", size = size, color_values = color_values)
+
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
@@ -182,7 +186,7 @@ plot_roc_curve <- function(performance_data,
 
   perf_dat_type <-
     check_performance_data_type_for_plotly(performance_data = performance_data)
-  
+
   prevalence <-
     get_prevalence_from_performance_data(performance_data, perf_dat_type)
 
@@ -192,7 +196,7 @@ plot_roc_curve <- function(performance_data,
     roc_curve <- performance_data %>%
       create_ggplot_for_performance_metrics(
         "FPR",
-        "sensitivity", col_values
+        "sensitivity", color_values
       ) %>%
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
@@ -200,117 +204,8 @@ plot_roc_curve <- function(performance_data,
   }
 
   if (interactive == TRUE) {
-    perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
-
-    performance_data <- performance_data %>%
-      add_hover_text_to_performance_data(perf_dat_type, 
-                                         curve = "roc",
-                                         stratified_by = stratified_by)
-
-
-    if (perf_dat_type %in% c("one model with model column", "one model")) {
-      roc_curve <- create_reference_lines_for_plotly(
-        perf_dat_type, "roc",
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several models") {
-      performance_data <- performance_data %>%
-        mutate(model = forcats::fct_inorder(factor(model)))
-
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "roc",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          col_values = col_values
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
-
-    if (perf_dat_type == "several populations") {
-      performance_data <- performance_data %>%
-        mutate(population = forcats::fct_inorder(factor(population)))
-
-      roc_curve <- create_reference_lines_for_plotly(perf_dat_type,
-        "roc",
-        population_color_vector =
-          col_values[seq_len(length(prevalence))],
-        size = size
-      ) %>%
-        add_lines_and_markers_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity
-        ) %>%
-        add_interactive_marker_from_performance_data(
-          performance_data = performance_data,
-          performance_data_type = perf_dat_type,
-          FPR,
-          sensitivity,
-          stratified_by
-        ) %>%
-        set_styling_for_rtichoke("roc") %>% 
-        plotly::animation_slider(
-          currentvalue = list(prefix = ifelse(
-            stratified_by == "probability_threshold",
-            "Prob. Threshold: ",
-            "Predicted Positives (Rate): "
-          ),
-          font = list(color="black"),
-          xanchor = "left"),
-          pad = list(t = 50)
-        )
-    }
+    roc_curve <- rtichoke_curve_list |>
+      create_plotly_curve()
   }
 
   return(roc_curve)

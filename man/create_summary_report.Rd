@@ -63,6 +63,5 @@ create_summary_report(
       dplyr::pull(outcome)
   )
 )
-
 }
 }

@@ -6,13 +6,13 @@
 \usage{
 create_subtitle_for_ggplot(
   probs_names,
-  col_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
+  color_values = c("#5BC0BE", "#FC8D62", "#8DA0CB", "#E78AC3", "#A4243B")
 )
 }
 \arguments{
 \item{probs_names}{the names of the probs}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 }
 \description{
 Creating subtitle for ggplot2

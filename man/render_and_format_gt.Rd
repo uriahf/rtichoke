@@ -9,7 +9,7 @@ render_and_format_gt(
   main_slider,
   perf_dat_type,
   prevalence,
-  col_values
+  color_values
 )
 }
 \arguments{
@@ -17,7 +17,7 @@ render_and_format_gt(
 
 \item{prevalence}{the prevalence of the populations}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 }
 \description{
 Rendering and Formatting gt

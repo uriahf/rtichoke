@@ -7,7 +7,7 @@
 create_table_for_auc(
   probs,
   reals,
-  col_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
+  color_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123")
 )
@@ -18,7 +18,7 @@ create_table_for_auc(
 
 \item{reals}{a list of vectors of binary outcomes (one for each population)}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 }
 \description{
 Create Table for AUC
@@ -26,17 +26,17 @@ Create Table for AUC
 \examples{
 
 rtichoke:::create_table_for_auc(
-    probs = list(example_dat$estimated_probabilities),
-    reals = list(example_dat$outcome)
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome)
 )
 
 
 rtichoke:::create_table_for_auc(
-probs = list(
-"First Model" = example_dat$estimated_probabilities,
-"Second Model" = example_dat$random_guess
-),
-reals = list(example_dat$outcome)
+  probs = list(
+    "First Model" = example_dat$estimated_probabilities,
+    "Second Model" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome)
 )
 
 
@@ -54,8 +54,7 @@ rtichoke:::create_table_for_auc(
     "test" = example_dat \%>\% dplyr::filter(type_of_set == "test") \%>\%
       dplyr::pull(outcome)
   )
-) 
-
+)
 
 }
 \keyword{internal}

@@ -10,14 +10,12 @@ BugReports: https://github.com/uriahf/rtichoke/issues
 Depends: 
     R (>= 2.10)
 Imports: 
-    bslib,
-    config,
     crosstalk,
     dplyr,
     forcats,
     ggplot2,
     glue,
-    golem (>= 0.3.1),
+    graphics,
     gt,
     htmltools,
     jsonlite,
@@ -30,8 +28,6 @@ Imports:
     purrr,
     reactable,
     rlang,
-    shiny (>= 1.6.0),
-    shinyWidgets,
     stats,
     stringr,
     tibble
@@ -44,5 +40,5 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3

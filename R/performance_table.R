@@ -12,15 +12,14 @@
 #' @export
 #'
 #' @examples
-#' 
 #' \dontrun{
-#' 
-#' 
+#'
+#'
 #' create_performance_table(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
-#' 
+#'
 #' create_performance_table(
 #'   probs = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
@@ -61,7 +60,7 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#' 
+#'
 #' create_performance_table(
 #'   probs = list(
 #'     "train" = example_dat %>%
@@ -78,22 +77,23 @@
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
-#'
 #' }
-create_performance_table <- function(probs, 
-                                     reals, 
+create_performance_table <- function(probs,
+                                     reals,
                                      by = 0.01,
                                      stratified_by = "probability_threshold",
-                                     col_values = c("#1b9e77", "#d95f02", 
-                                                    "#7570b3", "#e7298a", 
-                                                    "#07004D", "#E6AB02", 
-                                                    "#FE5F55", "#54494B", 
-                                                    "#006E90" , "#BC96E6",
-                                                    "#52050A", "#1F271B", 
-                                                    "#BE7C4D", "#63768D", 
-                                                    "#08A045", "#320A28", 
-                                                    "#82FF9E", "#2176FF", 
-                                                    "#D1603D", "#585123"),
+                                     color_values = c(
+                                       "#1b9e77", "#d95f02",
+                                       "#7570b3", "#e7298a",
+                                       "#07004D", "#E6AB02",
+                                       "#FE5F55", "#54494B",
+                                       "#006E90", "#BC96E6",
+                                       "#52050A", "#1F271B",
+                                       "#BE7C4D", "#63768D",
+                                       "#08A045", "#320A28",
+                                       "#82FF9E", "#2176FF",
+                                       "#D1603D", "#585123"
+                                     ),
                                      output_type = "reactable") {
   prepare_performance_data(
     probs = probs,
@@ -101,8 +101,10 @@ create_performance_table <- function(probs,
     by = by,
     stratified_by = stratified_by
   ) %>%
-    render_performance_table(col_values = col_values,
-                             output_type = output_type)
+    render_performance_table(
+      color_values = color_values,
+      output_type = output_type
+    )
 }
 
 
@@ -133,41 +135,47 @@ create_performance_table <- function(probs,
 #'
 #' multiple_populations_by_ppcr %>%
 #'   render_performance_table()
-#'
 #' }
 #'
 #' @export
 render_performance_table <- function(performance_data,
                                      chosen_threshold = NA,
                                      output_type = "reactable",
-                                     col_values = c("#1b9e77", "#d95f02", 
-                                                    "#7570b3", "#e7298a", 
-                                                    "#07004D", "#E6AB02", 
-                                                    "#FE5F55", "#54494B", 
-                                                    "#006E90" , "#BC96E6",
-                                                    "#52050A", "#1F271B", 
-                                                    "#BE7C4D", "#63768D", 
-                                                    "#08A045", "#320A28", 
-                                                    "#82FF9E", "#2176FF", 
-                                                    "#D1603D", "#585123")) {
-  
-  
+                                     color_values = c(
+                                       "#1b9e77", "#d95f02",
+                                       "#7570b3", "#e7298a",
+                                       "#07004D", "#E6AB02",
+                                       "#FE5F55", "#54494B",
+                                       "#006E90", "#BC96E6",
+                                       "#52050A", "#1F271B",
+                                       "#BE7C4D", "#63768D",
+                                       "#08A045", "#320A28",
+                                       "#82FF9E", "#2176FF",
+                                       "#D1603D", "#585123"
+                                     )) {
   stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
+
   perf_dat_type <- check_performance_data_type_for_plotly(
     performance_data = performance_data
   )
-  
+
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
-
+  
+  group_colors_vec <- performance_data |>
+    extract_reference_groups_from_performance_data(perf_dat_type)  |>
+    create_reference_group_color_vector(
+      perf_dat_type, color_values = color_values) |> 
+    unlist()
+  
+  
   if (output_type == "gt") {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%
-      render_and_format_gt(main_slider, perf_dat_type, prevalence, col_values)
+      render_and_format_gt(main_slider, perf_dat_type, prevalence, color_values)
   }
 
   if (output_type == "reactable") {
@@ -187,17 +195,17 @@ render_performance_table <- function(performance_data,
 
     if (stratified_by != "probability_threshold") {
       performance_data_reactable <- performance_data_reactable %>%
-        dplyr::relocate(predicted_positives,
-          ppcr,
+        dplyr::relocate(.data$predicted_positives,
+                        .data$ppcr,
           .after = Threshold
         ) %>%
-        dplyr::arrange(ppcr) %>%
-        dplyr::select(-Threshold) %>%
-        mutate(rank = dplyr::dense_rank(ppcr))
+        dplyr::arrange(.data$ppcr) %>%
+        dplyr::select(-.data$Threshold) %>%
+        mutate(rank = dplyr::dense_rank(.data$ppcr))
     } else {
       performance_data_reactable <- performance_data_reactable %>%
-        dplyr::arrange(Threshold) %>%
-        mutate(rank = dplyr::dense_rank(Threshold))
+        dplyr::arrange(.data$Threshold) %>%
+        mutate(rank = dplyr::dense_rank(.data$Threshold))
     }
 
 
@@ -205,19 +213,18 @@ render_performance_table <- function(performance_data,
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::mutate(
           Model = forcats::fct_inorder(
-            factor(Model)
+            factor(.data$Model)
           ),
           key_values =
             forcats::fct_inorder(
-              factor(Model)
+              factor(.data$Model)
             ),
           key_values =
-            factor(key_values,
+            factor(.data$key_values,
               labels = as.character(seq_len(
                 length(unique(performance_data_reactable %>%
-                                dplyr::pull(Model)))
-              )
-              )
+                  dplyr::pull(Model)))
+              ))
             )
         )
     }
@@ -226,19 +233,18 @@ render_performance_table <- function(performance_data,
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::mutate(
           Population = forcats::fct_inorder(
-            factor(Population)
+            factor(.data$Population)
           ),
           key_values =
             forcats::fct_inorder(
-              factor(Population)
+              factor(.data$Population)
             ),
           key_values =
-            factor(key_values,
-              labels =  as.character(seq_len(
-                  length(unique(performance_data_reactable %>%
-                    dplyr::pull(Population)))
-                )
-              )
+            factor(.data$key_values,
+              labels = as.character(seq_len(
+                length(unique(performance_data_reactable %>%
+                  dplyr::pull(Population)))
+              ))
             )
         )
     }
@@ -337,37 +343,9 @@ render_performance_table <- function(performance_data,
           ),
           Population = reactable::colDef(
             show = TRUE,
-            cell = function(value, index) {
-              n_levels <- length(levels(value))
+            cell = function(value) {
 
-              key_num <- index %% n_levels
-              if (key_num == 0) {
-                key_num <- n_levels
-              }
-              key_num <- as.character(key_num)
-
-              color <- switch(as.character(key_num),
-                "1" = col_values[1],
-                "2" = col_values[2],
-                "3" = col_values[3],
-                "4" = col_values[4],
-                "5" = col_values[5],
-                "6" = col_values[6],
-                "7" = col_values[7],
-                "8" = col_values[8],
-                "9" = col_values[9],
-                "10" = col_values[10],
-                "11" = col_values[11],
-                "12" = col_values[12],
-                "13" = col_values[13],
-                "14" = col_values[14],
-                "15" = col_values[15],
-                "16" = col_values[16],
-                "17" = col_values[17],
-                "18" = col_values[18],
-                "19" = col_values[19],
-                "20" = col_values[20]
-              )
+              color <- group_colors_vec[[as.character(value)]]
 
               badge <- status_badge(color = color)
               tagList(badge, value)
@@ -375,38 +353,10 @@ render_performance_table <- function(performance_data,
           ),
           Model = reactable::colDef(
             show = TRUE,
-            cell = function(value, index) {
-              n_levels <- length(levels(value))
-
-              key_num <- index %% n_levels
-              if (key_num == 0) {
-                key_num <- n_levels
-              }
-              key_num <- as.character(key_num)
-
-              color <- switch(as.character(key_num),
-                "1" = col_values[1],
-                "2" = col_values[2],
-                "3" = col_values[3],
-                "4" = col_values[4],
-                "5" = col_values[5],
-                "6" = col_values[6],
-                "7" = col_values[7],
-                "8" = col_values[8],
-                "9" = col_values[9],
-                "10" = col_values[10],
-                "11" = col_values[11],
-                "12" = col_values[12],
-                "13" = col_values[13],
-                "14" = col_values[14],
-                "15" = col_values[15],
-                "16" = col_values[16],
-                "17" = col_values[17],
-                "18" = col_values[18],
-                "19" = col_values[19],
-                "20" = col_values[20]
-              )
-
+            cell = function(value) {
+              
+              color <- group_colors_vec[[as.character(value)]]
+              
               badge <- status_badge(color = color)
               tagList(badge, value)
             }
@@ -418,19 +368,23 @@ render_performance_table <- function(performance_data,
         columnGroups = list(
           reactable::colGroup(
             name = "Performance Metrics",
-            columns = ( if(
+            columns = (if (
               stratified_by == "probability_threshold"
-            ) c(
-              "sensitivity",
-              "specificity",
-              "PPV", "NPV",
-              "lift", "NB"
-            ) else c(
-              "sensitivity",
-              "specificity",
-              "PPV", "NPV",
-              "lift"
-            ) )
+            ) {
+              c(
+                "sensitivity",
+                "specificity",
+                "PPV", "NPV",
+                "lift", "NB"
+              )
+            } else {
+              c(
+                "sensitivity",
+                "specificity",
+                "PPV", "NPV",
+                "lift"
+              )
+            })
           )
         ),
         details = function(index) {
@@ -520,12 +474,12 @@ prepare_performance_data_for_gt <- function(performance_data,
 
   if (stratified_by != "probability_threshold") {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
-      dplyr::relocate(plot_predicted_positives,
-        .after = Threshold
+      dplyr::relocate(.data$plot_predicted_positives,
+        .after = .data$Threshold
       ) %>%
-      dplyr::arrange(ppcr) %>%
-      dplyr::select(-Threshold) %>%
-      mutate(rank = dplyr::dense_rank(ppcr))
+      dplyr::arrange(.data$ppcr) %>%
+      dplyr::select(-.data$Threshold) %>%
+      mutate(rank = dplyr::dense_rank(.data$ppcr))
   } else {
     performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
       dplyr::arrange(Threshold) %>%
@@ -534,10 +488,10 @@ prepare_performance_data_for_gt <- function(performance_data,
 
   performance_data_ready_for_gt %>%
     dplyr::select(-c(
-      ppcr,
-      predicted_positives,
-      display_predicted_postivies,
-      FPR
+      .data$ppcr,
+      .data$predicted_positives,
+      .data$display_predicted_postivies,
+      .data$FPR
     ))
 }
 
@@ -552,7 +506,7 @@ render_and_format_gt <- function(performance_data,
                                  main_slider,
                                  perf_dat_type,
                                  prevalence,
-                                 col_values) {
+                                 color_values) {
   performance_data %>%
     gt::gt() %>%
     gt::cols_hide(rank) %>%
@@ -603,7 +557,7 @@ render_and_format_gt <- function(performance_data,
     #   title = gt::md(creating_title_for_gt(main_slider)),
     #   subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
     #                                       prevalence = prevalence,
-    #                                       col_values = col_values))
+    #                                       color_values = color_values))
     # ) %>%
     add_zebra_colors_to_gt_table(perf_dat_type %in% c(
       "several models",
@@ -653,7 +607,7 @@ creating_title_for_gt <- function(main_slider) {
 #' @inheritParams plot_roc_curve
 #' @param models_names the names of the different models
 creating_subtitle_for_gt <- function(perf_dat_type,
-                                     col_values = NA,
+                                     color_values = NA,
                                      prevalence = NA) {
   if (perf_dat_type == "one model") {
     subtitle_for_gt <- glue::glue("Prevalence: {round(prevalence, digits = 2)}")
@@ -667,22 +621,22 @@ creating_subtitle_for_gt <- function(perf_dat_type,
   }
 
   if (perf_dat_type == "several models") {
-    col_values <- col_values[seq_len(length(prevalence))]
+    color_values <- color_values[seq_len(length(prevalence))]
 
     subtitle_for_gt <- prevalence %>%
       names() %>%
-      purrr::map2(col_values, add_html_color_to_model_for_subtitle) %>%
+      purrr::map2(color_values, add_html_color_to_model_for_subtitle) %>%
       glue::glue_collapse(", ", last = " and ") %>%
       glue::glue(" (Prevalnce: {round(prevalence[1], digits = 2)})")
   }
 
   if (perf_dat_type == "several populations") {
-    col_values <- col_values[seq_len(length(prevalence))]
+    color_values <- color_values[seq_len(length(prevalence))]
 
     subtitle_for_gt <- purrr::pmap(
       list(
         names(prevalence),
-        col_values,
+        color_values,
         prevalence
       ),
       create_subtitle_for_one_population

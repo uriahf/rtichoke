@@ -11,7 +11,7 @@ create_decision_curve(
   stratified_by = "probability_threshold",
   chosen_threshold = NA,
   interactive = TRUE,
-  col_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
+  color_values = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#07004D", "#E6AB02",
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   size = NULL,
@@ -36,7 +36,7 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{col_values}{color palette}
+\item{color_values}{color palette}
 
 \item{size}{the size of the curve}
 
@@ -54,7 +54,6 @@ displayed}
 Create a decision Curve
 }
 \examples{
-
 \dontrun{
 
 
@@ -66,13 +65,15 @@ create_decision_curve(
 create_decision_curve(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome,
-  type = "interventions avoided")
+    type = "interventions avoided"
+  )
 )
 
 create_decision_curve(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome,
-  type = "combined")
+    type = "combined"
+  )
 )
 
 create_decision_curve(
@@ -151,6 +152,5 @@ create_decision_curve(
   ),
   type = "combined"
 )
-
 }
 }

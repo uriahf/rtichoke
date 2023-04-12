@@ -36,7 +36,6 @@
 #'       dplyr::pull(outcome)
 #'   )
 #' )
-#'
 #' }
 create_summary_report <- function(probs, reals, interactive = TRUE,
                                   output_file = "summary_report.html",
