@@ -63,9 +63,9 @@ tibble::tribble(
   ~"Curve", ~"Sens", ~"Spec", ~"PPV", ~"PPCR", ~"Lift", ~"NB", ~"P. Thr",
   "ROC", "y", "x", " ", " ", " ", " ", " ",
   "Lift", " ", " ", " ", "x", "y", " ", " ",
-  "Gains", " ", "y", " ", "x", " ", " ", " ",
+  "Gains", "y", " ", " ", "x", " ", " ", " ",
   "Precision Recall", "x", " ", "y", " ", " ", " ", " ",
-  "Decision", "x", " ", "y", " ", " ", "y", "x"
+  "Decision", " ", " ", " ", " ", " ", "y", "x"
 ) %>%
   gt::gt(rowname_col = "Curve") %>%
   #
