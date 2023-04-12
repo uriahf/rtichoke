@@ -161,7 +161,8 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #' @inheritParams create_roc_curve
 #'
 #' @export
-#'
+#' 
+#' @keywords internal
 #' @examples
 #' \dontrun{
 #'
