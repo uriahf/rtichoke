@@ -76,9 +76,6 @@
     <loc>/reference/add_zebra_colors_to_gt_table.html</loc>
   </url>
   <url>
-    <loc>/reference/arrange_estimated_probabilities_to_long_format.html</loc>
-  </url>
-  <url>
     <loc>/reference/bar_chart.html</loc>
   </url>
   <url>
@@ -89,6 +86,9 @@
   </url>
   <url>
     <loc>/reference/check_chosen_threshold_input.html</loc>
+  </url>
+  <url>
+    <loc>/reference/check_curve_input.html</loc>
   </url>
   <url>
     <loc>/reference/check_performance_data_stratification.html</loc>
@@ -103,16 +103,19 @@
     <loc>/reference/check_real_input.html</loc>
   </url>
   <url>
+    <loc>/reference/check_stratified_by_input.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_calibration_curve.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_calibration_curve_list.html</loc>
   </url>
   <url>
     <loc>/reference/create_color_reference_lines_vector.html</loc>
   </url>
   <url>
     <loc>/reference/create_conf_mat_list.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_dat_for_smooth_calibration.html</loc>
   </url>
   <url>
     <loc>/reference/create_decision_curve.html</loc>
@@ -133,6 +136,9 @@
     <loc>/reference/create_performance_table.html</loc>
   </url>
   <url>
+    <loc>/reference/create_plotly_curve.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_precision_recall_curve.html</loc>
   </url>
   <url>
@@ -143,6 +149,9 @@
   </url>
   <url>
     <loc>/reference/create_roc_curve.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_rtichoke_curve_list.html</loc>
   </url>
   <url>
     <loc>/reference/create_subtitle_for_ggplot.html</loc>
@@ -185,12 +194,6 @@
   </url>
   <url>
     <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_deciles_dat.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_histogram_for_calibration.html</loc>
   </url>
   <url>
     <loc>/reference/make_performance_metric_bold.html</loc>
@@ -241,16 +244,10 @@
     <loc>/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_conventional_decision.html</loc>
-  </url>
-  <url>
     <loc>/reference/plot_decision_curve.html</loc>
   </url>
   <url>
     <loc>/reference/plot_gains_curve.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_interventions_avoided.html</loc>
   </url>
   <url>
     <loc>/reference/plot_lift_curve.html</loc>
@@ -260,6 +257,9 @@
   </url>
   <url>
     <loc>/reference/plot_roc_curve.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_rtichoke_curve.html</loc>
   </url>
   <url>
     <loc>/reference/prepare_performance_data.html</loc>
@@ -281,6 +281,9 @@
   </url>
   <url>
     <loc>/reference/replace_nan_with_na.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rtichoke-package.html</loc>
   </url>
   <url>
     <loc>/reference/set_axis_titles.html</loc>
