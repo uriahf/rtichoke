@@ -1063,17 +1063,58 @@ create_reference_lines_data <- function(curve, prevalence,
   }
 
   if (curve == "lift") {
+    
+    hover_text_random <- "<b>Random Guess</b><br>Lift: {y}<br>Predicted Positives: {100*x}%"
+    
+    if (perf_dat_type == "several populations") {
+      reference_group <- rep(c("reference_line", paste0("reference_line_perfect_model_", names(prevalence))), each = 100)
+      reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = (length(prevalence) + 1))
+
+      reference_line_y_values <- c(
+        rep(1, 100),
+        prevalence |>
+          purrr::map(~ return_perfect_prediction_lift_y_values(.x)) |>
+          unlist()
+      )
+      hover_text_perfect <- "<b>Perfect Prediction ({reference_group})</b><br>Lift: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
+    } else {
+      reference_group <- rep(c("reference_line", "reference_line_perfect_model"), each = 100)
+      reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = 2)
+
+      reference_line_y_values <- c(
+        rep(1, 100),
+        return_perfect_prediction_lift_y_values(unique(unlist(prevalence)))
+      )
+      
+      hover_text_perfect <- "<b>Perfect Prediction</b><br>Lift: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
+    }
+    
     reference_lines_data <- data.frame(
-      reference_group = "reference_line",
-      x = seq(0.01, 1, by = 0.01),
-      y = rep(1, 100)
+      reference_group = reference_group,
+      x = reference_line_x_values,
+      y = reference_line_y_values
     ) |>
       dplyr::mutate(
-        text =
-          glue::glue(
-            "<b>Random Guess</b><br>Lift: {y}<br>Predicted Positives: {100*x}%"
-          )
+        text = dplyr::case_when(
+          reference_group == "reference_line" ~ glue::glue(hover_text_random),
+          TRUE ~ glue::glue(hover_text_perfect)
+        ),
+        text = stringr::str_replace(.data$text, "reference_line_perfect_model_", "")
       )
+    
+    # TODO: remove the code below ->
+    
+    # reference_lines_data <- data.frame(
+    #   reference_group = "reference_line",
+    #   x = seq(0.01, 1, by = 0.01),
+    #   y = rep(1, 100)
+    # ) |>
+    #   dplyr::mutate(
+    #     text =
+    #       glue::glue(
+    #         "<b>Random Guess</b><br>Lift: {y}<br>Predicted Positives: {100*x}%"
+    #       )
+    #   )
   }
 
   if (curve == "precision recall") {
@@ -1233,6 +1274,15 @@ return_perfect_prediction_gains_y_values <- function(prevalence) {
   c(
     seq(0, 1, length.out = (100 * (round(prevalence, digits = 3)) + 1)),
     rep(1, (100 - 100 * round(prevalence, digits = 3)))
+  )
+  
+}
+
+return_perfect_prediction_lift_y_values <- function(prevalence) {
+  
+  c(
+    rep( round(1 / prevalence, digits = 3), 100 * round(prevalence, digits = 3)),
+    seq( round(1 / prevalence, digits = 3), 1, length.out = (100 - 100 * (round(prevalence, digits = 3))))
   )
   
 }
