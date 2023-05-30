@@ -1099,7 +1099,7 @@ create_reference_lines_data <- function(curve, prevalence,
   }
 
   if (curve == "gains") {
-    hover_text_random <- "<b>Random Guess</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
+    hover_text_random <- "<b>Random Guess</b><br>Sensitivity: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
 
     if (perf_dat_type == "several populations") {
       reference_group <- rep(c("reference_line", paste0("reference_line_perfect_model_", names(prevalence))), each = 101)
@@ -1110,7 +1110,7 @@ create_reference_lines_data <- function(curve, prevalence,
           purrr::map(~ return_perfect_prediction_gains_y_values(.x)) |>
           unlist()
       )
-      hover_text_perfect <- "<b>Perfect Prediction ({reference_group})</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
+      hover_text_perfect <- "<b>Perfect Prediction ({reference_group})</b><br>Sensitivity: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
     } else {
       reference_group <- rep(c("reference_line", "reference_line_perfect_model"), each = 101)
       reference_line_x_values <- rep(seq(0, 1, by = 0.01), times = 2)
@@ -1119,7 +1119,7 @@ create_reference_lines_data <- function(curve, prevalence,
         return_perfect_prediction_gains_y_values(unique(unlist(prevalence)))
       )
 
-      hover_text_perfect <- "<b>Perfect Prediction</b><br>PPV: {round(y, digits = 3)}<br>Sensitivity: {x}"
+      hover_text_perfect <- "<b>Perfect Prediction</b><br>Sensitivity: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
     }
 
     reference_lines_data <- data.frame(
