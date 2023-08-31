@@ -1366,10 +1366,10 @@ extract_axes_ranges <- function(performance_data_ready, curve,
     )
   }
 
-  curve_axis_range |> purrr::map(~ extand_axis_range(.x))
+  curve_axis_range |> purrr::map(~ extend_axis_ranges(.x))
 }
 
-extand_axis_range <- function(axis_range, extand_range_by = 1.1) {
+extend_axis_ranges <- function(axis_range, extand_range_by = 1.1) {
   margin <- (extand_range_by - 1) * diff(axis_range)
 
   c(axis_range[1] - margin, axis_range[2] + margin)
@@ -1393,7 +1393,7 @@ prepare_performance_data_for_interactive_marker <- function(
   
   performance_data_for_interactive_marker <- performance_data_ready_for_curve
   
-  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
+  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -100
   performance_data_for_interactive_marker$x[is.nan(performance_data_for_interactive_marker$x)] <- -1
   
   if ( perf_dat_type %in% c("several models", "several populations") ) {
