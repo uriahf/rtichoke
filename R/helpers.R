@@ -1078,11 +1078,22 @@ create_reference_lines_data <- function(curve, prevalence,
       )
       hover_text_perfect <- "<b>Perfect Prediction ({reference_group})</b><br>Lift: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
     } else {
+      
+      if((unique(unlist(prevalence))) == 0) {
+        
+        random_guess <- rep(NaN, 100)
+        
+      } else {
+        
+        random_guess <- rep(1, 100)
+        
+      }
+      
       reference_group <- rep(c("reference_line", "reference_line_perfect_model"), each = 100)
       reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = 2)
 
       reference_line_y_values <- c(
-        rep(1, 100),
+        random_guess,
         return_perfect_prediction_lift_y_values(unique(unlist(prevalence)))
       )
       
@@ -1280,10 +1291,17 @@ return_perfect_prediction_gains_y_values <- function(prevalence) {
 
 return_perfect_prediction_lift_y_values <- function(prevalence) {
   
-  c(
-    rep( round(1 / prevalence, digits = 3), 100 * round(prevalence, digits = 3)),
-    seq( round(1 / prevalence, digits = 3), 1, length.out = (100 - 100 * (round(prevalence, digits = 3))))
-  )
+  if (prevalence == 0) {
+    
+    rep(NaN, 100)
+    
+  } else {
+
+    c(
+      rep( round(1 / prevalence, digits = 3), 100 * round(prevalence, digits = 3)),
+      seq( round(1 / prevalence, digits = 3), 1, length.out = (100 - 100 * (round(prevalence, digits = 3))))
+    )
+  }
   
 }
 
@@ -1292,9 +1310,14 @@ return_perfect_prediction_lift_y_values <- function(prevalence) {
 extract_axes_ranges <- function(performance_data_ready, curve,
                                 min_p_threshold,
                                 max_p_threshold) {
-  if (curve %in% c("lift", "decision", "interventions avoided")) {
+  if (curve %in% c("lift")) {
     max_y_range <- max(c(1, performance_data_ready$y), na.rm = TRUE)
   }
+  
+  if (curve %in% c("decision", "interventions avoided")) {
+    max_y_range <- max(performance_data_ready$y, na.rm = TRUE)
+  }
+  
 
   if (curve %in% c("decision", "interventions avoided")) {
     min_x_range <- min_p_threshold
@@ -1343,10 +1366,10 @@ extract_axes_ranges <- function(performance_data_ready, curve,
     )
   }
 
-  curve_axis_range |> purrr::map(~ extand_axis_range(.x))
+  curve_axis_range |> purrr::map(~ extend_axis_ranges(.x))
 }
 
-extand_axis_range <- function(axis_range, extand_range_by = 1.1) {
+extend_axis_ranges <- function(axis_range, extand_range_by = 1.1) {
   margin <- (extand_range_by - 1) * diff(axis_range)
 
   c(axis_range[1] - margin, axis_range[2] + margin)
@@ -1367,9 +1390,10 @@ return_treat_none_y_values <- function(prevalence) {
 prepare_performance_data_for_interactive_marker <- function(
     performance_data_ready_for_curve, perf_dat_type) {
   
+  
   performance_data_for_interactive_marker <- performance_data_ready_for_curve
   
-  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -1
+  performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -100
   performance_data_for_interactive_marker$x[is.nan(performance_data_for_interactive_marker$x)] <- -1
   
   if ( perf_dat_type %in% c("several models", "several populations") ) {
