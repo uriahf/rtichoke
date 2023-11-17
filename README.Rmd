@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 
 # rtichoke
 
+For some reproducible examples please visit [rtichoke blog](https://rtichoke-blog.netlify.app/)!
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/uriahf/rtichoke/workflows/R-CMD-check/badge.svg)](https://github.com/uriahf/rtichoke/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/rtichoke)](https://CRAN.R-project.org/package=rtichoke)
