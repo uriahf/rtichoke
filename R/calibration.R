@@ -332,19 +332,8 @@ create_calibration_curve_list <- function(probs,
         )
     )
 
-  calibration_curve_list$histogram_for_calibration <- probs %>%
-    purrr::map_df(~ hist(
-      .x,
-      plot = FALSE, breaks = seq(0, 1, 0.01)
-    ) %>%
-      .[c("mids", "counts")], .id = "reference_group") |>
-    dplyr::mutate(
-      text_obs = glue::glue("{counts} observations in "),
-      text_range = ifelse(mids == 0.005, "[0,0.01]",
-        glue::glue("( {mids - 0.005} , {mids + 0.005} ]")
-      ),
-      text = glue::glue("{text_obs}{text_range}")
-    )
+  calibration_curve_list$histogram_for_calibration <- prepare_events_per_strata_data(
+    probs)
 
   calibration_curve_list$histogram_opacity <- 1 / length(probs)
 
