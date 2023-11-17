@@ -14,6 +14,9 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/uriahf/rtichoke/branch/main/graph/badge.svg)](https://codecov.io/gh/uriahf/rtichoke?branch=main)
 <!-- badges: end -->
 
+For some reproducible examples please visit [rtichoke
+blog](https://rtichoke-blog.netlify.app/)!
+
 ## Installation
 
 <!-- You can install the released version of rtichoke from [CRAN](https://CRAN.R-project.org) with: -->
@@ -32,9 +35,9 @@ devtools::install_github("uriahf/rtichoke")
 
 ## Overview:
 
--   `rtichoke` is designed to help analysts with exploration of
-    performance metrics with a binary outcome. In order to do so it uses
-    interactive visualization.
+- `rtichoke` is designed to help analysts with exploration of
+  performance metrics with a binary outcome. In order to do so it uses
+  interactive visualization.
 
 ## Getting started
 
@@ -46,8 +49,8 @@ devtools::install_github("uriahf/rtichoke")
 
 In order to use `rtichoke` you need to have
 
--   `probs`: Estimated Probabilities as predictions.
--   `reals`: Binary Outcomes.
+- `probs`: Estimated Probabilities as predictions.
+- `reals`: Binary Outcomes.
 
 There are 3 different cases and for each one of them rtichoke requires a
 different kind of input:
@@ -74,8 +77,10 @@ predictions and a list with one vector for the outcomes.
 <!-- ``` -->
 
 ``` r
-create_roc_curve(probs = list(example_dat$bad_model),
-                 reals = list(example_dat$outcome))
+create_roc_curve(
+  probs = list(example_dat$bad_model),
+  reals = list(example_dat$outcome)
+)
 ```
 
 ### Models Comparison:
