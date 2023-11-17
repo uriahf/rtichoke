@@ -1,3 +1,7 @@
+# rtichoke 0.0.7
+
+-   Fix Lift Curve ranges [#110](https://github.com/uriahf/rtichoke/issues/110)
+
 # rtichoke 0.0.6
 
 -   Add perfect-model reference lines for lift curve [#106](https://github.com/uriahf/rtichoke/issues/106)

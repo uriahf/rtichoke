@@ -1,6 +1,6 @@
 Package: rtichoke
 Title: rtichoke
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: 
     person("Uriah", "Finkel", , "ufinkel@gmail.com", role = c("cre", "aut"))
 Description: Interactive visualization for model performance.
