@@ -164,14 +164,16 @@ render_performance_table <- function(performance_data,
   prevalence <- get_prevalence_from_performance_data(
     performance_data, perf_dat_type
   )
-  
+
   group_colors_vec <- performance_data |>
-    extract_reference_groups_from_performance_data(perf_dat_type)  |>
+    extract_reference_groups_from_performance_data(perf_dat_type) |>
     create_reference_group_color_vector(
-      perf_dat_type, color_values = color_values) |> 
+      perf_dat_type,
+      color_values = color_values
+    ) |>
     unlist()
-  
-  
+
+
   if (output_type == "gt") {
     performance_data %>%
       prepare_performance_data_for_gt(main_slider) %>%
@@ -196,7 +198,7 @@ render_performance_table <- function(performance_data,
     if (stratified_by != "probability_threshold") {
       performance_data_reactable <- performance_data_reactable %>%
         dplyr::relocate(.data$predicted_positives,
-                        .data$ppcr,
+          .data$ppcr,
           .after = Threshold
         ) %>%
         dplyr::arrange(.data$ppcr) %>%
@@ -344,7 +346,6 @@ render_performance_table <- function(performance_data,
           Population = reactable::colDef(
             show = TRUE,
             cell = function(value) {
-
               color <- group_colors_vec[[as.character(value)]]
 
               badge <- status_badge(color = color)
@@ -354,9 +355,8 @@ render_performance_table <- function(performance_data,
           Model = reactable::colDef(
             show = TRUE,
             cell = function(value) {
-              
               color <- group_colors_vec[[as.character(value)]]
-              
+
               badge <- status_badge(color = color)
               tagList(badge, value)
             }

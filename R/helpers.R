@@ -422,7 +422,7 @@ create_rtichoke_curve_list <- function(performance_data,
   stratified_by <- check_performance_data_stratification(
     performance_data
   )
-  
+
   rtichoke_curve_list$animation_slider_prefix <- ifelse(stratified_by == "probability_threshold",
     "Prob. Threshold: ",
     "Predicted Positives (Rate):"
@@ -496,11 +496,12 @@ create_rtichoke_curve_list <- function(performance_data,
       min_p_threshold = min_p_threshold,
       max_p_threshold = max_p_threshold
     )
-  
-  
+
+
   rtichoke_curve_list$performance_data_for_interactive_marker <- prepare_performance_data_for_interactive_marker(
     rtichoke_curve_list$performance_data_ready_for_curve,
-    rtichoke_curve_list$perf_dat_type)
+    rtichoke_curve_list$perf_dat_type
+  )
 
 
   rtichoke_curve_list$axes_ranges <- extract_axes_ranges(rtichoke_curve_list$performance_data_ready_for_curve,
@@ -562,7 +563,7 @@ create_plotly_curve <- function(rtichoke_curve_list) {
   if (!(rtichoke_curve_list$perf_dat_type %in% c("several models", "several populations"))) {
     interactive_marker$color <- "#f6e3be"
   }
-  
+
   plotly::plot_ly(
     x = ~x,
     y = ~y,
@@ -1063,9 +1064,8 @@ create_reference_lines_data <- function(curve, prevalence,
   }
 
   if (curve == "lift") {
-    
     hover_text_random <- "<b>Random Guess</b><br>Lift: {y}<br>Predicted Positives: {100*x}%"
-    
+
     if (perf_dat_type == "several populations") {
       reference_group <- rep(c("reference_line", paste0("reference_line_perfect_model_", names(prevalence))), each = 100)
       reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = (length(prevalence) + 1))
@@ -1078,17 +1078,12 @@ create_reference_lines_data <- function(curve, prevalence,
       )
       hover_text_perfect <- "<b>Perfect Prediction ({reference_group})</b><br>Lift: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
     } else {
-      
-      if((unique(unlist(prevalence))) == 0) {
-        
+      if ((unique(unlist(prevalence))) == 0) {
         random_guess <- rep(NaN, 100)
-        
       } else {
-        
         random_guess <- rep(1, 100)
-        
       }
-      
+
       reference_group <- rep(c("reference_line", "reference_line_perfect_model"), each = 100)
       reference_line_x_values <- rep(seq(0.01, 1, by = 0.01), times = 2)
 
@@ -1096,10 +1091,10 @@ create_reference_lines_data <- function(curve, prevalence,
         random_guess,
         return_perfect_prediction_lift_y_values(unique(unlist(prevalence)))
       )
-      
+
       hover_text_perfect <- "<b>Perfect Prediction</b><br>Lift: {round(y, digits = 3)}<br>Predicted Positives: {100*x}%"
     }
-    
+
     reference_lines_data <- data.frame(
       reference_group = reference_group,
       x = reference_line_x_values,
@@ -1112,9 +1107,9 @@ create_reference_lines_data <- function(curve, prevalence,
         ),
         text = stringr::str_replace(.data$text, "reference_line_perfect_model_", "")
       )
-    
+
     # TODO: remove the code below ->
-    
+
     # reference_lines_data <- data.frame(
     #   reference_group = "reference_line",
     #   x = seq(0.01, 1, by = 0.01),
@@ -1281,28 +1276,21 @@ create_reference_lines_data <- function(curve, prevalence,
 
 
 return_perfect_prediction_gains_y_values <- function(prevalence) {
-  
   c(
     seq(0, 1, length.out = (100 * (round(prevalence, digits = 3)) + 1)),
     rep(1, (100 - 100 * round(prevalence, digits = 3)))
   )
-  
 }
 
 return_perfect_prediction_lift_y_values <- function(prevalence) {
-  
   if (prevalence == 0) {
-    
     rep(NaN, 100)
-    
   } else {
-
     c(
-      rep( round(1 / prevalence, digits = 3), 100 * round(prevalence, digits = 3)),
-      seq( round(1 / prevalence, digits = 3), 1, length.out = (100 - 100 * (round(prevalence, digits = 3))))
+      rep(round(1 / prevalence, digits = 3), 100 * round(prevalence, digits = 3)),
+      seq(round(1 / prevalence, digits = 3), 1, length.out = (100 - 100 * (round(prevalence, digits = 3))))
     )
   }
-  
 }
 
 
@@ -1313,11 +1301,11 @@ extract_axes_ranges <- function(performance_data_ready, curve,
   if (curve %in% c("lift")) {
     max_y_range <- max(c(1, performance_data_ready$y), na.rm = TRUE)
   }
-  
+
   if (curve %in% c("decision", "interventions avoided")) {
     max_y_range <- max(performance_data_ready$y, na.rm = TRUE)
   }
-  
+
 
   if (curve %in% c("decision", "interventions avoided")) {
     min_x_range <- min_p_threshold
@@ -1333,7 +1321,6 @@ extract_axes_ranges <- function(performance_data_ready, curve,
   }
   if (curve == "lift") {
     curve_axis_range <- list(xaxis = c(0, 1), yaxis = c(0, max_y_range))
-    
   }
   if (curve == "precision recall") {
     curve_axis_range <- list(xaxis = c(0, 1), yaxis = c(0, 1))
@@ -1389,52 +1376,40 @@ return_treat_none_y_values <- function(prevalence) {
 
 prepare_performance_data_for_interactive_marker <- function(
     performance_data_ready_for_curve, perf_dat_type) {
-  
-  
   performance_data_for_interactive_marker <- performance_data_ready_for_curve
-  
+
   performance_data_for_interactive_marker$y[is.nan(performance_data_for_interactive_marker$y)] <- -100
   performance_data_for_interactive_marker$x[is.nan(performance_data_for_interactive_marker$x)] <- -1
-  
-  if ( perf_dat_type %in% c("several models", "several populations") ) {
-    
-    performance_data_for_interactive_marker |> 
-      split(~reference_group) |> 
+
+  if (perf_dat_type %in% c("several models", "several populations")) {
+    performance_data_for_interactive_marker |>
+      split(~reference_group) |>
       purrr::map_df(check_zero_variance_for_sub_population)
-    
   } else {
-    
     performance_data_for_interactive_marker
-    
   }
-  
 }
 
 
 check_zero_variance_for_sub_population <- function(performance_data_sup_population) {
-  
-  if ( nrow(performance_data_sup_population) == 2 ) {
-    
+  if (nrow(performance_data_sup_population) == 2) {
     dplyr::bind_rows(
       performance_data_sup_population[1, ],
       data.frame(
         reference_group = rep(
-          unique(performance_data_sup_population$reference_group), 
-          1 / 0.01 - 1),
+          unique(performance_data_sup_population$reference_group),
+          1 / 0.01 - 1
+        ),
         x = seq(0 + 0.01, 1 - 0.01, by = 0.01),
         y = rep(-1, 1 / 0.01 - 1)
-      ) |> 
+      ) |>
         dplyr::mutate(
           stratified_by = x,
           text = NA
         ),
       performance_data_sup_population[2, ]
     )
-    
   } else {
-    
     performance_data_sup_population
-    
   }
-  
 }

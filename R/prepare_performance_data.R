@@ -153,15 +153,13 @@ prepare_performance_data <- function(probs,
 
   tibble::tibble(
     probability_threshold = if (stratified_by != "probability_threshold" &
-                                length(unique(probs[[1]])) != 1) {
+      length(unique(probs[[1]])) != 1) {
       stats::quantile(probs[[1]],
         probs = rev(seq(0, 1, by = by))
       )
     } else if (stratified_by != "probability_threshold" &
-               length(unique(probs[[1]])) == 1) {
-      
+      length(unique(probs[[1]])) == 1) {
       c(0, 1)
-      
     } else {
       round(
         seq(0, 1, by = by),
@@ -171,19 +169,17 @@ prepare_performance_data <- function(probs,
   ) %>%
     {
       if (stratified_by != "probability_threshold" &
-          length(unique(probs[[1]])) != 1) {
+        length(unique(probs[[1]])) != 1) {
         dplyr::mutate(.,
           ppcr = round(seq(0, 1, by = by),
             digits = nchar(format(by, scientific = FALSE))
           )
         )
       } else if (stratified_by != "probability_threshold" &
-                 length(unique(probs[[1]])) == 1) {
-        
+        length(unique(probs[[1]])) == 1) {
         dplyr::mutate(.,
-                      ppcr = c(1, 0)
+          ppcr = c(1, 0)
         )
-        
       } else {
         .
       }

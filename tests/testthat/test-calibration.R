@@ -5,8 +5,10 @@ test_that("test deciles dat", {
   )
 
   expect_identical(deciles_dat$quintile, 1:10)
-  expect_identical(names(deciles_dat), 
-                   c("quintile", "y", "x", "sum_reals", "total_obs"))
+  expect_identical(
+    names(deciles_dat),
+    c("quintile", "y", "x", "sum_reals", "total_obs")
+  )
 })
 
 

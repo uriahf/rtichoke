@@ -1,4 +1,3 @@
-
 #' Create a list of confusion matrices
 #'
 #' @inheritParams plot_roc_curve
@@ -40,7 +39,7 @@ create_conf_mat_list <- function(performance_table,
     dplyr::mutate(
       Predicted_Negative = .data$FN + .data$TN,
       Real_Positive = .data$TP + .data$FN,
-      Real_Negative = .data$TN +.data$ FP,
+      Real_Negative = .data$TN + .data$ FP,
       N = .data$TP + .data$FP + .data$FN + .data$TN
     ) %>%
     dplyr::select(

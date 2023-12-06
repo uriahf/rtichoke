@@ -87,7 +87,6 @@ The user is required to provide a list with one vector for the predictions and a
 
 
 ```{r eval=FALSE, include=TRUE}
-
 create_roc_curve(
   probs = list(example_dat$bad_model),
   reals = list(example_dat$outcome)
@@ -193,7 +192,6 @@ The user is required to provide a list with one vector of predictions for each p
 
 
 ```{r eval=FALSE, include = TRUE}
-
 create_roc_curve(
   probs = list(
     "Train" = example_dat %>%

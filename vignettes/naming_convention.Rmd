@@ -22,7 +22,6 @@ library(rtichoke)
 ### Naming Convention
 
 ```{r echo=FALSE}
-
 library(magrittr)
 
 tibble::tribble(

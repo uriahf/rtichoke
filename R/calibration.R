@@ -116,7 +116,6 @@ create_calibration_curve <- function(probs,
   }
 
   calibration_curve
-
 }
 
 
@@ -134,24 +133,19 @@ create_calibration_curve <- function(probs,
 #'   define_limits_for_calibration_plot()
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
-  
   if (nrow(deciles_dat) == 1) {
-  
     l <- 0
     u <- 1
-    
   } else {
-  
     l <- max(0, min(deciles_dat$x, deciles_dat$y))
     u <- max(deciles_dat$x, deciles_dat$y)
-  
   }
-  
+
   limits <- c(
     l - (u - l) * 0.05,
     u + (u - l) * 0.05
   )
-  
+
   limits
 }
 
@@ -161,7 +155,7 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #' @inheritParams create_roc_curve
 #'
 #' @export
-#' 
+#'
 #' @keywords internal
 #' @examples
 #' \dontrun{
@@ -230,7 +224,7 @@ create_calibration_curve_list <- function(probs,
   calibration_curve_list$performance_type <- check_performance_type_by_probs_and_reals(probs, reals)
 
   calibration_curve_list$size <- list(size)
-  
+
   group_colors_vec <- create_reference_group_color_vector(
     reference_groups, calibration_curve_list$performance_type, color_values
   ) |>
@@ -253,9 +247,7 @@ create_calibration_curve_list <- function(probs,
       reals,
       function(x, y) {
         if (length(unique(x)) == 1) {
-          
           list("x" = unique(x), y = mean(y))
-          
         } else {
           lowess(x, y, iter = 0) %>%
             approx(
@@ -275,20 +267,18 @@ create_calibration_curve_list <- function(probs,
     )
 
     calibration_curve_list$smooth_dat <- purrr::map_df(
-      probs, reals = reals,
+      probs,
+      reals = reals,
       function(x, reals) {
         if (length(unique(x)) == 1) {
-          
           list("x" = unique(x), y = mean(reals[[1]]))
-          
         } else {
-          
           lowess(x, reals[[1]], iter = 0) %>%
             approx(
               xout = seq(0, 1, by = 0.01),
               ties = mean
-            )}
-        
+            )
+        }
       },
       .id = "reference_group"
     )
@@ -332,8 +322,9 @@ create_calibration_curve_list <- function(probs,
         )
     )
 
-  calibration_curve_list$histogram_for_calibration <- prepare_events_per_strata_data(
-    probs)
+  calibration_curve_list$histogram_for_calibration <- prepare_probs_distribution_data(
+    probs
+  )
 
   calibration_curve_list$histogram_opacity <- 1 / length(probs)
 
@@ -537,9 +528,7 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
 
 
 make_deciles_dat <- function(probs, reals) {
-  
-  if ( length(unique(probs)) == 1 ) {
-    
+  if (length(unique(probs)) == 1) {
     tibble::tibble(
       quintile = 1,
       x = unique(probs),
@@ -547,15 +536,11 @@ make_deciles_dat <- function(probs, reals) {
       sum_reals = sum(reals),
       total_obs = length(reals)
     )
-    
   } else {
-    
     data.frame(probs, reals) %>%
       dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
       dplyr::group_by(quintile) %>%
       dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) %>%
       dplyr::ungroup()
-    
   }
-  
 }
