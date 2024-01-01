@@ -39,9 +39,9 @@ const tooltip = d3.select("#" + options.outerDiv)
   .style("position", "absolute")
   .style("background-color", "blue")
   .style("border", "solid")
-  .style("border-width", "10px")
-  .style("border-radius", "50px")
-  .style("padding", "100px");
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
 
 
 
@@ -62,7 +62,34 @@ const color = d3
   .domain(keys)
   .range(d3.schemeCategory10);
   
+var mouseleave = function() {
+    tooltip
+      .style("opacity", 0)
+      
+  }  
+
+var mouseover = function(ev, d, tooltipcolor) {
+  //console.log(x(d.data.cat) > x2(Number(sliderelse.value)))
   
+  
+  tooltip
+      .style("opacity", 1)
+      .style("background-color", tooltipcolor)
+     
+  let loc = d3.pointer(ev)
+  
+  //console.log(d3.mouse(this)[1])
+  
+
+  tooltip.html(
+    d[1] - d[0] + " Observations<br>" + "Probability Percentile: " + d.data.cat)
+    //    .style("top",  (d3.mouse(this)[1]) + "px")
+    //    .style("left", (d3.mouse(this)[0]) + "px")
+      .style("left", loc[0] + 90 +  "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      .style("top", loc[1] + 30 + "px")
+
+
+  }  
   
 var barHeight = Math.ceil(height / data.length);
 
@@ -99,6 +126,26 @@ g.append("g")
      } else {
      return "#009e73"
      }})
+     .on("mouseover", (ev, d) => mouseover(ev, d))
+ .on("mousemove", function(ev, d) { 
+   d3.select(this)
+      .style("stroke", "black")
+      .style("stroke-width", "2")
+  .on("mouseout", function() {
+    
+    d3.select(this)
+      .style("stroke-width", "0")
+    
+    mouseleave()
+
+  })
+   
+   if (x(d.data.cat) <= x2(Number(slidervaluetolisten.value)) ) {
+       return mouseover(ev, d, "#FAC8CD")
+     } else {
+     return mouseover(ev, d, "#009e73")
+     }
+ })
 
 g.append("g")
    .selectAll(".bucket-real-positives")
