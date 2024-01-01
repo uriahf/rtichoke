@@ -540,6 +540,17 @@ create_probs_histogram <- function(
     by = 'cat',
   )
   
+  inputIdtry <- sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold")
+  labeltry <- "Filter by Minimum Price"
+  widthtry <- "200px"
+  valueIdtry <- sprintf("filter_%s_%s__value", "long-confusion-matrix", "probability_threshold")
+  
+  
+  oninputtry <-  paste(
+    sprintf("document.getElementById('%s').textContent = this.value;", valueIdtry),
+    sprintf("Reactable.setFilter('%s', '%s', this.value)", "long-confusion-matrix", "probability_threshold")
+  )
+  
   
   if ( condition_on == "probs" ) {
   
@@ -565,16 +576,7 @@ create_probs_histogram <- function(
     elementId = "hist-predicted-negatives"
   )
   
-  inputIdtry <- sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold")
-  labeltry <- "Filter by Minimum Price"
-  widthtry <- "200px"
-  valueIdtry <- sprintf("filter_%s_%s__value", "long-confusion-matrix", "probability_threshold")
   
-  
-  oninputtry <-  paste(
-    sprintf("document.getElementById('%s').textContent = this.value;", valueIdtry),
-    sprintf("Reactable.setFilter('%s', '%s', this.value)", "long-confusion-matrix", "probability_threshold")
-  )
   
 
   crosstalk::bscols(
@@ -583,13 +585,16 @@ create_probs_histogram <- function(
       div(
         tags$label(`for` = sprintf("filter_%s_%s", "long-confusion-matrix", 
                                    stratified_by), 
-                   "Probability Threshold"),
+                   ifelse(stratified_by == "probability_threshold",
+                          "Prob. Threshold: ",
+                          "Predicted Positives (Rate):"
+                   )),
         
         browsable(tags$input(
           # id = 'sliderelse',
           # id = sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold"),
-          id ="filter_long-confusion-matrix_probability_threshold",
-          class = paste("probs-histogram-slider", stratified_by, sep = "-" ),
+          id =paste("filter_long-confusion-matrix", stratified_by, sep = "-" ),
+          class = "probs-histogram-slider",
           type = "range",
           min = 0,
           max = 1,
@@ -600,9 +605,12 @@ create_probs_histogram <- function(
           style = "width: 100%;"
         ))),
         div(
-    hist_predicted_negatives ,
-    hist_predicted_positives, id = "myDiv", style = css(
-height = "600px",
+    hist_predicted_negatives , id = "DivPredictedNegatives", style = css(
+      height = "300px",
+      border = "3px red solid"
+    )),
+    div(hist_predicted_positives, id = "DivPredictedPositives", style = css(
+height = "300px",
 border = "3px red solid"
 ))
       
@@ -622,17 +630,45 @@ border = "3px red solid"
       script = system.file(
         "d3/probs_hist.js", 
         package = "rtichoke"),
-      width = 300,
-      height = 300,
-      container = 'div'
+      width = 250,
+      height = 250,
+      container = 'div', 
+      elementId = paste("hist-predicted", stratified_by, sep = "_"),
+      options = list(
+        listenTO = paste("filter_long-confusion-matrix", stratified_by, sep = "-" ),
+        outerDiv = paste("DivPredicted", stratified_by, sep = "_"))
     )
     
     crosstalk::bscols(
-      widths = c(1),
-      hist_predicted ,
-      htmltools::HTML(glue::glue(
-      "<input type='range' id='sliderelse' min='0' max='1' step='{by}' value='1'>
-"))
+      widths = c(6, 12),
+        div(
+          tags$label(`for` = sprintf("filter_%s_%s", "long-confusion-matrix", 
+                                     stratified_by), 
+                     ifelse(stratified_by == "probability_threshold",
+                            "Prob. Threshold: ",
+                            "Predicted Positives (Rate):"
+                     )),
+          
+          browsable(tags$input(
+            # id = 'sliderelse',
+            # id = sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold"),
+            id =paste("filter_long-confusion-matrix", stratified_by, sep = "-" ),
+            class = paste("probs-histogram-slider", stratified_by, sep = "-" ),
+            type = "range",
+            min = 0,
+            max = 1,
+            step = by,
+            value = 1,
+            oninput = oninputtry,
+            onchange = oninputtry, # For IE11 support
+            style = "width: 100%;"
+          ))),
+      div(hist_predicted, 
+          id = paste("DivPredicted", stratified_by, sep = "_"), style = css(
+        height = "300px",
+        border = "3px red solid"        
+      )
+      )
     ) 
     
   }

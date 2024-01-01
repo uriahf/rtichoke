@@ -65,17 +65,17 @@ const svg = div.append("svg")
   .attr("height", height + marginTop + marginBottom)
       .style("border", "1px dotted #000");
     
-const tooltip = d3.select('#myDiv')
+const tooltip = d3.select('#DivPredictedNegatives')
 //const tooltip = d3.select("body")
   .append("div")
   .attr("class", "tooltip")
-  .style("opacity", 1)
+  .style("opacity", 0)
   .style("position", "absolute")
   .style("background-color", "blue")
   .style("border", "solid")
-  .style("border-width", "10px")
-  .style("border-radius", "50px")
-  .style("padding", "100px");
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
    
       
 const g = svg
@@ -87,12 +87,6 @@ var mouseleave = function() {
       .style("opacity", 0)
       
   }
-  
-var mousemove = function(ev, d) {
-  
-       d3.select(this).attr('fill', "orange");
-
-}
 
     
 g.append("g")
@@ -161,7 +155,7 @@ g.append("g")
    .attr("height", (d) => y(d[0]) - y(d[1]))
    .attr("width", x.bandwidth())
    .attr("fill", function(d, i) {
-     if (x(d.data.cat) < x2(1) ) {
+     if (x(d.data.cat) <= x2(1) ) {
        return "#FAC8CD"
      } else {
      return "#FFF7F8"
@@ -169,21 +163,19 @@ g.append("g")
    }) 
  .on("mouseover", function(d, i) {
    
-   if (x(d.data.cat) < x2(Number(sliderelse.value)) ) {
+   if (x(d.data.cat) <= x2(Number(sliderelse.value)) ) {
        return mouseover(ev, d, "purple")
      } else {
      return mouseover(ev, d, "lightgreen")
      }
     }
-   
-   
    )
  .on("mousemove", function(ev, d) { 
     d3.select(this)
       .style("stroke", "black")
       .style("stroke-width", "1")
    
-   if (x(d.data.cat) < x2(Number(sliderelse.value)) ) {
+   if (x(d.data.cat) <= x2(Number(sliderelse.value)) ) {
        return mouseover(ev, d, "#009e73")
      } else {
      return mouseover(ev, d, "#F4FFF0")

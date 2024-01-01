@@ -17,8 +17,17 @@ const sliderelseValues = document.getElementById("sliderelseValues");
 
 const sliderelse = document.getElementById("filter_long-confusion-matrix_probability_threshold");
 
-console.log(sliderelse)
-
+const tooltip = d3.select('#DivPredictedNegatives')
+//const tooltip = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0)
+  .style("position", "absolute")
+  .style("background-color", "blue")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
 
 const marginTop = 25;
 const marginRight = 20;

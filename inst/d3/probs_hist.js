@@ -1,20 +1,20 @@
-// !preview r2d3 data=data.frame(cat = rep(c('(0,0.1]', '(0.1,0.2]', '(0.2,0.3]', '(0.3,0.4]', '(0.4,0.5]', '(0.5,0.6]', '(0.6,0.7]', '(0.7,0.8]', '(0.8,0.9]', '(0.9,1]'), 2),values =  c(runif(20)), name = rep(c('real_positives', 'real_negatives'), each = 10)) |> tidyr::pivot_wider(names_from = "name", values_from = "values"), container = 'div'
+// !preview r2d3 data=data.frame(cat = rep(c('(0,0.1]', '(0.1,0.2]', '(0.2,0.3]', '(0.3,0.4]', '(0.4,0.5]', '(0.5,0.6]', '(0.6,0.7]', '(0.7,0.8]', '(0.8,0.9]', '(0.9,1]'), 2),values =  c(runif(20)), name = rep(c('real_positives', 'real_negatives'), each = 10)) |> tidyr::pivot_wider(names_from = "name", values_from = "values"), container = 'div', options = list(highlightMetrics = list("TP" = TRUE, "TN" = TRUE, "FP" = TRUE, "FN" = TRUE))
 //
 // r2d3: https://rstudio.github.io/r2d3
 //
 
-var checkRealPositives = document.getElementById('real-positives')
-var checkRealNegatives = document.getElementById('real-negatives')
+// console.log(options.listenTO)
+console.log(options.outerDiv)
 
-var checkboxes = [checkRealPositives, checkRealNegatives]
+// console.log(options.highlightMetrics.TP)
+const slidervaluetolisten = document.getElementById(options.listenTO);
+//const sliderelse = document.getElementById("filter_long-confusion-matrix_probability_threshold");
+
+slidervaluetolisten.addEventListener("input", function() {
+    updatePlot(Number(slidervaluetolisten.value))
+ });
 
 
-const sliderelse = document.getElementById("sliderelse");
-const sliderelseValues = document.getElementById("sliderelseValues");
-
-
-//const WIDTH = 900;
-const HEIGHT = 300;
 const marginTop = 25;
 const marginRight = 20;
 const marginBottom = 35;
@@ -31,6 +31,20 @@ const x2 = d3.scaleLinear()
 
 
 
+const tooltip = d3.select("#" + options.outerDiv)
+//const tooltip = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 1)
+  .style("position", "absolute")
+  .style("background-color", "blue")
+  .style("border", "solid")
+  .style("border-width", "10px")
+  .style("border-radius", "50px")
+  .style("padding", "100px");
+
+
+
 const keys = ['real_positives', 'real_negatives']
 
 stackLayout = d3.stack().keys(keys)(data)
@@ -41,7 +55,7 @@ const y = d3
   .scaleLinear()
   .domain([0, d3.max(stackLayout, (d) => d3.max(d, (d) => d[1]))])
   .nice()
-  .range([HEIGHT, 0]);
+  .range([height, 0]);
     
 const color = d3
   .scaleOrdinal()
@@ -50,11 +64,11 @@ const color = d3
   
   
   
-var barHeight = Math.ceil(HEIGHT / data.length);
+var barHeight = Math.ceil(height / data.length);
 
 const svg = div.append("svg")
   .attr("width", width + marginLeft + marginRight)
-  .attr("height", HEIGHT + marginTop + marginBottom)
+  .attr("height", height + marginTop + marginBottom)
       .style("border", "1px dotted #000");
       
 const g = svg
@@ -148,9 +162,7 @@ g.selectAll(".verticalline")
   
 }
 
-sliderelse.addEventListener("input", function() {
-    updatePlot(Number(sliderelse.value))
-  });
+
    
 g.append("g")
     .attr("transform", `translate(0,${height})`)
