@@ -173,7 +173,7 @@ prepare_probs_distribution_data <- function(
 
   
 
-  } else if ( condition_on == "reals" ) {
+  } else if ( condition_on %in% c("probs", "reals") ) {
     
     hist_data_events <- probs |> 
       purrr::map_df(~ create_mids_and_counts_data_from_probs(
@@ -506,3 +506,134 @@ turn_cumulative_probs_distribution_data_to_performance_data <- function(
 }
 
 
+
+# TODO: add documentation, include inherit params
+# TODO: refactor and use map for multiple populations
+
+create_probs_histogram <- function(
+    probs, reals, condition_on = NA, stratified_by, by) {
+  
+  probs_distribution <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals, 
+    condition_on = condition_on,
+    stratified_by = stratified_by, 
+    by = by
+  )
+  
+  real_positives_hist_dat <- probs_distribution$real_positives |> 
+    # mutate(name = "real_positives") |>
+    rename("real_positives" = counts,
+           "cat" = "mids") |> 
+    select(cat, real_positives)    
+  
+  
+  real_negatives_hist_dat <- probs_distribution$real_negatives |> 
+    # mutate(name = "real_negatives") |>
+    rename("real_negatives" = counts,
+           "cat" = "mids") |> 
+    select(cat, real_negatives)  
+  
+  full_hist_dat <- left_join(
+    real_positives_hist_dat,
+    real_negatives_hist_dat,
+    by = 'cat',
+  )
+  
+  
+  if ( condition_on == "probs" ) {
+  
+  hist_predicted_positives <- r2d3::r2d3(
+    data = full_hist_dat,
+    script = system.file(
+      "d3/probs_hist_predicted_positives.js", 
+      package = "rtichoke"),
+    width = 250,
+    height = 250,
+    container = 'div', 
+    elementId = "hist-predicted-positives"
+  )
+  
+  hist_predicted_negatives <- r2d3::r2d3(
+    data = full_hist_dat,
+    script = system.file(
+      "d3/probs_hist_predicted_negatives.js", 
+      package = "rtichoke"),
+    width = 250,
+    height = 250,
+    container = 'div', 
+    elementId = "hist-predicted-negatives"
+  )
+  
+  inputIdtry <- sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold")
+  labeltry <- "Filter by Minimum Price"
+  widthtry <- "200px"
+  valueIdtry <- sprintf("filter_%s_%s__value", "long-confusion-matrix", "probability_threshold")
+  
+  
+  oninputtry <-  paste(
+    sprintf("document.getElementById('%s').textContent = this.value;", valueIdtry),
+    sprintf("Reactable.setFilter('%s', '%s', this.value)", "long-confusion-matrix", "probability_threshold")
+  )
+  
+
+  crosstalk::bscols(
+    widths = c(6, 12),
+    
+      div(
+        tags$label(`for` = sprintf("filter_%s_%s", "long-confusion-matrix", 
+                                   stratified_by), 
+                   "Probability Threshold"),
+        
+        browsable(tags$input(
+          # id = 'sliderelse',
+          # id = sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold"),
+          id ="filter_long-confusion-matrix_probability_threshold",
+          class = paste("probs-histogram-slider", stratified_by, sep = "-" ),
+          type = "range",
+          min = 0,
+          max = 1,
+          step = by,
+          value = 1,
+          oninput = oninputtry,
+          onchange = oninputtry, # For IE11 support
+          style = "width: 100%;"
+        ))),
+        div(
+    hist_predicted_negatives ,
+    hist_predicted_positives, id = "myDiv", style = css(
+height = "600px",
+border = "3px red solid"
+))
+      
+  )
+  
+  } else if (condition_on == "reals") {
+   
+    
+    full_hist_dat <- left_join(
+      real_positives_hist_dat,
+      real_negatives_hist_dat,
+      by = 'cat',
+    )
+    
+    hist_predicted <- r2d3::r2d3(
+      data = full_hist_dat,
+      script = system.file(
+        "d3/probs_hist.js", 
+        package = "rtichoke"),
+      width = 300,
+      height = 300,
+      container = 'div'
+    )
+    
+    crosstalk::bscols(
+      widths = c(1),
+      hist_predicted ,
+      htmltools::HTML(glue::glue(
+      "<input type='range' id='sliderelse' min='0' max='1' step='{by}' value='1'>
+"))
+    ) 
+    
+  }
+}

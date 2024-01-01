@@ -129,6 +129,49 @@ performance_dat <- prepare_performance_data(probs = params$probs,
 create_table_for_prevalence(performance_dat)
 ```
 
+
+# Prediction's Distribution {.tabset}
+
+## By Probability Threshold
+
+<br>
+
+```{r}
+
+create_probs_histogram(
+  probs = params$probs,
+  reals = params$reals,  
+  condition_on = "probs",
+  stratified_by = "probability_threshold",
+  by = 0.01
+)
+
+```
+
+
+<br>
+<br>
+
+## By Predicted Positives Condition Rate (PPCR)
+
+<br>
+
+
+```{r}
+
+create_probs_histogram(
+  probs = params$probs,
+  reals = params$reals, 
+  condition_on = "probs",
+  stratified_by = "ppcr",
+  by = 0.01
+)
+
+```
+
+<br>
+<br>
+
 # Calibration {.tabset}
 
 ## Smooth
