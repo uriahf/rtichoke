@@ -640,7 +640,7 @@ border = "3px red solid"
     )
     
     crosstalk::bscols(
-      widths = c(6, 12),
+      widths = c(6, 6, 12),
         div(
           tags$label(`for` = sprintf("filter_%s_%s", "long-confusion-matrix", 
                                      stratified_by), 
@@ -663,6 +663,7 @@ border = "3px red solid"
             onchange = oninputtry, # For IE11 support
             style = "width: 100%;"
           ))),
+      create_confusion_matrix_as_input_element(),
       div(hist_predicted, 
           id = paste("DivPredicted", stratified_by, sep = "_"), style = css(
         height = "300px",
@@ -673,3 +674,51 @@ border = "3px red solid"
     
   }
 }
+
+create_confusion_matrix_as_input_element <- function() {
+  
+  tibble::tribble(
+    ~"type", ~"predicted_positives", ~"predicted_negatives",
+    "Real Positives", "TP", "FN",
+    "Real Negatives", "FP", "TN"
+  ) |> 
+    reactable::reactable(
+      sortable = FALSE,
+      fullWidth = FALSE,
+      borderless = FALSE,
+      defaultColDef = reactable::colDef(
+        html = TRUE,
+        align = "center",
+        headerStyle  = list(fontWeight = 100),
+        header = reactable::JS(confusion_matrix_header_maker())
+      ),
+      columns = list(
+        predicted_positives = reactable::colDef(
+          name = "Predicted Positives", 
+          style = reactable::JS(confusion_matrix_style_maker("predicted_positives")), 
+          cell = reactable::JS(confusion_matrix_cell_maker())
+        ),
+        type = reactable::colDef(
+          name = "<br>All<br>Observations", 
+          # cell = reactable::JS(confusion_matrix_real_cell_maker()),
+          cell = reactable::JS(confusion_matrix_cell_maker()),
+          align = "left",
+          style = list(fontWeight = 100),
+          minWidth = 140
+        ),
+        predicted_negatives = reactable::colDef(
+          name = "Predicted Negatives", 
+          cell = reactable::JS(confusion_matrix_cell_maker()),
+          style = reactable::JS(confusion_matrix_style_maker("predicted_negatives"))
+        )
+      ),
+      meta = list(
+        highlightedMetrics = list(
+          TP = TRUE, FP = TRUE, TN = TRUE, FN = TRUE, N = TRUE, PP = TRUE, PN = TRUE, RP = TRUE, RN = TRUE
+        )),
+      elementId = "cars-colors-table"
+    )
+  
+}
+
+
