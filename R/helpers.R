@@ -1277,8 +1277,8 @@ create_reference_lines_data <- function(curve, prevalence,
 
 return_perfect_prediction_gains_y_values <- function(prevalence) {
   c(
-    seq(0, 1, length.out = (100 * (round(prevalence, digits = 3)) + 1)),
-    rep(1, (100 - 100 * round(prevalence, digits = 3)))
+    seq(0, 1, length.out = (100 * as.integer(round(prevalence, digits = 3)) + 1)),
+    rep(1, (100 - 100 * as.integer(round(prevalence, digits = 3))))
   )
 }
 
