@@ -521,23 +521,26 @@ create_probs_histogram <- function(
     by = by
   )
   
+  View(probs_distribution$real_positives)
+  
   real_positives_hist_dat <- probs_distribution$real_positives |> 
     # mutate(name = "real_positives") |>
     rename("real_positives" = counts,
            "cat" = "mids") |> 
-    select(cat, real_positives)    
+    select(reference_group, cat, real_positives)    
   
+  View(real_positives_hist_dat)
   
   real_negatives_hist_dat <- probs_distribution$real_negatives |> 
     # mutate(name = "real_negatives") |>
     rename("real_negatives" = counts,
            "cat" = "mids") |> 
-    select(cat, real_negatives)  
+    select(reference_group, cat, real_negatives)  
   
   full_hist_dat <- left_join(
     real_positives_hist_dat,
     real_negatives_hist_dat,
-    by = 'cat',
+    by = c('reference_group', 'cat'),
   )
   
   inputIdtry <- sprintf("filter_%s_%s", "long-confusion-matrix", "probability_threshold")
@@ -624,6 +627,8 @@ border = "3px red solid"
       real_negatives_hist_dat,
       by = 'cat',
     )
+    
+    View(full_hist_dat)
     
     hist_predicted <- r2d3::r2d3(
       data = full_hist_dat,
