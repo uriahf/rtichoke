@@ -639,9 +639,23 @@ border = "3px red solid"
         outerDiv = paste("DivPredicted", stratified_by, sep = "_"))
     )
     
+    reference_groups <- names(probs)
+    
+    
+    reference_groups_radio_buttons <- htmltools::tags$form(
+      lapply(reference_groups, function(reference_group) {
+        htmltools::tagList(
+          htmltools::tags$input(type = "radio", id = reference_group, name = "fruit", value = reference_group),
+          htmltools::tags$label(reference_group, `for` = reference_group),
+          htmltools::tags$br()
+        )
+      })
+    )
+    
     crosstalk::bscols(
       widths = c(6, 6, 12),
         div(
+          reference_groups_radio_buttons,
           tags$label(`for` = sprintf("filter_%s_%s", "long-confusion-matrix", 
                                      stratified_by), 
                      ifelse(stratified_by == "probability_threshold",
