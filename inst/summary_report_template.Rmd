@@ -139,8 +139,8 @@ create_table_for_prevalence(performance_dat)
 ```{r}
 
 create_probs_histogram(
-  probs = list(data_three_myths$pred),
-  reals = list(data_three_myths$outcome), 
+  probs = params$probs, 
+  reals = params$reals, 
   condition_on = "reals",
   stratified_by = "probability_threshold",
   by = 0.01
@@ -159,8 +159,8 @@ create_probs_histogram(
 ```{r}
 
 create_probs_histogram(
-  probs = list(data_three_myths$pred),
-  reals = list(data_three_myths$outcome), 
+  probs = params$probs, 
+  reals = params$reals, 
   condition_on = "reals",
   stratified_by = "ppcr",
   by = 0.01
