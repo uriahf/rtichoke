@@ -3,6 +3,8 @@
 // r2d3: https://rstudio.github.io/r2d3
 //
 
+
+
 const preprocessData = data => 
   data.map(d => ({
     ...d,
@@ -21,7 +23,13 @@ const initialReferenceGroupValue = getReferenceGroupValue()
 console.log('initialReferenceGroupValue')
 console.log(initialReferenceGroupValue)
 
-//const selectedData = preprocessData(data[ReferenceGroupValue][stratifiedByValue][selectedIndex]);
+console.log('data')
+console.log(JSON.stringify(data))
+
+const selectedData = data.filter(obj => obj.reference_group === initialReferenceGroupValue);
+
+console.log('selectedData')
+console.log(JSON.stringify(selectedData))
 
 // console.log(options.listenTO)
 // console.log(options.outerDiv)
