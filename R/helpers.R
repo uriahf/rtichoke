@@ -1413,3 +1413,68 @@ check_zero_variance_for_sub_population <- function(performance_data_sup_populati
     performance_data_sup_population
   }
 }
+
+create_radio_button <- function(
+    value,
+    radio_name,
+    onclick_handler,
+    is_checked = FALSE
+) {
+  htmltools::tags$input(
+    id = paste0(radio_name, value),
+    name = radio_name,
+    value = value,
+    type = "radio",
+    checked = is_checked,
+    onclick = onclick_handler
+  )
+}
+
+create_radio_label <- function(config, radio_name, onclick_handler) {
+  htmltools::tags$label(
+    `for` = radio_name,
+    create_radio_button(
+      config$value,
+      radio_name,
+      onclick_handler,
+      config$checked
+    ),
+    config$label
+  )
+}
+
+
+create_radio_buttons <- function(
+    radio_configs,
+    title,
+    radio_name,
+    onclick_handler
+) {
+  title_element <- htmltools::HTML(paste0("<b>", title, "</b>"))
+  radio_elements <- purrr::map(radio_configs, \(radio_config) {
+    create_radio_label(
+      radio_config,
+      radio_name,
+      onclick_handler
+    )
+  })
+  
+  htmltools::div(
+    title_element,
+    !!!radio_elements
+  )
+}
+
+create_reference_groups_radio_buttons <- function(
+    reference_groups
+) {
+  create_radio_buttons(
+    reference_groups |>
+      purrr::map(\(x) {
+        list(value = x, label = x, checked = FALSE)
+      }),
+    "Reference Group:",
+    "reference_group_radiobutton_",
+    "ManipulateReferenceGroup(this)" 
+  )
+}

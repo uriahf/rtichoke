@@ -521,15 +521,11 @@ create_probs_histogram <- function(
     by = by
   )
   
-  View(probs_distribution$real_positives)
-  
   real_positives_hist_dat <- probs_distribution$real_positives |> 
     # mutate(name = "real_positives") |>
     rename("real_positives" = counts,
            "cat" = "mids") |> 
     select(reference_group, cat, real_positives)    
-  
-  View(real_positives_hist_dat)
   
   real_negatives_hist_dat <- probs_distribution$real_negatives |> 
     # mutate(name = "real_negatives") |>
@@ -628,8 +624,6 @@ border = "3px red solid"
       by = 'cat',
     )
     
-    View(full_hist_dat)
-    
     hist_predicted <- r2d3::r2d3(
       data = full_hist_dat,
       script = system.file(
@@ -647,15 +641,17 @@ border = "3px red solid"
     reference_groups <- names(probs)
     
     
-    reference_groups_radio_buttons <- htmltools::tags$form(
-      lapply(reference_groups, function(reference_group) {
-        htmltools::tagList(
-          htmltools::tags$input(type = "radio", id = reference_group, name = "fruit", value = reference_group),
-          htmltools::tags$label(reference_group, `for` = reference_group),
-          htmltools::tags$br()
-        )
-      })
-    )
+    # reference_groups_radio_buttons <- htmltools::tags$form(
+    #   lapply(reference_groups, function(reference_group) {
+    #     htmltools::tagList(
+    #       htmltools::tags$input(type = "radio", id = reference_group, name = "fruit", value = reference_group),
+    #       htmltools::tags$label(reference_group, `for` = reference_group),
+    #       htmltools::tags$br()
+    #     )
+    #   })
+    # )
+    
+    reference_groups_radio_buttons <- create_reference_groups_radio_buttons(reference_groups)
     
     crosstalk::bscols(
       widths = c(6, 6, 12),

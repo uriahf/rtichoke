@@ -3,8 +3,28 @@
 // r2d3: https://rstudio.github.io/r2d3
 //
 
+const preprocessData = data => 
+  data.map(d => ({
+    ...d,
+    lower_bound: parseFloat(d.lower_bound).toFixed(4)
+  }));
+
+
+const getReferenceGroupValue = () => {
+  const radioButtons = document.getElementsByName('reference_group_radiobutton_');
+  return Array.from(radioButtons).find(radio => radio.checked)?.value;
+};
+
+
+const initialReferenceGroupValue = getReferenceGroupValue()
+
+console.log('initialReferenceGroupValue')
+console.log(initialReferenceGroupValue)
+
+//const selectedData = preprocessData(data[ReferenceGroupValue][stratifiedByValue][selectedIndex]);
+
 // console.log(options.listenTO)
-console.log(options.outerDiv)
+// console.log(options.outerDiv)
 
 // console.log(options.highlightMetrics.TP)
 const slidervaluetolisten = document.getElementById(options.listenTO);
