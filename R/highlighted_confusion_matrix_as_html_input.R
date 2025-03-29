@@ -251,9 +251,6 @@ onclick_reactable_setMeta <- function(highlightedMetrics = list(
         if (checkBox.checked) {
         
         
-        
-        console.log('checkbox is checked')
-        
           return {
           highlightedMetrics: {",
     purrr::map2_chr(
@@ -267,8 +264,6 @@ onclick_reactable_setMeta <- function(highlightedMetrics = list(
     
     } else {
     
-      console.log('checkbox is not checked')
-        
         return {
           highlightedMetrics: {",
     purrr::map2_chr(
@@ -296,8 +291,6 @@ confusion_matrix_real_cell_maker <- function(){
     const { currency, exchangeRates } = state.meta;
     const cellInfoValueMetric = cellInfo.value
     
-    console.log(cellInfoValueMetric)
- 
  ', onclick_reactable_setMeta(
    highlightedMetrics = list(
      checked = list(
@@ -306,8 +299,6 @@ confusion_matrix_real_cell_maker <- function(){
      nonchecked = list(
        "TP" = "!prevMeta", "TN" = "prevMeta", "FP" = "prevMeta", "FN" = "prevMeta"
      )        ), checkboxId = "\'real_positives_checkbox\'"), '
-    
-      console.log(cellInfo.value)
     
     })">${cellInfo.value}`
     } 
@@ -322,8 +313,6 @@ confusion_matrix_cell_maker <- function() {
     const { currency, exchangeRates } = state.meta;
     const cellInfoValueMetric = cellInfo.value
     
-    console.log(cellInfoValueMetric.toLowerCase() === "tp")
-
 if (cellInfoValueMetric.toLowerCase() === "tp") {
 
     return `<input type="checkbox" id="tp-checkbox" 
@@ -337,12 +326,9 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
             "TP" = "!prevMeta", "TN" = "prevMeta", "FP" = "prevMeta", "FN" = "prevMeta"
           )        ), checkboxId = "\'tp-checkbox\'"), '
       
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
   } else if (cellInfoValueMetric.toLowerCase() === "fp") {
-  
-  console.log("This is not TP")
   
   return `<input type="checkbox" id="fp-checkbox" 
       name="vehicle1" value="Bike" checked = true onclick="(function(cellInfoValueMetric) {
@@ -354,7 +340,6 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
           nonchecked = list(
             "TP" = "prevMeta", "TN" = "prevMeta", "FP" = "!prevMeta", "FN" = "prevMeta"
           )        ), checkboxId = "\'fp-checkbox\'"),'
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
     
@@ -363,8 +348,6 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
   return `<input type="checkbox" id="tn-checkbox" 
       name="vehicle1" value="Bike" checked = true onclick="(function(cellInfoValueMetric) {
       
-          console.log(cellInfoValueMetric)
-
       ', onclick_reactable_setMeta(
         highlightedMetrics = list(
           checked = list(
@@ -373,23 +356,15 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
           nonchecked = list(
             "TP" = "prevMeta", "TN" = "!prevMeta", "FP" = "prevMeta", "FN" = "prevMeta"
           )        ), checkboxId = "\'tn-checkbox\'"),'
-      
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
   
   
   } else if (cellInfoValueMetric.toLowerCase() === "fn") {
   
-   console.log("This is not TP")
   
   return `<input type="checkbox" id="fn-checkbox" 
       name="vehicle1" value="Bike" checked = true onclick="(function(cellInfoValueMetric) {
-      
-          console.log(cellInfoValueMetric)
-
-      //console.log(cellInfo)
-      //console.log(cellInfo)
       
       ', onclick_reactable_setMeta(
         highlightedMetrics = list(
@@ -399,7 +374,6 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
           nonchecked = list(
             "TP" = "prevMeta", "TN" = "prevMeta", "FP" = "prevMeta", "FN" = "!prevMeta"
           )        ), checkboxId = "\'fn-checkbox\'"),'
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
   
@@ -417,7 +391,6 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
             "TP" = "!prevMeta", "TN" = "prevMeta", "FP" = "prevMeta", "FN" = "!prevMeta"
           )        ), checkboxId = "\'real_positives_checkbox\'"), '
       
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
   } else if (cellInfoValueMetric.toLowerCase() === "real negatives") {
@@ -433,7 +406,6 @@ if (cellInfoValueMetric.toLowerCase() === "tp") {
             "TP" = "prevMeta", "TN" = "!prevMeta", "FP" = "!prevMeta", "FN" = "prevMeta"
           )        ), checkboxId = "\'real_negatives_checkbox\'"), '
       
-    console.log(\'Internal function is called\');
   })()">
       ${cellInfo.value}`;
   }
@@ -450,26 +422,19 @@ confusion_matrix_style_maker <- function(predicted){
       
       const { showColors, mpgColors } = state.meta
       const value = rowInfo.values['predicted_positives']
-      console.log('value')
-      console.log(value)
-      
       
         if (state.meta.highlightedMetrics.TP & value == 'TP') {
-        console.log('TP Manipulation checked')
           return { backgroundColor: `#009e73`, fontWeight: `600` }
         } 
       if (!state.meta.highlightedMetrics.TP & value == 'TP') {
       
-      console.log('TP Manipulation not checked')
           return { backgroundColor: `#F4FFF0`, fontWeight: `600` }
       }
         
        if (state.meta.highlightedMetrics.FP & value == 'FP') {
-       console.log('FP Manipulation checked')
           return { backgroundColor: `#FAC8CD`, fontWeight: `600` }
         } 
       if (!state.meta.highlightedMetrics.FP & value == 'FP') {
-      console.log('FP Manipulation not checked')
           return { backgroundColor: `#FFF7F8`, fontWeight: `600` }
         }  
         
@@ -483,11 +448,9 @@ confusion_matrix_style_maker <- function(predicted){
       const value = rowInfo.values['predicted_negatives']
       
         if (state.meta.highlightedMetrics.TN & value == 'TN') {
-        console.log('TN Manipulation checked')
           return { backgroundColor: `#009e73`, fontWeight: `600` }
         } 
       if (!state.meta.highlightedMetrics.TN & value == 'TN') {
-        console.log('TN Manipulation not checked')
           return { backgroundColor: `#F4FFF0`, fontWeight: `600` }
       }
         
