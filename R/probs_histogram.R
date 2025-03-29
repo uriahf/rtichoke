@@ -621,7 +621,7 @@ border = "3px red solid"
     full_hist_dat <- left_join(
       real_positives_hist_dat,
       real_negatives_hist_dat,
-      by = 'cat',
+      by = c('reference_group', 'cat'),
     )
     
     hist_predicted <- r2d3::r2d3(

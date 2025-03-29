@@ -1478,3 +1478,13 @@ create_reference_groups_radio_buttons <- function(
     "ManipulateReferenceGroup(this)" 
   )
 }
+
+
+data_to_json <- function(data) {
+  jsonlite::toJSON(
+    data,
+    dataframe = "rows",
+    auto_unbox = FALSE,
+    rownames = TRUE
+  )
+}
