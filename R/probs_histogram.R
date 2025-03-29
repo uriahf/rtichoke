@@ -625,7 +625,7 @@ border = "3px red solid"
     )
     
     hist_predicted <- r2d3::r2d3(
-      data = full_hist_dat,
+      data = data_to_json(full_hist_dat),
       script = system.file(
         "d3/probs_hist.js", 
         package = "rtichoke"),
@@ -639,17 +639,6 @@ border = "3px red solid"
     )
     
     reference_groups <- names(probs)
-    
-    
-    # reference_groups_radio_buttons <- htmltools::tags$form(
-    #   lapply(reference_groups, function(reference_group) {
-    #     htmltools::tagList(
-    #       htmltools::tags$input(type = "radio", id = reference_group, name = "fruit", value = reference_group),
-    #       htmltools::tags$label(reference_group, `for` = reference_group),
-    #       htmltools::tags$br()
-    #     )
-    #   })
-    # )
     
     reference_groups_radio_buttons <- create_reference_groups_radio_buttons(reference_groups)
     
