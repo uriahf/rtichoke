@@ -18,8 +18,7 @@ add_hover_text_to_performance_data(
 
 \item{curve}{curve}
 
-\item{stratified_by}{Performance Metrics can be stratified by Probability
-Threshold or alternatively by Predicted Positives Condition Rate}
+\item{stratified_by}{A character string specifying the stratification method.}
 }
 \description{
 Adding hover text to performance data

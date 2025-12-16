@@ -18,16 +18,15 @@ plot_roc_curve(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
+\item{chosen_threshold}{A numeric value for a specific threshold to highlight.}
 
-\item{interactive}{whether the plot should be interactive
-plots}
+\item{interactive}{A logical indicating whether to create an interactive \code{plotly} chart.}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
-\item{title_included}{add title to the curve}
+\item{title_included}{A logical indicating whether to include a title.}
 
-\item{size}{the size of the curve}
+\item{size}{A numeric value for the line size.}
 }
 \description{
 Plot a ROC Curve

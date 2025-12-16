@@ -16,11 +16,11 @@ render_performance_table(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
+\item{chosen_threshold}{A numeric value for a specific threshold to highlight.}
 
 \item{output_type}{the type of the output table}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 }
 \description{
 Create a Performance Table

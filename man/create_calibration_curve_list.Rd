@@ -14,14 +14,11 @@ create_calibration_curve_list(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
-\item{color_values}{color palette}
-
-\item{size}{the size of the curve}
+\item{size}{A numeric value for the line size.}
 }
 \description{
 Create a Calibration Curve List

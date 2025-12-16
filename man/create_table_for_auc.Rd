@@ -13,12 +13,9 @@ create_table_for_auc(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
-
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 }
 \description{
 Create Table for AUC

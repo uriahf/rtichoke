@@ -21,24 +21,19 @@ create_decision_curve(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
+\item{by}{The increment for the probability threshold sequence.}
 
-\item{by}{number: increment of the sequence.}
+\item{stratified_by}{A character string specifying the stratification method.}
 
-\item{stratified_by}{Performance Metrics can be stratified by Probability
-Threshold or alternatively by Predicted Positives Condition Rate}
+\item{chosen_threshold}{A numeric value for a specific threshold to highlight.}
 
-\item{chosen_threshold}{a chosen threshold to display (for non-interactive)}
+\item{interactive}{A logical indicating whether to create an interactive \code{plotly} chart.}
 
-\item{interactive}{whether the plot should be interactive
-plots}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
-\item{color_values}{color palette}
-
-\item{size}{the size of the curve}
+\item{size}{A numeric value for the line size.}
 
 \item{type}{What type of Decision Curve, default choice is "conventional".
 Alternatives are "interventions avoided" and "combined" for both

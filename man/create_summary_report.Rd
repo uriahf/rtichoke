@@ -13,13 +13,9 @@ create_summary_report(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
-
-\item{interactive}{whether the plot should be interactive
-plots}
+\item{interactive}{A logical indicating whether to create an interactive \code{plotly} chart.}
 
 \item{output_file}{The name of the output file}
 

@@ -17,7 +17,7 @@ render_and_format_gt(
 
 \item{prevalence}{the prevalence of the populations}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 }
 \description{
 Rendering and Formatting gt

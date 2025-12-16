@@ -14,7 +14,7 @@ create_table_for_prevalence(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 }
 \description{
 Create Data for Prevalence
