@@ -1,0 +1,79 @@
+name: pkgdown preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pkgdown-pages
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+
+      - name: Build pkgdown site
+        run: Rscript -e 'pkgdown::build_site(new_process = FALSE)'
+
+      - name: Publish PR preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages
+          git worktree add /tmp/gh-pages origin/gh-pages
+          rm -rf "/tmp/gh-pages/pr-preview/pr-${PR_NUMBER}"
+          mkdir -p "/tmp/gh-pages/pr-preview/pr-${PR_NUMBER}"
+          cp -a docs/. "/tmp/gh-pages/pr-preview/pr-${PR_NUMBER}/"
+          cd /tmp/gh-pages
+          git add "pr-preview/pr-${PR_NUMBER}"
+          if git diff --cached --quiet; then
+            echo "Preview is already up to date."
+            exit 0
+          fi
+          git commit -m "Deploy pkgdown preview for PR #${PR_NUMBER}"
+          git push origin HEAD:gh-pages
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove PR preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages
+          git worktree add /tmp/gh-pages origin/gh-pages
+          cd /tmp/gh-pages
+          if [ ! -d "pr-preview/pr-${PR_NUMBER}" ]; then
+            echo "No preview directory to remove."
+            exit 0
+          fi
+          rm -rf "pr-preview/pr-${PR_NUMBER}"
+          git add -A "pr-preview/pr-${PR_NUMBER}"
+          git commit -m "Remove pkgdown preview for PR #${PR_NUMBER}"
+          git push origin HEAD:gh-pages
