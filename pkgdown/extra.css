@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap");
+
+:root {
+  --rtichoke-bg: #fff7f5;
+  --rtichoke-surface: #ffffff;
+  --rtichoke-soft: #fef0ec;
+  --rtichoke-primary: #c54b29;
+  --rtichoke-accent: #ce3d15;
+  --rtichoke-border: #f0cfc3;
+  --rtichoke-text: #281d19;
+}
+
+body {
+  background: var(--rtichoke-bg);
+  color: var(--rtichoke-text);
+  font-family: "Commissioner", system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
+  color: var(--rtichoke-primary);
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+}
+
+a {
+  color: var(--rtichoke-accent);
+}
+
+a:hover,
+a:focus {
+  color: var(--rtichoke-primary);
+}
+
+.navbar {
+  background: rgba(255, 247, 245, 0.96) !important;
+  border-bottom: 1px solid var(--rtichoke-border);
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: var(--rtichoke-primary) !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active {
+  color: var(--rtichoke-accent) !important;
+}
+
+pre,
+.sourceCode,
+.card,
+.callout {
+  border-color: var(--rtichoke-border) !important;
+  border-radius: 0.75rem;
+}
+
+pre,
+.sourceCode {
+  background: #fffdfc;
+}
+
+code {
+  color: #8f321b;
+}
+
+.btn-primary {
+  background-color: var(--rtichoke-primary);
+  border-color: var(--rtichoke-primary);
+}
