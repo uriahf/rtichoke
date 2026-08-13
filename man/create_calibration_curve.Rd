@@ -16,19 +16,15 @@ create_calibration_curve(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
+\item{interactive}{A logical indicating whether to create an interactive \code{plotly} chart.}
 
-\item{interactive}{whether the plot should be interactive
-plots}
-
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
 \item{type}{discrete or smooth}
 
-\item{size}{the size of the curve}
+\item{size}{A numeric value for the line size.}
 }
 \description{
 Create a Calibration Curve

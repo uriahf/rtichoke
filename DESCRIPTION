@@ -3,6 +3,8 @@ Title: rtichoke
 Version: 0.0.7
 Authors@R: 
     person("Uriah", "Finkel", , "ufinkel@gmail.com", role = c("cre", "aut"))
+Author: Uriah Finkel
+Maintainer: Uriah Finkel <ufinkel@gmail.com>
 Description: Interactive visualization for model performance.
 License: MIT + file LICENSE
 URL: https://github.com/uriahf/rtichoke
@@ -40,5 +42,5 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3

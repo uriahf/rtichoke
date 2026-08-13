@@ -16,17 +16,13 @@ create_performance_table(
 )
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{reals}{A list of numeric vectors containing the binary outcomes (0 or 1).}
 
-\item{reals}{a list of vectors of binary outcomes (one for each population)}
+\item{by}{The increment for the probability threshold sequence.}
 
-\item{by}{number: increment of the sequence.}
+\item{stratified_by}{A character string specifying the stratification method.}
 
-\item{stratified_by}{Performance Metrics can be stratified by Probability
-Threshold or alternatively by Predicted Positives Condition Rate}
-
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
 \item{output_type}{the type of the output table}
 }

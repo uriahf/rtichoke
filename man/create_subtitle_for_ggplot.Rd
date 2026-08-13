@@ -12,7 +12,7 @@ create_subtitle_for_ggplot(
 \arguments{
 \item{probs_names}{the names of the probs}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 }
 \description{
 Creating subtitle for ggplot2

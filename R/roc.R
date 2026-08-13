@@ -1,38 +1,44 @@
 # ROC Curve ---------------------------------------------------------------
 
-
-#' ROC Curve
-#'
 #' Create a ROC Curve
 #'
-#' @inheritParams prepare_performance_data
-#' @param color_values color palette
-#' @param chosen_threshold a chosen threshold to display (for non-interactive)
-#' @param interactive whether the plot should be interactive
-#' plots
-#' @param color_values color palette
-#' @param title_included add title to the curve
-#' @param size the size of the curve
+#' This is a generic function to create an interactive or static ROC curve
+#' to visualize model performance for binary classification problems.
 #'
+#' @param x An object containing prediction and outcome data.
+#' @param ... Additional arguments passed to specific methods.
 #'
-#' @export
+#' @return A `plotly` or `ggplot2` object.
 #'
+create_roc_curve <- function(x, ...) {
+  UseMethod("create_roc_curve")
+}
+
+#' @rdname create_roc_curve
+#' @exportS3Method
+#' @param reals A list of numeric vectors containing the binary outcomes (0 or 1).
+#' @param by The increment for the probability threshold sequence.
+#' @param stratified_by A character string specifying the stratification method.
+#' @param chosen_threshold A numeric value for a specific threshold to highlight.
+#' @param interactive A logical indicating whether to create an interactive `plotly` chart.
+#' @param color_values A character vector of hex codes for the color palette.
+#' @param title_included A logical indicating whether to include a title.
+#' @param size A numeric value for the line size.
 #' @examples
 #' \dontrun{
-#'
 #' create_roc_curve(
-#'   probs = list(example_dat$estimated_probabilities),
+#'   x = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome)
 #' )
 #'
 #' create_roc_curve(
-#'   probs = list(example_dat$estimated_probabilities),
+#'   x = list(example_dat$estimated_probabilities),
 #'   reals = list(example_dat$outcome),
 #'   stratified_by = "ppcr"
 #' )
 #'
 #' create_roc_curve(
-#'   probs = list(
+#'   x = list(
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
@@ -41,7 +47,7 @@
 #'
 #'
 #' create_roc_curve(
-#'   probs = list(
+#'   x = list(
 #'     "First Model" = example_dat$estimated_probabilities,
 #'     "Second Model" = example_dat$random_guess
 #'   ),
@@ -51,7 +57,7 @@
 #'
 #'
 #' create_roc_curve(
-#'   probs = list(
+#'   x = list(
 #'     "train" = example_dat %>%
 #'       dplyr::filter(type_of_set == "train") %>%
 #'       dplyr::pull(estimated_probabilities),
@@ -67,7 +73,7 @@
 #' )
 #'
 #' create_roc_curve(
-#'   probs = list(
+#'   x = list(
 #'     "train" = example_dat %>%
 #'       dplyr::filter(type_of_set == "train") %>%
 #'       dplyr::pull(estimated_probabilities),
@@ -83,25 +89,25 @@
 #'   stratified_by = "ppcr"
 #' )
 #' }
-create_roc_curve <- function(probs, reals, by = 0.01,
-                             stratified_by = "probability_threshold",
-                             chosen_threshold = NA,
-                             interactive = TRUE,
-                             color_values = c(
-                               "#1b9e77", "#d95f02",
-                               "#7570b3", "#e7298a",
-                               "#07004D", "#E6AB02",
-                               "#FE5F55", "#54494B",
-                               "#006E90", "#BC96E6",
-                               "#52050A", "#1F271B",
-                               "#BE7C4D", "#63768D",
-                               "#08A045", "#320A28",
-                               "#82FF9E", "#2176FF",
-                               "#D1603D", "#585123"
-                             ),
-                             title_included = FALSE,
-                             size = NULL) {
-  check_probs_input(probs)
+create_roc_curve.default <- function(x, reals, by = 0.01,
+                                     stratified_by = "probability_threshold",
+                                     chosen_threshold = NA,
+                                     interactive = TRUE,
+                                     color_values = c(
+                                       "#1b9e77", "#d95f02",
+                                       "#7570b3", "#e7298a",
+                                       "#07004D", "#E6AB02",
+                                       "#FE5F55", "#54494B",
+                                       "#006E90", "#BC96E6",
+                                       "#52050A", "#1F271B",
+                                       "#BE7C4D", "#63768D",
+                                       "#08A045", "#320A28",
+                                       "#82FF9E", "#2176FF",
+                                       "#D1603D", "#585123"
+                                     ),
+                                     title_included = FALSE,
+                                     size = NULL, ...) {
+  check_probs_input(x)
   # check_real_input(reals)
 
   if (!is.na(chosen_threshold)) {
@@ -109,7 +115,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
   }
 
   prepare_performance_data(
-    probs = probs,
+    probs = x,
     reals = reals,
     by = by,
     stratified_by = stratified_by

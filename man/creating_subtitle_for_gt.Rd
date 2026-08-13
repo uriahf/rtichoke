@@ -7,7 +7,7 @@
 creating_subtitle_for_gt(perf_dat_type, color_values = NA, prevalence = NA)
 }
 \arguments{
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
 \item{models_names}{the names of the different models}
 }

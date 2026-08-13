@@ -18,7 +18,7 @@ plot_rtichoke_curve(
 \arguments{
 \item{performance_data}{an rtichoke Performance Data}
 
-\item{color_values}{color palette}
+\item{color_values}{A character vector of hex codes for the color palette.}
 
 \item{min_p_threshold}{The minimum Probability Threshold value to be
 displayed}
@@ -26,7 +26,7 @@ displayed}
 \item{max_p_threshold}{The maximum Probability Threshold value to be
 displayed}
 
-\item{size}{the size of the curve}
+\item{size}{A numeric value for the line size.}
 }
 \description{
 Plot rtichoke curve

@@ -15,8 +15,7 @@ create_text_for_hover(
 
 \item{curve}{curve type}
 
-\item{stratified_by}{Performance Metrics can be stratified by Probability
-Threshold or alternatively by Predicted Positives Condition Rate}
+\item{stratified_by}{A character string specifying the stratification method.}
 }
 \description{
 Creating text to hover
