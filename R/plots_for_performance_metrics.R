@@ -39,16 +39,16 @@ create_ggplot_for_performance_metrics <- function(performance_data,
       )
   } else {
     color_values_vec <- color_values[
-      seq_len(length(unique(performance_data %>%
+      seq_len(length(unique(performance_data |>
         dplyr::pull(1))))
     ]
 
-    if (length(unique(performance_data %>% dplyr::pull(1))) == 1) {
+    if (length(unique(performance_data |> dplyr::pull(1))) == 1) {
       color_values_vec <- "black"
     }
 
-    if (length(unique(performance_data %>% dplyr::pull(1))) > 1) {
-      names(color_values_vec) <- unique(performance_data %>% dplyr::pull(1))
+    if (length(unique(performance_data |> dplyr::pull(1))) > 1) {
+      names(color_values_vec) <- unique(performance_data |> dplyr::pull(1))
     }
 
     ggplot_for_performance_metrics <- ggplot2::ggplot() +
@@ -84,7 +84,7 @@ create_ggplot_for_performance_metrics <- function(performance_data,
 #' @param plotly_object a plotly plot for performance metrics
 #' @keywords internal
 remove_grid_lines_from_plotly <- function(plotly_object) {
-  plotly_object %>%
+  plotly_object |>
     plotly::layout(
       xaxis = list(showgrid = FALSE),
       yaxis = list(showgrid = FALSE)
