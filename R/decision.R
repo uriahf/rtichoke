@@ -68,32 +68,32 @@
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "interventions avoided"
@@ -102,16 +102,16 @@
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "combined"
@@ -151,7 +151,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     plot_decision_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
@@ -176,31 +176,31 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #' \dontrun{
 #'
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve(type = "combined")
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve(type = "combined")
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve(type = "combined")
 #' }
 #' @export
@@ -229,11 +229,11 @@ plot_decision_curve <- function(performance_data,
   }
 
   if (interactive == FALSE) {
-    decision_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("threshold", "NB", color_values) %>%
+    decision_curve <- performance_data |>
+      create_ggplot_for_performance_metrics("threshold", "NB", color_values) |>
       add_reference_lines_to_ggplot(
         create_reference_lines_data_frame("decision", prevalence)
-      ) %>%
+      ) |>
       set_decision_curve_limits() +
       ggplot2::xlab("Probability Threshold") +
       ggplot2::ylab("Net Benefit")
