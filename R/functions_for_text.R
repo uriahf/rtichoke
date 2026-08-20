@@ -6,31 +6,31 @@
 #' @keywords internal
 make_performance_metrics_bold <- function(text_for_hover, curve) {
   if (curve == "roc") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold("Sensitivity", "FPR")
   }
 
   if (curve == "lift") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold("lift", "ppcr")
   }
 
   if (curve == "precision recall") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold("Sensitivity", "PPV")
   }
 
   if (curve == "gains") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold("ppcr", "Sensitivity")
   }
 
   if (curve == "decision") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold("NB", "probability_threshold")
   }
   if (curve == "interventions avoided") {
-    text_for_hover <- text_for_hover %>%
+    text_for_hover <- text_for_hover |>
       make_two_performance_metrics_bold(
         "Interventions Avoided",
         "probability_threshold"
@@ -122,8 +122,8 @@ add_population_for_text_for_hover <- function(text_for_hover) {
 make_two_performance_metrics_bold <- function(text_for_hover,
                                               performance_metric_x,
                                               performance_metric_y) {
-  text_for_hover %>%
-    make_performance_metric_bold(performance_metric_x) %>%
+  text_for_hover |>
+    make_performance_metric_bold(performance_metric_x) |>
     make_performance_metric_bold(performance_metric_y)
 }
 
@@ -136,10 +136,10 @@ make_two_performance_metrics_bold <- function(text_for_hover,
 make_performance_metric_bold <- function(hover_text, performance_metric) {
   performance_metrics_text_hover <- unlist(stringr::str_split(hover_text, "<br>"))
 
-  performance_metrics_text_hover[performance_metrics_text_hover %>%
+  performance_metrics_text_hover[performance_metrics_text_hover |>
     stringr::str_detect(performance_metric)] <- paste0(
     "<b>",
-    performance_metrics_text_hover[performance_metrics_text_hover %>%
+    performance_metrics_text_hover[performance_metrics_text_hover |>
       stringr::str_detect(performance_metric)],
     "</b>"
   )
@@ -179,7 +179,7 @@ add_hover_text_to_performance_data <- function(performance_data,
     stratified_by
   )
 
-  performance_data %>%
+  performance_data |>
     dplyr::mutate(
       dplyr::across(where(is.numeric), round, 3),
       text = glue::glue(text_for_hover),
