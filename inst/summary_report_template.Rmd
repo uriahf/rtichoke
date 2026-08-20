@@ -43,7 +43,7 @@ tibble::tribble(
   ~"type", ~"predicted_positive", ~"predicted_negative",
   "Real Positive", "TP", "FN",
   "Real Negative", "FP", "TN"
-) %>% 
+) |> 
   reactable::reactable(sortable = FALSE,
             fullWidth = FALSE,
             borderless = FALSE,
