@@ -104,7 +104,7 @@ prepare_performance_data <- function(probs,
   . <- probability_threshold <- NULL
 
   check_probs_input(probs)
-  # check_real_input(reals)
+  check_real_input(reals)
 
   match.arg(stratified_by, c("probability_threshold", "ppcr"))
 
