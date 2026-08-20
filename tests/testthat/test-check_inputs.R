@@ -54,6 +54,21 @@ test_that("real must be 0 or 1", {
 })
 
 
+test_that("public performance builders reject non-binary outcomes", {
+  probs <- list(c(example_dat$estimated_probabilities, 0.5))
+  invalid_reals <- list(c(example_dat$outcome, 0.5))
+
+  expect_error(
+    prepare_performance_data(probs = probs, reals = invalid_reals),
+    "Outcomes are out of the range"
+  )
+  expect_error(
+    create_roc_curve(probs = probs, reals = invalid_reals),
+    "Outcomes are out of the range"
+  )
+})
+
+
 test_that("public curve builders reject out-of-range probabilities", {
   invalid_probs <- list(c(example_dat$estimated_probabilities, -0.1))
   reals <- list(c(example_dat$outcome, 1))
