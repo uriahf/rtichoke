@@ -37,9 +37,13 @@
 #'   )
 #' )
 #' }
-create_summary_report <- function(probs, reals, interactive = TRUE,
-                                  output_file = "summary_report.html",
-                                  output_dir = getwd()) {
+create_summary_report <- function(
+  probs,
+  reals,
+  interactive = TRUE,
+  output_file = "summary_report.html",
+  output_dir = getwd()
+) {
   rmarkdown::render(
     file.path(
       system.file(package = "rtichoke"),

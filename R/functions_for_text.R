@@ -48,9 +48,11 @@ make_performance_metrics_bold <- function(text_for_hover, curve) {
 #' @inheritParams create_roc_curve
 #'
 #' @keywords internal
-create_text_for_hover <- function(performance_data_type,
-                                  curve,
-                                  stratified_by = "probability_threshold") {
+create_text_for_hover <- function(
+  performance_data_type,
+  curve,
+  stratified_by = "probability_threshold"
+) {
   if (curve != "interventions avoided") {
     text_for_hover <- paste0(
       "Prob. Threshold: {probability_threshold}
@@ -60,10 +62,7 @@ Specificity: {specificity}
 Lift: {lift}
 PPV: {PPV}
 NPV: {NPV}\n",
-      ifelse(stratified_by == "probability_threshold",
-        "NB: {NB}\n",
-        ""
-      ),
+      ifelse(stratified_by == "probability_threshold", "NB: {NB}\n", ""),
       "Predicted Positives: {predicted_positives} ({100 * ppcr}%)
 TP: {TP}
 TN: {TN}
@@ -94,10 +93,7 @@ FN: {FN}"
 #'
 #' @keywords internal
 add_models_for_text_for_hover <- function(text_for_hover) {
-  paste("<b>Model: {model}</b>",
-    text_for_hover,
-    sep = "\n"
-  )
+  paste("<b>Model: {model}</b>", text_for_hover, sep = "\n")
 }
 
 #' Adding population for text to hover
@@ -106,10 +102,7 @@ add_models_for_text_for_hover <- function(text_for_hover) {
 #'
 #' @keywords internal
 add_population_for_text_for_hover <- function(text_for_hover) {
-  paste("<b>Population: {population}</b>",
-    text_for_hover,
-    sep = "\n"
-  )
+  paste("<b>Population: {population}</b>", text_for_hover, sep = "\n")
 }
 
 #' Making two performance metrics bold
@@ -119,9 +112,11 @@ add_population_for_text_for_hover <- function(text_for_hover) {
 #' @param performance_metric_y  y
 #'
 #' @keywords internal
-make_two_performance_metrics_bold <- function(text_for_hover,
-                                              performance_metric_x,
-                                              performance_metric_y) {
+make_two_performance_metrics_bold <- function(
+  text_for_hover,
+  performance_metric_x,
+  performance_metric_y
+) {
   text_for_hover |>
     make_performance_metric_bold(performance_metric_x) |>
     make_performance_metric_bold(performance_metric_y)
@@ -134,30 +129,35 @@ make_two_performance_metrics_bold <- function(text_for_hover,
 #'
 #' @keywords internal
 make_performance_metric_bold <- function(hover_text, performance_metric) {
-  performance_metrics_text_hover <- unlist(stringr::str_split(hover_text, "<br>"))
+  performance_metrics_text_hover <- unlist(stringr::str_split(
+    hover_text,
+    "<br>"
+  ))
 
-  performance_metrics_text_hover[performance_metrics_text_hover |>
-    stringr::str_detect(performance_metric)] <- paste0(
+  performance_metrics_text_hover[
+    performance_metrics_text_hover |>
+      stringr::str_detect(performance_metric)
+  ] <- paste0(
     "<b>",
-    performance_metrics_text_hover[performance_metrics_text_hover |>
-      stringr::str_detect(performance_metric)],
+    performance_metrics_text_hover[
+      performance_metrics_text_hover |>
+        stringr::str_detect(performance_metric)
+    ],
     "</b>"
   )
 
   updated_text_hover <- paste(
     unlist(
       stringr::str_split(
-        performance_metrics_text_hover, "<br>"
+        performance_metrics_text_hover,
+        "<br>"
       )
     ),
     collapse = "<br>"
   )
 
-
-
   updated_text_hover
 }
-
 
 
 #' Adding hover text to performance data
@@ -169,10 +169,12 @@ make_performance_metric_bold <- function(hover_text, performance_metric) {
 #' @inheritParams create_roc_curve
 #'
 #' @keywords internal
-add_hover_text_to_performance_data <- function(performance_data,
-                                               performance_data_type,
-                                               curve,
-                                               stratified_by = "probability_threshold") {
+add_hover_text_to_performance_data <- function(
+  performance_data,
+  performance_data_type,
+  curve,
+  stratified_by = "probability_threshold"
+) {
   text_for_hover <- create_text_for_hover(
     performance_data_type,
     curve,

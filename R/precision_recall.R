@@ -74,25 +74,37 @@
 #'   stratified_by = "ppcr"
 #' )
 #' }
-create_precision_recall_curve <- function(probs,
-                                          reals,
-                                          by = 0.01,
-                                          stratified_by = "probability_threshold",
-                                          chosen_threshold = NA,
-                                          interactive = TRUE,
-                                          color_values = c(
-                                            "#1b9e77", "#d95f02",
-                                            "#7570b3", "#e7298a",
-                                            "#07004D", "#E6AB02",
-                                            "#FE5F55", "#54494B",
-                                            "#006E90", "#BC96E6",
-                                            "#52050A", "#1F271B",
-                                            "#BE7C4D", "#63768D",
-                                            "#08A045", "#320A28",
-                                            "#82FF9E", "#2176FF",
-                                            "#D1603D", "#585123"
-                                          ),
-                                          size = NULL) {
+create_precision_recall_curve <- function(
+  probs,
+  reals,
+  by = 0.01,
+  stratified_by = "probability_threshold",
+  chosen_threshold = NA,
+  interactive = TRUE,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  size = NULL
+) {
   prepare_performance_data(
     probs = probs,
     reals = reals,
@@ -106,7 +118,6 @@ create_precision_recall_curve <- function(probs,
       size = size
     )
 }
-
 
 
 #' Precision Recall Curve from Performance Data
@@ -139,25 +150,40 @@ create_precision_recall_curve <- function(probs,
 #'
 #' @export
 
-plot_precision_recall_curve <- function(performance_data,
-                                        chosen_threshold = NA,
-                                        interactive = TRUE,
-                                        color_values = c(
-                                          "#1b9e77", "#d95f02",
-                                          "#7570b3", "#e7298a",
-                                          "#07004D", "#E6AB02",
-                                          "#FE5F55", "#54494B",
-                                          "#006E90", "#BC96E6",
-                                          "#52050A", "#1F271B",
-                                          "#BE7C4D", "#63768D",
-                                          "#08A045", "#320A28",
-                                          "#82FF9E", "#2176FF",
-                                          "#D1603D", "#585123"
-                                        ),
-                                        size = NULL) {
+plot_precision_recall_curve <- function(
+  performance_data,
+  chosen_threshold = NA,
+  interactive = TRUE,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  size = NULL
+) {
   rtichoke_curve_list <- performance_data |>
-    create_rtichoke_curve_list("precision recall", size = size, color_values = color_values)
-
+    create_rtichoke_curve_list(
+      "precision recall",
+      size = size,
+      color_values = color_values
+    )
 
   perf_dat_type <- check_performance_data_type_for_plotly(performance_data)
   prevalence <- get_prevalence_from_performance_data(
@@ -169,7 +195,6 @@ plot_precision_recall_curve <- function(performance_data,
     performance_data
   )
 
-
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame(
       "precision recall",
@@ -178,7 +203,8 @@ plot_precision_recall_curve <- function(performance_data,
 
     precision_recall_curve <- performance_data |>
       create_ggplot_for_performance_metrics(
-        "sensitivity", "PPV",
+        "sensitivity",
+        "PPV",
         color_values
       ) |>
       add_reference_lines_to_ggplot(reference_lines) |>

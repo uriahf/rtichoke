@@ -7,12 +7,16 @@ check_performance_data_type_for_plotly <- function(performance_data) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
     performance_data_type <- "one model"
   }
-  if ((names(performance_data)[1] == "model") & (
-    length(unique(performance_data |> pull(1))) == 1)) {
+  if (
+    (names(performance_data)[1] == "model") &
+      (length(unique(performance_data |> pull(1))) == 1)
+  ) {
     performance_data_type <- "one model with model column"
   }
-  if ((names(performance_data)[1] == "model") & (
-    length(unique(performance_data |> pull(1))) > 1)) {
+  if (
+    (names(performance_data)[1] == "model") &
+      (length(unique(performance_data |> pull(1))) > 1)
+  ) {
     performance_data_type <- "several models"
   }
   if (names(performance_data)[1] == "population") {
@@ -28,24 +32,47 @@ check_performance_data_type_for_plotly <- function(performance_data) {
 #' @param performance_data_type the type of the performance data
 #'
 #' @keywords internal
-add_markers_and_lines_to_plotly <- function(plotly_object,
-                                            performance_data_type) {
-  if (performance_data_type %in%
-    c("one model", "one model with model column")) {
+add_markers_and_lines_to_plotly <- function(
+  plotly_object,
+  performance_data_type
+) {
+  if (
+    performance_data_type %in%
+      c("one model", "one model with model column")
+  ) {
     plotly_with_markers_and_lines <- plotly_object |>
       plotly::add_trace(
         hoverinfo = "text",
         text = ~ paste(
-          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-          "FPR:", round(FPR, digits = 3), "<br>",
-          "Specificity", round(specificity, digits = 3), "<br>",
-          "Lift", round(lift, digits = 3), "<br>",
-          "PPV", round(PPV, digits = 3), "<br>",
-          "NPV", round(NPV, digits = 3), "<br>",
-          "TP:", TP, "<br>",
-          "TN:", TN, "<br>",
-          "FP:", FP, "<br>",
-          "FN:", FN
+          "TPR (Sensitivity):",
+          round(sensitivity, digits = 3),
+          "<br>",
+          "FPR:",
+          round(FPR, digits = 3),
+          "<br>",
+          "Specificity",
+          round(specificity, digits = 3),
+          "<br>",
+          "Lift",
+          round(lift, digits = 3),
+          "<br>",
+          "PPV",
+          round(PPV, digits = 3),
+          "<br>",
+          "NPV",
+          round(NPV, digits = 3),
+          "<br>",
+          "TP:",
+          TP,
+          "<br>",
+          "TN:",
+          TN,
+          "<br>",
+          "FP:",
+          FP,
+          "<br>",
+          "FN:",
+          FN
         ),
         type = "scatter",
         mode = "markers+lines",
@@ -58,17 +85,38 @@ add_markers_and_lines_to_plotly <- function(plotly_object,
       plotly::add_trace(
         hoverinfo = "text",
         text = ~ paste(
-          "Model:", model, "<br>",
-          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-          "FPR:", round(FPR, digits = 3), "<br>",
-          "Specificity", round(specificity, digits = 3), "<br>",
-          "LIFT", round(lift, digits = 3), "<br>",
-          "PPV", round(PPV, digits = 3), "<br>",
-          "NPV", round(NPV, digits = 3), "<br>",
-          "TP:", TP, "<br>",
-          "TN:", TN, "<br>",
-          "FP:", FP, "<br>",
-          "FN:", FN
+          "Model:",
+          model,
+          "<br>",
+          "TPR (Sensitivity):",
+          round(sensitivity, digits = 3),
+          "<br>",
+          "FPR:",
+          round(FPR, digits = 3),
+          "<br>",
+          "Specificity",
+          round(specificity, digits = 3),
+          "<br>",
+          "LIFT",
+          round(lift, digits = 3),
+          "<br>",
+          "PPV",
+          round(PPV, digits = 3),
+          "<br>",
+          "NPV",
+          round(NPV, digits = 3),
+          "<br>",
+          "TP:",
+          TP,
+          "<br>",
+          "TN:",
+          TN,
+          "<br>",
+          "FP:",
+          FP,
+          "<br>",
+          "FN:",
+          FN
         ),
         type = "scatter",
         mode = "markers+lines"
@@ -80,17 +128,38 @@ add_markers_and_lines_to_plotly <- function(plotly_object,
       plotly::add_trace(
         hoverinfo = "text",
         text = ~ paste(
-          "Population:", population, "<br>",
-          "TPR (Sensitivity):", round(sensitivity, digits = 3), "<br>",
-          "FPR:", round(FPR, digits = 3), "<br>",
-          "Specificity", round(specificity, digits = 3), "<br>",
-          "Lift", round(lift, digits = 3), "<br>",
-          "PPV", round(PPV, digits = 3), "<br>",
-          "NPV", round(NPV, digits = 3), "<br>",
-          "TP:", TP, "<br>",
-          "TN:", TN, "<br>",
-          "FP:", FP, "<br>",
-          "FN:", FN
+          "Population:",
+          population,
+          "<br>",
+          "TPR (Sensitivity):",
+          round(sensitivity, digits = 3),
+          "<br>",
+          "FPR:",
+          round(FPR, digits = 3),
+          "<br>",
+          "Specificity",
+          round(specificity, digits = 3),
+          "<br>",
+          "Lift",
+          round(lift, digits = 3),
+          "<br>",
+          "PPV",
+          round(PPV, digits = 3),
+          "<br>",
+          "NPV",
+          round(NPV, digits = 3),
+          "<br>",
+          "TP:",
+          TP,
+          "<br>",
+          "TN:",
+          TN,
+          "<br>",
+          "FP:",
+          FP,
+          "<br>",
+          "FN:",
+          FN
         ),
         type = "scatter",
         mode = "markers+lines"
@@ -100,22 +169,21 @@ add_markers_and_lines_to_plotly <- function(plotly_object,
 }
 
 
-
 #' Add Reference Lines to Plotly Object
 #'
 #' @param plotly_object a plotly plot for performance metrics
 #' @param performance_data_type the type of the Performance Data
 #' @param reference_lines dataframe of reference lines
 #' @keywords internal
-add_reference_lines_to_plotly <- function(plotly_object,
-                                          reference_lines,
-                                          performance_data_type = "one model") {
+add_reference_lines_to_plotly <- function(
+  plotly_object,
+  reference_lines,
+  performance_data_type = "one model"
+) {
   if (performance_data_type == "several populations") {
     reference_lines |>
       split(seq_len(nrow(reference_lines))) |>
-      purrr::reduce(add_reference_lines_to_plotly,
-        .init = plotly_object
-      ) |>
+      purrr::reduce(add_reference_lines_to_plotly, .init = plotly_object) |>
       add_markers() |>
       add_lines()
   } else {
@@ -130,8 +198,6 @@ add_reference_lines_to_plotly <- function(plotly_object,
 }
 
 
-
-
 #' Set styling for rtichoke plotly
 #'
 #' @param plotly_object a plotly object
@@ -141,15 +207,18 @@ add_reference_lines_to_plotly <- function(plotly_object,
 #' @param min_x_range the minimum value of x range (for decision curve)
 #' @param max_x_range the maximum value of x range (for decision curve)
 #' @keywords internal
-set_styling_for_rtichoke <- function(plotly_object,
-                                     curve,
-                                     min_y_range = NA,
-                                     max_y_range = NA,
-                                     min_x_range = NA,
-                                     max_x_range = NA) {
+set_styling_for_rtichoke <- function(
+  plotly_object,
+  curve,
+  min_y_range = NA,
+  max_y_range = NA,
+  min_x_range = NA,
+  max_x_range = NA
+) {
   plotly_object |>
     remove_grid_lines_from_plotly() |>
-    set_axis_titles(curve,
+    set_axis_titles(
+      curve,
       max_y_range = max_y_range,
       min_y_range = min_y_range,
       min_x_range = min_x_range,
@@ -159,17 +228,18 @@ set_styling_for_rtichoke <- function(plotly_object,
 }
 
 
-
 #' Set Titles for x and y axis in plotly objects
 #'
 #' @inheritParams set_styling_for_rtichoke
 #' @keywords internal
-set_axis_titles <- function(plotly_object,
-                            curve,
-                            max_y_range = NA,
-                            min_y_range = NA,
-                            min_x_range = NA,
-                            max_x_range = NA) {
+set_axis_titles <- function(
+  plotly_object,
+  curve,
+  max_y_range = NA,
+  min_y_range = NA,
+  min_x_range = NA,
+  max_x_range = NA
+) {
   if (curve == "roc") {
     plotly_obj <- plotly_object |>
       plotly::layout(
@@ -274,27 +344,29 @@ set_axis_titles <- function(plotly_object,
 }
 
 
-
-
-
 #' Add interactive marker based on performance data
 #'
 #' @inheritParams add_lines_and_markers_from_performance_data
 #' @inheritParams create_roc_curve
 #' @keywords internal
-add_interactive_marker_from_performance_data <- function(plotly_object,
-                                                         performance_data,
-                                                         performance_data_type,
-                                                         x_perf_metric,
-                                                         y_perf_metric,
-                                                         stratified_by = "probability_threshold") {
+add_interactive_marker_from_performance_data <- function(
+  plotly_object,
+  performance_data,
+  performance_data_type,
+  x_perf_metric,
+  y_perf_metric,
+  stratified_by = "probability_threshold"
+) {
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
-  if (performance_data_type %in% c(
-    "one model",
-    "one model with model column"
-  )) {
+  if (
+    performance_data_type %in%
+      c(
+        "one model",
+        "one model with model column"
+      )
+  ) {
     plotly_plot <- plotly_object |>
       plotly::add_markers(
         data = performance_data,
@@ -358,9 +430,6 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 }
 
 
-
-
-
 #' Add lines and markers based on performance data
 #'
 #' @param plotly_object a previous plotly object
@@ -370,41 +439,50 @@ add_interactive_marker_from_performance_data <- function(plotly_object,
 #' @param y_perf_metric performance metric for the y axis
 #' @param color_values color palette
 #' @keywords internal
-add_lines_and_markers_from_performance_data <- function(plotly_object,
-                                                        performance_data,
-                                                        performance_data_type,
-                                                        x_perf_metric,
-                                                        y_perf_metric,
-                                                        color_values = c(
-                                                          "#5BC0BE",
-                                                          "#FC8D62",
-                                                          "#8DA0CB",
-                                                          "#E78AC3",
-                                                          "#A4243B"
-                                                        )) {
+add_lines_and_markers_from_performance_data <- function(
+  plotly_object,
+  performance_data,
+  performance_data_type,
+  x_perf_metric,
+  y_perf_metric,
+  color_values = c(
+    "#5BC0BE",
+    "#FC8D62",
+    "#8DA0CB",
+    "#E78AC3",
+    "#A4243B"
+  )
+) {
   x_perf_metric <- enquo(x_perf_metric)
   y_perf_metric <- enquo(y_perf_metric)
 
-  if (performance_data_type %in% c(
-    "one model",
-    "one model with model column"
-  )) {
+  if (
+    performance_data_type %in%
+      c(
+        "one model",
+        "one model with model column"
+      )
+  ) {
     color_values_vec <- "black"
   } else {
     color_values_vec <- color_values[
       seq_len(
-        length(unique(performance_data |>
-          pull(1)))
+        length(unique(
+          performance_data |>
+            pull(1)
+        ))
       )
     ]
     names(color_values_vec) <- unique(performance_data |> pull(1))
   }
 
-
-  if (performance_data_type %in% c(
-    "one model",
-    "one model with model column"
-  )) {
+  if (
+    performance_data_type %in%
+      c(
+        "one model",
+        "one model with model column"
+      )
+  ) {
     plotly_base <- plotly_object |>
       plotly::add_trace(
         data = performance_data,
@@ -452,9 +530,6 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 }
 
 
-
-
-
 #' Create reference lines plotly as the first stage of interactive plot
 #'
 #' @inheritParams create_roc_curve
@@ -465,22 +540,23 @@ add_lines_and_markers_from_performance_data <- function(plotly_object,
 #' @param population_color_vector color values
 #' @param size the size of the curve
 #' @keywords internal
-create_reference_lines_for_plotly <- function(performance_table_type,
-                                              curve,
-                                              prevalence = NA,
-                                              population_color_vector = NA,
-                                              size = NULL,
-                                              performance_data = NULL) {
-  size_height <- switch(is.null(size) + 1,
-    size + 50,
-    NULL
-  )
+create_reference_lines_for_plotly <- function(
+  performance_table_type,
+  curve,
+  prevalence = NA,
+  population_color_vector = NA,
+  size = NULL,
+  performance_data = NULL
+) {
+  size_height <- switch(is.null(size) + 1, size + 50, NULL)
 
-
-  if ((curve %in% c("roc", "lift")) || ((performance_table_type !=
-    "several populations"))) {
+  if (
+    (curve %in% c("roc", "lift")) ||
+      ((performance_table_type != "several populations"))
+  ) {
     if (curve %in% c("gains", "decision")) {
-      reference_lines_for_plotly <- create_reference_lines_data_frame(curve,
+      reference_lines_for_plotly <- create_reference_lines_data_frame(
+        curve,
         plotly = TRUE,
         prevalence,
         performance_data = performance_data
@@ -500,12 +576,14 @@ create_reference_lines_for_plotly <- function(performance_table_type,
           text = ~text
         )
     } else {
-      reference_lines_for_plotly <- create_reference_lines_data_frame(curve,
+      reference_lines_for_plotly <- create_reference_lines_data_frame(
+        curve,
         plotly = TRUE,
         prevalence
       ) |>
         plotly::plot_ly(
-          x = ~x, y = ~y,
+          x = ~x,
+          y = ~y,
           height = size_height,
           width = size
         ) |>
@@ -546,12 +624,11 @@ create_reference_lines_for_plotly <- function(performance_table_type,
       population_color_reference_vector <- color_values |>
         create_color_reference_lines_vector("gains")
 
-
       population_linetype_reference_vector <- color_values |>
         create_linetype_reference_vector("gains")
 
-
-      reference_lines_for_plotly <- create_reference_lines_data_frame("gains",
+      reference_lines_for_plotly <- create_reference_lines_data_frame(
+        "gains",
         plotly = TRUE,
         prevalence
       ) |>
@@ -615,18 +692,15 @@ create_reference_lines_for_plotly <- function(performance_table_type,
 }
 
 
-
-
-
-
-
 #' Creating color reference lines vector
 #'
 #' @param color_populations_vector color population vector
 #' @param curve a curve
 #' @keywords internal
-create_color_reference_lines_vector <- function(color_populations_vector,
-                                                curve) {
+create_color_reference_lines_vector <- function(
+  color_populations_vector,
+  curve
+) {
   if (curve == "gains") {
     color_populations_vector <- c(color_populations_vector, random = "grey")
   }
@@ -634,13 +708,10 @@ create_color_reference_lines_vector <- function(color_populations_vector,
     color_populations_vector <- color_populations_vector
   }
   if (curve == "decision") {
-    color_populations_vector <- c(color_populations_vector,
-      treat_none = "grey"
-    )
+    color_populations_vector <- c(color_populations_vector, treat_none = "grey")
   }
   color_populations_vector
 }
-
 
 
 #' Creating linetype reference lines vector

@@ -40,20 +40,32 @@
 #' )
 #'
 #' @keywords internal
-create_table_for_auc <- function(probs,
-                                 reals,
-                                 color_values = c(
-                                   "#1b9e77", "#d95f02",
-                                   "#7570b3", "#e7298a",
-                                   "#07004D", "#E6AB02",
-                                   "#FE5F55", "#54494B",
-                                   "#006E90", "#BC96E6",
-                                   "#52050A", "#1F271B",
-                                   "#BE7C4D", "#63768D",
-                                   "#08A045", "#320A28",
-                                   "#82FF9E", "#2176FF",
-                                   "#D1603D", "#585123"
-                                 )) {
+create_table_for_auc <- function(
+  probs,
+  reals,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  )
+) {
   if (length(probs) == 1) {
     names(probs) <- "Model 1"
   }
@@ -69,7 +81,8 @@ create_table_for_auc <- function(probs,
         } else {
           as.numeric(
             pROC::auc(
-              x, y
+              x,
+              y
             )
           )
         }
@@ -117,7 +130,8 @@ create_table_for_auc <- function(probs,
             }
             key_num <- as.character(key_num)
 
-            color <- switch(as.character(key_num),
+            color <- switch(
+              as.character(key_num),
               "1" = color_values[1],
               "2" = color_values[2],
               "3" = color_values[3],
@@ -174,9 +188,7 @@ create_table_for_brier_score <- function(probs, real) {
             cell = function(value) {
               width <- paste0(value * 100, "%")
               bar_chart_with_background(
-                format(round(value, digits = 2),
-                  nsmall = 2
-                ),
+                format(round(value, digits = 2), nsmall = 2),
                 width = width,
                 fill = "red",
                 background = "#e1e1e1"
@@ -190,18 +202,31 @@ create_table_for_brier_score <- function(probs, real) {
   table_for_brier_score
 }
 
-bar_chart_with_background <- function(label, width = "100%", height = "16px",
-                                      fill = "#00bfc4", background = NULL) {
-  bar <- htmltools::div(style = list(
-    background = fill, width = width,
-    height = height
-  ))
-  chart <- htmltools::div(style = list(
-    flexGrow = 1, marginLeft = "8px",
-    background = background
-  ), bar)
+bar_chart_with_background <- function(
+  label,
+  width = "100%",
+  height = "16px",
+  fill = "#00bfc4",
+  background = NULL
+) {
+  bar <- htmltools::div(
+    style = list(
+      background = fill,
+      width = width,
+      height = height
+    )
+  )
+  chart <- htmltools::div(
+    style = list(
+      flexGrow = 1,
+      marginLeft = "8px",
+      background = background
+    ),
+    bar
+  )
   htmltools::div(
     style = list(display = "flex", alignItems = "center"),
-    as.character(label), chart
+    as.character(label),
+    chart
   )
 }

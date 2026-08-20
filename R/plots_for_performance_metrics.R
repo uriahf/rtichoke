@@ -8,19 +8,20 @@
 #' @param color_values color palette
 #'
 #' @keywords internal
-create_ggplot_for_performance_metrics <- function(performance_data,
-                                                  x_perf_metric,
-                                                  y_perf_metric,
-                                                  color_values = c(
-                                                    "#5BC0BE",
-                                                    "#FC8D62",
-                                                    "#8DA0CB",
-                                                    "#E78AC3",
-                                                    "#A4243B"
-                                                  )) {
+create_ggplot_for_performance_metrics <- function(
+  performance_data,
+  x_perf_metric,
+  y_perf_metric,
+  color_values = c(
+    "#5BC0BE",
+    "#FC8D62",
+    "#8DA0CB",
+    "#E78AC3",
+    "#A4243B"
+  )
+) {
   if (!(names(performance_data)[1] %in% c("population", "model"))) {
     color_values_vec <- "black"
-
 
     ggplot_for_performance_metrics <- ggplot2::ggplot() +
       ggplot2::geom_point(
@@ -28,19 +29,23 @@ create_ggplot_for_performance_metrics <- function(performance_data,
         ggplot2::aes_string(
           x = x_perf_metric,
           y = y_perf_metric
-        ), size = 1
+        ),
+        size = 1
       ) +
       ggplot2::geom_path(
         data = performance_data,
         ggplot2::aes_string(
           x = x_perf_metric,
           y = y_perf_metric
-        ), size = 1
+        ),
+        size = 1
       )
   } else {
     color_values_vec <- color_values[
-      seq_len(length(unique(performance_data |>
-        dplyr::pull(1))))
+      seq_len(length(unique(
+        performance_data |>
+          dplyr::pull(1)
+      )))
     ]
 
     if (length(unique(performance_data |> dplyr::pull(1))) == 1) {
@@ -59,7 +64,8 @@ create_ggplot_for_performance_metrics <- function(performance_data,
           y = y_perf_metric,
           group = names(performance_data)[1],
           color = names(performance_data)[1]
-        ), size = 1
+        ),
+        size = 1
       ) +
       ggplot2::geom_path(
         data = performance_data,
@@ -68,7 +74,8 @@ create_ggplot_for_performance_metrics <- function(performance_data,
           y = y_perf_metric,
           group = names(performance_data)[1],
           color = names(performance_data)[1]
-        ), size = 1
+        ),
+        size = 1
       )
   }
 

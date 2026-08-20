@@ -79,23 +79,35 @@
 #' )
 #' }
 #'
-create_calibration_curve <- function(probs,
-                                     reals,
-                                     interactive = TRUE,
-                                     color_values = c(
-                                       "#1b9e77", "#d95f02",
-                                       "#7570b3", "#e7298a",
-                                       "#07004D", "#E6AB02",
-                                       "#FE5F55", "#54494B",
-                                       "#006E90", "#BC96E6",
-                                       "#52050A", "#1F271B",
-                                       "#BE7C4D", "#63768D",
-                                       "#08A045", "#320A28",
-                                       "#82FF9E", "#2176FF",
-                                       "#D1603D", "#585123"
-                                     ),
-                                     type = "discrete",
-                                     size = NULL) {
+create_calibration_curve <- function(
+  probs,
+  reals,
+  interactive = TRUE,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  type = "discrete",
+  size = NULL
+) {
   check_probs_input(probs)
   check_real_input(reals)
 
@@ -106,7 +118,6 @@ create_calibration_curve <- function(probs,
     size = size
   )
 
-
   if (interactive == TRUE) {
     calibration_curve <- calibration_curve_list |>
       create_plotly_curve_from_calibration_curve_list(type = type)
@@ -116,7 +127,6 @@ create_calibration_curve <- function(probs,
   }
 
   calibration_curve
-
 }
 
 
@@ -134,24 +144,19 @@ create_calibration_curve <- function(probs,
 #'   define_limits_for_calibration_plot()
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
-  
   if (nrow(deciles_dat) == 1) {
-  
     l <- 0
     u <- 1
-    
   } else {
-  
     l <- max(0, min(deciles_dat$x, deciles_dat$y))
     u <- max(deciles_dat$x, deciles_dat$y)
-  
   }
-  
+
   limits <- c(
     l - (u - l) * 0.05,
     u + (u - l) * 0.05
   )
-  
+
   limits
 }
 
@@ -161,7 +166,7 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #' @inheritParams create_roc_curve
 #'
 #' @export
-#' 
+#'
 #' @keywords internal
 #' @examples
 #' \dontrun{
@@ -201,21 +206,33 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #'   )
 #' )
 #' }
-create_calibration_curve_list <- function(probs,
-                                          reals,
-                                          color_values = c(
-                                            "#1b9e77", "#d95f02",
-                                            "#7570b3", "#e7298a",
-                                            "#07004D", "#E6AB02",
-                                            "#FE5F55", "#54494B",
-                                            "#006E90", "#BC96E6",
-                                            "#52050A", "#1F271B",
-                                            "#BE7C4D", "#63768D",
-                                            "#08A045", "#320A28",
-                                            "#82FF9E", "#2176FF",
-                                            "#D1603D", "#585123"
-                                          ),
-                                          size = NULL) {
+create_calibration_curve_list <- function(
+  probs,
+  reals,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  size = NULL
+) {
   check_probs_input(probs)
   check_real_input(reals)
 
@@ -227,16 +244,19 @@ create_calibration_curve_list <- function(probs,
 
   calibration_curve_list <- list()
 
-  calibration_curve_list$performance_type <- check_performance_type_by_probs_and_reals(probs, reals)
+  calibration_curve_list$performance_type <- check_performance_type_by_probs_and_reals(
+    probs,
+    reals
+  )
 
   calibration_curve_list$size <- list(size)
-  
+
   group_colors_vec <- create_reference_group_color_vector(
-    reference_groups, calibration_curve_list$performance_type, color_values
+    reference_groups,
+    calibration_curve_list$performance_type,
+    color_values
   ) |>
     as.list()
-
-
 
   # Create Deciles Dat
 
@@ -253,9 +273,7 @@ create_calibration_curve_list <- function(probs,
       reals,
       function(x, y) {
         if (length(unique(x)) == 1) {
-          
           list("x" = unique(x), y = mean(y))
-          
         } else {
           lowess(x, y, iter = 0) |>
             approx(
@@ -275,20 +293,18 @@ create_calibration_curve_list <- function(probs,
     )
 
     calibration_curve_list$smooth_dat <- purrr::map_df(
-      probs, reals = reals,
+      probs,
+      reals = reals,
       function(x, reals) {
         if (length(unique(x)) == 1) {
-          
           list("x" = unique(x), y = mean(reals[[1]]))
-          
         } else {
-          
           lowess(x, reals[[1]], iter = 0) |>
             approx(
               xout = seq(0, 1, by = 0.01),
               ties = mean
-            )}
-        
+            )
+        }
       },
       .id = "reference_group"
     )
@@ -298,25 +314,29 @@ create_calibration_curve_list <- function(probs,
 
   if (calibration_curve_list$performance_type != "one model") {
     hover_text_for_discrete_calibration <- paste0(
-      "<b>{reference_group}</b><br>", hover_text_for_discrete_calibration
+      "<b>{reference_group}</b><br>",
+      hover_text_for_discrete_calibration
     )
   }
 
   calibration_curve_list$deciles_dat <- calibration_curve_list$deciles_dat |>
     dplyr::mutate(
-      text =
-        glue::glue(paste0(hover_text_for_discrete_calibration, " ( {sum_reals} / {total_obs} )"))
+      text = glue::glue(paste0(
+        hover_text_for_discrete_calibration,
+        " ( {sum_reals} / {total_obs} )"
+      ))
     )
 
   calibration_curve_list$smooth_dat <- calibration_curve_list$smooth_dat |>
     dplyr::mutate(
-      text =
-        glue::glue(hover_text_for_discrete_calibration)
+      text = glue::glue(hover_text_for_discrete_calibration)
     )
 
   calibration_curve_list$group_colors_vec <- group_colors_vec
 
-  limits <- define_limits_for_calibration_plot(calibration_curve_list$deciles_dat)
+  limits <- define_limits_for_calibration_plot(
+    calibration_curve_list$deciles_dat
+  )
 
   calibration_curve_list$axes_ranges <- list(xaxis = limits, yaxis = limits)
 
@@ -326,21 +346,26 @@ create_calibration_curve_list <- function(probs,
     y = seq(0, 1, by = 0.01)
   ) |>
     dplyr::mutate(
-      text =
-        glue::glue(
-          "<b>Perfectly Calibrated</b><br>Predicted: {x}<br>Observed: {y}"
-        )
+      text = glue::glue(
+        "<b>Perfectly Calibrated</b><br>Predicted: {x}<br>Observed: {y}"
+      )
     )
 
   calibration_curve_list$histogram_for_calibration <- probs |>
-    purrr::map_df(~ hist(
-      .x,
-      plot = FALSE, breaks = seq(0, 1, 0.01)
+    purrr::map_df(
+      ~ hist(
+        .x,
+        plot = FALSE,
+        breaks = seq(0, 1, 0.01)
+      ) |>
+        (\(histogram) histogram[c("mids", "counts")])(),
+      .id = "reference_group"
     ) |>
-      (\(histogram) histogram[c("mids", "counts")])(), .id = "reference_group") |>
     dplyr::mutate(
       text_obs = glue::glue("{counts} observations in "),
-      text_range = ifelse(mids == 0.005, "[0,0.01]",
+      text_range = ifelse(
+        mids == 0.005,
+        "[0,0.01]",
         glue::glue("( {mids - 0.005} , {mids + 0.005} ]")
       ),
       text = glue::glue("{text_obs}{text_range}")
@@ -348,12 +373,14 @@ create_calibration_curve_list <- function(probs,
 
   calibration_curve_list$histogram_opacity <- 1 / length(probs)
 
-
   calibration_curve_list
 }
 
 
-create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_list, type = "discrete") {
+create_plotly_curve_from_calibration_curve_list <- function(
+  calibration_curve_list,
+  type = "discrete"
+) {
   calibration_curve <- plotly::plot_ly(
     x = ~x,
     y = ~y,
@@ -372,7 +399,6 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
         dash = "dot"
       )
     )
-
 
   if (type == "discrete") {
     calibration_curve <- calibration_curve |>
@@ -450,7 +476,10 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
 }
 
 
-create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_list, type = "discrete") {
+create_ggplot_curve_from_calibration_curve_list <- function(
+  calibration_curve_list,
+  type = "discrete"
+) {
   if (type == "discrete") {
     calibration_curve <- ggplot2::ggplot(
       calibration_curve_list$deciles_dat,
@@ -482,7 +511,9 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
         expand = FALSE
       ) +
       ggplot2::theme(legend.position = "none") +
-      ggplot2::scale_colour_manual(values = unlist(calibration_curve_list$group_colors_vec))
+      ggplot2::scale_colour_manual(
+        values = unlist(calibration_curve_list$group_colors_vec)
+      )
   } else {
     calibration_curve <- ggplot2::ggplot(
       calibration_curve_list$smooth_dat,
@@ -513,7 +544,9 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
         expand = FALSE
       ) +
       ggplot2::theme(legend.position = "none") +
-      ggplot2::scale_colour_manual(values = unlist(calibration_curve_list$group_colors_vec))
+      ggplot2::scale_colour_manual(
+        values = unlist(calibration_curve_list$group_colors_vec)
+      )
   }
 
   histogram_for_calibration <- ggplot2::ggplot(
@@ -531,7 +564,9 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
     ) +
     ggplot2::labs(x = "Predicted") +
     ggplot2::theme(axis.title.y = ggplot2::element_text(colour = "white")) +
-    ggplot2::scale_fill_manual(values = unlist(calibration_curve_list$group_colors_vec))
+    ggplot2::scale_fill_manual(
+      values = unlist(calibration_curve_list$group_colors_vec)
+    )
 
   patchwork::wrap_plots(
     calibration_curve +
@@ -548,9 +583,7 @@ create_ggplot_curve_from_calibration_curve_list <- function(calibration_curve_li
 
 
 make_deciles_dat <- function(probs, reals) {
-  
-  if ( length(unique(probs)) == 1 ) {
-    
+  if (length(unique(probs)) == 1) {
     tibble::tibble(
       quintile = 1,
       x = unique(probs),
@@ -558,15 +591,16 @@ make_deciles_dat <- function(probs, reals) {
       sum_reals = sum(reals),
       total_obs = length(reals)
     )
-    
   } else {
-    
     data.frame(probs, reals) |>
       dplyr::mutate(quintile = dplyr::ntile(probs, 10)) |>
       dplyr::group_by(quintile) |>
-      dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) |>
+      dplyr::summarise(
+        y = sum(reals) / n(),
+        x = mean(probs),
+        sum_reals = sum(reals),
+        total_obs = n()
+      ) |>
       dplyr::ungroup()
-    
   }
-  
 }

@@ -41,7 +41,6 @@ check_probs_input <- function(probs) {
 }
 
 
-
 #' Check real input
 #'
 #' @inheritParams prepare_performance_data
@@ -101,7 +100,6 @@ check_chosen_threshold_input <- function(chosen_threshold) {
 }
 
 
-
 #' Check cheson threshold input
 #'
 #' @inheritParams prepare_performance_data
@@ -132,10 +130,17 @@ check_performance_data_stratification <- function(performance_data) {
 #' check_curve_input("lift")
 #' }
 check_curve_input <- function(curve) {
-  rlang::arg_match(curve, c(
-    "roc", "lift", "precision recall", "gains",
-    "decision", "interventions avoided"
-  ))
+  rlang::arg_match(
+    curve,
+    c(
+      "roc",
+      "lift",
+      "precision recall",
+      "gains",
+      "decision",
+      "interventions avoided"
+    )
+  )
 }
 
 

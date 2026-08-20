@@ -18,14 +18,23 @@ test_that("Estimated Probabilities are in Range", {
         "train" = example_dat |>
           dplyr::filter(type_of_set == "train") |>
           dplyr::pull(estimated_probabilities),
-        "test" = c(example_dat |> dplyr::filter(type_of_set == "test") |>
-          dplyr::pull(estimated_probabilities), -0.2)
+        "test" = c(
+          example_dat |>
+            dplyr::filter(type_of_set == "test") |>
+            dplyr::pull(estimated_probabilities),
+          -0.2
+        )
       ),
       reals = list(
-        "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
+        "train" = example_dat |>
+          dplyr::filter(type_of_set == "train") |>
           dplyr::pull(outcome),
-        "test" = c(example_dat |> dplyr::filter(type_of_set == "test") |>
-          dplyr::pull(outcome), 1)
+        "test" = c(
+          example_dat |>
+            dplyr::filter(type_of_set == "test") |>
+            dplyr::pull(outcome),
+          1
+        )
       )
     )
   )
