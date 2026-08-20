@@ -24,7 +24,9 @@ importFrom(crosstalk,SharedData)
 importFrom(graphics,text)
 importFrom(magrittr,"%>%")
 importFrom(pROC,auc)
-importFrom(stats,approx)
-importFrom(stats,as.formula)
-importFrom(stats,lowess)
-importFrom(stats,quantile)
+importFrom(stats,
+  approx,
+  as.formula,
+  lowess,
+  quantile
+)
