@@ -21,25 +21,27 @@ create_table_for_prevalence <- function(performance_data,
   )
 
   if (perf_dat_type == "several populations") {
+    prevalence <- performance_data |>
+      get_prevalence_from_performance_data()
+    real_positives <- performance_data |>
+      get_real_positives_from_performance_data()
+    n_obs <- performance_data |>
+      dplyr::rename(any_of(c(
+        "Model" = "model",
+        "Population" = "population",
+        "Threshold" = "threshold"
+      ))) |>
+      get_n_from_performance_data() |>
+      dplyr::select(n_obs)
+
     data_for_prevalence <- dplyr::bind_cols(
-      performance_data %>%
-        get_prevalence_from_performance_data() %>%
-        tibble(population = names(.), prevalence = .),
-      performance_data %>%
-        get_real_positives_from_performance_data() %>%
-        tibble(real_positives = .),
-      performance_data %>%
-        dplyr::rename(any_of(c(
-          "Model" = "model",
-          "Population" = "population",
-          "Threshold" = "threshold"
-        ))) %>%
-        get_n_from_performance_data() %>%
-        dplyr::select(n_obs)
-    ) %>%
+      tibble(population = names(prevalence), prevalence = prevalence),
+      tibble(real_positives = real_positives),
+      n_obs
+    ) |>
       dplyr::mutate(population = forcats::fct_inorder(population))
 
-    table_for_prevalence <- data_for_prevalence %>%
+    table_for_prevalence <- data_for_prevalence |>
       reactable::reactable(
         sortable = FALSE,
         columns = list(
@@ -117,7 +119,7 @@ create_table_for_prevalence <- function(performance_data,
       n_obs = as.numeric(get_n_from_performance_data(performance_data))
     )
 
-    table_for_prevalence <- data_for_prevalence %>%
+    table_for_prevalence <- data_for_prevalence |>
       reactable::reactable(
         sortable = FALSE,
         columns = list(
