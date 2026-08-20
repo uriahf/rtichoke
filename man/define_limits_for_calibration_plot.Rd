@@ -6,9 +6,6 @@
 \usage{
 define_limits_for_calibration_plot(deciles_dat)
 }
-\arguments{
-\item{deciles_dat}{}
-}
 \description{
 Define limits for Calibration Curve
 }
