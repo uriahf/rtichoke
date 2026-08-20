@@ -43,32 +43,32 @@
 #'
 #' create_precision_recall_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_precision_recall_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   stratified_by = "ppcr"
@@ -98,7 +98,7 @@ create_precision_recall_curve <- function(probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     plot_precision_recall_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
@@ -118,22 +118,22 @@ create_precision_recall_curve <- function(probs,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_precision_recall_curve()
 #'
-#' one_pop_one_model_by_ppcr %>%
+#' one_pop_one_model_by_ppcr |>
 #'   plot_precision_recall_curve()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_precision_recall_curve()
 #'
-#' multiple_models_by_ppcr %>%
+#' multiple_models_by_ppcr |>
 #'   plot_precision_recall_curve()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_precision_recall_curve()
 #'
-#' multiple_populations_by_ppcr %>%
+#' multiple_populations_by_ppcr |>
 #'   plot_precision_recall_curve()
 #' }
 #'
@@ -176,12 +176,12 @@ plot_precision_recall_curve <- function(performance_data,
       prevalence
     )
 
-    precision_recall_curve <- performance_data %>%
+    precision_recall_curve <- performance_data |>
       create_ggplot_for_performance_metrics(
         "sensitivity", "PPV",
         color_values
-      ) %>%
-      add_reference_lines_to_ggplot(reference_lines) %>%
+      ) |>
+      add_reference_lines_to_ggplot(reference_lines) |>
       set_precision_recall_curve_limits() +
       ggplot2::xlab("Sensitivity") +
       ggplot2::ylab("PPV")
