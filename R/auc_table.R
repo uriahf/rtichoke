@@ -25,13 +25,16 @@
 #'     "train" = example_dat |>
 #'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
+#'     "test" = example_dat |>
+#'       dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
+#'     "test" = example_dat |>
+#'       dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
@@ -54,17 +57,15 @@ create_table_for_auc <- function(probs,
   if (length(probs) == 1) {
     names(probs) <- "Model 1"
   }
-  
+
   data_for_auc <- tibble::tibble(
     population = names(probs),
     auc = purrr::map2_dbl(
       .x = reals,
       .y = probs,
       function(x, y) {
-        if ( length(unique(x)) == 1 ) {
-          
+        if (length(unique(x)) == 1) {
           NA
-          
         } else {
           as.numeric(
             pROC::auc(
@@ -87,21 +88,14 @@ create_table_for_auc <- function(probs,
           minWidth = 300,
           align = "left",
           cell = function(value) {
-            
             if (is.na(value)) {
-            
               width <- "0%"
               label <- "    "
-              
-              
             } else {
-              
               width <- paste0(value * 100, "%")
-              label <- format(round(value, digits = 2),  nsmall = 2)
-              
+              label <- format(round(value, digits = 2), nsmall = 2)
             }
-            
-            
+
             bar_chart_with_background(
               label = label,
               width = width,
@@ -116,7 +110,7 @@ create_table_for_auc <- function(probs,
           minWidth = 300,
           cell = function(value, index) {
             n_levels <- length(levels(value))
-            
+
             key_num <- index %% n_levels
             if (key_num == 0) {
               key_num <- n_levels
@@ -155,8 +149,6 @@ create_table_for_auc <- function(probs,
 
   table_for_auc
 }
-
-
 
 create_table_for_brier_score <- function(probs, real) {
   if (is.list(probs) & !is.list(real)) {
@@ -197,7 +189,6 @@ create_table_for_brier_score <- function(probs, real) {
 
   table_for_brier_score
 }
-
 
 bar_chart_with_background <- function(label, width = "100%", height = "16px",
                                       fill = "#00bfc4", background = NULL) {
