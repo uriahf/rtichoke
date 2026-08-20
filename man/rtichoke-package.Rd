@@ -11,6 +11,7 @@ Interactive visualization for model performance.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://uriahf.github.io/rtichoke/}
   \item \url{https://github.com/uriahf/rtichoke}
   \item Report bugs at \url{https://github.com/uriahf/rtichoke/issues}
 }
