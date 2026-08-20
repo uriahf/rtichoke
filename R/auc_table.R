@@ -70,7 +70,7 @@ create_table_for_auc <- function(probs,
             pROC::auc(
               x, y
             )
-          )}
+          )
         }
       }
     )
