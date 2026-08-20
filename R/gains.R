@@ -43,32 +43,32 @@
 #'
 #' create_gains_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_gains_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   stratified_by = "ppcr"
@@ -100,7 +100,7 @@ create_gains_curve <- function(probs, reals, by = 0.01,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     plot_gains_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
@@ -118,22 +118,22 @@ create_gains_curve <- function(probs, reals, by = 0.01,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_gains_curve()
 #'
-#' one_pop_one_model_by_ppcr %>%
+#' one_pop_one_model_by_ppcr |>
 #'   plot_gains_curve()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_gains_curve()
 #'
-#' multiple_models_by_ppcr %>%
+#' multiple_models_by_ppcr |>
 #'   plot_gains_curve()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_gains_curve()
 #'
-#' multiple_populations_by_ppcr %>%
+#' multiple_populations_by_ppcr |>
 #'   plot_gains_curve()
 #' }
 #'
@@ -177,12 +177,12 @@ plot_gains_curve <- function(performance_data,
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
-    gains_curve <- performance_data %>%
+    gains_curve <- performance_data |>
       create_ggplot_for_performance_metrics(
         "ppcr", "sensitivity",
         color_values
-      ) %>%
-      add_reference_lines_to_ggplot(reference_lines) %>%
+      ) |>
+      add_reference_lines_to_ggplot(reference_lines) |>
       set_gains_curve_limits() +
       ggplot2::xlab("Predicted Positives (Rate)") +
       ggplot2::ylab("Sensitivity")
@@ -213,7 +213,7 @@ add_gains_curve_reference_lines <- function(gains_curve, prevalence) {
         "#A4243B"
       )[seq_len(length(prevalence))],
       add_prevalence_layers_to_gains_curve
-    ) %>% unlist(),
+    ) |> unlist(),
     gains_curve$layers
   )
   gains_curve
