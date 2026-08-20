@@ -52,32 +52,32 @@
 #'
 #' create_roc_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_roc_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   stratified_by = "ppcr"
@@ -113,7 +113,7 @@ create_roc_curve <- function(probs, reals, by = 0.01,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     plot_roc_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
@@ -134,22 +134,22 @@ create_roc_curve <- function(probs, reals, by = 0.01,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_roc_curve()
 #'
-#' one_pop_one_model_by_ppcr %>%
+#' one_pop_one_model_by_ppcr |>
 #'   plot_roc_curve()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_roc_curve()
 #'
-#' multiple_models_by_ppcr %>%
+#' multiple_models_by_ppcr |>
 #'   plot_roc_curve()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_roc_curve()
 #'
-#' multiple_populations_by_ppcr %>%
+#' multiple_populations_by_ppcr |>
 #'   plot_roc_curve()
 #' }
 #'
@@ -193,11 +193,11 @@ plot_roc_curve <- function(performance_data,
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("roc")
 
-    roc_curve <- performance_data %>%
+    roc_curve <- performance_data |>
       create_ggplot_for_performance_metrics(
         "FPR",
         "sensitivity", color_values
-      ) %>%
+      ) |>
       add_reference_lines_to_ggplot(reference_lines) +
       ggplot2::xlab("1 - Specificity") +
       ggplot2::ylab("Sensitivity")
