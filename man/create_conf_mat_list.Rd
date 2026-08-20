@@ -15,22 +15,22 @@ Create a list of confusion matrices
 \examples{
 \dontrun{
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   create_conf_mat_list()
 
-one_pop_one_model_by_ppcr \%>\%
+one_pop_one_model_by_ppcr |>
   create_conf_mat_list()
 
-multiple_models \%>\%
+multiple_models |>
   create_conf_mat_list()
 
-multiple_models_by_ppcr \%>\%
+multiple_models_by_ppcr |>
   create_conf_mat_list()
 
-multiple_populations \%>\%
+multiple_populations |>
   create_conf_mat_list()
 
-multiple_populations_by_ppcr \%>\%
+multiple_populations_by_ppcr |>
   create_conf_mat_list()
 }
 }

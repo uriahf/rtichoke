@@ -32,22 +32,22 @@ Plot a LIFT Curve
 \examples{
 \dontrun{
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   plot_lift_curve()
 
-one_pop_one_model_by_ppcr \%>\%
+one_pop_one_model_by_ppcr |>
   plot_lift_curve()
 
-multiple_models \%>\%
+multiple_models |>
   plot_lift_curve()
 
-multiple_models_by_ppcr \%>\%
+multiple_models_by_ppcr |>
   plot_lift_curve()
 
-multiple_populations \%>\%
+multiple_populations |>
   plot_lift_curve()
 
-multiple_populations_by_ppcr \%>\%
+multiple_populations_by_ppcr |>
   plot_lift_curve()
 }
 

@@ -46,31 +46,31 @@ Plot a Precision decision Curve
 \dontrun{
 
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   plot_decision_curve()
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   plot_decision_curve(type = "interventions avoided")
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   plot_decision_curve(type = "combined")
 
-multiple_models \%>\%
+multiple_models |>
   plot_decision_curve()
 
-multiple_models \%>\%
+multiple_models |>
   plot_decision_curve(type = "interventions avoided")
 
-multiple_models \%>\%
+multiple_models |>
   plot_decision_curve(type = "combined")
 
-multiple_populations \%>\%
+multiple_populations |>
   plot_decision_curve()
 
-multiple_populations \%>\%
+multiple_populations |>
   plot_decision_curve(type = "interventions avoided")
 
-multiple_populations \%>\%
+multiple_populations |>
   plot_decision_curve(type = "combined")
 }
 }
