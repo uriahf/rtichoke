@@ -22,16 +22,16 @@
 #'
 #' rtichoke:::create_table_for_auc(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
@@ -55,29 +55,29 @@ create_table_for_auc <- function(probs,
     names(probs) <- "Model 1"
   }
   
-  data_for_auc <- purrr::map2_dbl(
-    .x = reals,
-    .y = probs,
-    function(x, y) {
-      if ( length(unique(x)) == 1 ) {
-        
-        NA
-        
-      } else {
-        as.numeric(
-          pROC::auc(
-            x, y
-          )
-        )}
-    }
-  ) %>%
-    tibble::tibble(
-      population = names(probs),
-      auc = .
-    ) %>%
+  data_for_auc <- tibble::tibble(
+    population = names(probs),
+    auc = purrr::map2_dbl(
+      .x = reals,
+      .y = probs,
+      function(x, y) {
+        if ( length(unique(x)) == 1 ) {
+          
+          NA
+          
+        } else {
+          as.numeric(
+            pROC::auc(
+              x, y
+            )
+          )}
+        }
+      }
+    )
+  ) |>
     dplyr::mutate(population = forcats::fct_inorder(population))
 
-  table_for_auc <- data_for_auc %>%
+  table_for_auc <- data_for_auc |>
     reactable::reactable(
       sortable = FALSE,
       fullWidth = FALSE,
@@ -170,7 +170,7 @@ create_table_for_brier_score <- function(probs, real) {
       brier_score = sum((probs - real)^2) / length(probs)
     )
 
-    table_for_brier_score <- data_for_brier_score %>%
+    table_for_brier_score <- data_for_brier_score |>
       reactable(
         sortable = FALSE,
         fullWidth = FALSE,
