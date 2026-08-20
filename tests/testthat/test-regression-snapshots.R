@@ -25,7 +25,8 @@ test_that("single-model performance data stays stable", {
     dplyr::filter(
       performance_data,
       probability_threshold %in% c(0.25, 0.5, 0.75)
-    )
+    ),
+    style = "json2"
   )
 })
 
@@ -42,7 +43,8 @@ test_that("multi-model performance data stays stable", {
 
   expect_identical(unique(performance_data$model), c("Model A", "Model B"))
   expect_snapshot_value(
-    dplyr::filter(performance_data, probability_threshold == 0.5)
+    dplyr::filter(performance_data, probability_threshold == 0.5),
+    style = "json2"
   )
 })
 
@@ -65,7 +67,8 @@ test_that("multi-population performance data stays stable", {
     c("Population A", "Population B")
   )
   expect_snapshot_value(
-    dplyr::filter(performance_data, probability_threshold == 0.5)
+    dplyr::filter(performance_data, probability_threshold == 0.5),
+    style = "json2"
   )
 })
 
@@ -78,7 +81,7 @@ test_that("ppcr stratification stays stable", {
     stratified_by = "ppcr"
   )
 
-  expect_snapshot_value(performance_data)
+  expect_snapshot_value(performance_data, style = "json2")
 })
 
 
@@ -88,5 +91,5 @@ test_that("calibration deciles stay stable", {
     real = example_dat$outcome
   )
 
-  expect_snapshot_value(deciles_dat)
+  expect_snapshot_value(deciles_dat, style = "json2")
 })
