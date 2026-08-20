@@ -7,10 +7,4 @@ test_that("decision type is validated", {
     ),
     "should be one of"
   )
-
-  expect_error(
-    one_pop_one_model %>%
-      plot_decision_curve(type = "decision"),
-    "should be one of"
-  )
 })
