@@ -14,3 +14,4 @@ $run_dev.*
 ^Meta$
 ^\.github$
 ^codecov\.yml$
+^cache$
