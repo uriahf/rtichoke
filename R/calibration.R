@@ -45,16 +45,16 @@
 #'
 #' create_calibration_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "discrete"
@@ -63,16 +63,16 @@
 #'
 #' create_calibration_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "smooth"
@@ -130,7 +130,7 @@ create_calibration_curve <- function(probs,
 #' make_deciles_dat(
 #'   probs = example_dat$estimated_probabilities,
 #'   real = example_dat$outcome
-#' ) %>%
+#' ) |>
 #'   define_limits_for_calibration_plot()
 #' }
 define_limits_for_calibration_plot <- function(deciles_dat) {
@@ -187,16 +187,16 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #'
 #' create_calibration_curve_list(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
@@ -257,7 +257,7 @@ create_calibration_curve_list <- function(probs,
           list("x" = unique(x), y = mean(y))
           
         } else {
-          lowess(x, y, iter = 0) %>%
+          lowess(x, y, iter = 0) |>
             approx(
               xout = seq(0, 1, by = 0.01),
               ties = mean
@@ -283,7 +283,7 @@ create_calibration_curve_list <- function(probs,
           
         } else {
           
-          lowess(x, reals[[1]], iter = 0) %>%
+          lowess(x, reals[[1]], iter = 0) |>
             approx(
               xout = seq(0, 1, by = 0.01),
               ties = mean
@@ -332,12 +332,12 @@ create_calibration_curve_list <- function(probs,
         )
     )
 
-  calibration_curve_list$histogram_for_calibration <- probs %>%
+  calibration_curve_list$histogram_for_calibration <- probs |>
     purrr::map_df(~ hist(
       .x,
       plot = FALSE, breaks = seq(0, 1, 0.01)
-    ) %>%
-      .[c("mids", "counts")], .id = "reference_group") |>
+    ) |>
+      (\(histogram) histogram[c("mids", "counts")])(), .id = "reference_group") |>
     dplyr::mutate(
       text_obs = glue::glue("{counts} observations in "),
       text_range = ifelse(mids == 0.005, "[0,0.01]",
@@ -398,7 +398,7 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
   # Histogram
 
   histogram_for_calibration <- calibration_curve_list$histogram_for_calibration |>
-    plotly::plot_ly() %>%
+    plotly::plot_ly() |>
     plotly::add_bars(
       x = ~mids,
       y = ~counts,
@@ -411,7 +411,7 @@ create_plotly_curve_from_calibration_curve_list <- function(calibration_curve_li
       text = ~text,
       hoverinfo = "text",
       textposition = "none"
-    ) %>%
+    ) |>
     plotly::layout(
       barmode = "overlay",
       xaxis = list(showgrid = FALSE),
@@ -561,10 +561,10 @@ make_deciles_dat <- function(probs, reals) {
     
   } else {
     
-    data.frame(probs, reals) %>%
-      dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
-      dplyr::group_by(quintile) %>%
-      dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) %>%
+    data.frame(probs, reals) |>
+      dplyr::mutate(quintile = dplyr::ntile(probs, 10)) |>
+      dplyr::group_by(quintile) |>
+      dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) |>
       dplyr::ungroup()
     
   }
