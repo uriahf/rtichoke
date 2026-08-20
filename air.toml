@@ -1,0 +1,12 @@
+[format]
+line-width = 80
+indent-width = 2
+indent-style = "space"
+line-ending = "auto"
+persistent-line-breaks = true
+assignment-style = "arrow"
+exclude = []
+default-exclude = true
+skip = []
+table = []
+default-table = true
