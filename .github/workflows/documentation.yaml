@@ -29,6 +29,16 @@ jobs:
         shell: Rscript {0}
         run: roxygen2::roxygenise()
 
+      - name: Capture generated diff
+        shell: bash
+        run: git diff -- DESCRIPTION NAMESPACE man > roxygen-generated.diff
+
+      - name: Upload generated diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: roxygen-generated-diff
+          path: roxygen-generated.diff
+
       - name: Check generated files are current
         shell: bash
         run: git diff --exit-code -- DESCRIPTION NAMESPACE man
