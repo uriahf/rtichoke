@@ -47,32 +47,32 @@
 #'
 #' create_performance_table(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_performance_table(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   stratified_by = "ppcr"
@@ -100,7 +100,7 @@ create_performance_table <- function(probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     render_performance_table(
       color_values = color_values,
       output_type = output_type
@@ -118,22 +118,22 @@ create_performance_table <- function(probs,
 #' @examples
 #' \dontrun{
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   render_performance_table()
 #'
-#' one_pop_one_model_by_ppcr %>%
+#' one_pop_one_model_by_ppcr |>
 #'   render_performance_table()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   render_performance_table()
 #'
-#' multiple_models_by_ppcr %>%
+#' multiple_models_by_ppcr |>
 #'   render_performance_table()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   render_performance_table()
 #'
-#' multiple_populations_by_ppcr %>%
+#' multiple_populations_by_ppcr |>
 #'   render_performance_table()
 #' }
 #'
@@ -173,19 +173,19 @@ render_performance_table <- function(performance_data,
   
   
   if (output_type == "gt") {
-    performance_data %>%
-      prepare_performance_data_for_gt(main_slider) %>%
+    performance_data |>
+      prepare_performance_data_for_gt(main_slider) |>
       render_and_format_gt(main_slider, perf_dat_type, prevalence, color_values)
   }
 
   if (output_type == "reactable") {
-    performance_data_reactable <- performance_data %>%
+    performance_data_reactable <- performance_data |>
       dplyr::select(any_of(
         c(
           "probability_threshold", "model", "population", "sensitivity", "specificity",
           "PPV", "NPV", "lift", "predicted_positives", "NB", "ppcr"
         )
-      )) %>%
+      )) |>
       dplyr::rename(any_of(c(
         "Model" = "model",
         "Population" = "population",
@@ -194,23 +194,23 @@ render_performance_table <- function(performance_data,
 
 
     if (stratified_by != "probability_threshold") {
-      performance_data_reactable <- performance_data_reactable %>%
+      performance_data_reactable <- performance_data_reactable |>
         dplyr::relocate(.data$predicted_positives,
                         .data$ppcr,
           .after = Threshold
-        ) %>%
-        dplyr::arrange(.data$ppcr) %>%
-        dplyr::select(-.data$Threshold) %>%
+        ) |>
+        dplyr::arrange(.data$ppcr) |>
+        dplyr::select(-.data$Threshold) |>
         mutate(rank = dplyr::dense_rank(.data$ppcr))
     } else {
-      performance_data_reactable <- performance_data_reactable %>%
-        dplyr::arrange(.data$Threshold) %>%
+      performance_data_reactable <- performance_data_reactable |>
+        dplyr::arrange(.data$Threshold) |>
         mutate(rank = dplyr::dense_rank(.data$Threshold))
     }
 
 
     if ("Model" %in% names(performance_data_reactable)) {
-      performance_data_reactable <- performance_data_reactable %>%
+      performance_data_reactable <- performance_data_reactable |>
         dplyr::mutate(
           Model = forcats::fct_inorder(
             factor(.data$Model)
@@ -222,7 +222,7 @@ render_performance_table <- function(performance_data,
           key_values =
             factor(.data$key_values,
               labels = as.character(seq_len(
-                length(unique(performance_data_reactable %>%
+                length(unique(performance_data_reactable |>
                   dplyr::pull(Model)))
               ))
             )
@@ -230,7 +230,7 @@ render_performance_table <- function(performance_data,
     }
 
     if ("Population" %in% names(performance_data_reactable)) {
-      performance_data_reactable <- performance_data_reactable %>%
+      performance_data_reactable <- performance_data_reactable |>
         dplyr::mutate(
           Population = forcats::fct_inorder(
             factor(.data$Population)
@@ -242,14 +242,14 @@ render_performance_table <- function(performance_data,
           key_values =
             factor(.data$key_values,
               labels = as.character(seq_len(
-                length(unique(performance_data_reactable %>%
+                length(unique(performance_data_reactable |>
                   dplyr::pull(Population)))
               ))
             )
         )
     }
 
-    confusion_matrix_list <- performance_data %>%
+    confusion_matrix_list <- performance_data |>
       create_conf_mat_list(stratified_by = stratified_by)
 
     interactive_data <- SharedData$new(performance_data_reactable)
@@ -265,7 +265,7 @@ render_performance_table <- function(performance_data,
       ))
     }
 
-    interactive_data_reactable <- interactive_data %>%
+    interactive_data_reactable <- interactive_data |>
       reactable::reactable(
         showSortIcon = FALSE,
         borderless = FALSE,
@@ -390,8 +390,7 @@ render_performance_table <- function(performance_data,
         details = function(index) {
           htmltools::div(
             style = "padding: 16px",
-            confusion_matrix_list %>%
-              .[[index]]
+            confusion_matrix_list[[index]]
           )
         }
       )
@@ -438,7 +437,7 @@ render_performance_table <- function(performance_data,
           interactive_data,
           ~key_values,
           inline = TRUE,
-          labels_values = unique(performance_data_reactable %>%
+          labels_values = unique(performance_data_reactable |>
             pull(main_label))
         ),
         crosstalk::filter_slider(
@@ -461,32 +460,32 @@ render_performance_table <- function(performance_data,
 #' @inheritParams plot_roc_curve
 prepare_performance_data_for_gt <- function(performance_data,
                                             main_slider) {
-  performance_data_ready_for_gt <- performance_data %>%
-    replace_nan_with_na() %>%
+  performance_data_ready_for_gt <- performance_data |>
+    replace_nan_with_na() |>
     dplyr::rename(any_of(c(
       "Model" = "model",
       "Population" = "population",
       "Threshold" = "probability_threshold"
-    ))) %>%
+    ))) |>
     add_colors_to_performance_dat()
 
 
 
   if (stratified_by != "probability_threshold") {
-    performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
+    performance_data_ready_for_gt <- performance_data_ready_for_gt |>
       dplyr::relocate(.data$plot_predicted_positives,
         .after = .data$Threshold
-      ) %>%
-      dplyr::arrange(.data$ppcr) %>%
-      dplyr::select(-.data$Threshold) %>%
+      ) |>
+      dplyr::arrange(.data$ppcr) |>
+      dplyr::select(-.data$Threshold) |>
       mutate(rank = dplyr::dense_rank(.data$ppcr))
   } else {
-    performance_data_ready_for_gt <- performance_data_ready_for_gt %>%
-      dplyr::arrange(Threshold) %>%
+    performance_data_ready_for_gt <- performance_data_ready_for_gt |>
+      dplyr::arrange(Threshold) |>
       mutate(rank = dplyr::dense_rank(Threshold))
   }
 
-  performance_data_ready_for_gt %>%
+  performance_data_ready_for_gt |>
     dplyr::select(-c(
       .data$ppcr,
       .data$predicted_positives,
@@ -507,58 +506,58 @@ render_and_format_gt <- function(performance_data,
                                  perf_dat_type,
                                  prevalence,
                                  color_values) {
-  performance_data %>%
-    gt::gt() %>%
-    gt::cols_hide(rank) %>%
+  performance_data |>
+    gt::gt() |>
+    gt::cols_hide(rank) |>
     gt::fmt_missing(
       columns = dplyr::everything(),
       rows = dplyr::everything(),
       missing_text = ""
-    ) %>%
+    ) |>
     gt::cols_align(
       align = "left",
       columns = dplyr::everything()
-    ) %>%
+    ) |>
     gt::cols_align(
       align = "center",
       columns = NB
-    ) %>%
+    ) |>
     gt::cols_width(
       c(
         TP, TN, FP, FN,
         sensitivity, lift, specificity, PPV, NPV, NB,
         plot_predicted_positives
       ) ~ px(100)
-    ) %>%
+    ) |>
     gt::tab_spanner(
       label = "Confusion Matrix",
       columns = c(
         TP, FP, TN, FN,
         sensitivity, lift, specificity, PPV, NPV, NB
       )
-    ) %>%
+    ) |>
     gt::tab_spanner(
       label = "Performance Metrics",
       columns = c(
         sensitivity, lift, specificity,
         PPV, NPV, NB
       )
-    ) %>%
+    ) |>
     gt::cols_label(
       sensitivity = "Sens",
       lift = "Lift",
       specificity = "Spec",
       plot_predicted_positives = "Predicted Positives"
-    ) %>%
+    ) |>
     # gt::tab_options(
     #   table.background.color = "#FFFBF3"
-    # ) %>%
+    # ) |>
     # gt::tab_header(
     #   title = gt::md(creating_title_for_gt(main_slider)),
     #   subtitle = gt::md(creating_subtitle_for_gt(perf_dat_type,
     #                                       prevalence = prevalence,
     #                                       color_values = color_values))
-    # ) %>%
+    # ) |>
     add_zebra_colors_to_gt_table(perf_dat_type %in% c(
       "several models",
       "several populations"
@@ -575,7 +574,7 @@ render_and_format_gt <- function(performance_data,
 add_zebra_colors_to_gt_table <- function(performance_table,
                                          add_zebra_colors) {
   if (add_zebra_colors == TRUE) {
-    performance_table %>%
+    performance_table |>
       gt::tab_style(
         style = gt::cell_fill(color = "#f5f1f1"),
         locations = gt::cells_body(
@@ -623,10 +622,10 @@ creating_subtitle_for_gt <- function(perf_dat_type,
   if (perf_dat_type == "several models") {
     color_values <- color_values[seq_len(length(prevalence))]
 
-    subtitle_for_gt <- prevalence %>%
-      names() %>%
-      purrr::map2(color_values, add_html_color_to_model_for_subtitle) %>%
-      glue::glue_collapse(", ", last = " and ") %>%
+    subtitle_for_gt <- prevalence |>
+      names() |>
+      purrr::map2(color_values, add_html_color_to_model_for_subtitle) |>
+      glue::glue_collapse(", ", last = " and ") |>
       glue::glue(" (Prevalnce: {round(prevalence[1], digits = 2)})")
   }
 
@@ -640,7 +639,7 @@ creating_subtitle_for_gt <- function(perf_dat_type,
         prevalence
       ),
       create_subtitle_for_one_population
-    ) %>%
+    ) |>
       glue::glue_collapse(", ", last = " and ")
   }
 
