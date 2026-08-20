@@ -11,11 +11,11 @@ get_real_positives_from_performance_data <- function(performance_data,
                                                        "not important") {
   real_positives <- real_positives <- NULL
 
-  real_positives <- performance_data %>%
-    mutate(real_positives = TP + FN) %>%
-    dplyr::filter(ppcr == 1) %>%
-    dplyr::select(dplyr::any_of(c("model", "population", "real_positives"))) %>%
-    distinct() %>%
+  real_positives <- performance_data |>
+    mutate(real_positives = TP + FN) |>
+    dplyr::filter(ppcr == 1) |>
+    dplyr::select(dplyr::any_of(c("model", "population", "real_positives"))) |>
+    distinct() |>
     dplyr::pull(real_positives, name = 1)
 
   real_positives
@@ -34,10 +34,10 @@ get_prevalence_from_performance_data <- function(performance_data,
                                                    "not important") {
   PPV <- ppcr <- NULL
 
-  prevalence <- performance_data %>%
-    dplyr::filter(ppcr == 1) %>%
-    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) %>%
-    distinct() %>%
+  prevalence <- performance_data |>
+    dplyr::filter(ppcr == 1) |>
+    dplyr::select(dplyr::any_of(c("model", "population", "PPV"))) |>
+    distinct() |>
     dplyr::pull(PPV, name = 1)
 
   prevalence
@@ -58,13 +58,13 @@ get_n_from_performance_data <- function(performance_data,
 
   # print(performance_data)
 
-  real_positives <- performance_data %>%
-    dplyr::filter(ppcr == 1) %>%
+  real_positives <- performance_data |>
+    dplyr::filter(ppcr == 1) |>
     dplyr::select(dplyr::any_of(
       c("Model", "Population", "predicted_positives")
-    )) %>%
-    distinct() %>%
-    rename("n_obs" = predicted_positives) %>%
+    )) |>
+    distinct() |>
+    rename("n_obs" = predicted_positives) |>
     select(1, "n_obs")
   # dplyr::pull(predicted_positives , name = 1)
 
@@ -173,7 +173,7 @@ create_reference_lines_data_frame <- function(curve,
             linetype = "dotted"
           )
         }
-      ) %>%
+      ) |>
         bind_rows(
           data.frame(
             x = 0, xend = 1, y = 0, yend = 1, col = "grey",
@@ -186,18 +186,18 @@ create_reference_lines_data_frame <- function(curve,
         x = prevalence,
         y = 1,
         row.names = NULL
-      ) %>%
+      ) |>
         bind_rows(
           data.frame(
             population = rep(names(prevalence), each = 2),
             x = c(0, 1),
             y = c(0, 1)
           )
-        ) %>%
-        dplyr::arrange(population, x, y) %>%
+        ) |>
+        dplyr::arrange(population, x, y) |>
         dplyr::bind_rows(
           data.frame(population = "random", x = c(0, 1), y = c(0, 1))
-        ) %>%
+        ) |>
         dplyr::mutate(
           text = dplyr::case_when(
             population != "random" ~ glue::glue(
@@ -219,17 +219,17 @@ create_reference_lines_data_frame <- function(curve,
       )
     } else {
       if (length(prevalence) == 1) {
-        reference_lines_data_frame <- performance_data %>%
+        reference_lines_data_frame <- performance_data |>
           dplyr::mutate(
             population = "treat_all",
             x = probability_threshold,
             y = prevalence - (1 - prevalence) *
               (probability_threshold / (1 - probability_threshold))
-          ) %>%
-          dplyr::select(population, x, y) %>%
+          ) |>
+          dplyr::select(population, x, y) |>
           dplyr::bind_rows(
             data.frame(population = "treat_none", x = c(0, 1), y = c(0, 0))
-          ) %>%
+          ) |>
           dplyr::mutate(
             text = dplyr::case_when(
               population != "treat_none" ~ glue::glue("<b>NB Treat All:</b> \\
@@ -240,24 +240,24 @@ create_reference_lines_data_frame <- function(curve,
             )
           )
       } else {
-        reference_lines_data_frame <- performance_data %>%
+        reference_lines_data_frame <- performance_data |>
           dplyr::left_join(
-            data.frame(prevalence) %>%
+            data.frame(prevalence) |>
               tibble::rownames_to_column("population")
-          ) %>%
+          ) |>
           dplyr::mutate(
             x = probability_threshold,
             y = prevalence - (1 - prevalence) *
               (probability_threshold / (1 - probability_threshold)),
             linetype = "solid"
-          ) %>%
-          dplyr::select(population, x, y, linetype) %>%
+          ) |>
+          dplyr::select(population, x, y, linetype) |>
           dplyr::bind_rows(
             data.frame(
               population = "treat_none", x = c(0, 1), y = c(0, 0),
               linetype = "dotted"
             )
-          ) %>%
+          ) |>
           dplyr::mutate(
             text = dplyr::case_when(
               population != "treat_none" ~ glue::glue(
@@ -334,8 +334,11 @@ create_segment_for_reference_line <- function(reference_line) {
 
 add_reference_lines_to_ggplot <- function(ggplot_curve, reference_lines) {
   ggplot_curve$layers <- c(
-    purrr::map(reference_lines %>%
-      split(seq_len(nrow(.))), ~ create_segment_for_reference_line(.x)),
+    purrr::map(
+      reference_lines |>
+        split(seq_len(nrow(reference_lines))),
+      ~ create_segment_for_reference_line(.x)
+    ),
     ggplot_curve$layers
   )
   ggplot_curve
@@ -618,7 +621,6 @@ create_plotly_curve <- function(rtichoke_curve_list) {
 }
 
 
-
 #' Plot rtichoke curve
 #'
 #' @inheritParams create_roc_curve
@@ -772,10 +774,10 @@ extract_reference_groups_from_performance_data <- function(performance_data, per
 
 
 make_deciles_dat_new <- function(probs, reals) {
-  data.frame(probs, reals) %>%
-    dplyr::mutate(quintile = dplyr::ntile(probs, 10)) %>%
-    dplyr::group_by(quintile) %>%
-    dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) %>%
+  data.frame(probs, reals) |>
+    dplyr::mutate(quintile = dplyr::ntile(probs, 10)) |>
+    dplyr::group_by(quintile) |>
+    dplyr::summarise(y = sum(reals) / n(), x = mean(probs), sum_reals = sum(reals), total_obs = n()) |>
     dplyr::ungroup()
 }
 
@@ -818,10 +820,10 @@ prepare_performance_data_for_curve <- function(performance_data,
                                                perf_dat_type,
                                                min_p_threshold = 0,
                                                max_p_threshold = 1) {
-  performance_data %>%
-    {
+  performance_data |>
+    (\(data) {
       if (y_performance_metric == "NB_interventions_avoided") {
-        dplyr::mutate(.,
+        dplyr::mutate(data,
           N = TP + TN + FP + FN,
           prevalence = (TP + FN) / N,
           NB_intervention_all = prevalence - (1 - prevalence) *
@@ -830,17 +832,18 @@ prepare_performance_data_for_curve <- function(performance_data,
             ((1 - probability_threshold) / probability_threshold)
         )
       } else {
-        .
+        data
       }
-    } %>%
-    {
+    })() |>
+    (\(data) {
       if (stratified_by == "probability_threshold") {
-        dplyr::filter(., probability_threshold <= max_p_threshold) |>
+        data |>
+          dplyr::filter(probability_threshold <= max_p_threshold) |>
           dplyr::filter(probability_threshold >= min_p_threshold)
       } else {
-        .
+        data
       }
-    } |>
+    })() |>
     add_hover_text_to_performance_data_new(
       x_performance_metric, y_performance_metric, stratified_by, perf_dat_type
     ) |>
@@ -849,14 +852,14 @@ prepare_performance_data_for_curve <- function(performance_data,
       y_performance_metric,
       stratified_by,
       perf_dat_type
-    ) %>%
-    {
+    ) |>
+    (\(data) {
       if (y_performance_metric %in% c("NB", "NB_interventions_avoided")) {
-        dplyr::filter(., !is.nan(y))
+        dplyr::filter(data, !is.nan(y))
       } else {
-        .
+        data
       }
-    }
+    })()
 }
 
 
@@ -872,23 +875,17 @@ add_hover_text_to_performance_data_new <- function(performance_data,
     make_two_performance_metrics_bold(
       performance_metric_x,
       performance_metric_y
-    ) %>%
-    {
-      if (perf_dat_type == "several models") {
-        add_models_for_text_for_hover_new(.)
-      } else {
-        .
-      }
-    } %>%
-    {
-      if (perf_dat_type == "several populations") {
-        add_population_for_text_for_hover_new(.)
-      } else {
-        .
-      }
-    }
+    )
 
-  performance_data %>%
+  if (perf_dat_type == "several models") {
+    hover_text <- add_models_for_text_for_hover_new(hover_text)
+  }
+
+  if (perf_dat_type == "several populations") {
+    hover_text <- add_population_for_text_for_hover_new(hover_text)
+  }
+
+  performance_data |>
     dplyr::mutate(
       dplyr::across(where(is.numeric), round, 3),
       text = glue::glue(hover_text),
