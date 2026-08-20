@@ -8,10 +8,6 @@ Define limits for Calibration Curve
 define_limits_for_calibration_plot(deciles_dat)
 ```
 
-## Arguments
-
-- deciles_dat:
-
 ## Examples
 
 ``` r
