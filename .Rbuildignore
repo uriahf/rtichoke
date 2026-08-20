@@ -15,3 +15,5 @@ $run_dev.*
 ^\.github$
 ^codecov\.yml$
 ^cache$
+^\.lintr$
+^air\.toml$
