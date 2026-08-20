@@ -97,7 +97,7 @@ create_calibration_curve <- function(probs,
                                      type = "discrete",
                                      size = NULL) {
   check_probs_input(probs)
-  # check_real_input(real)
+  check_real_input(reals)
 
   calibration_curve_list <- create_calibration_curve_list(
     probs = probs,
@@ -217,7 +217,7 @@ create_calibration_curve_list <- function(probs,
                                           ),
                                           size = NULL) {
   check_probs_input(probs)
-  # check_real_input(real)
+  check_real_input(reals)
 
   if (is.null(names(probs))) {
     names(probs) <- "model"
