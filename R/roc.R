@@ -232,5 +232,5 @@ plot_roc_curve <- function(
       create_plotly_curve()
   }
 
-  return(roc_curve)
+  roc_curve
 }
