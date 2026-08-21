@@ -39,7 +39,5 @@ jobs:
         shell: bash
         run: |
           while IFS= read -r file; do
-            air format "$file"
+            air format "$file" --check
           done < changed-r-files.txt
-          git diff -- '*.R'
-          git diff --exit-code -- '*.R'
