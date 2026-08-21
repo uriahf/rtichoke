@@ -56,7 +56,7 @@ build_evaluation_metadata <- function(probs, reals) {
   )
 
   data.frame(
-    model = evaluation,
+    model = rep(NA_character_, length(evaluation)),
     population = evaluation,
     evaluation = evaluation,
     stringsAsFactors = FALSE
