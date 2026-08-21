@@ -203,16 +203,6 @@ plot_roc_curve <- function(
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  stratified_by <- check_performance_data_stratification(
-    performance_data
-  )
-
-  perf_dat_type <-
-    check_performance_data_type_for_plotly(performance_data = performance_data)
-
-  prevalence <-
-    get_prevalence_from_performance_data(performance_data, perf_dat_type)
-
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame("roc")
 
