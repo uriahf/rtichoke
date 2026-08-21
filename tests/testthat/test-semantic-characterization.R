@@ -75,7 +75,10 @@ test_that("multiple models share one population context", {
     )
   })
 
-  expect_identical(sem_reference_groups(performance_data, "roc"), "reference_line")
+  expect_identical(
+    sem_reference_groups(performance_data, "roc"),
+    "reference_line"
+  )
   expect_identical(
     sem_reference_groups(performance_data, "precision recall"),
     "reference_line"
@@ -127,7 +130,10 @@ test_that("different-prevalence populations own distinct references", {
     )
   })
 
-  expect_identical(sem_reference_groups(performance_data, "roc"), "reference_line")
+  expect_identical(
+    sem_reference_groups(performance_data, "roc"),
+    "reference_line"
+  )
   expect_setequal(
     sem_reference_groups(performance_data, "precision recall"),
     c("Population low", "Population high")
