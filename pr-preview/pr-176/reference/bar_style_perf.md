@@ -10,6 +10,6 @@ bar_style_perf(width = 1, color = "lightgreen")
 
 ## Arguments
 
-- The:
+- width:
 
-  width of the background color
+  the width of the background color
