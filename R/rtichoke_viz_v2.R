@@ -39,7 +39,10 @@ rtichoke_viz_roc_v2_spec <- function(
   }
 
   if (nrow(evaluation_metadata) == 0L) {
-    stop("ROC evaluation metadata must contain at least one evaluation", call. = FALSE)
+    stop(
+      "ROC evaluation metadata must contain at least one evaluation",
+      call. = FALSE
+    )
   }
 
   compatibility_group <- roc_v2_compatibility_group(
