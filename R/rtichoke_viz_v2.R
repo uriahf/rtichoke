@@ -9,7 +9,7 @@
 #' @param evaluation_metadata Output from [build_evaluation_metadata()].
 #'
 #' @return A nested list representing a canonical ROC v2 specification.
-#' @keywords internal
+#' @noRd
 rtichoke_viz_roc_v2_spec <- function(
   performance_data,
   evaluation_metadata
