@@ -114,7 +114,7 @@ prepare_performance_data <- function(
     stop("Probabilities mustn't be greater than one ")
   }
 
-  if ((length(probs) > 1) & (length(reals) == 1)) {
+  if ((length(probs) > 1) && (length(reals) == 1)) {
     if (is.null(names(probs))) {
       names(probs) <- paste("model", seq_len(length(probs)))
     }
@@ -133,8 +133,8 @@ prepare_performance_data <- function(
     )
   }
 
-  if ((length(probs) > 1) & (length(reals) > 1)) {
-    if (is.null(names(probs)) & is.null(names(reals))) {
+  if ((length(probs) > 1) && (length(reals) > 1)) {
+    if (is.null(names(probs)) && is.null(names(reals))) {
       names(probs) <- paste("population", seq_len(length(probs)))
       names(reals) <- paste("population", seq_len(length(reals)))
     }
@@ -156,12 +156,12 @@ prepare_performance_data <- function(
 
   tibble::tibble(
     probability_threshold = if (
-      stratified_by != "probability_threshold" &
+      stratified_by != "probability_threshold" &&
         length(unique(probs[[1]])) != 1
     ) {
       stats::quantile(probs[[1]], probs = rev(seq(0, 1, by = by)))
     } else if (
-      stratified_by != "probability_threshold" &
+      stratified_by != "probability_threshold" &&
         length(unique(probs[[1]])) == 1
     ) {
       c(0, 1)
@@ -174,7 +174,7 @@ prepare_performance_data <- function(
   ) |>
     (\(data) {
       if (
-        stratified_by != "probability_threshold" &
+        stratified_by != "probability_threshold" &&
           length(unique(probs[[1]])) != 1
       ) {
         dplyr::mutate(
@@ -185,7 +185,7 @@ prepare_performance_data <- function(
           )
         )
       } else if (
-        stratified_by != "probability_threshold" &
+        stratified_by != "probability_threshold" &&
           length(unique(probs[[1]])) == 1
       ) {
         dplyr::mutate(data, ppcr = c(1, 0))
