@@ -26,6 +26,7 @@ jobs:
       - name: Build source package
         shell: Rscript {0}
         run: |
+          dir.create("cran-artifacts", showWarnings = FALSE)
           pkg <- pkgbuild::build(path = ".", dest_path = "cran-artifacts")
           writeLines(pkg, "cran-artifacts/tarball-path.txt")
 
