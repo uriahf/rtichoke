@@ -9,13 +9,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/uriahf/rtichoke/blob/main/DESCRIPTION)
 
-Finkel U (2026). *rtichoke: rtichoke*. R package version 0.0.7,
-<https://github.com/uriahf/rtichoke>.
+Finkel U (2026). *rtichoke: Interactive Visualization of Binary
+Prediction Model Performance*. R package version 0.0.7,
+<https://uriahf.github.io/rtichoke/>.
 
     @Manual{,
-      title = {rtichoke: rtichoke},
+      title = {rtichoke: Interactive Visualization of Binary Prediction Model Performance},
       author = {Uriah Finkel},
       year = {2026},
       note = {R package version 0.0.7},
-      url = {https://github.com/uriahf/rtichoke},
+      url = {https://uriahf.github.io/rtichoke/},
     }

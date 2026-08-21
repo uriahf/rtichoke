@@ -1,10 +1,16 @@
-# rtichoke: rtichoke
+# rtichoke: Interactive Visualization of Binary Prediction Model Performance
 
-Interactive visualization for model performance.
+Tools for exploring the performance of prediction models with binary
+outcomes through interactive and static visualizations. Supports
+receiver operating characteristic, precision-recall, gains, lift,
+decision, and calibration curves, together with performance tables and
+summary reports.
 
 ## See also
 
 Useful links:
+
+- <https://uriahf.github.io/rtichoke/>
 
 - <https://github.com/uriahf/rtichoke>
 
