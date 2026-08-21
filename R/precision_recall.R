@@ -191,10 +191,6 @@ plot_precision_recall_curve <- function(
     perf_dat_type
   )
 
-  stratified_by <- check_performance_data_stratification(
-    performance_data
-  )
-
   if (interactive == FALSE) {
     reference_lines <- create_reference_lines_data_frame(
       "precision recall",
