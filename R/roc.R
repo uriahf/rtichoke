@@ -115,7 +115,6 @@ create_roc_curve <- function(
   size = NULL
 ) {
   check_probs_input(probs)
-  # check_real_input(reals)
 
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
