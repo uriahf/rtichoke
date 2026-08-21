@@ -79,16 +79,16 @@ for each population.
 
 create_roc_curve(
   probs = list(
-    "Train" = example_dat %>%
-      dplyr::filter(type_of_set == "train") %>%
+    "Train" = example_dat |>
+      dplyr::filter(type_of_set == "train") |>
       dplyr::pull(estimated_probabilities),
-    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+    "Test" = example_dat |> dplyr::filter(type_of_set == "test") |>
       dplyr::pull(estimated_probabilities)
   ),
   reals = list(
-    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+    "Train" = example_dat |> dplyr::filter(type_of_set == "train") |>
       dplyr::pull(outcome),
-    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+    "Test" = example_dat |> dplyr::filter(type_of_set == "test") |>
       dplyr::pull(outcome)
   )
 )
@@ -103,7 +103,7 @@ data and use it as an input: instead of `create_*_curve` use
 
 ``` r
 
-one_pop_one_model_as_a_vector %>%
+one_pop_one_model_as_a_vector |>
   plot_roc_curve()
 ```
 

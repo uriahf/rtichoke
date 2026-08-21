@@ -110,10 +110,10 @@
 <!--   real = as.numeric( -->
 <!--     rtichoke::example_dat$outcome) -->
 <!--   )  -->
-<!-- predictions_and_outcomes %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>%  -->
-<!--   gt::cols_align(align = "center") %>%  -->
+<!-- predictions_and_outcomes |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |>  -->
+<!--   gt::cols_align(align = "center") |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2)  -->
 <!-- ``` -->
@@ -136,10 +136,10 @@
 <!--     "Bad Model" = example_dat$bad_model, -->
 <!--     "Random Guess" = example_dat$random_guess, -->
 <!--   real = as.numeric(rtichoke::example_dat$outcome))  -->
-<!-- predictions_and_outcomes %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>%  -->
-<!--   gt::cols_align(align = "center") %>%  -->
+<!-- predictions_and_outcomes |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |>  -->
+<!--   gt::cols_align(align = "center") |>  -->
 <!--   gt::fmt_number(columns = 1:3, -->
 <!--                  decimals  = 2) -->
 <!-- ``` -->
@@ -162,49 +162,49 @@
 <!-- library(rtichoke) -->
 <!-- set.seed(42) -->
 <!-- predictions_and_outcomes_train <- tibble::tibble( -->
-<!--     "probs" = example_dat %>% -->
-<!--       dplyr::filter(type_of_set == "train") %>% -->
+<!--     "probs" = example_dat |> -->
+<!--       dplyr::filter(type_of_set == "train") |> -->
 <!--       dplyr::pull(estimated_probabilities), -->
-<!--   real = example_dat %>% dplyr::filter(type_of_set == "train") %>% -->
-<!--       dplyr::pull(outcome) %>%  -->
+<!--   real = example_dat |> dplyr::filter(type_of_set == "train") |> -->
+<!--       dplyr::pull(outcome) |>  -->
 <!--     as.numeric())   -->
 <!-- predictions_and_outcomes_test <- tibble::tibble( -->
-<!--     "probs" = example_dat %>% -->
-<!--       dplyr::filter(type_of_set == "test") %>% -->
+<!--     "probs" = example_dat |> -->
+<!--       dplyr::filter(type_of_set == "test") |> -->
 <!--       dplyr::pull(estimated_probabilities), -->
-<!--   real = example_dat %>% dplyr::filter(type_of_set == "test") %>% -->
-<!--       dplyr::pull(outcome) %>%  -->
+<!--   real = example_dat |> dplyr::filter(type_of_set == "test") |> -->
+<!--       dplyr::pull(outcome) |>  -->
 <!--     as.numeric())   -->
-<!-- predictions_and_outcomes_train %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>% -->
+<!-- predictions_and_outcomes_train |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |> -->
 <!--   gt::tab_header( -->
 <!--     title = gt::md("**Train Set**") -->
-<!--   )  %>%  -->
+<!--   )  |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2) -->
-<!-- predictions_and_outcomes_test %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>% -->
+<!-- predictions_and_outcomes_test |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |> -->
 <!--   gt::tab_header( -->
 <!--     title = gt::md("**Test Set**") -->
-<!--   )%>%  -->
+<!--   ) |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2) -->
 <!-- ``` -->
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/create_roc_curve.html">create_roc_curve</a></span><span class="op">(</span></span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span>
-<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">estimated_probabilities</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="st">"Train"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"train"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span>,</span>
-<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="st">"Test"</span> <span class="op">=</span> <span class="va">example_dat</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type_of_set</span> <span class="op">==</span> <span class="st">"test"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">outcome</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -215,7 +215,7 @@
 </h2>
 <p>For some outputs in rtichoke you can alternatively prepare a performance data and use it as an input: instead of <code>create_*_curve</code> use <code>plot_*_curve</code> and instead of <code>create_performance_table</code> use <code>render_performance_table</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">one_pop_one_model_as_a_vector</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">one_pop_one_model_as_a_vector</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/plot_roc_curve.html">plot_roc_curve</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="summary-report">Summary Report<a class="anchor" aria-label="anchor" href="#summary-report"></a>
