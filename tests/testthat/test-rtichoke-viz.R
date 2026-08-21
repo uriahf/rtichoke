@@ -19,11 +19,19 @@ test_that("real rtichoke ROC output maps to the canonical viz spec", {
     c("Estimated model", "Random guess")
   )
 
-  expect_identical(spec$data[[1]]$cutoff, performance_data$probability_threshold[[1]])
-  expect_identical(spec$data[[1]]$sensitivity, performance_data$sensitivity[[1]])
-  expect_identical(spec$data[[1]]$specificity, performance_data$specificity[[1]])
+  expect_identical(
+    spec$data[[1]]$cutoff,
+    performance_data$probability_threshold[[1]]
+  )
+  expect_identical(
+    spec$data[[1]]$sensitivity,
+    performance_data$sensitivity[[1]]
+  )
+  expect_identical(
+    spec$data[[1]]$specificity,
+    performance_data$specificity[[1]]
+  )
 })
-
 
 test_that("ROC spec rejects incomplete performance data", {
   expect_error(
