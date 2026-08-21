@@ -35,11 +35,12 @@ test_that("keyed populations retain distinct identities", {
     )
   )
 
+  expect_true(all(is.na(metadata$model)))
   expect_identical(metadata$population, c("Population A", "Population B"))
   expect_identical(metadata$evaluation, c("Population A", "Population B"))
 })
 
-test_that("paired inputs preserve evaluation labels", {
+test_that("paired inputs preserve evaluation labels without guessing model", {
   pair_names <- c("Model A @ Population A", "Model B @ Population B")
   metadata <- rtichoke:::build_evaluation_metadata(
     probs = stats::setNames(
@@ -52,6 +53,7 @@ test_that("paired inputs preserve evaluation labels", {
     )
   )
 
+  expect_true(all(is.na(metadata$model)))
   expect_identical(metadata$population, pair_names)
   expect_identical(metadata$evaluation, pair_names)
 })
