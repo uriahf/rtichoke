@@ -51,7 +51,7 @@ create_table_for_prevalence <- function(
       tibble(real_positives = real_positives),
       n_obs
     ) |>
-      dplyr::mutate(population = forcats::fct_inorder(population))
+      dplyr::mutate(population = forcats::fct_inorder(.data$population))
 
     table_for_prevalence <- data_for_prevalence |>
       reactable::reactable(
