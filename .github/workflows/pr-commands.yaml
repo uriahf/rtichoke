@@ -14,7 +14,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/pr-fetch@v2
         with:
@@ -31,14 +31,21 @@ jobs:
       - name: Document
         run: Rscript -e 'roxygen2::roxygenise()'
 
-      - name: commit
+      - name: Commit documentation
+        id: commit_documentation
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add man/\* NAMESPACE
+          git add -- DESCRIPTION NAMESPACE man
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git commit -m 'Document'
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - uses: r-lib/actions/pr-push@v2
+        if: steps.commit_documentation.outputs.changed == 'true'
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
