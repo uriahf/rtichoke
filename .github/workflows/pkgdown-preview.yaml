@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RTICHOKE_VIZ_VERSION: "0.1.0"
     steps:
       - uses: actions/checkout@v4
 
@@ -34,21 +35,33 @@ jobs:
       - name: Build pkgdown site
         run: Rscript -e 'pkgdown::build_site(new_process = FALSE)'
 
+      - name: Download rtichoke_viz browser bundle
+        run: |
+          VERSION="${RTICHOKE_VIZ_VERSION}"
+          BUNDLE="rtichoke-viz-${VERSION}"
+          BASE_URL="https://github.com/uriahf/rtichoke_viz/releases/download/v${VERSION}"
+          mkdir -p /tmp/rtichoke-viz
+          curl -fL "${BASE_URL}/${BUNDLE}.tar.gz" \
+            -o "/tmp/rtichoke-viz/${BUNDLE}.tar.gz"
+          curl -fL "${BASE_URL}/${BUNDLE}.tar.gz.sha256" \
+            -o "/tmp/rtichoke-viz/${BUNDLE}.tar.gz.sha256"
+          cd /tmp/rtichoke-viz
+          sha256sum -c "${BUNDLE}.tar.gz.sha256"
+          tar -xzf "${BUNDLE}.tar.gz"
+
       - name: Generate rtichoke_viz ROC proof
         run: |
           Rscript scripts/rtichoke_viz_roc_proof.R
-          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.js" \
-            -o docs/rtichoke-viz-roc/rtichoke-viz.js
-          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.css" \
-            -o docs/rtichoke-viz-roc/rtichoke-viz.css
+          BUNDLE="/tmp/rtichoke-viz/rtichoke-viz-${RTICHOKE_VIZ_VERSION}"
+          cp "${BUNDLE}/rtichoke-viz.js" docs/rtichoke-viz-roc/
+          cp "${BUNDLE}/rtichoke-viz.css" docs/rtichoke-viz-roc/
 
       - name: Generate rtichoke_viz calibration proof
         run: |
           Rscript scripts/rtichoke_viz_calibration_proof.R
-          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.js" \
-            -o docs/rtichoke-viz-calibration/rtichoke-viz.js
-          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.css" \
-            -o docs/rtichoke-viz-calibration/rtichoke-viz.css
+          BUNDLE="/tmp/rtichoke-viz/rtichoke-viz-${RTICHOKE_VIZ_VERSION}"
+          cp "${BUNDLE}/rtichoke-viz.js" docs/rtichoke-viz-calibration/
+          cp "${BUNDLE}/rtichoke-viz.css" docs/rtichoke-viz-calibration/
 
       - name: Publish PR preview
         env:
