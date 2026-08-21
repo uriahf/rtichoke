@@ -1,7 +1,5 @@
 # Decision Curve ----------------------------------------------------------
 
-
-
 #' Decision Curve
 #'
 #' Create a decision Curve
@@ -68,32 +66,32 @@
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "interventions avoided"
@@ -102,41 +100,55 @@
 #'
 #' create_decision_curve(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   type = "combined"
 #' )
 #' }
-create_decision_curve <- function(probs, reals, by = 0.01,
-                                  stratified_by = "probability_threshold",
-                                  chosen_threshold = NA,
-                                  interactive = TRUE,
-                                  color_values = c(
-                                    "#1b9e77", "#d95f02",
-                                    "#7570b3", "#e7298a",
-                                    "#07004D", "#E6AB02",
-                                    "#FE5F55", "#54494B",
-                                    "#006E90", "#BC96E6",
-                                    "#52050A", "#1F271B",
-                                    "#BE7C4D", "#63768D",
-                                    "#08A045", "#320A28",
-                                    "#82FF9E", "#2176FF",
-                                    "#D1603D", "#585123"
-                                  ),
-                                  size = NULL,
-                                  type = "conventional",
-                                  min_p_threshold = 0,
-                                  max_p_threshold = 1) {
+create_decision_curve <- function(
+  probs,
+  reals,
+  by = 0.01,
+  stratified_by = "probability_threshold",
+  chosen_threshold = NA,
+  interactive = TRUE,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  size = NULL,
+  type = "conventional",
+  min_p_threshold = 0,
+  max_p_threshold = 1
+) {
   match.arg(
     arg = type,
     choices = c("conventional", "interventions avoided", "combined")
@@ -151,7 +163,7 @@ create_decision_curve <- function(probs, reals, by = 0.01,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) %>%
+  ) |>
     plot_decision_curve(
       chosen_threshold = chosen_threshold,
       interactive = interactive,
@@ -162,7 +174,6 @@ create_decision_curve <- function(probs, reals, by = 0.01,
       max_p_threshold = max_p_threshold
     )
 }
-
 
 
 #' Decision Curve from Performance Data
@@ -176,64 +187,76 @@ create_decision_curve <- function(probs, reals, by = 0.01,
 #' \dontrun{
 #'
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve()
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' one_pop_one_model %>%
+#' one_pop_one_model |>
 #'   plot_decision_curve(type = "combined")
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve()
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' multiple_models %>%
+#' multiple_models |>
 #'   plot_decision_curve(type = "combined")
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve()
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve(type = "interventions avoided")
 #'
-#' multiple_populations %>%
+#' multiple_populations |>
 #'   plot_decision_curve(type = "combined")
 #' }
 #' @export
 
-plot_decision_curve <- function(performance_data,
-                                chosen_threshold = NA,
-                                interactive = TRUE,
-                                color_values = c(
-                                  "#1b9e77", "#d95f02",
-                                  "#7570b3", "#e7298a",
-                                  "#07004D", "#E6AB02",
-                                  "#FE5F55", "#54494B",
-                                  "#006E90", "#BC96E6",
-                                  "#52050A", "#1F271B",
-                                  "#BE7C4D", "#63768D",
-                                  "#08A045", "#320A28",
-                                  "#82FF9E", "#2176FF",
-                                  "#D1603D", "#585123"
-                                ),
-                                size = NULL,
-                                type = "conventional",
-                                min_p_threshold = 0,
-                                max_p_threshold = 1) {
+plot_decision_curve <- function(
+  performance_data,
+  chosen_threshold = NA,
+  interactive = TRUE,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  ),
+  size = NULL,
+  type = "conventional",
+  min_p_threshold = 0,
+  max_p_threshold = 1
+) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
 
   if (interactive == FALSE) {
-    decision_curve <- performance_data %>%
-      create_ggplot_for_performance_metrics("threshold", "NB", color_values) %>%
+    decision_curve <- performance_data |>
+      create_ggplot_for_performance_metrics("threshold", "NB", color_values) |>
       add_reference_lines_to_ggplot(
         create_reference_lines_data_frame("decision", prevalence)
-      ) %>%
+      ) |>
       set_decision_curve_limits() +
       ggplot2::xlab("Probability Threshold") +
       ggplot2::ylab("Net Benefit")
@@ -243,7 +266,8 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- performance_data |>
         create_rtichoke_curve_list(
           "decision",
-          size = size, color_values = color_values,
+          size = size,
+          color_values = color_values,
           min_p_threshold = min_p_threshold,
           max_p_threshold = max_p_threshold
         ) |>
@@ -254,7 +278,8 @@ plot_decision_curve <- function(performance_data,
       decision_curve <- decision_curve <- performance_data |>
         create_rtichoke_curve_list(
           "interventions avoided",
-          size = size, color_values = color_values,
+          size = size,
+          color_values = color_values,
           min_p_threshold = min_p_threshold,
           max_p_threshold = max_p_threshold
         ) |>
@@ -275,7 +300,9 @@ plot_decision_curve <- function(performance_data,
   return(decision_curve)
 }
 
-plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) {
+plot_decision_combined_curve <- function(
+  rtichoke_decision_combined_curve_list
+) {
   interactive_marker <- list(
     size = 12,
     line = list(
@@ -284,8 +311,10 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
     )
   )
 
-  if (!(rtichoke_decision_combined_curve_list$perf_dat_type %in%
-    c("several models", "several populations"))) {
+  if (
+    !(rtichoke_decision_combined_curve_list$perf_dat_type %in%
+      c("several models", "several populations"))
+  ) {
     interactive_marker$color <- "#f6e3be"
   }
 
@@ -296,11 +325,11 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
       suffix = c("_conventional", "_interventions_avoided")
     )
 
-  size_height <- switch(is.null(rtichoke_decision_combined_curve_list$size[[1]]) + 1,
+  size_height <- switch(
+    is.null(rtichoke_decision_combined_curve_list$size[[1]]) + 1,
     1.25 * rtichoke_decision_combined_curve_list$size[[1]] + 50,
     NULL
   )
-
 
   conventional_decision_curve <- plotly::plot_ly(
     height = size_height,
@@ -344,12 +373,14 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
     ) |>
     plotly::layout(
       xaxis = list(
-        showgrid = FALSE, fixedrange = TRUE,
+        showgrid = FALSE,
+        fixedrange = TRUE,
         range = rtichoke_decision_combined_curve_list$axes_ranges$conventional$xaxis,
         title = rtichoke_decision_combined_curve_list$axes_labels$conventional$xaxis
       ),
       yaxis = list(
-        showgrid = FALSE, fixedrange = TRUE,
+        showgrid = FALSE,
+        fixedrange = TRUE,
         range = rtichoke_decision_combined_curve_list$axes_ranges$conventional$yaxis
       )
     )
@@ -395,11 +426,13 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
     ) |>
     plotly::layout(
       xaxis = list(
-        showgrid = FALSE, fixedrange = TRUE,
+        showgrid = FALSE,
+        fixedrange = TRUE,
         range = rtichoke_decision_combined_curve_list$axes_ranges$`interventions avoided`$xaxis
       ),
       yaxis = list(
-        showgrid = FALSE, fixedrange = TRUE,
+        showgrid = FALSE,
+        fixedrange = TRUE,
         range = rtichoke_decision_combined_curve_list$axes_ranges$`interventions avoided`$yaxis
       )
     )
@@ -437,8 +470,10 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
   )
 
   plotly::subplot(
-    interventions_avoided_curve |> plotly::layout(annotations = interventions_avoided_annotation),
-    conventional_decision_curve |> plotly::layout(annotations = conventional_decision_annotation),
+    interventions_avoided_curve |>
+      plotly::layout(annotations = interventions_avoided_annotation),
+    conventional_decision_curve |>
+      plotly::layout(annotations = conventional_decision_annotation),
     nrows = 2,
     shareX = TRUE,
     shareY = FALSE,
@@ -460,31 +495,35 @@ plot_decision_combined_curve <- function(rtichoke_decision_combined_curve_list) 
 }
 
 
-
-
-check_equality_between_decision_curve_lists <- function(decision_conventional_list,
-                                                        decision_interventions_avoided_list) {
+check_equality_between_decision_curve_lists <- function(
+  decision_conventional_list,
+  decision_interventions_avoided_list
+) {
   stopifnot(
     all.equal(
       decision_conventional_list[c(
-        "size", "animation_slider_prefix",
-        "perf_dat_type", "group_colors_vec"
+        "size",
+        "animation_slider_prefix",
+        "perf_dat_type",
+        "group_colors_vec"
       )],
       decision_interventions_avoided_list[c(
-        "size", "animation_slider_prefix",
-        "perf_dat_type", "group_colors_vec"
+        "size",
+        "animation_slider_prefix",
+        "perf_dat_type",
+        "group_colors_vec"
       )]
     )
   )
 }
 
-unify_decision_curve_lists_for_combined_decision_curve_list <- function(rtichoke_decision_curve_lists) {
+unify_decision_curve_lists_for_combined_decision_curve_list <- function(
+  rtichoke_decision_curve_lists
+) {
   check_equality_between_decision_curve_lists(
     rtichoke_decision_curve_lists$conventional,
     rtichoke_decision_curve_lists$`interventions avoided`
   )
-
-
 
   rtichoke_decision_combined_curve_list <- rtichoke_decision_curve_lists$conventional[
     c("animation_slider_prefix", "perf_dat_type", "group_colors_vec")
@@ -516,33 +555,47 @@ unify_decision_curve_lists_for_combined_decision_curve_list <- function(rtichoke
 }
 
 
-create_rtichoke_combined_decision_curve_list <- function(performance_data,
-                                                         curve,
-                                                         min_p_threshold = 0.01,
-                                                         max_p_threshold = 0.99,
-                                                         size = NULL,
-                                                         color_values = c(
-                                                           "#1b9e77", "#d95f02",
-                                                           "#7570b3", "#e7298a",
-                                                           "#07004D", "#E6AB02",
-                                                           "#FE5F55", "#54494B",
-                                                           "#006E90", "#BC96E6",
-                                                           "#52050A", "#1F271B",
-                                                           "#BE7C4D", "#63768D",
-                                                           "#08A045", "#320A28",
-                                                           "#82FF9E", "#2176FF",
-                                                           "#D1603D", "#585123"
-                                                         )) {
+create_rtichoke_combined_decision_curve_list <- function(
+  performance_data,
+  curve,
+  min_p_threshold = 0.01,
+  max_p_threshold = 0.99,
+  size = NULL,
+  color_values = c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  )
+) {
   rtichoke_decision_curve_lists <- c("decision", "interventions avoided") |>
-    purrr::map(~ create_rtichoke_curve_list(performance_data,
-      curve = .x,
-      min_p_threshold = min_p_threshold,
-      max_p_threshold = max_p_threshold,
-      size = size,
-      color_values = color_values
-    )) |>
+    purrr::map(
+      ~ create_rtichoke_curve_list(
+        performance_data,
+        curve = .x,
+        min_p_threshold = min_p_threshold,
+        max_p_threshold = max_p_threshold,
+        size = size,
+        color_values = color_values
+      )
+    ) |>
     purrr::set_names("conventional", "interventions avoided")
-
 
   rtichoke_decision_curve_lists |>
     unify_decision_curve_lists_for_combined_decision_curve_list() |>

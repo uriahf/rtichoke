@@ -8,8 +8,20 @@ test_that("Performance Table names are correct", {
       reals = list(example_dat$outcome)
     )),
     c(
-      "model", "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
+      "model",
+      "probability_threshold",
+      "TP",
+      "TN",
+      "FN",
+      "FP",
+      "sensitivity",
+      "FPR",
+      "specificity",
+      "PPV",
+      "NPV",
+      "lift",
+      "predicted_positives",
+      "NB",
       "ppcr"
     )
   )
@@ -20,8 +32,19 @@ test_that("Performance Table names are correct", {
       reals = list(example_dat$outcome)
     )),
     c(
-      "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
+      "probability_threshold",
+      "TP",
+      "TN",
+      "FN",
+      "FP",
+      "sensitivity",
+      "FPR",
+      "specificity",
+      "PPV",
+      "NPV",
+      "lift",
+      "predicted_positives",
+      "NB",
       "ppcr"
     )
   )
@@ -29,22 +52,37 @@ test_that("Performance Table names are correct", {
   expect_equal(
     names(prepare_performance_data(
       probs = list(
-        "train" = example_dat %>%
-          dplyr::filter(type_of_set == "train") %>%
+        "train" = example_dat |>
+          dplyr::filter(type_of_set == "train") |>
           dplyr::pull(estimated_probabilities),
-        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+        "test" = example_dat |>
+          dplyr::filter(type_of_set == "test") |>
           dplyr::pull(estimated_probabilities)
       ),
       reals = list(
-        "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+        "train" = example_dat |>
+          dplyr::filter(type_of_set == "train") |>
           dplyr::pull(outcome),
-        "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+        "test" = example_dat |>
+          dplyr::filter(type_of_set == "test") |>
           dplyr::pull(outcome)
       )
     )),
     c(
-      "population", "probability_threshold", "TP", "TN", "FN", "FP", "sensitivity",
-      "FPR", "specificity", "PPV", "NPV", "lift", "predicted_positives", "NB",
+      "population",
+      "probability_threshold",
+      "TP",
+      "TN",
+      "FN",
+      "FP",
+      "sensitivity",
+      "FPR",
+      "specificity",
+      "PPV",
+      "NPV",
+      "lift",
+      "predicted_positives",
+      "NB",
       "ppcr"
     )
   )

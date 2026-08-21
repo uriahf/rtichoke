@@ -28,22 +28,22 @@ Create a Performance Table
 \examples{
 \dontrun{
 
-one_pop_one_model \%>\%
+one_pop_one_model |>
   render_performance_table()
 
-one_pop_one_model_by_ppcr \%>\%
+one_pop_one_model_by_ppcr |>
   render_performance_table()
 
-multiple_models \%>\%
+multiple_models |>
   render_performance_table()
 
-multiple_models_by_ppcr \%>\%
+multiple_models_by_ppcr |>
   render_performance_table()
 
-multiple_populations \%>\%
+multiple_populations |>
   render_performance_table()
 
-multiple_populations_by_ppcr \%>\%
+multiple_populations_by_ppcr |>
   render_performance_table()
 }
 

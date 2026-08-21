@@ -77,10 +77,10 @@ The user is required to provide a list with one vector for the predictions and a
 <!--   )  -->
 
 
-<!-- predictions_and_outcomes %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>%  -->
-<!--   gt::cols_align(align = "center") %>%  -->
+<!-- predictions_and_outcomes |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |>  -->
+<!--   gt::cols_align(align = "center") |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2)  -->
 <!-- ``` -->
@@ -116,10 +116,10 @@ The user is required to provide a list with one vector of predictions for each m
 <!--   real = as.numeric(rtichoke::example_dat$outcome))  -->
 
 
-<!-- predictions_and_outcomes %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>%  -->
-<!--   gt::cols_align(align = "center") %>%  -->
+<!-- predictions_and_outcomes |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |>  -->
+<!--   gt::cols_align(align = "center") |>  -->
 <!--   gt::fmt_number(columns = 1:3, -->
 <!--                  decimals  = 2) -->
 <!-- ``` -->
@@ -153,39 +153,39 @@ The user is required to provide a list with one vector of predictions for each p
 <!-- set.seed(42) -->
 
 <!-- predictions_and_outcomes_train <- tibble::tibble( -->
-<!--     "probs" = example_dat %>% -->
-<!--       dplyr::filter(type_of_set == "train") %>% -->
+<!--     "probs" = example_dat |> -->
+<!--       dplyr::filter(type_of_set == "train") |> -->
 <!--       dplyr::pull(estimated_probabilities), -->
-<!--   real = example_dat %>% dplyr::filter(type_of_set == "train") %>% -->
-<!--       dplyr::pull(outcome) %>%  -->
+<!--   real = example_dat |> dplyr::filter(type_of_set == "train") |> -->
+<!--       dplyr::pull(outcome) |>  -->
 <!--     as.numeric())   -->
 
 <!-- predictions_and_outcomes_test <- tibble::tibble( -->
-<!--     "probs" = example_dat %>% -->
-<!--       dplyr::filter(type_of_set == "test") %>% -->
+<!--     "probs" = example_dat |> -->
+<!--       dplyr::filter(type_of_set == "test") |> -->
 <!--       dplyr::pull(estimated_probabilities), -->
-<!--   real = example_dat %>% dplyr::filter(type_of_set == "test") %>% -->
-<!--       dplyr::pull(outcome) %>%  -->
+<!--   real = example_dat |> dplyr::filter(type_of_set == "test") |> -->
+<!--       dplyr::pull(outcome) |>  -->
 <!--     as.numeric())   -->
 
 
 
-<!-- predictions_and_outcomes_train %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>% -->
+<!-- predictions_and_outcomes_train |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |> -->
 <!--   gt::tab_header( -->
 <!--     title = gt::md("**Train Set**") -->
-<!--   )  %>%  -->
+<!--   )  |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2) -->
 
 
-<!-- predictions_and_outcomes_test %>%  -->
-<!--   dplyr::sample_n(replace = FALSE, size = 6) %>%  -->
-<!--   gt::gt() %>% -->
+<!-- predictions_and_outcomes_test |>  -->
+<!--   dplyr::sample_n(replace = FALSE, size = 6) |>  -->
+<!--   gt::gt() |> -->
 <!--   gt::tab_header( -->
 <!--     title = gt::md("**Test Set**") -->
-<!--   )%>%  -->
+<!--   ) |>  -->
 <!--   gt::fmt_number(columns = probs, -->
 <!--                  decimals  = 2) -->
 
@@ -196,16 +196,16 @@ The user is required to provide a list with one vector of predictions for each p
 
 create_roc_curve(
   probs = list(
-    "Train" = example_dat %>%
-      dplyr::filter(type_of_set == "train") %>%
+    "Train" = example_dat |>
+      dplyr::filter(type_of_set == "train") |>
       dplyr::pull(estimated_probabilities),
-    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+    "Test" = example_dat |> dplyr::filter(type_of_set == "test") |>
       dplyr::pull(estimated_probabilities)
   ),
   reals = list(
-    "Train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+    "Train" = example_dat |> dplyr::filter(type_of_set == "train") |>
       dplyr::pull(outcome),
-    "Test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+    "Test" = example_dat |> dplyr::filter(type_of_set == "test") |>
       dplyr::pull(outcome)
   )
 )
@@ -219,7 +219,7 @@ For some outputs in rtichoke you can alternatively prepare a performance data an
 instead of `create_*_curve` use `plot_*_curve` and instead of `create_performance_table` use `render_performance_table`:
 
 ```{r eval=FALSE, include = TRUE}
-one_pop_one_model_as_a_vector %>%
+one_pop_one_model_as_a_vector |>
   plot_roc_curve()
 ```
 

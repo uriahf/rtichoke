@@ -65,60 +65,62 @@
 #'
 #' prepare_performance_data(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   )
 #' )
 #'
 #' prepare_performance_data(
 #'   probs = list(
-#'     "train" = example_dat %>%
-#'       dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |>
+#'       dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(estimated_probabilities),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(estimated_probabilities)
 #'   ),
 #'   reals = list(
-#'     "train" = example_dat %>% dplyr::filter(type_of_set == "train") %>%
+#'     "train" = example_dat |> dplyr::filter(type_of_set == "train") |>
 #'       dplyr::pull(outcome),
-#'     "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'     "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'       dplyr::pull(outcome)
 #'   ),
 #'   stratified_by = "ppcr"
 #' )
 #'
 #' @export
-prepare_performance_data <- function(probs,
-                                     reals,
-                                     by = 0.01,
-                                     stratified_by = "probability_threshold") {
-  . <- probability_threshold <- NULL
+prepare_performance_data <- function(
+  probs,
+  reals,
+  by = 0.01,
+  stratified_by = "probability_threshold"
+) {
+  probability_threshold <- NULL
 
   check_probs_input(probs)
   check_real_input(reals)
 
   match.arg(stratified_by, c("probability_threshold", "ppcr"))
 
-  if ((probs %>% purrr::map_lgl(~ any(.x > 1)) %>% any())) {
+  if ((probs |> purrr::map_lgl(~ any(.x > 1)) |> any())) {
     stop("Probabilities mustn't be greater than one ")
   }
 
-  if ((length(probs) > 1) & (length(reals) == 1)) {
+  if ((length(probs) > 1) && (length(reals) == 1)) {
     if (is.null(names(probs))) {
-      names(probs) <- paste("model", seq_len(length(probs)))
+      names(probs) <- paste("model", seq_along(probs))
     }
 
     return(
-      probs %>%
+      probs |>
         purrr::map(
           ~ prepare_performance_data(
             probs = list(.),
@@ -126,17 +128,18 @@ prepare_performance_data <- function(probs,
             by = by,
             stratified_by = stratified_by
           )
-        ) %>%
+        ) |>
         dplyr::bind_rows(.id = "model")
     )
   }
 
-  if ((length(probs) > 1) & (length(reals) > 1)) {
-    if (is.null(names(probs)) & is.null(names(reals))) {
-      names(probs) <- paste("population", seq_len(length(probs)))
-      names(reals) <- paste("population", seq_len(length(reals)))
+  if ((length(probs) > 1) && (length(reals) > 1)) {
+    if (is.null(names(probs)) && is.null(names(reals))) {
+      names(probs) <- paste("population", seq_along(probs))
+      names(reals) <- paste("population", seq_along(reals))
     }
-    return(purrr::map2_dfr(probs,
+    return(purrr::map2_dfr(
+      probs,
       reals,
       ~ prepare_performance_data(
         list(.x),
@@ -152,83 +155,90 @@ prepare_performance_data <- function(probs,
   N <- length(probs[[1]])
 
   tibble::tibble(
-    probability_threshold = if (stratified_by != "probability_threshold" &
-                                length(unique(probs[[1]])) != 1) {
-      stats::quantile(probs[[1]],
-        probs = rev(seq(0, 1, by = by))
-      )
-    } else if (stratified_by != "probability_threshold" &
-               length(unique(probs[[1]])) == 1) {
-      
+    probability_threshold = if (
+      stratified_by != "probability_threshold" &&
+        length(unique(probs[[1]])) != 1
+    ) {
+      stats::quantile(probs[[1]], probs = rev(seq(0, 1, by = by)))
+    } else if (
+      stratified_by != "probability_threshold" &&
+        length(unique(probs[[1]])) == 1
+    ) {
       c(0, 1)
-      
     } else {
       round(
         seq(0, 1, by = by),
         digits = nchar(format(by, scientific = FALSE))
       )
     }
-  ) %>%
-    {
-      if (stratified_by != "probability_threshold" &
-          length(unique(probs[[1]])) != 1) {
-        dplyr::mutate(.,
-          ppcr = round(seq(0, 1, by = by),
+  ) |>
+    (\(data) {
+      if (
+        stratified_by != "probability_threshold" &&
+          length(unique(probs[[1]])) != 1
+      ) {
+        dplyr::mutate(
+          data,
+          ppcr = round(
+            seq(0, 1, by = by),
             digits = nchar(format(by, scientific = FALSE))
           )
         )
-      } else if (stratified_by != "probability_threshold" &
-                 length(unique(probs[[1]])) == 1) {
-        
-        dplyr::mutate(.,
-                      ppcr = c(1, 0)
-        )
-        
+      } else if (
+        stratified_by != "probability_threshold" &&
+          length(unique(probs[[1]])) == 1
+      ) {
+        dplyr::mutate(data, ppcr = c(1, 0))
       } else {
-        .
+        data
       }
-    } %>%
+    })() |>
     dplyr::mutate(
       TP = lapply(
         probability_threshold,
         function(x) {
-          ifelse(x == 0,
+          ifelse(
+            x == 0,
             length(probs[[1]][reals[[1]] == 1]),
             sum(probs[[1]][reals[[1]] == 1] > x)
           )
         }
-      ) %>%
+      ) |>
         unlist(),
       TN = lapply(
         probability_threshold,
         function(x) {
-          ifelse(x == 0, as.integer(0),
-            sum(probs[[1]][reals[[1]] == 0] <= x)
-          )
+          ifelse(x == 0, as.integer(0), sum(probs[[1]][reals[[1]] == 0] <= x))
         }
-      ) %>%
+      ) |>
         unlist()
-    ) %>%
-    {
+    ) |>
+    (\(data) {
       if (stratified_by != "probability_threshold") {
-        dplyr::mutate(., TN = dplyr::case_when(
-          ppcr != 1 ~ TN,
-          TRUE ~ as.integer(0)
-        ))
+        dplyr::mutate(
+          data,
+          TN = dplyr::case_when(
+            ppcr != 1 ~ TN,
+            TRUE ~ as.integer(0)
+          )
+        )
       } else {
-        .
+        data
       }
-    } %>%
-    {
+    })() |>
+    (\(data) {
       if (stratified_by != "probability_threshold") {
-        dplyr::mutate(., TP = dplyr::case_when(
-          ppcr != 1 ~ TP,
-          TRUE ~ as.integer(sum(reals[[1]]))
-        ))
+        dplyr::mutate(
+          data,
+          TP = dplyr::case_when(
+            ppcr != 1 ~ TP,
+            TRUE ~ as.integer(sum(reals[[1]]))
+          )
+        )
       } else {
-        .
+        data
       }
-    } %>%
+    })() |>
     dplyr::mutate(
       FN = sum(reals[[1]]) - TP,
       FP = N - sum(reals[[1]]) - TN,
@@ -239,16 +249,24 @@ prepare_performance_data <- function(probs,
       NPV = TN / (TN + FN),
       lift = (TP / (TP + FN)) / ((TP + FP) / N),
       predicted_positives = TP + FP
-    ) %>%
-    {
+    ) |>
+    (\(data) {
       if (stratified_by == "probability_threshold") {
-        dplyr::mutate(., NB = TP / N - (FP / N) * (
-          probability_threshold / (1 - probability_threshold)))
+        dplyr::mutate(
+          data,
+          NB = TP /
+            N -
+            (FP / N) * (probability_threshold / (1 - probability_threshold))
+        )
       } else {
-        .
+        data
       }
-    } %>%
-    {
-      if (stratified_by == "probability_threshold") dplyr::mutate(., ppcr = (TP + FP) / N) else .
-    }
+    })() |>
+    (\(data) {
+      if (stratified_by == "probability_threshold") {
+        dplyr::mutate(data, ppcr = (TP + FP) / N)
+      } else {
+        data
+      }
+    })()
 }

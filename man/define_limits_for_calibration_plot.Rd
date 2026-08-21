@@ -14,7 +14,7 @@ Define limits for Calibration Curve
 make_deciles_dat(
   probs = example_dat$estimated_probabilities,
   real = example_dat$outcome
-) \%>\%
+) |>
   define_limits_for_calibration_plot()
 }
 }

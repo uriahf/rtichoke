@@ -10,16 +10,16 @@ test_that("probs must be in range of [0,1]", {
 
   expect_error(
     list(
-      "train" = example_dat %>%
-        dplyr::filter(type_of_set == "train") %>%
+      "train" = example_dat |>
+        dplyr::filter(type_of_set == "train") |>
         dplyr::pull(estimated_probabilities),
       "test" = c(
-        example_dat %>%
-          dplyr::filter(type_of_set == "test") %>%
+        example_dat |>
+          dplyr::filter(type_of_set == "test") |>
           dplyr::pull(estimated_probabilities),
         -0.2
       )
-    ) %>%
+    ) |>
       check_probs_input(),
     "Estimated Probabilities are out of the range"
   )
@@ -38,16 +38,16 @@ test_that("real must be 0 or 1", {
 
   expect_error(
     list(
-      "train" = example_dat %>%
-        dplyr::filter(type_of_set == "train") %>%
+      "train" = example_dat |>
+        dplyr::filter(type_of_set == "train") |>
         dplyr::pull(outcome),
       "test" = c(
-        example_dat %>%
-          dplyr::filter(type_of_set == "test") %>%
+        example_dat |>
+          dplyr::filter(type_of_set == "test") |>
           dplyr::pull(outcome),
         0.2
       )
-    ) %>%
+    ) |>
       rtichoke:::check_real_input(),
     "Outcomes are out of the range"
   )
@@ -94,7 +94,7 @@ test_that("public curve builders reject out-of-range probabilities", {
 
 test_that("plot functions reject incompatible stratification options", {
   expect_error(
-    train_and_test_sets %>%
+    train_and_test_sets |>
       plot_roc_curve(
         interactive = FALSE,
         stratified_by = "ppcr"
@@ -102,7 +102,7 @@ test_that("plot functions reject incompatible stratification options", {
   )
 
   expect_error(
-    train_and_test_sets %>%
+    train_and_test_sets |>
       plot_lift_curve(
         interactive = FALSE,
         stratified_by = "ppcr"
@@ -110,7 +110,7 @@ test_that("plot functions reject incompatible stratification options", {
   )
 
   expect_error(
-    train_and_test_sets %>%
+    train_and_test_sets |>
       plot_precision_recall_curve(
         interactive = FALSE,
         main_slider = "ppcr"
@@ -118,7 +118,7 @@ test_that("plot functions reject incompatible stratification options", {
   )
 
   expect_error(
-    train_and_test_sets %>%
+    train_and_test_sets |>
       plot_gains_curve(
         interactive = FALSE,
         main_slider = "ppcr"
@@ -126,12 +126,12 @@ test_that("plot functions reject incompatible stratification options", {
   )
 
   expect_error(
-    train_and_test_sets_enforced_percentiles_symmetry %>%
+    train_and_test_sets_enforced_percentiles_symmetry |>
       plot_gains_curve(stratified_by = "ppcr")
   )
 
   expect_error(
-    train_and_test_sets %>%
+    train_and_test_sets |>
       plot_decision_curve(
         interactive = FALSE,
         main_slider = "ppcr"
@@ -139,7 +139,7 @@ test_that("plot functions reject incompatible stratification options", {
   )
 
   expect_error(
-    train_and_test_sets_enforced_percentiles_symmetry %>%
+    train_and_test_sets_enforced_percentiles_symmetry |>
       plot_decision_curve(interactive = FALSE)
   )
 })

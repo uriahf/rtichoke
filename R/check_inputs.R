@@ -7,29 +7,29 @@
 #' check_probs_input(example_dat$estimated_probabilities)
 #'
 #' list(
-#'   "train" = example_dat %>%
-#'     dplyr::filter(type_of_set == "train") %>%
+#'   "train" = example_dat |>
+#'     dplyr::filter(type_of_set == "train") |>
 #'     dplyr::pull(estimated_probabilities),
-#'   "test" = example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'   "test" = example_dat |> dplyr::filter(type_of_set == "test") |>
 #'     dplyr::pull(estimated_probabilities)
-#' ) %>%
+#' ) |>
 #'   check_probs_input()
 #'
 #' check_probs_input(c(example_dat$estimated_probabilities, -0.1))
 #' check_probs_input(c(example_dat$estimated_probabilities, 1.1))
 #'
 #' list(
-#'   "train" = example_dat %>%
-#'     dplyr::filter(type_of_set == "train") %>%
+#'   "train" = example_dat |>
+#'     dplyr::filter(type_of_set == "train") |>
 #'     dplyr::pull(estimated_probabilities),
-#'   "test" = c(example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'   "test" = c(example_dat |> dplyr::filter(type_of_set == "test") |>
 #'     dplyr::pull(estimated_probabilities), -0.2)
-#' ) %>%
+#' ) |>
 #'   check_probs_input()
 #' }
 check_probs_input <- function(probs) {
   if (is.list(probs)) {
-    probs %>%
+    probs |>
       purrr::map(.f = ~ check_probs_input(.x))
   }
 
@@ -41,7 +41,6 @@ check_probs_input <- function(probs) {
 }
 
 
-
 #' Check real input
 #'
 #' @inheritParams prepare_performance_data
@@ -51,30 +50,30 @@ check_probs_input <- function(probs) {
 #' check_real_input(example_dat$outcome)
 #'
 #' list(
-#'   "train" = example_dat %>%
-#'     dplyr::filter(type_of_set == "train") %>%
+#'   "train" = example_dat |>
+#'     dplyr::filter(type_of_set == "train") |>
 #'     dplyr::pull(outcome),
-#'   "test" = example_dat %>%
-#'     dplyr::filter(type_of_set == "test") %>%
+#'   "test" = example_dat |>
+#'     dplyr::filter(type_of_set == "test") |>
 #'     dplyr::pull(outcome)
-#' ) %>%
+#' ) |>
 #'   check_real_input()
 #'
 #' check_real_input(c(example_dat$outcome, -0.1))
 #' check_real_input(c(example_dat$outcome, 1.1))
 #'
 #' list(
-#'   "train" = example_dat %>%
-#'     dplyr::filter(type_of_set == "train") %>%
+#'   "train" = example_dat |>
+#'     dplyr::filter(type_of_set == "train") |>
 #'     dplyr::pull(outcome),
-#'   "test" = c(example_dat %>% dplyr::filter(type_of_set == "test") %>%
+#'   "test" = c(example_dat |> dplyr::filter(type_of_set == "test") |>
 #'     dplyr::pull(outcome), -0.2)
-#' ) %>%
+#' ) |>
 #'   check_real_input()
 #' }
 check_real_input <- function(real) {
   if (is.list(real)) {
-    real %>%
+    real |>
       purrr::map(.f = ~ check_real_input(.x))
   }
 
@@ -99,7 +98,6 @@ check_chosen_threshold_input <- function(chosen_threshold) {
     stop("Chosen Threshold is out of the range")
   }
 }
-
 
 
 #' Check cheson threshold input
@@ -132,10 +130,17 @@ check_performance_data_stratification <- function(performance_data) {
 #' check_curve_input("lift")
 #' }
 check_curve_input <- function(curve) {
-  rlang::arg_match(curve, c(
-    "roc", "lift", "precision recall", "gains",
-    "decision", "interventions avoided"
-  ))
+  rlang::arg_match(
+    curve,
+    c(
+      "roc",
+      "lift",
+      "precision recall",
+      "gains",
+      "decision",
+      "interventions avoided"
+    )
+  )
 }
 
 
