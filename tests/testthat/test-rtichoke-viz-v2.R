@@ -92,7 +92,11 @@ test_that("ROC v2 preserves unknown model identity for keyed populations", {
       list(id = "evaluation-2", population = "Population B")
     )
   )
-  expect_false(any(vapply(spec$evaluations, function(x) "model" %in% names(x), logical(1))))
+  expect_false(any(vapply(
+    spec$evaluations,
+    function(x) "model" %in% names(x),
+    logical(1)
+  )))
   expect_identical(
     lapply(spec$series, `[[`, "display"),
     list(
