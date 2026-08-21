@@ -18,12 +18,23 @@ export(plot_roc_curve)
 export(prepare_performance_data)
 export(render_performance_table)
 import(dplyr)
-import(htmltools)
-import(rlang)
 importFrom(crosstalk,SharedData)
 importFrom(graphics,text)
+importFrom(htmltools,
+  attachDependencies,
+  htmlDependency,
+  span,
+  tagList,
+  tags
+)
 importFrom(magrittr,"%>%")
 importFrom(pROC,auc)
+importFrom(rlang,
+  ":=",
+  .data,
+  enquo,
+  sym
+)
 importFrom(stats,
   approx,
   as.formula,
