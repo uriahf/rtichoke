@@ -4,12 +4,9 @@
 \name{rtichoke-package}
 \alias{rtichoke}
 \alias{rtichoke-package}
-\title{rtichoke: Interactive Evaluation of Binary Prediction Models}
+\title{rtichoke: Interactive Visualization of Binary Prediction Model Performance}
 \description{
-Interactive tools for evaluating binary prediction-model performance. Provides
-visualizations and summaries for receiver operating characteristic and
-precision-recall curves, gains and lift charts, decision curves, calibration,
-confusion matrices, model metrics, and related performance reports.
+Tools for exploring the performance of prediction models with binary outcomes through interactive and static visualizations. Supports receiver operating characteristic, precision-recall, gains, lift, decision, and calibration curves, together with performance tables and summary reports.
 }
 \seealso{
 Useful links:
