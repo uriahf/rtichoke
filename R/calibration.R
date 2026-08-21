@@ -132,7 +132,7 @@ create_calibration_curve <- function(
 
 #' Define limits for Calibration Curve
 #'
-#' @param deciles_dat
+#' @param deciles_dat A data frame containing decile-level calibration data.
 #'
 #' @keywords internal
 #' @examples
