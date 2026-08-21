@@ -116,7 +116,7 @@ prepare_performance_data <- function(
 
   if ((length(probs) > 1) && (length(reals) == 1)) {
     if (is.null(names(probs))) {
-      names(probs) <- paste("model", seq_len(length(probs)))
+      names(probs) <- paste("model", seq_along(probs))
     }
 
     return(
@@ -135,8 +135,8 @@ prepare_performance_data <- function(
 
   if ((length(probs) > 1) && (length(reals) > 1)) {
     if (is.null(names(probs)) && is.null(names(reals))) {
-      names(probs) <- paste("population", seq_len(length(probs)))
-      names(reals) <- paste("population", seq_len(length(reals)))
+      names(probs) <- paste("population", seq_along(probs))
+      names(reals) <- paste("population", seq_along(reals))
     }
     return(purrr::map2_dfr(
       probs,
