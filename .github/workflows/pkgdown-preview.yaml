@@ -42,6 +42,14 @@ jobs:
           curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.css" \
             -o docs/rtichoke-viz-roc/rtichoke-viz.css
 
+      - name: Generate rtichoke_viz calibration proof
+        run: |
+          Rscript scripts/rtichoke_viz_calibration_proof.R
+          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.js" \
+            -o docs/rtichoke-viz-calibration/rtichoke-viz.js
+          curl -fL "https://raw.githubusercontent.com/uriahf/rtichoke_python/9cfa1e6249f435dd2690fbe297eece4aed766c7a/src/rtichoke/_vendor/rtichoke_viz/rtichoke-viz.css" \
+            -o docs/rtichoke-viz-calibration/rtichoke-viz.css
+
       - name: Publish PR preview
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
