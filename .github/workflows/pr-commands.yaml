@@ -56,27 +56,52 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: r-lib/actions/pr-fetch@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: r-lib/actions/setup-r@v2
+      - uses: posit-dev/setup-air@v1
 
-      - name: Install dependencies
-        run: Rscript -e 'install.packages("styler")'
+      - name: Find changed R files
+        id: changed_r_files
+        run: |
+          git diff --name-only --diff-filter=ACMR \
+            origin/${{ github.event.repository.default_branch }}...HEAD \
+            -- '*.R' > changed-r-files.txt
+          if [[ -s changed-r-files.txt ]]; then
+            echo "has-files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-files=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Style
-        run: Rscript -e 'styler::style_pkg()'
+        if: steps.changed_r_files.outputs.has-files == 'true'
+        run: |
+          while IFS= read -r file; do
+            air format "$file"
+          done < changed-r-files.txt
 
-      - name: commit
+      - name: Commit style changes
+        id: commit_style
+        if: steps.changed_r_files.outputs.has-files == 'true'
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add \*.R
+          while IFS= read -r file; do
+            git add -- "$file"
+          done < changed-r-files.txt
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git commit -m 'Style'
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - uses: r-lib/actions/pr-push@v2
+        if: steps.commit_style.outputs.changed == 'true'
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
