@@ -1,0 +1,49 @@
+name: CRAN validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cran-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: devel
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Build source package
+        shell: Rscript {0}
+        run: |
+          pkg <- pkgbuild::build(path = ".", dest_path = "cran-artifacts")
+          writeLines(pkg, "cran-artifacts/tarball-path.txt")
+
+      - name: Run CRAN-style check
+        shell: Rscript {0}
+        run: |
+          pkg <- readLines("cran-artifacts/tarball-path.txt", warn = FALSE)
+          rcmdcheck::rcmdcheck(
+            path = pkg,
+            args = "--as-cran",
+            error_on = "never",
+            check_dir = "cran-artifacts/check"
+          )
+
+      - name: Upload CRAN validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cran-validation
+          path: cran-artifacts/
+          if-no-files-found: warn
