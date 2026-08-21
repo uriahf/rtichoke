@@ -7,7 +7,7 @@
 bar_style_nb_reactable(width = 1, pos_fill = "lightgreen", neg_fill = "pink")
 }
 \arguments{
-\item{The}{width of the background color}
+\item{width}{the width of the background color}
 }
 \description{
 Add background color
