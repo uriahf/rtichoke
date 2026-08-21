@@ -103,7 +103,7 @@ prepare_performance_data <- function(
   by = 0.01,
   stratified_by = "probability_threshold"
 ) {
-  . <- probability_threshold <- NULL
+  probability_threshold <- NULL
 
   check_probs_input(probs)
   check_real_input(reals)
