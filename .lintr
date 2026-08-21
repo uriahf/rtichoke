@@ -1,2 +1,2 @@
 linters: lintr::linters_with_defaults(lintr::object_name_linter(styles = c("snake_case", "symbols"), regexes = c(statistical_abbreviation = "^(N|TP|TN|FP|FN|PPV|NPV|FPR|NB)$")))
-encoding: UTF-8
+encoding: "UTF-8"
