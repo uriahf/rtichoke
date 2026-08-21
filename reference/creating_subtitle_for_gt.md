@@ -13,7 +13,3 @@ creating_subtitle_for_gt(perf_dat_type, color_values = NA, prevalence = NA)
 - color_values:
 
   color palette
-
-- models_names:
-
-  the names of the different models

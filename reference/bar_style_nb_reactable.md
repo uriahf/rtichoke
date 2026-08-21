@@ -10,6 +10,6 @@ bar_style_nb_reactable(width = 1, pos_fill = "lightgreen", neg_fill = "pink")
 
 ## Arguments
 
-- The:
+- width:
 
-  width of the background color
+  the width of the background color
