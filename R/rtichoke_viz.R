@@ -163,7 +163,7 @@ write_rtichoke_viz_roc_proof <- function(performance_data, output_dir) {
   invisible(output_path)
 }
 
-write_rtichoke_viz_calibration_proof <- function(
+write_rtichoke_viz_calib_proof <- function(
   calibration_curve_list,
   output_dir
 ) {
