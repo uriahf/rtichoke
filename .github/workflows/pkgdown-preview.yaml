@@ -92,8 +92,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Remove PR preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin gh-pages
