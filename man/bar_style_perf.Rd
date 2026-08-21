@@ -7,7 +7,7 @@
 bar_style_perf(width = 1, color = "lightgreen")
 }
 \arguments{
-\item{The}{width of the background color}
+\item{width}{the width of the background color}
 }
 \description{
 Add background color
