@@ -1,13 +1,17 @@
-filter_checkbox_rtichoke <- function(id,
-                                     label,
-                                     sharedData,
-                                     group,
-                                     allLevels = FALSE,
-                                     inline = FALSE,
-                                     columns = 1,
-                                     labels_values) {
+filter_checkbox_rtichoke <- function(
+  id,
+  label,
+  sharedData,
+  group,
+  allLevels = FALSE,
+  inline = FALSE,
+  columns = 1,
+  labels_values
+) {
   options <- makeGroupOptions_rtichoke(
-    sharedData, group, allLevels,
+    sharedData,
+    group,
+    allLevels,
     labels_values
   )
 
@@ -26,9 +30,15 @@ filter_checkbox_rtichoke <- function(id,
         class = "crosstalk-options-group",
         columnize(
           columns,
-          mapply(labels, values, FUN = function(label, value) {
-            makeCheckbox(id, value, label)
-          }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+          mapply(
+            labels,
+            values,
+            FUN = function(label, value) {
+              makeCheckbox(id, value, label)
+            },
+            SIMPLIFY = FALSE,
+            USE.NAMES = FALSE
+          )
         )
       ),
       tags$script(
@@ -41,8 +51,12 @@ filter_checkbox_rtichoke <- function(id,
   ))
 }
 
-makeGroupOptions_rtichoke <- function(sharedData, group, allLevels,
-                                      labels_values) {
+makeGroupOptions_rtichoke <- function(
+  sharedData,
+  group,
+  allLevels,
+  labels_values
+) {
   df <- sharedData$data(
     withSelection = FALSE,
     withFilter = FALSE,

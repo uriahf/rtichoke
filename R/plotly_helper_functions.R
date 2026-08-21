@@ -548,10 +548,7 @@ create_reference_lines_for_plotly <- function(
   size = NULL,
   performance_data = NULL
 ) {
-  size_height <- switch(is.null(size) + 1,
-    size + 50,
-    NULL
-  )
+  size_height <- switch(is.null(size) + 1, size + 50, NULL)
 
   if (
     (curve %in% c("roc", "lift")) ||
