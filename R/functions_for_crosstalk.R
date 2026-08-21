@@ -67,13 +67,11 @@ makeGroupOptions_rtichoke <- function(sharedData, group, allLevels,
     sort(unique(group))
   }
   matches <- match(group, lvls)
-  vals <- lapply(seq_len(length(lvls)), function(i) {
+  vals <- lapply(seq_along(lvls), function(i) {
     df$key_[which(matches == i)]
   })
 
   lvls_str <- as.character(lvls)
-
-  # print(lvls_str)
 
   options <- list(
     items = data.frame(
@@ -85,7 +83,6 @@ makeGroupOptions_rtichoke <- function(sharedData, group, allLevels,
     group = sharedData$groupName()
   )
 
-  # print(options)
   options
 }
 
@@ -97,7 +94,6 @@ inlineCheckbox <- function(id, value, label) {
   )
 }
 
-
 jqueryLib <- function() {
   htmlDependency(
     name = "jquery",
@@ -108,14 +104,13 @@ jqueryLib <- function() {
   )
 }
 
-
 columnize <- function(columnCount, elements) {
   if (columnCount <= 1 || length(elements) <= 1) {
     return(elements)
   }
 
   columnSize <- ceiling(length(elements) / columnCount)
-  lapply(1:ceiling(length(elements) / columnSize), function(i) {
+  lapply(seq_len(ceiling(length(elements) / columnSize)), function(i) {
     tags$div(class = "crosstalk-options-column", {
       start <- (i - 1) * columnSize + 1
       end <- i * columnSize
