@@ -677,7 +677,6 @@ creating_title_for_gt <- function(main_slider) {
 #'
 #' @keywords internal
 #' @inheritParams plot_roc_curve
-#' @param models_names the names of the different models
 creating_subtitle_for_gt <- function(
   perf_dat_type,
   color_values = NA,
@@ -756,7 +755,7 @@ add_html_color_to_model_for_subtitle <- function(model_name, model_color) {
 
 #' Add background color
 #'
-#' @param The width of the background color
+#' @param width the width of the background color
 #'
 #' @keywords internal
 bar_style_perf <- function(width = 1, color = "lightgreen") {
@@ -779,7 +778,7 @@ bar_style_perf <- function(width = 1, color = "lightgreen") {
 
 #' Add background color
 #'
-#' @param The width of the background color
+#' @param width the width of the background color
 #'
 #' @keywords internal
 bar_style_nb_reactable <- function(
