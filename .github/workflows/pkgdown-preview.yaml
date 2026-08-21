@@ -31,6 +31,10 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RTICHOKE_VIZ_VERSION: "0.2.0"
+      RTICHOKE_VIZ_RELEASE_TAG: "v0.2.0"
+      RTICHOKE_VIZ_SOURCE_COMMIT: "45dc109a6a0679d0f8f3f9452d8de9306a89b906"
+      RTICHOKE_VIZ_ARCHIVE: "rtichoke-viz-0.2.0.tar.gz"
+      RTICHOKE_VIZ_SHA256: "3861277c01b3983f8b344a9ee0237c7d09fd0ba4c3d1e0cce489962e7b559d9f"
     steps:
       - uses: actions/checkout@v6
 
@@ -50,21 +54,23 @@ jobs:
 
       - name: Download rtichoke_viz browser bundle
         run: |
-          VERSION="${RTICHOKE_VIZ_VERSION}"
-          BUNDLE="rtichoke-viz-${VERSION}"
-          BASE_URL="https://github.com/uriahf/rtichoke_viz/releases/download/v${VERSION}"
+          BUNDLE="rtichoke-viz-${RTICHOKE_VIZ_VERSION}"
+          BASE_URL="https://github.com/uriahf/rtichoke_viz/releases/download/${RTICHOKE_VIZ_RELEASE_TAG}"
           mkdir -p /tmp/rtichoke-viz
-          curl -fL "${BASE_URL}/${BUNDLE}.tar.gz" \
-            -o "/tmp/rtichoke-viz/${BUNDLE}.tar.gz"
-          curl -fL "${BASE_URL}/${BUNDLE}.tar.gz.sha256" \
-            -o "/tmp/rtichoke-viz/${BUNDLE}.tar.gz.sha256"
+          curl -fL "${BASE_URL}/${RTICHOKE_VIZ_ARCHIVE}" \
+            -o "/tmp/rtichoke-viz/${RTICHOKE_VIZ_ARCHIVE}"
+          curl -fL "${BASE_URL}/${RTICHOKE_VIZ_ARCHIVE}.sha256" \
+            -o "/tmp/rtichoke-viz/${RTICHOKE_VIZ_ARCHIVE}.sha256"
           cd /tmp/rtichoke-viz
-          EXPECTED="$(awk '{print $1}' "${BUNDLE}.tar.gz.sha256")"
-          ACTUAL="$(sha256sum "${BUNDLE}.tar.gz" | awk '{print $1}')"
+          EXPECTED="$(awk '{print $1}' "${RTICHOKE_VIZ_ARCHIVE}.sha256")"
+          ACTUAL="$(sha256sum "${RTICHOKE_VIZ_ARCHIVE}" | awk '{print $1}')"
+          echo "rtichoke_viz release tag: ${RTICHOKE_VIZ_RELEASE_TAG}"
+          echo "rtichoke_viz source commit: ${RTICHOKE_VIZ_SOURCE_COMMIT}"
+          echo "rtichoke_viz archive: ${RTICHOKE_VIZ_ARCHIVE}"
           echo "rtichoke_viz archive SHA-256: ${ACTUAL}"
-          printf '%s\n' "${ACTUAL}" > "${GITHUB_WORKSPACE}/docs/rtichoke-viz-archive.sha256"
           test "${ACTUAL}" = "${EXPECTED}"
-          tar -xzf "${BUNDLE}.tar.gz"
+          test "${ACTUAL}" = "${RTICHOKE_VIZ_SHA256}"
+          tar -xzf "${RTICHOKE_VIZ_ARCHIVE}"
           test -f "${BUNDLE}/rtichoke-viz.js"
           test -f "${BUNDLE}/rtichoke-viz.css"
           test -f "${BUNDLE}/rtichoke-viz.schema.json"
