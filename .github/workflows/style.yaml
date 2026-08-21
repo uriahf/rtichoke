@@ -30,10 +30,13 @@ jobs:
             echo "has-files=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check Air formatting
+      - name: Show Air formatting
         if: steps.changed-r-files.outputs.has-files == 'true'
         shell: bash
         run: |
           while IFS= read -r file; do
-            air format "$file" --check
+            air format "$file"
+            echo "--- AIR-FORMATTED: $file ---"
+            cat "$file"
+            echo "--- END AIR-FORMATTED ---"
           done < changed-r-files.txt
