@@ -46,7 +46,9 @@ jobs:
           curl -fL "${BASE_URL}/${BUNDLE}.tar.gz.sha256" \
             -o "/tmp/rtichoke-viz/${BUNDLE}.tar.gz.sha256"
           cd /tmp/rtichoke-viz
-          sha256sum -c "${BUNDLE}.tar.gz.sha256"
+          EXPECTED="$(awk '{print $1}' "${BUNDLE}.tar.gz.sha256")"
+          ACTUAL="$(sha256sum "${BUNDLE}.tar.gz" | awk '{print $1}')"
+          test "${ACTUAL}" = "${EXPECTED}"
           tar -xzf "${BUNDLE}.tar.gz"
 
       - name: Generate rtichoke_viz ROC proof
@@ -90,9 +92,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Remove PR preview
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin gh-pages
