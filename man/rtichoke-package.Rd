@@ -6,6 +6,8 @@
 \alias{rtichoke-package}
 \title{rtichoke: Interactive Visualization of Binary Prediction Model Performance}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Tools for exploring the performance of prediction models with binary outcomes through interactive and static visualizations. Supports receiver operating characteristic, precision-recall, gains, lift, decision, and calibration curves, together with performance tables and summary reports.
 }
 \seealso{
