@@ -62,6 +62,7 @@ jobs:
           EXPECTED="$(awk '{print $1}' "${BUNDLE}.tar.gz.sha256")"
           ACTUAL="$(sha256sum "${BUNDLE}.tar.gz" | awk '{print $1}')"
           echo "rtichoke_viz archive SHA-256: ${ACTUAL}"
+          printf '%s\n' "${ACTUAL}" > "${GITHUB_WORKSPACE}/docs/rtichoke-viz-archive.sha256"
           test "${ACTUAL}" = "${EXPECTED}"
           tar -xzf "${BUNDLE}.tar.gz"
           test -f "${BUNDLE}/rtichoke-viz.js"
