@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RTICHOKE_VIZ_VERSION: "0.1.0"
+      RTICHOKE_VIZ_VERSION: "0.2.0"
     steps:
       - uses: actions/checkout@v6
 
@@ -61,8 +61,18 @@ jobs:
           cd /tmp/rtichoke-viz
           EXPECTED="$(awk '{print $1}' "${BUNDLE}.tar.gz.sha256")"
           ACTUAL="$(sha256sum "${BUNDLE}.tar.gz" | awk '{print $1}')"
+          echo "rtichoke_viz archive SHA-256: ${ACTUAL}"
           test "${ACTUAL}" = "${EXPECTED}"
           tar -xzf "${BUNDLE}.tar.gz"
+          test -f "${BUNDLE}/rtichoke-viz.js"
+          test -f "${BUNDLE}/rtichoke-viz.css"
+          test -f "${BUNDLE}/rtichoke-viz.schema.json"
+          test -f "${BUNDLE}/rtichoke-viz-v2.schema.json"
+          test -f "${BUNDLE}/MANIFEST"
+          grep -Fq 'https://rtichoke.dev/schema/viz/1.0.json' \
+            "${BUNDLE}/rtichoke-viz.schema.json"
+          grep -Fq 'https://rtichoke.dev/schema/viz/2.0.json' \
+            "${BUNDLE}/rtichoke-viz-v2.schema.json"
 
       - name: Generate rtichoke_viz ROC proof
         run: |
