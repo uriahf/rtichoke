@@ -6,6 +6,9 @@
 \usage{
 define_limits_for_calibration_plot(deciles_dat)
 }
+\arguments{
+\item{deciles_dat}{A data frame containing decile-level calibration data.}
+}
 \description{
 Define limits for Calibration Curve
 }

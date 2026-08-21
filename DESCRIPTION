@@ -1,11 +1,16 @@
 Package: rtichoke
-Title: rtichoke
+Title: Interactive Visualization of Binary Prediction Model Performance
 Version: 0.0.7
 Authors@R: 
     person("Uriah", "Finkel", , "ufinkel@gmail.com", role = c("cre", "aut"))
-Description: Interactive visualization for model performance.
+Description: Tools for exploring the performance of prediction models with
+    binary outcomes through interactive and static visualizations. Supports
+    receiver operating characteristic, precision-recall, gains, lift,
+    decision, and calibration curves, together with performance tables and
+    summary reports.
 License: MIT + file LICENSE
-URL: https://github.com/uriahf/rtichoke
+URL: https://uriahf.github.io/rtichoke/,
+    https://github.com/uriahf/rtichoke
 BugReports: https://github.com/uriahf/rtichoke/issues
 Depends: 
     R (>= 4.2)

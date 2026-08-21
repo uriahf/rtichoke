@@ -4,13 +4,17 @@
 \name{rtichoke-package}
 \alias{rtichoke}
 \alias{rtichoke-package}
-\title{rtichoke: rtichoke}
+\title{rtichoke: Interactive Evaluation of Binary Prediction Models}
 \description{
-Interactive visualization for model performance.
+Interactive tools for evaluating binary prediction-model performance. Provides
+visualizations and summaries for receiver operating characteristic and
+precision-recall curves, gains and lift charts, decision curves, calibration,
+confusion matrices, model metrics, and related performance reports.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://uriahf.github.io/rtichoke/}
   \item \url{https://github.com/uriahf/rtichoke}
   \item Report bugs at \url{https://github.com/uriahf/rtichoke/issues}
 }
