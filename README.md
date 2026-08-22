@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rtichoke
+# rtichoke <a href="https://uriahf.github.io/rtichoke/"><img src="man/figures/logo.png" align="right" height="160" /></a>
 
 <!-- badges: start -->
 
