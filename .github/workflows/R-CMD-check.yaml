@@ -3,6 +3,13 @@
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.Rbuildignore'
+      - '_pkgdown.yml'
+      - 'air.toml'
+      - 'codecov.yml'
 
 name: R-CMD-check
 
@@ -35,6 +42,7 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          pak-version: stable
 
       - uses: r-lib/actions/check-r-package@v2
         with:
