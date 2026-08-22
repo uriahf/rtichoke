@@ -29,6 +29,7 @@
 <url><loc>/reference/bar_chart.html</loc></url>
 <url><loc>/reference/bar_style_nb_reactable.html</loc></url>
 <url><loc>/reference/bar_style_perf.html</loc></url>
+<url><loc>/reference/build_evaluation_metadata.html</loc></url>
 <url><loc>/reference/check_chosen_threshold_input.html</loc></url>
 <url><loc>/reference/check_curve_input.html</loc></url>
 <url><loc>/reference/check_performance_data_stratification.html</loc></url>
@@ -81,7 +82,6 @@
 <url><loc>/reference/one_pop_one_model_by_ppcr.html</loc></url>
 <url><loc>/reference/one_pop_three_models.html</loc></url>
 <url><loc>/reference/one_pop_three_models_enforced_percentiles_symmetry.html</loc></url>
-<url><loc>/reference/pipe.html</loc></url>
 <url><loc>/reference/plot_decision_curve.html</loc></url>
 <url><loc>/reference/plot_gains_curve.html</loc></url>
 <url><loc>/reference/plot_lift_curve.html</loc></url>
