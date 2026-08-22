@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Uriah Finkel \email{ufinkel@gmail.com}
 
+Authors:
+\itemize{
+  \item Uriah Finkel \email{ufinkel@gmail.com}
+}
+
 }
 \keyword{internal}
