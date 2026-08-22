@@ -17,3 +17,5 @@ $run_dev.*
 ^cache$
 ^\.lintr$
 ^air\.toml$
+^Makefile$
+^\.pre-commit-config\.yaml$

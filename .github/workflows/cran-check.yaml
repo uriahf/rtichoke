@@ -22,6 +22,7 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          pak-version: stable
 
       - name: Build source package
         shell: Rscript {0}

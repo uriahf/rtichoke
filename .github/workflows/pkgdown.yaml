@@ -25,6 +25,7 @@ jobs:
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
+          pak-version: stable
 
       - name: Deploy package
         run: |

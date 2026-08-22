@@ -48,6 +48,7 @@ jobs:
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
+          pak-version: stable
 
       - name: Build pkgdown site
         run: Rscript -e 'pkgdown::build_site(new_process = FALSE)'
