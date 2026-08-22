@@ -1,4 +1,4 @@
-# rtichoke [![](reference/figures/logo.png)](https://uriahf.github.io/rtichoke/)
+# rtichoke
 
 For some reproducible examples please visit [rtichoke
 blog](https://rtichoke-blog.netlify.app/)!
