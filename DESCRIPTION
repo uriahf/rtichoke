@@ -20,12 +20,9 @@ Imports:
     forcats,
     ggplot2,
     glue,
-    graphics,
     gt,
     htmltools,
     jsonlite,
-    lazyeval,
-    magrittr,
     patchwork,
     plotly,
     pROC,
@@ -46,3 +43,4 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
+RoxygenNote: 7.3.1
