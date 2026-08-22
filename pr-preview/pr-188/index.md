@@ -1,5 +1,8 @@
 # rtichoke
 
+[![rtichoke
+logo](https://raw.githubusercontent.com/uriahf/rtichoke/main/man/figures/logo.png)](https://uriahf.github.io/rtichoke/)
+
 For some reproducible examples please visit [rtichoke
 blog](https://rtichoke-blog.netlify.app/)!
 
