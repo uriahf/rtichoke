@@ -64,7 +64,7 @@ makeGroupOptions_rtichoke <- function(
   )
 
   if (inherits(group, "formula")) {
-    group <- lazyeval::f_eval(group, df)
+    group <- rlang::eval_tidy(group, df)
   }
 
   if (length(group) < 1) {

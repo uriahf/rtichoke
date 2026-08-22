@@ -63,26 +63,19 @@ create_conf_mat_list <- function(
       ~ dplyr::select(., -.data$probability_threshold, -.data$ppcr, -.data$idx)
     ) |>
     purrr::map(~ matrix(., nrow = 3, byrow = TRUE)) |>
-    purrr::map(
-      ~ magrittr::set_rownames(
-        .,
-        c(
-          "Predicted Positive",
-          "Predicted Negative",
-          " "
-        )
+    purrr::map(function(m) {
+      rownames(m) <- c(
+        "Predicted Positive",
+        "Predicted Negative",
+        " "
       )
-    ) |>
-    purrr::map(
-      ~ magrittr::set_colnames(
-        .,
-        c(
-          "Real Positive",
-          "Real Negative",
-          " "
-        )
+      colnames(m) <- c(
+        "Real Positive",
+        "Real Negative",
+        " "
       )
-    )
+      m
+    })
 
   matrix_list |>
     purrr::map(~ render_reactable_confusion_matrix(.))
