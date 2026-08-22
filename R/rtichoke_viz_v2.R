@@ -14,15 +14,132 @@ rtichoke_viz_roc_v2_spec <- function(
   performance_data,
   evaluation_metadata
 ) {
-  required_columns <- c(
-    "probability_threshold",
-    "sensitivity",
-    "specificity"
+  rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "roc"
+  )
+}
+
+#' Build a canonical rtichoke_viz v2 gains specification
+#'
+#' Translate already-computed gains performance data plus explicit semantic
+#' evaluation metadata into the canonical rtichoke_viz v2 contract. Perfect
+#' model reference geometry is derived from the same production prevalence
+#' values used by the existing gains renderer. This helper is deliberately
+#' internal and is not wired into production rendering yet.
+#'
+#' @inheritParams rtichoke_viz_roc_v2_spec
+#'
+#' @return A nested list representing a canonical gains v2 specification.
+#' @noRd
+rtichoke_viz_gains_v2_spec <- function(
+  performance_data,
+  evaluation_metadata
+) {
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "gains"
+  )
+
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- gains_v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    populations
+  )
+
+  perfect_references <- lapply(populations, function(population) {
+    population_prevalence <- unname(prevalence[[population]])
+    list(
+      type = "path",
+      scope = "population",
+      population = population,
+      label = "Perfect Model",
+      points = list(
+        list(x = 0, y = 0),
+        list(x = as.numeric(population_prevalence), y = 1),
+        list(x = 1, y = 1)
+      )
+    )
+  })
+
+  spec$references <- c(
+    list(list(type = "identity", scope = "global", label = "Random")),
+    perfect_references
+  )
+  spec
+}
+
+gains_v2_population_prevalence <- function(
+  performance_data,
+  evaluation_metadata,
+  populations
+) {
+  prevalence <- get_prevalence_from_performance_data(performance_data)
+  model_known <- !is.na(evaluation_metadata$model) &
+    nzchar(evaluation_metadata$model)
+
+  if (all(model_known) && "model" %in% names(performance_data)) {
+    population_prevalence <- vapply(
+      populations,
+      function(population) {
+        models <- as.character(evaluation_metadata$model[
+          evaluation_metadata$population == population
+        ])
+        values <- unique(unname(prevalence[names(prevalence) %in% models]))
+        if (length(values) != 1L) {
+          stop(
+            "Gains performance data must have one prevalence per population: ",
+            population,
+            call. = FALSE
+          )
+        }
+        values[[1]]
+      },
+      numeric(1)
+    )
+    return(stats::setNames(population_prevalence, populations))
+  }
+
+  if (length(prevalence) == 1L) {
+    prevalence <- stats::setNames(prevalence, populations[[1]])
+  }
+
+  missing_populations <- setdiff(populations, names(prevalence))
+  if (length(missing_populations) > 0L) {
+    stop(
+      "Gains performance data is missing prevalence for populations: ",
+      paste(missing_populations, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  prevalence[populations]
+}
+
+rtichoke_viz_curve_v2_spec <- function(
+  performance_data,
+  evaluation_metadata,
+  type = c("roc", "gains")
+) {
+  type <- match.arg(type)
+  required_columns <- switch(
+    type,
+    roc = c("probability_threshold", "sensitivity", "specificity"),
+    gains = c("probability_threshold", "ppcr", "sensitivity")
   )
   missing_columns <- setdiff(required_columns, names(performance_data))
   if (length(missing_columns) > 0L) {
     stop(
-      "ROC performance data is missing columns: ",
+      toupper(type),
+      " performance data is missing columns: ",
       paste(missing_columns, collapse = ", "),
       call. = FALSE
     )
@@ -32,7 +149,8 @@ rtichoke_viz_roc_v2_spec <- function(
   missing_metadata <- setdiff(required_metadata, names(evaluation_metadata))
   if (length(missing_metadata) > 0L) {
     stop(
-      "ROC evaluation metadata is missing columns: ",
+      toupper(type),
+      " evaluation metadata is missing columns: ",
       paste(missing_metadata, collapse = ", "),
       call. = FALSE
     )
@@ -40,7 +158,10 @@ rtichoke_viz_roc_v2_spec <- function(
 
   if (nrow(evaluation_metadata) == 0L) {
     stop(
-      "ROC evaluation metadata must contain at least one evaluation",
+      paste0(
+        toupper(type),
+        " evaluation metadata must contain at least one evaluation"
+      ),
       call. = FALSE
     )
   }
@@ -54,7 +175,8 @@ rtichoke_viz_roc_v2_spec <- function(
   missing_groups <- setdiff(unique(compatibility_group), metadata_group)
   if (length(missing_groups) > 0L) {
     stop(
-      "ROC performance rows are missing evaluation metadata: ",
+      toupper(type),
+      " performance rows are missing evaluation metadata: ",
       paste(missing_groups, collapse = ", "),
       call. = FALSE
     )
@@ -112,25 +234,45 @@ rtichoke_viz_roc_v2_spec <- function(
 
   data <- lapply(seq_len(nrow(performance_data)), function(i) {
     group <- compatibility_group[[i]]
-    list(
+    datum <- list(
       seriesId = unname(series_ids[[group]]),
       cutoff = as.numeric(performance_data$probability_threshold[[i]]),
-      sensitivity = as.numeric(performance_data$sensitivity[[i]]),
-      specificity = as.numeric(performance_data$specificity[[i]])
+      sensitivity = as.numeric(performance_data$sensitivity[[i]])
     )
+    if (type == "roc") {
+      datum$specificity <- as.numeric(performance_data$specificity[[i]])
+    } else {
+      datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+    }
+    datum
   })
+
+  if (type == "roc") {
+    return(list(
+      schemaVersion = "2.0",
+      type = "roc",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "false_positive_rate",
+      y = "sensitivity",
+      xAxis = list(label = "1 - Specificity", domain = c(0, 1)),
+      yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+      references = list(list(type = "identity", scope = "global"))
+    ))
+  }
 
   list(
     schemaVersion = "2.0",
-    type = "roc",
+    type = "gains",
     evaluations = evaluations,
     series = series,
     data = data,
-    x = "false_positive_rate",
+    x = "ppcr",
     y = "sensitivity",
-    xAxis = list(label = "1 - Specificity", domain = c(0, 1)),
+    xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
     yAxis = list(label = "Sensitivity", domain = c(0, 1)),
-    references = list(list(type = "identity", scope = "global"))
+    references = list()
   )
 }
 

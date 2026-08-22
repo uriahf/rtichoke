@@ -100,8 +100,16 @@ test_that("ROC v2 preserves unknown model identity for keyed populations", {
   expect_identical(
     lapply(spec$series, `[[`, "display"),
     list(
-      list(label = "Population A", group = "Population A", role = "population"),
-      list(label = "Population B", group = "Population B", role = "population")
+      list(
+        label = "Population A",
+        group = "Population A",
+        role = "population"
+      ),
+      list(
+        label = "Population B",
+        group = "Population B",
+        role = "population"
+      )
     )
   )
   expect_setequal(
@@ -139,4 +147,82 @@ test_that("ROC v2 IDs do not encode compatibility group labels", {
     vapply(spec$series, `[[`, "", "id"),
     vapply(renamed_spec$series, `[[`, "", "id")
   )
+})
+
+test_that("gains v2 uses production prevalence for perfect path", {
+  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+  reals <- list("Population A" = c(0, 0, 0, 1))
+  performance_data <- prepare_performance_data(probs, reals, by = 0.25)
+
+  spec <- rtichoke:::rtichoke_viz_gains_v2_spec(
+    performance_data,
+    rtichoke:::build_evaluation_metadata(probs, reals)
+  )
+
+  prevalence <- unname(
+    rtichoke:::get_prevalence_from_performance_data(performance_data)
+  )
+  expect_identical(spec$type, "gains")
+  expect_identical(spec$x, "ppcr")
+  expect_identical(spec$y, "sensitivity")
+  expect_identical(
+    spec$references[[1]],
+    list(type = "identity", scope = "global", label = "Random")
+  )
+  expect_identical(spec$references[[2]]$scope, "population")
+  expect_identical(spec$references[[2]]$population, "Population A")
+  expect_identical(
+    spec$references[[2]]$points,
+    list(
+      list(x = 0, y = 0),
+      list(x = prevalence, y = 1),
+      list(x = 1, y = 1)
+    )
+  )
+})
+
+test_that("gains v2 shares one perfect path across models in one population", {
+  probs <- list(
+    "Model A" = c(0.05, 0.2, 0.7, 0.95),
+    "Model B" = c(0.1, 0.4, 0.6, 0.9)
+  )
+  reals <- list("Population A" = c(0, 0, 1, 1))
+
+  spec <- rtichoke:::rtichoke_viz_gains_v2_spec(
+    prepare_performance_data(probs, reals, by = 0.25),
+    rtichoke:::build_evaluation_metadata(probs, reals)
+  )
+
+  expect_length(spec$series, 2)
+  expect_length(spec$references, 2)
+  expect_identical(spec$references[[2]]$population, "Population A")
+})
+
+test_that("gains v2 keeps equal-prevalence populations as distinct owners", {
+  probs <- list(
+    "Population A" = c(0.05, 0.2, 0.7, 0.95),
+    "Population B" = c(0.1, 0.4, 0.6, 0.9)
+  )
+  reals <- list(
+    "Population A" = c(0, 0, 1, 1),
+    "Population B" = c(0, 1, 0, 1)
+  )
+
+  spec <- rtichoke:::rtichoke_viz_gains_v2_spec(
+    prepare_performance_data(probs, reals, by = 0.25),
+    rtichoke:::build_evaluation_metadata(probs, reals)
+  )
+
+  perfect <- spec$references[-1]
+  expect_length(perfect, 2)
+  expect_identical(
+    vapply(perfect, `[[`, "", "population"),
+    c("Population A", "Population B")
+  )
+  expect_identical(perfect[[1]]$points, perfect[[2]]$points)
+  expect_false(any(vapply(
+    spec$evaluations,
+    function(x) "model" %in% names(x),
+    logical(1)
+  )))
 })
