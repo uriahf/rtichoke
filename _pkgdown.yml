@@ -24,6 +24,8 @@ navbar:
         - text: "Performance Tables"
           href: articles/performance-tables.html
         - text: "-------------------"
+        - text: "Naming Conventions"
+          href: articles/naming_convention.html
         - text: "Recipes & Workflows"
           href: articles/recipes-and-workflows.html
     recipes:
