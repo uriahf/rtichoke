@@ -45,7 +45,7 @@ render_rtichoke_viz_browser <- function(spec) {
     roc = "renderRocV2",
     gains = "renderGainsV2"
   )
-  renderer <- unname(renderers[[spec$type]])
+  renderer <- if (spec$type %in% names(renderers)) unname(renderers[[spec$type]]) else NULL
   if (is.null(renderer)) {
     stop(
       "Browser rendering is not available for chart type: ",
@@ -92,6 +92,81 @@ render_rtichoke_viz_browser <- function(spec) {
   ))
 }
 
+#' Build a canonical rtichoke_viz v2 lift specification
+#'
+#' Translate already-computed lift performance data plus explicit semantic
+#' evaluation metadata into the canonical rtichoke_viz v2 contract. Perfect
+#' model reference geometry is derived from the same production prevalence
+#' values used by the existing lift renderer. This helper is deliberately
+#' internal and is not wired into production rendering yet.
+#'
+#' @inheritParams rtichoke_viz_roc_v2_spec
+#'
+#' @return A nested list representing a canonical lift v2 specification.
+#' @noRd
+rtichoke_viz_lift_v2_spec <- function(
+  performance_data,
+  evaluation_metadata
+) {
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "lift"
+  )
+
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    populations
+  )
+
+  perfect_references <- lapply(populations, function(population) {
+    p <- as.numeric(prevalence[[population]])
+    inv_p <- 1 / p
+    list(
+      type = "path",
+      scope = "population",
+      population = population,
+      label = "Perfect Model",
+      points = list(
+        list(x = 0, y = inv_p),
+        list(x = p, y = inv_p),
+        list(x = 1, y = 1)
+      )
+    )
+  })
+
+  spec$references <- c(
+    list(list(
+      type = "horizontal",
+      value = 1,
+      scope = "global",
+      label = "Random"
+    )),
+    perfect_references
+  )
+
+  data_lifts <- vapply(spec$data, `[[`, numeric(1), "lift")
+  perfect_lifts <- vapply(populations, function(pop) {
+    1 / as.numeric(prevalence[[pop]])
+  }, numeric(1))
+
+  max_lift <- max(c(data_lifts, perfect_lifts, 1), na.rm = TRUE)
+
+  spec$yAxis <- list(
+    label = "Lift",
+    domain = c(0, max_lift)
+  )
+
+  spec
+}
+
 #' Build a canonical rtichoke_viz v2 gains specification
 #'
 #' Translate already-computed gains performance data plus explicit semantic
@@ -120,7 +195,7 @@ rtichoke_viz_gains_v2_spec <- function(
     character(1),
     "population"
   ))
-  prevalence <- gains_v2_population_prevalence(
+  prevalence <- v2_population_prevalence(
     performance_data,
     evaluation_metadata,
     populations
@@ -148,7 +223,7 @@ rtichoke_viz_gains_v2_spec <- function(
   spec
 }
 
-gains_v2_population_prevalence <- function(
+v2_population_prevalence <- function(
   performance_data,
   evaluation_metadata,
   populations
@@ -167,7 +242,7 @@ gains_v2_population_prevalence <- function(
         values <- unique(unname(prevalence[names(prevalence) %in% models]))
         if (length(values) != 1L) {
           stop(
-            "Gains performance data must have one prevalence per population: ",
+            "Performance data must have one prevalence per population: ",
             population,
             call. = FALSE
           )
@@ -186,7 +261,7 @@ gains_v2_population_prevalence <- function(
   missing_populations <- setdiff(populations, names(prevalence))
   if (length(missing_populations) > 0L) {
     stop(
-      "Gains performance data is missing prevalence for populations: ",
+      "Performance data is missing prevalence for populations: ",
       paste(missing_populations, collapse = ", "),
       call. = FALSE
     )
@@ -195,16 +270,19 @@ gains_v2_population_prevalence <- function(
   prevalence[populations]
 }
 
+gains_v2_population_prevalence <- v2_population_prevalence
+
 rtichoke_viz_curve_v2_spec <- function(
   performance_data,
   evaluation_metadata,
-  type = c("roc", "gains")
+  type = c("roc", "gains", "lift")
 ) {
   type <- match.arg(type)
   required_columns <- switch(
     type,
     roc = c("probability_threshold", "sensitivity", "specificity"),
-    gains = c("probability_threshold", "ppcr", "sensitivity")
+    gains = c("probability_threshold", "ppcr", "sensitivity"),
+    lift = c("probability_threshold", "ppcr", "lift")
   )
   missing_columns <- setdiff(required_columns, names(performance_data))
   if (length(missing_columns) > 0L) {
@@ -307,13 +385,17 @@ rtichoke_viz_curve_v2_spec <- function(
     group <- compatibility_group[[i]]
     datum <- list(
       seriesId = unname(series_ids[[group]]),
-      cutoff = as.numeric(performance_data$probability_threshold[[i]]),
-      sensitivity = as.numeric(performance_data$sensitivity[[i]])
+      cutoff = as.numeric(performance_data$probability_threshold[[i]])
     )
     if (type == "roc") {
+      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
       datum$specificity <- as.numeric(performance_data$specificity[[i]])
-    } else {
+    } else if (type == "gains") {
+      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
       datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+    } else if (type == "lift") {
+      datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+      datum$lift <- as.numeric(performance_data$lift[[i]])
     }
     datum
   })
@@ -333,16 +415,31 @@ rtichoke_viz_curve_v2_spec <- function(
     ))
   }
 
+  if (type == "gains") {
+    return(list(
+      schemaVersion = "2.0",
+      type = "gains",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "ppcr",
+      y = "sensitivity",
+      xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
+      yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+      references = list()
+    ))
+  }
+
   list(
     schemaVersion = "2.0",
-    type = "gains",
+    type = "lift",
     evaluations = evaluations,
     series = series,
     data = data,
     x = "ppcr",
-    y = "sensitivity",
+    y = "lift",
     xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
-    yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+    yAxis = list(label = "Lift"),
     references = list()
   )
 }
