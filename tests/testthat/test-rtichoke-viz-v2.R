@@ -264,6 +264,7 @@ test_that("ROC renderer choices dispatch without changing performance data", {
   )
   expect_s3_class(browser, "shiny.tag.list")
   expect_match(as.character(browser), "renderRocV2", fixed = TRUE)
+  expect_match(as.character(browser), "rtichoke-viz-0.4.0", fixed = TRUE)
   expect_error(
     plot_roc_curve(performance_data, renderer = "browser"),
     "explicit evaluation_metadata"
@@ -278,6 +279,7 @@ test_that("gains browser renderer consumes the canonical v2 builder", {
 
   expect_s3_class(browser, "shiny.tag.list")
   expect_match(as.character(browser), "renderGainsV2", fixed = TRUE)
+  expect_match(as.character(browser), "rtichoke-viz-0.4.0", fixed = TRUE)
   expect_match(as.character(browser), '"schemaVersion":"2.0"', fixed = TRUE)
 })
 
@@ -478,18 +480,44 @@ test_that("Lift v2 preserves unknown model semantics when model is unknown", {
   expect_identical(spec$series[[1]]$display$label, "Population A")
 })
 
-test_that("Lift default public Plotly behavior remains unchanged and browser Lift fails clearly", {
+test_that("Lift browser rendering uses the canonical v2 producer", {
   probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
   reals <- list("Population A" = c(0, 0, 1, 1))
 
-  plotly_plot <- create_lift_curve(probs, reals, by = 0.25)
-  expect_s3_class(plotly_plot, "plotly")
-
-  ggplot_plot <- create_lift_curve(probs, reals, by = 0.25, interactive = FALSE)
-  expect_s3_class(ggplot_plot, "ggplot")
-
-  expect_error(
-    create_lift_curve(probs, reals, by = 0.25, renderer = "browser"),
-    "Browser rendering is not available for chart type: lift"
+  browser <- create_lift_curve(
+    probs,
+    reals,
+    by = 0.25,
+    renderer = "browser"
   )
+
+  expect_s3_class(browser, "shiny.tag.list")
+  html <- as.character(browser)
+  expect_match(html, "renderLiftV2", fixed = TRUE)
+  expect_match(html, '"schemaVersion":"2.0"', fixed = TRUE)
+  expect_match(html, '"type":"lift"', fixed = TRUE)
+  expect_match(html, '"x":"ppcr"', fixed = TRUE)
+  expect_match(html, '"y":"lift"', fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.4.0", fixed = TRUE)
+})
+
+test_that("Lift default Plotly and noninteractive ggplot2 behavior is unchanged", {
+  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+  reals <- list("Population A" = c(0, 0, 1, 1))
+
+  expect_s3_class(create_lift_curve(probs, reals, by = 0.25), "plotly")
+  expect_s3_class(
+    create_lift_curve(probs, reals, by = 0.25, interactive = FALSE),
+    "ggplot"
+  )
+})
+
+test_that("vendored rtichoke_viz exports renderLiftV2", {
+  bundle <- system.file(
+    "rtichoke-viz",
+    "rtichoke-viz.js",
+    package = "rtichoke"
+  )
+  expect_true(nzchar(bundle))
+  expect_true(any(grepl("renderLiftV2", readLines(bundle, warn = FALSE), fixed = TRUE)))
 })
