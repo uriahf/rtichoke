@@ -9,6 +9,9 @@
 #' @param chosen_threshold a chosen threshold to display (for non-interactive)
 #' @param interactive whether the plot should be interactive
 #' plots
+#' @param renderer rendering backend. `"default"` preserves the existing
+#'   `interactive` behavior; alternatives are `"ggplot2"`, `"plotly"`, and
+#'   `"browser"`.
 #' @param color_values color palette
 #' @param title_included add title to the curve
 #' @param size the size of the curve
@@ -112,7 +115,8 @@ create_roc_curve <- function(
     "#585123"
   ),
   title_included = FALSE,
-  size = NULL
+  size = NULL,
+  renderer = "default"
 ) {
   check_probs_input(probs)
 
@@ -120,19 +124,25 @@ create_roc_curve <- function(
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  prepare_performance_data(
+  performance_data <- prepare_performance_data(
     probs = probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) |>
-    plot_roc_curve(
-      chosen_threshold = chosen_threshold,
-      interactive = interactive,
-      color_values = color_values,
-      title_included = FALSE,
-      size = size
-    )
+  )
+  evaluation_metadata <- if (identical(renderer, "browser")) {
+    build_evaluation_metadata(probs, reals)
+  }
+  plot_roc_curve(
+    performance_data,
+    chosen_threshold = chosen_threshold,
+    interactive = interactive,
+    color_values = color_values,
+    title_included = FALSE,
+    size = size,
+    renderer = renderer,
+    evaluation_metadata = evaluation_metadata
+  )
 }
 
 
@@ -142,6 +152,9 @@ create_roc_curve <- function(
 #'
 #' @inheritParams create_roc_curve
 #' @param performance_data an rtichoke Performance Data
+#' @param evaluation_metadata explicit semantic evaluation metadata required
+#'   when `renderer = "browser"`. It is supplied automatically by
+#'   [create_roc_curve()].
 #'
 #' @examples
 #' \dontrun{
@@ -193,8 +206,24 @@ plot_roc_curve <- function(
     "#585123"
   ),
   title_included = FALSE,
-  size = NULL
+  size = NULL,
+  renderer = "default",
+  evaluation_metadata = NULL
 ) {
+  renderer <- rtichoke_viz_renderer(renderer, interactive)
+  if (renderer == "browser") {
+    if (is.null(evaluation_metadata)) {
+      stop(
+        "Browser rendering requires explicit evaluation_metadata",
+        call. = FALSE
+      )
+    }
+    return(render_rtichoke_viz_browser(rtichoke_viz_roc_v2_spec(
+      performance_data,
+      evaluation_metadata
+    )))
+  }
+
   rtichoke_curve_list <- performance_data |>
     create_rtichoke_curve_list("roc", size = size, color_values = color_values)
 
@@ -202,7 +231,7 @@ plot_roc_curve <- function(
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  if (interactive == FALSE) {
+  if (renderer == "ggplot2") {
     reference_lines <- create_reference_lines_data_frame("roc")
 
     roc_curve <- performance_data |>
@@ -216,7 +245,7 @@ plot_roc_curve <- function(
       ggplot2::ylab("Sensitivity")
   }
 
-  if (interactive == TRUE) {
+  if (renderer == "plotly") {
     roc_curve <- rtichoke_curve_list |>
       create_plotly_curve()
   }

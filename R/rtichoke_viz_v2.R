@@ -21,6 +21,77 @@ rtichoke_viz_roc_v2_spec <- function(
   )
 }
 
+rtichoke_viz_renderer <- function(renderer, interactive) {
+  renderer <- match.arg(
+    renderer,
+    c("default", "ggplot2", "plotly", "browser")
+  )
+  if (renderer == "default") {
+    return(if (isTRUE(interactive)) "plotly" else "ggplot2")
+  }
+  renderer
+}
+
+rtichoke_viz_browser_id <- local({
+  next_id <- 0L
+  function() {
+    next_id <<- next_id + 1L
+    paste0("rtichoke-viz-", next_id)
+  }
+})
+
+render_rtichoke_viz_browser <- function(spec) {
+  renderers <- c(
+    roc = "renderRocV2",
+    gains = "renderGainsV2"
+  )
+  renderer <- unname(renderers[[spec$type]])
+  if (is.null(renderer)) {
+    stop(
+      "Browser rendering is not available for chart type: ",
+      spec$type,
+      call. = FALSE
+    )
+  }
+
+  id <- rtichoke_viz_browser_id()
+  json <- jsonlite::toJSON(spec, auto_unbox = TRUE, digits = NA)
+  json <- gsub("</", "<\\/", json, fixed = TRUE)
+  dependency <- htmltools::htmlDependency(
+    name = "rtichoke-viz",
+    version = "0.3.0",
+    src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
+    script = list(src = "rtichoke-viz.js", type = "module"),
+    stylesheet = "rtichoke-viz.css"
+  )
+  script <- paste0(
+    "import { ",
+    renderer,
+    " } from './lib/rtichoke-viz-0.3.0/rtichoke-viz.js';\n",
+    "const spec = JSON.parse(document.querySelector('#",
+    id,
+    "-spec').textContent);\n",
+    "document.querySelector('#",
+    id,
+    "').append(",
+    renderer,
+    "(spec));"
+  )
+
+  htmltools::browsable(htmltools::attachDependencies(
+    htmltools::tagList(
+      htmltools::tags$div(id = id, class = "rtichoke-viz-chart"),
+      htmltools::tags$script(
+        id = paste0(id, "-spec"),
+        type = "application/json",
+        htmltools::HTML(json)
+      ),
+      htmltools::tags$script(type = "module", htmltools::HTML(script))
+    ),
+    dependency
+  ))
+}
+
 #' Build a canonical rtichoke_viz v2 gains specification
 #'
 #' Translate already-computed gains performance data plus explicit semantic

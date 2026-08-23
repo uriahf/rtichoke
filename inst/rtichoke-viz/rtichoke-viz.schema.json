@@ -1,0 +1,352 @@
+{
+  "$id": "https://rtichoke.dev/schema/viz/1.0.json",
+  "title": "rtichoke visualization specification",
+  "anyOf": [
+    {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "type",
+        "data",
+        "x",
+        "y",
+        "xAxis",
+        "yAxis"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0",
+          "type": "string"
+        },
+        "type": {
+          "const": "roc",
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "model",
+              "cutoff",
+              "sensitivity",
+              "specificity"
+            ],
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "population": {
+                "type": "string"
+              },
+              "horizon": {
+                "type": "number"
+              },
+              "cutoff": {
+                "type": "number"
+              },
+              "sensitivity": {
+                "minimum": 0,
+                "maximum": 1,
+                "type": "number"
+              },
+              "specificity": {
+                "minimum": 0,
+                "maximum": 1,
+                "type": "number"
+              }
+            }
+          }
+        },
+        "x": {
+          "const": "false_positive_rate",
+          "type": "string"
+        },
+        "y": {
+          "const": "sensitivity",
+          "type": "string"
+        },
+        "xAxis": {
+          "type": "object",
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "domain": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "additionalItems": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "yAxis": {
+          "type": "object",
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "domain": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "additionalItems": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "anyOf": [
+                  {
+                    "const": "identity",
+                    "type": "string"
+                  },
+                  {
+                    "const": "horizontal",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vertical",
+                    "type": "string"
+                  }
+                ]
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "type",
+        "data",
+        "x",
+        "y",
+        "xAxis",
+        "yAxis"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0",
+          "type": "string"
+        },
+        "type": {
+          "const": "calibration",
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "model",
+              "predicted",
+              "observed",
+              "method"
+            ],
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "population": {
+                "type": "string"
+              },
+              "horizon": {
+                "type": "number"
+              },
+              "predicted": {
+                "minimum": 0,
+                "maximum": 1,
+                "type": "number"
+              },
+              "observed": {
+                "minimum": 0,
+                "maximum": 1,
+                "type": "number"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "const": "discrete",
+                    "type": "string"
+                  },
+                  {
+                    "const": "smooth",
+                    "type": "string"
+                  }
+                ]
+              },
+              "events": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "total": {
+                "minimum": 0,
+                "type": "number"
+              }
+            }
+          }
+        },
+        "distribution": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "model",
+              "midpoint",
+              "count",
+              "binWidth"
+            ],
+            "properties": {
+              "model": {
+                "type": "string"
+              },
+              "population": {
+                "type": "string"
+              },
+              "horizon": {
+                "type": "number"
+              },
+              "midpoint": {
+                "minimum": 0,
+                "maximum": 1,
+                "type": "number"
+              },
+              "count": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "binWidth": {
+                "exclusiveMinimum": 0,
+                "maximum": 1,
+                "type": "number"
+              }
+            }
+          }
+        },
+        "x": {
+          "const": "predicted",
+          "type": "string"
+        },
+        "y": {
+          "const": "observed",
+          "type": "string"
+        },
+        "xAxis": {
+          "type": "object",
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "domain": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "additionalItems": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "yAxis": {
+          "type": "object",
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "domain": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "additionalItems": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "anyOf": [
+                  {
+                    "const": "identity",
+                    "type": "string"
+                  },
+                  {
+                    "const": "horizontal",
+                    "type": "string"
+                  },
+                  {
+                    "const": "vertical",
+                    "type": "string"
+                  }
+                ]
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

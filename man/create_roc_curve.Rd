@@ -15,7 +15,8 @@ create_roc_curve(
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   title_included = FALSE,
-  size = NULL
+  size = NULL,
+  renderer = "default"
 )
 }
 \arguments{
@@ -39,6 +40,10 @@ plots}
 \item{title_included}{add title to the curve}
 
 \item{size}{the size of the curve}
+
+\item{renderer}{rendering backend. \code{"default"} preserves the existing
+\code{interactive} behavior; alternatives are \code{"ggplot2"}, \code{"plotly"}, and
+\code{"browser"}.}
 }
 \description{
 Create a ROC Curve
