@@ -317,7 +317,9 @@ test_that("Lift v2 represents one model in one population", {
   )
 
   expect_identical(unique(vapply(spec$data, `[[`, "", "seriesId")), "series-1")
-  expect_true(all(c("seriesId", "cutoff", "ppcr", "lift") %in% names(spec$data[[1]])))
+  expect_true(all(
+    c("seriesId", "cutoff", "ppcr", "lift") %in% names(spec$data[[1]])
+  ))
 
   expect_identical(
     spec$references[[1]],
@@ -329,7 +331,9 @@ test_that("Lift v2 represents one model in one population", {
     )
   )
 
-  prevalence <- unname(rtichoke:::get_prevalence_from_performance_data(perf_dat))
+  prevalence <- unname(rtichoke:::get_prevalence_from_performance_data(
+    perf_dat
+  ))
   expect_identical(spec$references[[2]]$scope, "population")
   expect_identical(spec$references[[2]]$population, "Population A")
   expect_identical(spec$references[[2]]$label, "Perfect Model")
@@ -342,7 +346,10 @@ test_that("Lift v2 represents one model in one population", {
     )
   )
 
-  expect_identical(spec$xAxis, list(label = "Predicted Positives (Rate)", domain = c(0, 1)))
+  expect_identical(
+    spec$xAxis,
+    list(label = "Predicted Positives (Rate)", domain = c(0, 1))
+  )
   expect_identical(spec$yAxis$label, "Lift")
   expect_equal(spec$yAxis$domain[[1]], 0)
   expect_true(spec$yAxis$domain[[2]] >= 1 / prevalence)

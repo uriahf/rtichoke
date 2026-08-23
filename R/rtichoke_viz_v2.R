@@ -45,7 +45,11 @@ render_rtichoke_viz_browser <- function(spec) {
     roc = "renderRocV2",
     gains = "renderGainsV2"
   )
-  renderer <- if (spec$type %in% names(renderers)) unname(renderers[[spec$type]]) else NULL
+  renderer <- if (spec$type %in% names(renderers)) {
+    unname(renderers[[spec$type]])
+  } else {
+    NULL
+  }
   if (is.null(renderer)) {
     stop(
       "Browser rendering is not available for chart type: ",
@@ -153,9 +157,13 @@ rtichoke_viz_lift_v2_spec <- function(
   )
 
   data_lifts <- vapply(spec$data, `[[`, numeric(1), "lift")
-  perfect_lifts <- vapply(populations, function(pop) {
-    1 / as.numeric(prevalence[[pop]])
-  }, numeric(1))
+  perfect_lifts <- vapply(
+    populations,
+    function(pop) {
+      1 / as.numeric(prevalence[[pop]])
+    },
+    numeric(1)
+  )
 
   max_lift <- max(c(data_lifts, perfect_lifts, 1), na.rm = TRUE)
 
