@@ -15,4 +15,4 @@
 - [Recipes & Canonical
   Workflows](https://uriahf.github.io/rtichoke/articles/recipes-and-workflows.md):
 - [Naming
-  Convention](https://uriahf.github.io/rtichoke/articles/naming_convention.md):
+  Conventions](https://uriahf.github.io/rtichoke/articles/naming_convention.md):
