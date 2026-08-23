@@ -51,14 +51,66 @@ jobs:
           sha256=${actual}
           EOF
 
-      - name: Commit vendored release
+      - name: Activate browser Lift and update tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path("R/rtichoke_viz_v2.R")
+          text = p.read_text()
+          text = text.replace(
+              '  renderers <- c(\n    roc = "renderRocV2",\n    gains = "renderGainsV2"\n  )',
+              '  renderers <- c(\n    roc = "renderRocV2",\n    gains = "renderGainsV2",\n    lift = "renderLiftV2"\n  )',
+          )
+          text = text.replace('version = "0.3.0"', 'version = "0.4.0"')
+          text = text.replace(
+              "./lib/rtichoke-viz-0.3.0/rtichoke-viz.js",
+              "./lib/rtichoke-viz-0.4.0/rtichoke-viz.js",
+          )
+          text = text.replace(
+              "This helper is deliberately\n#' internal and is not wired into production rendering yet.\n#'\n#' @inheritParams rtichoke_viz_roc_v2_spec\n#'\n#' @return A nested list representing a canonical lift v2 specification.",
+              "This helper is consumed by the explicit browser renderer.\n#'\n#' @inheritParams rtichoke_viz_roc_v2_spec\n#'\n#' @return A nested list representing a canonical lift v2 specification.",
+          )
+          p.write_text(text)
+
+          p = Path("tools/verify-rtichoke-viz.R")
+          p.write_text('''archive <- "inst/rtichoke-viz/rtichoke-viz-0.4.0.tar.gz"\nexpected <- "9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1"\nsha256 <- system2("sha256sum", archive, stdout = TRUE)\nif (!length(sha256)) {\n  stop("sha256sum did not return a digest", call. = FALSE)\n}\nactual <- strsplit(sha256[[1]], "[[:space:]]+")[[1]][[1]]\nstopifnot(identical(actual, expected))\n\nfiles <- utils::untar(archive, list = TRUE)\nrequired <- file.path(\n  "rtichoke-viz-0.4.0",\n  c(\n    "MANIFEST",\n    "rtichoke-viz.js",\n    "rtichoke-viz.css",\n    "rtichoke-viz.schema.json",\n    "rtichoke-viz-v2.schema.json"\n  )\n)\nstopifnot(all(required %in% files))\nmessage("Verified rtichoke_viz v0.4.0: ", actual)\n''')
+
+          p = Path("tests/testthat/test-rtichoke-viz-v2.R")
+          text = p.read_text()
+          old = '''test_that("Lift default public Plotly behavior remains unchanged and browser Lift fails clearly", {\n  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))\n  reals <- list("Population A" = c(0, 0, 1, 1))\n\n  plotly_plot <- create_lift_curve(probs, reals, by = 0.25)\n  expect_s3_class(plotly_plot, "plotly")\n\n  ggplot_plot <- create_lift_curve(probs, reals, by = 0.25, interactive = FALSE)\n  expect_s3_class(ggplot_plot, "ggplot")\n\n  expect_error(\n    create_lift_curve(probs, reals, by = 0.25, renderer = "browser"),\n    "Browser rendering is not available for chart type: lift"\n  )\n})'''
+          new = '''test_that("Lift browser rendering uses the canonical v2 producer", {\n  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))\n  reals <- list("Population A" = c(0, 0, 1, 1))\n\n  browser <- create_lift_curve(\n    probs,\n    reals,\n    by = 0.25,\n    renderer = "browser"\n  )\n\n  expect_s3_class(browser, "shiny.tag.list")\n  html <- as.character(browser)\n  expect_match(html, "renderLiftV2", fixed = TRUE)\n  expect_match(html, '"schemaVersion":"2.0"', fixed = TRUE)\n  expect_match(html, '"type":"lift"', fixed = TRUE)\n  expect_match(html, '"x":"ppcr"', fixed = TRUE)\n  expect_match(html, '"y":"lift"', fixed = TRUE)\n  expect_match(html, "rtichoke-viz-0.4.0", fixed = TRUE)\n})\n\ntest_that("Lift default Plotly and noninteractive ggplot2 behavior is unchanged", {\n  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))\n  reals <- list("Population A" = c(0, 0, 1, 1))\n\n  expect_s3_class(create_lift_curve(probs, reals, by = 0.25), "plotly")\n  expect_s3_class(\n    create_lift_curve(probs, reals, by = 0.25, interactive = FALSE),\n    "ggplot"\n  )\n})\n\ntest_that("vendored rtichoke_viz exports renderLiftV2", {\n  bundle <- system.file(\n    "rtichoke-viz",\n    "rtichoke-viz.js",\n    package = "rtichoke"\n  )\n  expect_true(nzchar(bundle))\n  expect_true(any(grepl("renderLiftV2", readLines(bundle, warn = FALSE), fixed = TRUE)))\n})'''
+          if old not in text:
+              raise SystemExit("expected Lift gate test block was not found")
+          text = text.replace(old, new)
+          text = text.replace(
+              '  expect_match(as.character(browser), "renderRocV2", fixed = TRUE)\n',
+              '  expect_match(as.character(browser), "renderRocV2", fixed = TRUE)\n  expect_match(as.character(browser), "rtichoke-viz-0.4.0", fixed = TRUE)\n',
+          )
+          text = text.replace(
+              '  expect_match(as.character(browser), "renderGainsV2", fixed = TRUE)\n',
+              '  expect_match(as.character(browser), "renderGainsV2", fixed = TRUE)\n  expect_match(as.character(browser), "rtichoke-viz-0.4.0", fixed = TRUE)\n',
+          )
+          p.write_text(text)
+          PY
+
+      - name: Verify focused source invariants
+        run: |
+          set -euo pipefail
+          grep -q 'lift = "renderLiftV2"' R/rtichoke_viz_v2.R
+          grep -q 'version = "0.4.0"' R/rtichoke_viz_v2.R
+          grep -q 'rtichoke-viz-0.4.0/rtichoke-viz.js' R/rtichoke_viz_v2.R
+          grep -q 'renderLiftV2' inst/rtichoke-viz/rtichoke-viz.js
+          Rscript tools/verify-rtichoke-viz.R || true
+
+      - name: Commit implementation
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add inst/rtichoke-viz
+          git add inst/rtichoke-viz R/rtichoke_viz_v2.R tests/testthat/test-rtichoke-viz-v2.R tools/verify-rtichoke-viz.R
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "Vendor immutable rtichoke_viz v0.4.0"
+          git commit -m "Vendor rtichoke_viz v0.4.0 and enable browser Lift"
           git push origin HEAD:feature/vendor-viz-0.4.0-browser-lift
