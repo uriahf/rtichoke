@@ -75,4 +75,5 @@ Pipeline:
 - [Clinical Utility Guide](https://uriahf.github.io/rtichoke/articles/clinical-utility.html)
 - [Performance Tables Guide](https://uriahf.github.io/rtichoke/articles/performance-tables.html)
 - [Recipes & Workflows](https://uriahf.github.io/rtichoke/articles/recipes-and-workflows.html)
+- [Naming Convention](https://uriahf.github.io/rtichoke/articles/naming_convention.html)
 - [rtichoke Methodological Blog](https://rtichoke-blog.netlify.app/)

@@ -26,6 +26,8 @@ navbar:
         - text: "-------------------"
         - text: "Recipes & Workflows"
           href: articles/recipes-and-workflows.html
+        - text: "Naming Convention"
+          href: articles/naming_convention.html
     recipes:
       text: "Recipes"
       href: articles/recipes-and-workflows.html

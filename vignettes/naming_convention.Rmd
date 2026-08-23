@@ -18,11 +18,9 @@ knitr::opts_chunk$set(
 library(rtichoke)
 ```
 
-
 ### Naming Convention
 
 ```{r echo=FALSE}
-
 tibble::tribble(
   ~"Output", ~"Predictions and Outcomes", ~"Performance Data",
   "Performance Data", "`prepare_performance_data()`", "",
@@ -66,10 +64,6 @@ tibble::tribble(
   "Decision", " ", " ", " ", " ", " ", "y", "x"
 ) |>
   gt::gt(rowname_col = "Curve") |>
-  #
-  # gt::fmt_markdown(columns = c("Sens", "Spec", "PPV", "PPCR", "Lift", "NB", "P. Thr")) |>
-  #
-  # gt::fmt_markdown(columns = everything()) |>
   gt::tab_style(
     style = list(
       gt::cell_text(weight = "bold")
