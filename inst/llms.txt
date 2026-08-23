@@ -1,0 +1,78 @@
+# rtichoke: Interactive Visualization of Binary Prediction Model Performance
+
+> `rtichoke` is an R package designed for interactive and static evaluation of binary prediction models. It allows data scientists and clinical researchers to explore model performance metrics across discrimination, calibration, clinical utility, and summary tables.
+
+## Core Mental Model & Workflow
+
+`rtichoke` is model-agnostic and operates on estimated probabilities (`probs`) and binary outcomes (`reals`).
+
+Data inputs:
+- Single Model: `probs = list(vector)`, `reals = list(vector)`
+- Model Comparison: `probs = list("Model A" = vector1, "Model B" = vector2)`, `reals = list(vector)`
+- Multiple Populations: `probs = list("Train" = vector1, "Test" = vector2)`, `reals = list("Train" = outcome1, "Test" = outcome2)`
+
+Pipeline:
+1. `prepare_performance_data(probs, reals)` -> generates performance data table across probability thresholds or PPCR percentiles.
+2. `plot_*_curve(perf_data)` / `render_performance_table(perf_data)` -> produces interactive or static output.
+3. Or one-step: `create_*_curve(probs, reals)` directly.
+
+---
+
+## API Reference Map
+
+### 1. Performance Data Preparation
+- `prepare_performance_data(probs, reals, by = 0.01, stratified_by = "probability_threshold")`
+  - Computes threshold-specific confusion matrices and performance metrics (Sensitivity, Specificity, PPV, NPV, Lift, Net Benefit).
+  - `stratified_by`: `"probability_threshold"` (default) or `"ppcr"` (Predicted Positives Condition Rate / risk percentiles).
+
+### 2. Discrimination
+- `create_roc_curve(probs, reals, ...)` / `plot_roc_curve(performance_data, ...)`
+  - Plots Sensitivity vs 1 - Specificity. Diagonal reference line represents uninformative model ($AUC = 0.50$).
+- `create_precision_recall_curve(probs, reals, ...)` / `plot_precision_recall_curve(performance_data, ...)`
+  - Plots PPV (Precision) vs Sensitivity (Recall). Baseline reference line equals population prevalence.
+- `create_gains_curve(probs, reals, ...)` / `plot_gains_curve(performance_data, ...)`
+  - Plots cumulative positive outcomes captured vs fraction of population screened.
+- `create_lift_curve(probs, reals, ...)` / `plot_lift_curve(performance_data, ...)`
+  - Plots ratio of model performance vs random selection baseline (reference line at Lift = 1.0).
+
+### 3. Calibration
+- `create_calibration_curve(probs, reals, type = "discrete", ...)`
+  - Compares predicted risk vs observed outcome frequency ($y = x$ diagonal is perfect calibration).
+  - `type`: `"discrete"` (binned deciles) or `"smooth"` (lowess curve).
+- `create_calibration_curve_list(probs, reals, ...)`
+  - Returns raw calibration list components (deciles, smooth data, histogram).
+
+### 4. Clinical Utility
+- `create_decision_curve(probs, reals, ...)` / `plot_decision_curve(performance_data, ...)`
+  - Evaluates Net Benefit across decision threshold probabilities ($p_t$).
+  - Reference strategies: Treat All and Treat None ($\text{Net Benefit} = 0$).
+  - Includes Interventions Avoided metric.
+
+### 5. Performance Tables & Reports
+- `create_performance_table(probs, reals, output_type = "reactable")` / `render_performance_table(performance_data, output_type = "reactable")`
+  - Interactive table summarizing metrics across probability thresholds. Supports `output_type = "reactable"` or `"gt"`.
+- `create_summary_report(probs, reals, output_file = "summary_report.html")`
+  - Generates self-contained HTML report with all interactive curves and performance tables.
+
+### 6. Included Data
+- `rtichoke::example_dat`: Benchmark dataset containing columns `estimated_probabilities`, `bad_model`, `random_guess`, `outcome`, `type_of_set`.
+
+---
+
+## Capabilities & Capability Boundaries (Negative Information)
+
+- **Supported Outcomes:** Binary classification outcomes (0 / 1).
+- **Time-Dependent Prediction:** Time-dependent survival prediction and time-dependent calibration across multiple follow-up time horizons (e.g., `_times`) are **NOT** implemented in R `rtichoke`.
+- **Authoritative API:** Do not invent `_times` arguments or time-horizon calibration workflows in R `rtichoke`.
+
+---
+
+## Documentation Links & Guides
+
+- [Getting Started Guide](https://uriahf.github.io/rtichoke/articles/getting-started.html)
+- [Discrimination Guide](https://uriahf.github.io/rtichoke/articles/discrimination.html)
+- [Calibration Guide](https://uriahf.github.io/rtichoke/articles/calibration.html)
+- [Clinical Utility Guide](https://uriahf.github.io/rtichoke/articles/clinical-utility.html)
+- [Performance Tables Guide](https://uriahf.github.io/rtichoke/articles/performance-tables.html)
+- [Recipes & Workflows](https://uriahf.github.io/rtichoke/articles/recipes-and-workflows.html)
+- [rtichoke Methodological Blog](https://rtichoke-blog.netlify.app/)

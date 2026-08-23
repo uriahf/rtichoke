@@ -1,4 +1,112 @@
-url: ~
+url: https://uriahf.github.io/rtichoke/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [getting-started, articles, reference, recipes, news]
+    right: [blog, github]
+  components:
+    getting-started:
+      text: "Getting Started"
+      href: articles/getting-started.html
+    articles:
+      text: "Guides"
+      menu:
+        - text: "Getting Started"
+          href: articles/getting-started.html
+        - text: "Discrimination"
+          href: articles/discrimination.html
+        - text: "Calibration"
+          href: articles/calibration.html
+        - text: "Clinical Utility"
+          href: articles/clinical-utility.html
+        - text: "Performance Tables"
+          href: articles/performance-tables.html
+        - text: "-------------------"
+        - text: "Recipes & Workflows"
+          href: articles/recipes-and-workflows.html
+    recipes:
+      text: "Recipes"
+      href: articles/recipes-and-workflows.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    news:
+      text: "Changelog"
+      href: news/index.html
+    blog:
+      text: "Blog"
+      href: https://rtichoke-blog.netlify.app/
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/uriahf/rtichoke
+      aria-label: GitHub
+
+articles:
+  - title: "User Guides"
+    navbar: Guides
+    contents:
+      - getting-started
+      - discrimination
+      - calibration
+      - clinical-utility
+      - performance-tables
+      - recipes-and-workflows
+      - naming_convention
+
+reference:
+  - title: "Performance Data Preparation"
+    desc: "Prepare probability predictions and binary outcomes into performance data objects."
+    contents:
+      - prepare_performance_data
+
+  - title: "Discrimination"
+    desc: "Evaluate model discrimination using ROC, Precision-Recall, Gains, and Lift curves."
+    contents:
+      - create_roc_curve
+      - plot_roc_curve
+      - create_precision_recall_curve
+      - plot_precision_recall_curve
+      - create_gains_curve
+      - plot_gains_curve
+      - create_lift_curve
+      - plot_lift_curve
+
+  - title: "Calibration"
+    desc: "Assess predictive calibration across probability ranges."
+    contents:
+      - create_calibration_curve
+      - create_calibration_curve_list
+
+  - title: "Clinical Utility"
+    desc: "Evaluate net benefit and clinical impact via Decision Curves and Interventions Avoided."
+    contents:
+      - create_decision_curve
+      - plot_decision_curve
+
+  - title: "Performance Tables & Reports"
+    desc: "Summarize model metrics into interactive or static tables and reports."
+    contents:
+      - create_performance_table
+      - render_performance_table
+      - create_summary_report
+
+  - title: "Example Datasets"
+    desc: "Included benchmark dataset and prepared performance data objects."
+    contents:
+      - example_dat
+      - multiple_models
+      - multiple_models_by_ppcr
+      - multiple_populations
+      - multiple_populations_by_ppcr
+      - one_pop_one_model
+      - one_pop_one_model_as_a_list
+      - one_pop_one_model_as_a_list_enforced_percentiles_symmetry
+      - one_pop_one_model_as_a_vector
+      - one_pop_one_model_as_a_vector_enforced_percentiles_symmetry
+      - one_pop_one_model_by_ppcr
+      - one_pop_three_models
+      - one_pop_three_models_enforced_percentiles_symmetry
+      - train_and_test_sets
+      - train_and_test_sets_enforced_percentiles_symmetry
