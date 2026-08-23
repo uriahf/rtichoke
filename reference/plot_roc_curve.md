@@ -54,7 +54,7 @@ plot_roc_curve(
 
   explicit semantic evaluation metadata required when
   `renderer = "browser"`. It is supplied automatically by
-  [`create_roc_curve()`](create_roc_curve.md).
+  [`create_roc_curve()`](https://uriahf.github.io/rtichoke/reference/create_roc_curve.md).
 
 ## Examples
 

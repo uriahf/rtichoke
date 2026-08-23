@@ -1,58 +1,96 @@
 # Package index
 
-## All functions
+## Performance Data Preparation
 
-- [`create_calibration_curve()`](create_calibration_curve.md) : Create a
-  Calibration Curve
-- [`create_decision_curve()`](create_decision_curve.md) : Decision Curve
-- [`create_gains_curve()`](create_gains_curve.md) : Gains Curve
-- [`create_lift_curve()`](create_lift_curve.md) : Lift Curve
-- [`create_performance_table()`](create_performance_table.md) :
-  Performance Table
-- [`create_precision_recall_curve()`](create_precision_recall_curve.md)
+Prepare probability predictions and binary outcomes into performance
+data objects.
+
+- [`prepare_performance_data()`](https://uriahf.github.io/rtichoke/reference/prepare_performance_data.md)
+  : Prepare Performance Data
+
+## Discrimination
+
+Evaluate model discrimination using ROC, Precision-Recall, Gains, and
+Lift curves.
+
+- [`create_roc_curve()`](https://uriahf.github.io/rtichoke/reference/create_roc_curve.md)
+  : ROC Curve
+- [`plot_roc_curve()`](https://uriahf.github.io/rtichoke/reference/plot_roc_curve.md)
+  : ROC Curve from Performance Data
+- [`create_precision_recall_curve()`](https://uriahf.github.io/rtichoke/reference/create_precision_recall_curve.md)
   : Precision Recall Curve
-- [`create_roc_curve()`](create_roc_curve.md) : ROC Curve
-- [`create_summary_report()`](create_summary_report.md) : Create a
-  summary report
-- [`example_dat`](example_dat.md) : Example Data Frame for rtichoke
-  package
-- [`multiple_models`](multiple_models.md) : Example Performance Data
-- [`multiple_models_by_ppcr`](multiple_models_by_ppcr.md) : Example
-  Performance Data
-- [`multiple_populations`](multiple_populations.md) : Example
-  Performance Data
-- [`multiple_populations_by_ppcr`](multiple_populations_by_ppcr.md) :
-  Example Performance Data
-- [`one_pop_one_model`](one_pop_one_model.md) : Example Performance Data
-- [`one_pop_one_model_as_a_list`](one_pop_one_model_as_a_list.md) :
-  Example Performance Data
-- [`one_pop_one_model_as_a_list_enforced_percentiles_symmetry`](one_pop_one_model_as_a_list_enforced_percentiles_symmetry.md)
+- [`plot_precision_recall_curve()`](https://uriahf.github.io/rtichoke/reference/plot_precision_recall_curve.md)
+  : Precision Recall Curve from Performance Data
+- [`create_gains_curve()`](https://uriahf.github.io/rtichoke/reference/create_gains_curve.md)
+  : Gains Curve
+- [`plot_gains_curve()`](https://uriahf.github.io/rtichoke/reference/plot_gains_curve.md)
+  : Gains Curve from Performance Data
+- [`create_lift_curve()`](https://uriahf.github.io/rtichoke/reference/create_lift_curve.md)
+  : Lift Curve
+- [`plot_lift_curve()`](https://uriahf.github.io/rtichoke/reference/plot_lift_curve.md)
+  : LIFT Curve from Performance Data
+
+## Calibration
+
+Assess predictive calibration across probability ranges.
+
+- [`create_calibration_curve()`](https://uriahf.github.io/rtichoke/reference/create_calibration_curve.md)
+  : Create a Calibration Curve
+- [`create_calibration_curve_list()`](https://uriahf.github.io/rtichoke/reference/create_calibration_curve_list.md)
+  : Create a Calibration Curve List
+
+## Clinical Utility
+
+Evaluate net benefit and clinical impact via Decision Curves and
+Interventions Avoided.
+
+- [`create_decision_curve()`](https://uriahf.github.io/rtichoke/reference/create_decision_curve.md)
+  : Decision Curve
+- [`plot_decision_curve()`](https://uriahf.github.io/rtichoke/reference/plot_decision_curve.md)
+  : Decision Curve from Performance Data
+
+## Performance Tables & Reports
+
+Summarize model metrics into interactive or static tables and reports.
+
+- [`create_performance_table()`](https://uriahf.github.io/rtichoke/reference/create_performance_table.md)
+  : Performance Table
+- [`render_performance_table()`](https://uriahf.github.io/rtichoke/reference/render_performance_table.md)
+  : Performance Table
+- [`create_summary_report()`](https://uriahf.github.io/rtichoke/reference/create_summary_report.md)
+  : Create a summary report
+
+## Example Datasets
+
+Included benchmark dataset and prepared performance data objects.
+
+- [`example_dat`](https://uriahf.github.io/rtichoke/reference/example_dat.md)
+  : Example Data Frame for rtichoke package
+- [`multiple_models`](https://uriahf.github.io/rtichoke/reference/multiple_models.md)
   : Example Performance Data
-- [`one_pop_one_model_as_a_vector`](one_pop_one_model_as_a_vector.md) :
-  Example Performance Data
-- [`one_pop_one_model_as_a_vector_enforced_percentiles_symmetry`](one_pop_one_model_as_a_vector_enforced_percentiles_symmetry.md)
+- [`multiple_models_by_ppcr`](https://uriahf.github.io/rtichoke/reference/multiple_models_by_ppcr.md)
   : Example Performance Data
-- [`one_pop_one_model_by_ppcr`](one_pop_one_model_by_ppcr.md) : Example
-  Performance Data
-- [`one_pop_three_models`](one_pop_three_models.md) : Example
-  Performance Data
-- [`one_pop_three_models_enforced_percentiles_symmetry`](one_pop_three_models_enforced_percentiles_symmetry.md)
+- [`multiple_populations`](https://uriahf.github.io/rtichoke/reference/multiple_populations.md)
   : Example Performance Data
-- [`plot_decision_curve()`](plot_decision_curve.md) : Decision Curve
-  from Performance Data
-- [`plot_gains_curve()`](plot_gains_curve.md) : Gains Curve from
-  Performance Data
-- [`plot_lift_curve()`](plot_lift_curve.md) : LIFT Curve from
-  Performance Data
-- [`plot_precision_recall_curve()`](plot_precision_recall_curve.md) :
-  Precision Recall Curve from Performance Data
-- [`plot_roc_curve()`](plot_roc_curve.md) : ROC Curve from Performance
-  Data
-- [`prepare_performance_data()`](prepare_performance_data.md) : Prepare
-  Performance Data
-- [`render_performance_table()`](render_performance_table.md) :
-  Performance Table
-- [`train_and_test_sets`](train_and_test_sets.md) : Example Performance
-  Data
-- [`train_and_test_sets_enforced_percentiles_symmetry`](train_and_test_sets_enforced_percentiles_symmetry.md)
+- [`multiple_populations_by_ppcr`](https://uriahf.github.io/rtichoke/reference/multiple_populations_by_ppcr.md)
+  : Example Performance Data
+- [`one_pop_one_model`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model.md)
+  : Example Performance Data
+- [`one_pop_one_model_as_a_list`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model_as_a_list.md)
+  : Example Performance Data
+- [`one_pop_one_model_as_a_list_enforced_percentiles_symmetry`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model_as_a_list_enforced_percentiles_symmetry.md)
+  : Example Performance Data
+- [`one_pop_one_model_as_a_vector`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model_as_a_vector.md)
+  : Example Performance Data
+- [`one_pop_one_model_as_a_vector_enforced_percentiles_symmetry`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model_as_a_vector_enforced_percentiles_symmetry.md)
+  : Example Performance Data
+- [`one_pop_one_model_by_ppcr`](https://uriahf.github.io/rtichoke/reference/one_pop_one_model_by_ppcr.md)
+  : Example Performance Data
+- [`one_pop_three_models`](https://uriahf.github.io/rtichoke/reference/one_pop_three_models.md)
+  : Example Performance Data
+- [`one_pop_three_models_enforced_percentiles_symmetry`](https://uriahf.github.io/rtichoke/reference/one_pop_three_models_enforced_percentiles_symmetry.md)
+  : Example Performance Data
+- [`train_and_test_sets`](https://uriahf.github.io/rtichoke/reference/train_and_test_sets.md)
+  : Example Performance Data
+- [`train_and_test_sets_enforced_percentiles_symmetry`](https://uriahf.github.io/rtichoke/reference/train_and_test_sets_enforced_percentiles_symmetry.md)
   : Example Performance Data
