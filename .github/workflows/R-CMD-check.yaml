@@ -20,6 +20,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  vendor-release:
+    runs-on: ubuntu-latest
+    name: verify immutable rtichoke_viz v0.4.0
+    steps:
+      - name: Download and verify release
+        run: |
+          set -euo pipefail
+          VERSION=0.4.0
+          TAG=v0.4.0
+          SOURCE_COMMIT=2125c7099839cadd536c6f38f3f7e23a17ca4348
+          BUNDLE="rtichoke-viz-${VERSION}"
+          BASE="https://github.com/uriahf/rtichoke_viz/releases/download/${TAG}"
+          mkdir release
+          curl -fL "${BASE}/${BUNDLE}.tar.gz" -o "release/${BUNDLE}.tar.gz"
+          curl -fL "${BASE}/${BUNDLE}.tar.gz.sha256" -o "release/${BUNDLE}.tar.gz.sha256"
+          expected="$(awk '{print $1}' "release/${BUNDLE}.tar.gz.sha256")"
+          actual="$(sha256sum "release/${BUNDLE}.tar.gz" | awk '{print $1}')"
+          test "${actual}" = "${expected}"
+          tar -xzf "release/${BUNDLE}.tar.gz" -C release
+          grep -Fx "version=${VERSION}" "release/${BUNDLE}/MANIFEST"
+          grep -Fx "commit=${SOURCE_COMMIT}" "release/${BUNDLE}/MANIFEST"
+          grep -q 'renderLiftV2' "release/${BUNDLE}/rtichoke-viz.js"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rtichoke-viz-0.4.0-release
+          path: release/
+
   R-CMD-check:
     runs-on: ubuntu-latest
     name: ubuntu-latest (release)
