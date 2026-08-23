@@ -1,8 +1,8 @@
 ---
-title: "Naming Convention"
+title: "Naming Conventions"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Naming Convention}
+  %\VignetteIndexEntry{Naming Conventions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,11 +18,18 @@ knitr::opts_chunk$set(
 library(rtichoke)
 ```
 
+## Naming conventions
 
-### Naming Convention
+rtichoke uses a consistent naming pattern to distinguish high-level workflows
+from lower-level plotting and rendering functions. Functions named `create_*()`
+start from predictions and outcomes and create a curve, table, or report.
+`prepare_performance_data()` exposes the common performance-data layer, while
+`plot_*()` and `render_*()` functions operate on already prepared performance
+data where those lower-level interfaces are available.
+
+The table below summarizes the main entry points.
 
 ```{r echo=FALSE}
-
 tibble::tribble(
   ~"Output", ~"Predictions and Outcomes", ~"Performance Data",
   "Performance Data", "`prepare_performance_data()`", "",
@@ -54,7 +61,10 @@ tibble::tribble(
   )
 ```
 
-### Curves based on Performance Metrics
+## Curves and performance metrics
+
+The performance curves are different views of the same underlying performance
+data. This table shows which quantities define the axes of each curve.
 
 ```{r echo=FALSE}
 tibble::tribble(
@@ -66,10 +76,6 @@ tibble::tribble(
   "Decision", " ", " ", " ", " ", " ", "y", "x"
 ) |>
   gt::gt(rowname_col = "Curve") |>
-  #
-  # gt::fmt_markdown(columns = c("Sens", "Spec", "PPV", "PPCR", "Lift", "NB", "P. Thr")) |>
-  #
-  # gt::fmt_markdown(columns = everything()) |>
   gt::tab_style(
     style = list(
       gt::cell_text(weight = "bold")
