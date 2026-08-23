@@ -103,24 +103,31 @@ create_gains_curve <- function(
     "#D1603D",
     "#585123"
   ),
-  size = NULL
+  size = NULL,
+  renderer = "default"
 ) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  prepare_performance_data(
+  performance_data <- prepare_performance_data(
     probs = probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
-  ) |>
-    plot_gains_curve(
-      chosen_threshold = chosen_threshold,
-      interactive = interactive,
-      color_values = color_values,
-      size = size
-    )
+  )
+  evaluation_metadata <- if (identical(renderer, "browser")) {
+    build_evaluation_metadata(probs, reals)
+  }
+  plot_gains_curve(
+    performance_data,
+    chosen_threshold = chosen_threshold,
+    interactive = interactive,
+    color_values = color_values,
+    size = size,
+    renderer = renderer,
+    evaluation_metadata = evaluation_metadata
+  )
 }
 
 #' Gains Curve from Performance Data
@@ -179,8 +186,24 @@ plot_gains_curve <- function(
     "#D1603D",
     "#585123"
   ),
-  size = NULL
+  size = NULL,
+  renderer = "default",
+  evaluation_metadata = NULL
 ) {
+  renderer <- rtichoke_viz_renderer(renderer, interactive)
+  if (renderer == "browser") {
+    if (is.null(evaluation_metadata)) {
+      stop(
+        "Browser rendering requires explicit evaluation_metadata",
+        call. = FALSE
+      )
+    }
+    return(render_rtichoke_viz_browser(rtichoke_viz_gains_v2_spec(
+      performance_data,
+      evaluation_metadata
+    )))
+  }
+
   rtichoke_curve_list <- performance_data |>
     create_rtichoke_curve_list(
       "gains",
@@ -204,7 +227,7 @@ plot_gains_curve <- function(
     perf_dat_type
   )
 
-  if (interactive == FALSE) {
+  if (renderer == "ggplot2") {
     reference_lines <- create_reference_lines_data_frame("gains", prevalence)
 
     gains_curve <- performance_data |>
@@ -219,7 +242,7 @@ plot_gains_curve <- function(
       ggplot2::ylab("Sensitivity")
   }
 
-  if (interactive == TRUE) {
+  if (renderer == "plotly") {
     gains_curve <- rtichoke_curve_list |>
       create_plotly_curve()
   }

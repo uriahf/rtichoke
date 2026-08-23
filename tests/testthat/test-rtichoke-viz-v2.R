@@ -226,3 +226,57 @@ test_that("gains v2 keeps equal-prevalence populations as distinct owners", {
     logical(1)
   )))
 })
+
+test_that("renderer selector preserves the legacy default", {
+  expect_identical(
+    rtichoke:::rtichoke_viz_renderer("default", TRUE),
+    "plotly"
+  )
+  expect_identical(
+    rtichoke:::rtichoke_viz_renderer("default", FALSE),
+    "ggplot2"
+  )
+  expect_identical(
+    rtichoke:::rtichoke_viz_renderer("browser", TRUE),
+    "browser"
+  )
+  expect_error(rtichoke:::rtichoke_viz_renderer("unknown", TRUE), "arg")
+})
+
+test_that("ROC renderer choices dispatch without changing performance data", {
+  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+  reals <- list("Population A" = c(0, 0, 1, 1))
+  performance_data <- prepare_performance_data(probs, reals, by = 0.25)
+  metadata <- rtichoke:::build_evaluation_metadata(probs, reals)
+
+  expect_s3_class(
+    plot_roc_curve(performance_data, renderer = "ggplot2"),
+    "ggplot"
+  )
+  expect_s3_class(
+    plot_roc_curve(performance_data, renderer = "plotly"),
+    "plotly"
+  )
+  browser <- plot_roc_curve(
+    performance_data,
+    renderer = "browser",
+    evaluation_metadata = metadata
+  )
+  expect_s3_class(browser, "shiny.tag.list")
+  expect_match(as.character(browser), "renderRocV2", fixed = TRUE)
+  expect_error(
+    plot_roc_curve(performance_data, renderer = "browser"),
+    "explicit evaluation_metadata"
+  )
+})
+
+test_that("gains browser renderer consumes the canonical v2 builder", {
+  probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+  reals <- list("Population A" = c(0, 0, 1, 1))
+
+  browser <- create_gains_curve(probs, reals, by = 0.25, renderer = "browser")
+
+  expect_s3_class(browser, "shiny.tag.list")
+  expect_match(as.character(browser), "renderGainsV2", fixed = TRUE)
+  expect_match(as.character(browser), '"schemaVersion":"2.0"', fixed = TRUE)
+})

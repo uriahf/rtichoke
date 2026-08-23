@@ -1,0 +1,2270 @@
+{
+  "$id": "https://rtichoke.dev/schema/viz/2.0.json",
+  "title": "rtichoke visualization specification v2",
+  "anyOf": [
+    {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "schemaVersion",
+            "evaluations",
+            "series",
+            "xAxis",
+            "yAxis"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "2.0",
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "evaluations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "population"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "population": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "evaluationId",
+                  "display"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "evaluationId": {
+                    "type": "string"
+                  },
+                  "horizon": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "display": {
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "group",
+                      "role"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "anyOf": [
+                          {
+                            "const": "model",
+                            "type": "string"
+                          },
+                          {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          {
+                            "const": "evaluation",
+                            "type": "string"
+                          },
+                          {
+                            "const": "context",
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "xAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "yAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "references": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "global",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "data",
+            "x",
+            "y"
+          ],
+          "properties": {
+            "type": {
+              "const": "roc",
+              "type": "string"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "seriesId",
+                  "cutoff",
+                  "sensitivity",
+                  "specificity"
+                ],
+                "properties": {
+                  "seriesId": {
+                    "type": "string"
+                  },
+                  "cutoff": {
+                    "type": "number"
+                  },
+                  "sensitivity": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "specificity": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "x": {
+              "const": "false_positive_rate",
+              "type": "string"
+            },
+            "y": {
+              "const": "sensitivity",
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "schemaVersion",
+            "evaluations",
+            "series",
+            "xAxis",
+            "yAxis"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "2.0",
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "evaluations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "population"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "population": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "evaluationId",
+                  "display"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "evaluationId": {
+                    "type": "string"
+                  },
+                  "horizon": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "display": {
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "group",
+                      "role"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "anyOf": [
+                          {
+                            "const": "model",
+                            "type": "string"
+                          },
+                          {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          {
+                            "const": "evaluation",
+                            "type": "string"
+                          },
+                          {
+                            "const": "context",
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "xAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "yAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "references": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "global",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "data",
+            "x",
+            "y"
+          ],
+          "properties": {
+            "type": {
+              "const": "calibration",
+              "type": "string"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "seriesId",
+                  "predicted",
+                  "observed",
+                  "method"
+                ],
+                "properties": {
+                  "seriesId": {
+                    "type": "string"
+                  },
+                  "predicted": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "observed": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "method": {
+                    "anyOf": [
+                      {
+                        "const": "discrete",
+                        "type": "string"
+                      },
+                      {
+                        "const": "smooth",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "events": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "distribution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "seriesId",
+                  "midpoint",
+                  "count",
+                  "binWidth"
+                ],
+                "properties": {
+                  "seriesId": {
+                    "type": "string"
+                  },
+                  "midpoint": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "count": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "binWidth": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "x": {
+              "const": "predicted",
+              "type": "string"
+            },
+            "y": {
+              "const": "observed",
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "schemaVersion",
+            "evaluations",
+            "series",
+            "xAxis",
+            "yAxis"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "2.0",
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "evaluations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "population"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "population": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "evaluationId",
+                  "display"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "evaluationId": {
+                    "type": "string"
+                  },
+                  "horizon": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "display": {
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "group",
+                      "role"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "anyOf": [
+                          {
+                            "const": "model",
+                            "type": "string"
+                          },
+                          {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          {
+                            "const": "evaluation",
+                            "type": "string"
+                          },
+                          {
+                            "const": "context",
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "xAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "yAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "references": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "global",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "data",
+            "x",
+            "y"
+          ],
+          "properties": {
+            "type": {
+              "const": "precision_recall",
+              "type": "string"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "seriesId",
+                  "cutoff",
+                  "sensitivity",
+                  "ppv"
+                ],
+                "properties": {
+                  "seriesId": {
+                    "type": "string"
+                  },
+                  "cutoff": {
+                    "type": "number"
+                  },
+                  "sensitivity": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "ppv": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "x": {
+              "const": "sensitivity",
+              "type": "string"
+            },
+            "y": {
+              "const": "ppv",
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "schemaVersion",
+            "evaluations",
+            "series",
+            "xAxis",
+            "yAxis"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": "2.0",
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "evaluations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "population"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "population": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "evaluationId",
+                  "display"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "evaluationId": {
+                    "type": "string"
+                  },
+                  "horizon": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "display": {
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "group",
+                      "role"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "anyOf": [
+                          {
+                            "const": "model",
+                            "type": "string"
+                          },
+                          {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          {
+                            "const": "evaluation",
+                            "type": "string"
+                          },
+                          {
+                            "const": "context",
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "xAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "yAxis": {
+              "type": "object",
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "additionalItems": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            "references": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "global",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "identity",
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "horizontal",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "value"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "vertical",
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "number"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "points"
+                            ],
+                            "properties": {
+                              "type": {
+                                "const": "path",
+                                "type": "string"
+                              },
+                              "points": {
+                                "minItems": 2,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "required": [
+                                    "x",
+                                    "y"
+                                  ],
+                                  "properties": {
+                                    "x": {
+                                      "type": "number"
+                                    },
+                                    "y": {
+                                      "type": "number"
+                                    }
+                                  }
+                                }
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "data",
+            "x",
+            "y"
+          ],
+          "properties": {
+            "type": {
+              "const": "gains",
+              "type": "string"
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "seriesId",
+                  "cutoff",
+                  "ppcr",
+                  "sensitivity"
+                ],
+                "properties": {
+                  "seriesId": {
+                    "type": "string"
+                  },
+                  "cutoff": {
+                    "type": "number"
+                  },
+                  "ppcr": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  },
+                  "sensitivity": {
+                    "minimum": 0,
+                    "maximum": 1,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "x": {
+              "const": "ppcr",
+              "type": "string"
+            },
+            "y": {
+              "const": "sensitivity",
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
