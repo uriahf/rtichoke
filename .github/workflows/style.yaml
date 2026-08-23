@@ -1,5 +1,10 @@
 on:
   pull_request:
+    paths:
+      - '**.R'
+      - '**.Rmd'
+      - 'air.toml'
+      - '.github/workflows/style.yaml'
 
 name: style
 
