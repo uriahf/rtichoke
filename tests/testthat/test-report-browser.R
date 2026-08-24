@@ -115,10 +115,13 @@ test_that("equal evaluation ids remain local across chart components", {
     c("evaluation-1", "evaluation-1")
   )
   expect_false("evaluations" %in% names(report))
-  expect_equal(lengths(regmatches(
-    html,
-    gregexpr('"id":"evaluation-1"', html, fixed = TRUE)
-  )), 2L)
+  expect_equal(
+    lengths(regmatches(
+      html,
+      gregexpr('"id":"evaluation-1"', html, fixed = TRUE)
+    )),
+    2L
+  )
 })
 
 test_that("calibration report component comes from canonical v2 producer", {
