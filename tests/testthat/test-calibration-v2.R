@@ -1,27 +1,36 @@
 calibration_v2_fixture <- function(groups = "Model A") {
-  deciles <- do.call(rbind, lapply(seq_along(groups), function(i) {
-    data.frame(
-      reference_group = groups[[i]],
-      x = c(0.2, 0.8),
-      y = c(0.25, 0.75) + (i - 1) * 0.01,
-      sum_reals = c(5, 15) + i,
-      total_obs = c(20, 20)
-    )
-  }))
-  smooth <- do.call(rbind, lapply(seq_along(groups), function(i) {
-    data.frame(
-      reference_group = groups[[i]],
-      x = c(0.1, 0.5, 0.9),
-      y = c(0.12, 0.52, 0.88) + (i - 1) * 0.01
-    )
-  }))
-  histogram <- do.call(rbind, lapply(seq_along(groups), function(i) {
-    data.frame(
-      reference_group = groups[[i]],
-      mids = c(0.005, 0.015),
-      counts = c(7, 11) + i
-    )
-  }))
+  deciles <- do.call(
+    rbind,
+    lapply(seq_along(groups), function(i) {
+      data.frame(
+        reference_group = groups[[i]],
+        x = c(0.2, 0.8),
+        y = c(0.25, 0.75) + (i - 1) * 0.01,
+        sum_reals = c(5, 15) + i,
+        total_obs = c(20, 20)
+      )
+    })
+  )
+  smooth <- do.call(
+    rbind,
+    lapply(seq_along(groups), function(i) {
+      data.frame(
+        reference_group = groups[[i]],
+        x = c(0.1, 0.5, 0.9),
+        y = c(0.12, 0.52, 0.88) + (i - 1) * 0.01
+      )
+    })
+  )
+  histogram <- do.call(
+    rbind,
+    lapply(seq_along(groups), function(i) {
+      data.frame(
+        reference_group = groups[[i]],
+        mids = c(0.005, 0.015),
+        counts = c(7, 11) + i
+      )
+    })
+  )
   list(
     deciles_dat = deciles,
     smooth_dat = smooth,
