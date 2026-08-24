@@ -55,12 +55,18 @@ jobs:
           sha256=${actual}
           EOF
 
-      - name: Commit vendored release
+      - name: Align standalone browser dependency namespace
+        run: |
+          set -euo pipefail
+          sed -i 's/version = "0.4.0"/version = "0.5.0"/' R/rtichoke_viz_v2.R
+          sed -i 's/rtichoke-viz-0.4.0/rtichoke-viz-0.5.0/g' R/rtichoke_viz_v2.R
+
+      - name: Commit vendored release and dependency alignment
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add inst/rtichoke-viz
+          git add inst/rtichoke-viz R/rtichoke_viz_v2.R
           if git diff --cached --quiet; then
             exit 0
           fi
