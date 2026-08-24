@@ -15,16 +15,20 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
   json <- jsonlite::toJSON(report_spec, auto_unbox = TRUE, digits = NA)
   json <- gsub("</", "<\\/", json, fixed = TRUE)
 
+  vendor_dir <- system.file("rtichoke-viz", package = "rtichoke")
+  bundle <- paste(
+    readLines(file.path(vendor_dir, "rtichoke-viz.js"), warn = FALSE),
+    collapse = "\n"
+  )
+  bundle <- gsub("</", "<\\/", bundle, fixed = TRUE)
+
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
     version = "0.5.0",
-    src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
-    script = list(src = "rtichoke-viz.js", type = "module"),
+    src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )
-  script <- paste0(
-    "import { renderReport } from ",
-    "'./lib/rtichoke-viz-0.5.0/rtichoke-viz.js';\n",
+  initializer <- paste0(
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -32,6 +36,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     id,
     "').append(renderReport(spec));"
   )
+  script <- paste(bundle, initializer, sep = "\n")
 
   htmltools::browsable(htmltools::attachDependencies(
     htmltools::tagList(
