@@ -1,4 +1,4 @@
-name: Apply immutable rtichoke_viz v0.4.0 integration
+name: Complete immutable rtichoke_viz v0.4.0 integration
 
 on:
   pull_request:
@@ -17,16 +17,18 @@ jobs:
         with:
           ref: feat/browser-lift-v0.4.0
           fetch-depth: 0
-      - name: Re-verify immutable release payload
+      - name: Restore and verify exact immutable archive
         shell: bash
         run: |
           set -euo pipefail
-          ARCHIVE=inst/rtichoke-viz/rtichoke-viz-0.4.0.tar.gz
+          ARCHIVE=rtichoke-viz-0.4.0.tar.gz
           SHA256=9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1
-          echo "${SHA256}  ${ARCHIVE}" | sha256sum --check --strict
-          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'version=0.4.0'
-          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'commit=2125c7099839cadd536c6f38f3f7e23a17ca4348'
-          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/rtichoke-viz.js | grep -q 'renderLiftV2'
+          URL=https://github.com/uriahf/rtichoke_viz/releases/download/v0.4.0/${ARCHIVE}
+          curl --fail --location --retry 3 "$URL" --output "inst/rtichoke-viz/${ARCHIVE}"
+          echo "${SHA256}  inst/rtichoke-viz/${ARCHIVE}" | sha256sum --check --strict
+          tar -xOf "inst/rtichoke-viz/${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'version=0.4.0'
+          tar -xOf "inst/rtichoke-viz/${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'commit=2125c7099839cadd536c6f38f3f7e23a17ca4348'
+          tar -xOf "inst/rtichoke-viz/${ARCHIVE}" rtichoke-viz-0.4.0/rtichoke-viz.js | grep -q 'renderLiftV2'
       - name: Wire Lift and update focused tests
         shell: bash
         run: |
@@ -112,15 +114,13 @@ jobs:
             "rtichoke-viz.schema.json",
             "rtichoke-viz-v2.schema.json"
           )
-          required <- file.path(root, payload)
-          stopifnot(all(required %in% files))
+          stopifnot(all(file.path(root, payload) %in% files))
 
           extracted <- tempfile("rtichoke-viz-")
           dir.create(extracted)
           on.exit(unlink(extracted, recursive = TRUE), add = TRUE)
           utils::untar(archive, exdir = extracted)
           release_dir <- file.path(extracted, root)
-
           manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
           stopifnot(
             "version=0.4.0" %in% manifest,
@@ -128,8 +128,7 @@ jobs:
           )
 
           read_raw <- function(path) {
-            size <- file.info(path)$size
-            readBin(path, what = "raw", n = size)
+            readBin(path, what = "raw", n = file.info(path)$size)
           }
           for (name in payload) {
             stopifnot(identical(
@@ -159,7 +158,6 @@ jobs:
             )
             stopifnot(grepl(unname(schemas[[name]]), schema, fixed = TRUE))
           }
-
           message("Verified rtichoke_viz v0.4.0: ", actual)
           RSCRIPT
           cat > tests/testthat/test-rtichoke-viz-vendor.R <<'RTEST'
@@ -209,6 +207,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add R/rtichoke_viz_v2.R tools/verify-rtichoke-viz.R tests/testthat
+          git add -f inst/rtichoke-viz/rtichoke-viz-0.4.0.tar.gz
           if git diff --cached --quiet; then
             echo 'No integration changes to commit'
           else
