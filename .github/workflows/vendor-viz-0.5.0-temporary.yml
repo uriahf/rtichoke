@@ -1,0 +1,68 @@
+name: Vendor rtichoke_viz v0.5.0 (temporary)
+
+on:
+  push:
+    branches:
+      - feature/browser-report-viz-0.5.0
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/browser-report-viz-0.5.0
+
+      - name: Download and vendor immutable v0.5.0 release
+        run: |
+          set -euo pipefail
+          VERSION=0.5.0
+          TAG=v0.5.0
+          SOURCE_COMMIT=9c5a114ebe968e8cef4d2f14bf82ed552d2c8a17
+          BUNDLE="rtichoke-viz-${VERSION}"
+          BASE="https://github.com/uriahf/rtichoke_viz/releases/download/${TAG}"
+
+          curl -fL "${BASE}/${BUNDLE}.tar.gz" -o "/tmp/${BUNDLE}.tar.gz"
+          curl -fL "${BASE}/${BUNDLE}.tar.gz.sha256" -o "/tmp/${BUNDLE}.tar.gz.sha256"
+          expected="$(awk '{print $1}' "/tmp/${BUNDLE}.tar.gz.sha256")"
+          actual="$(sha256sum "/tmp/${BUNDLE}.tar.gz" | awk '{print $1}')"
+          test "${actual}" = "${expected}"
+
+          rm -rf /tmp/rtichoke-viz-release
+          mkdir -p /tmp/rtichoke-viz-release
+          tar -xzf "/tmp/${BUNDLE}.tar.gz" -C /tmp/rtichoke-viz-release
+          root="/tmp/rtichoke-viz-release/${BUNDLE}"
+          grep -Fx "version=${VERSION}" "${root}/MANIFEST"
+          grep -Fx "commit=${SOURCE_COMMIT}" "${root}/MANIFEST"
+          grep -q 'renderReport' "${root}/rtichoke-viz.js"
+          grep -q 'renderPerformanceTable' "${root}/rtichoke-viz.js"
+
+          rm -f inst/rtichoke-viz/rtichoke-viz-*.tar.gz
+          cp "/tmp/${BUNDLE}.tar.gz" inst/rtichoke-viz/
+          cp "${root}/MANIFEST" inst/rtichoke-viz/MANIFEST
+          cp "${root}/rtichoke-viz.js" inst/rtichoke-viz/rtichoke-viz.js
+          cp "${root}/rtichoke-viz.css" inst/rtichoke-viz/rtichoke-viz.css
+          cp "${root}/rtichoke-viz.schema.json" inst/rtichoke-viz/rtichoke-viz.schema.json
+          cp "${root}/rtichoke-viz-v2.schema.json" inst/rtichoke-viz/rtichoke-viz-v2.schema.json
+          cat > inst/rtichoke-viz/PROVENANCE <<EOF
+          release=https://github.com/uriahf/rtichoke_viz/releases/tag/${TAG}
+          version=${VERSION}
+          commit=${SOURCE_COMMIT}
+          archive=${BUNDLE}.tar.gz
+          sha256=${actual}
+          EOF
+
+      - name: Commit vendored release
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add inst/rtichoke-viz
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Vendor rtichoke_viz v0.5.0"
+          git push origin HEAD:feature/browser-report-viz-0.5.0
