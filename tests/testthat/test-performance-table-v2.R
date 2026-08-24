@@ -1,4 +1,8 @@
-performance_table_spec <- function(probs, reals, stratified_by = "probability_threshold") {
+performance_table_spec <- function(
+  probs,
+  reals,
+  stratified_by = "probability_threshold"
+) {
   performance_data <- prepare_performance_data(
     probs,
     reals,
@@ -19,10 +23,19 @@ test_that("performance table v2 represents one model and population", {
 
   expect_identical(spec$schemaVersion, "2.0")
   expect_identical(spec$type, "performance_table")
-  expect_identical(spec$evaluations, list(list(
-    id = "evaluation-1", population = "Population A", model = "Model A"
+  expect_identical(
+    spec$evaluations,
+    list(list(
+      id = "evaluation-1",
+      population = "Population A",
+      model = "Model A"
+    ))
+  )
+  expect_false(any(vapply(
+    spec$rows,
+    function(x) "seriesId" %in% names(x),
+    logical(1)
   )))
-  expect_false(any(vapply(spec$rows, function(x) "seriesId" %in% names(x), logical(1))))
 })
 
 test_that("performance table v2 shares population across models", {
@@ -58,7 +71,11 @@ test_that("performance table v2 preserves unknown model populations", {
     vapply(spec$evaluations, `[[`, "", "population"),
     c("Population A", "Population B")
   )
-  expect_false(any(vapply(spec$evaluations, function(x) "model" %in% names(x), logical(1))))
+  expect_false(any(vapply(
+    spec$evaluations,
+    function(x) "model" %in% names(x),
+    logical(1)
+  )))
 })
 
 test_that("performance table v2 evaluation IDs are deterministic", {
@@ -82,13 +99,22 @@ test_that("performance table v2 maps operating points and long metrics", {
   threshold_spec <- performance_table_spec(probs, reals)
   ppcr_spec <- performance_table_spec(probs, reals, "ppcr")
 
-  expect_identical(threshold_spec$rows[[1]]$operatingPoint$type, "probability_threshold")
+  expect_identical(
+    threshold_spec$rows[[1]]$operatingPoint$type,
+    "probability_threshold"
+  )
   expect_identical(ppcr_spec$rows[[1]]$operatingPoint$type, "ppcr")
-  expect_true(all(vapply(threshold_spec$rows[[1]]$values, function(x) {
-    identical(sort(names(x)), c("estimate", "metricId"))
-  }, logical(1))))
-  expect_true("net_benefit" %in% vapply(threshold_spec$metrics, `[[`, "", "id"))
-  expect_false("net_benefit" %in% vapply(ppcr_spec$metrics, `[[`, "", "id"))
+  expect_true(all(vapply(
+    threshold_spec$rows[[1]]$values,
+    function(x) identical(sort(names(x)), c("estimate", "metricId")),
+    logical(1)
+  )))
+  expect_true(
+    "net_benefit" %in% vapply(threshold_spec$metrics, `[[`, "", "id")
+  )
+  expect_false(
+    "net_benefit" %in% vapply(ppcr_spec$metrics, `[[`, "", "id")
+  )
 })
 
 test_that("performance table v2 distinguishes zero and missing", {
@@ -98,10 +124,13 @@ test_that("performance table v2 distinguishes zero and missing", {
     PPV = c(NaN, 0.5)
   )
   metadata <- data.frame(
-    model = "Model A", population = "Population A", evaluation = "Model A"
+    model = "Model A",
+    population = "Population A",
+    evaluation = "Model A"
   )
   spec <- rtichoke:::rtichoke_viz_performance_table_v2_spec(
-    performance_data, metadata
+    performance_data,
+    metadata
   )
 
   first <- spec$rows[[1]]$values
@@ -122,10 +151,13 @@ test_that("performance table v2 copies existing statistics without recomputation
     NB = -0.321
   )
   metadata <- data.frame(
-    model = "Model A", population = "Population A", evaluation = "Model A"
+    model = "Model A",
+    population = "Population A",
+    evaluation = "Model A"
   )
   spec <- rtichoke:::rtichoke_viz_performance_table_v2_spec(
-    performance_data, metadata
+    performance_data,
+    metadata
   )
   estimates <- stats::setNames(
     vapply(spec$rows[[1]]$values, function(x) x$estimate, numeric(1)),
