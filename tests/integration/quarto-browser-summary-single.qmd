@@ -1,0 +1,42 @@
+---
+title: "rtichoke single browser summary report acceptance"
+format:
+  html:
+    embed-resources: false
+---
+
+<iframe id="report-one" src="summary-report-one.html" style="width:100%;height:1800px;border:0"></iframe>
+<div id="acceptance-status" data-ready="false"></div>
+
+<script>
+(() => {
+  const status = document.querySelector("#acceptance-status");
+  const frame = document.querySelector("#report-one");
+
+  function poll() {
+    const doc = frame.contentDocument;
+    if (doc) {
+      const component = id => doc.querySelector(`[data-component-id="${id}"]`);
+      const table = component("performance-table")?.querySelector("table.rtichoke-performance-table__table");
+      const roc = component("roc")?.querySelector("svg");
+      const calibration = component("calibration")?.querySelector("svg");
+      const report = doc.querySelector(".rtichoke-viz-report");
+      const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
+        (sheet.href || "").includes("rtichoke-viz-0.5.0/rtichoke-viz.css")
+      );
+      const styled = report && getComputedStyle(report).display !== "none";
+      if (table && roc && calibration && cssLoaded && styled) {
+        status.dataset.ready = "true";
+        status.dataset.table = "true";
+        status.dataset.roc = "true";
+        status.dataset.calibration = "true";
+        status.dataset.css = "true";
+        return;
+      }
+    }
+    setTimeout(poll, 100);
+  }
+
+  poll();
+})();
+</script>

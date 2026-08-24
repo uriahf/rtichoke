@@ -1,0 +1,110 @@
+name: Quarto browser summary acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/**'
+      - 'inst/**'
+      - 'tests/integration/**'
+      - '.github/workflows/quarto-browser-summary-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  quarto-browser-summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Record host versions
+        run: |
+          quarto --version
+          google-chrome --version
+
+      - name: Generate real public browser reports
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+          out <- file.path("tests", "integration")
+          create_summary_report(
+            probs = list(example_dat$estimated_probabilities),
+            reals = list(example_dat$outcome),
+            renderer = "browser",
+            output_file = "summary-report-one.html",
+            output_dir = out
+          )
+          create_summary_report(
+            probs = list("Model B" = rev(example_dat$estimated_probabilities)),
+            reals = list(example_dat$outcome),
+            renderer = "browser",
+            output_file = "summary-report-two.html",
+            output_dir = out
+          )
+
+      - name: Render Quarto hosts
+        run: |
+          quarto render tests/integration/quarto-browser-summary-single.qmd
+          quarto render tests/integration/quarto-browser-summary.qmd
+          test -f tests/integration/quarto-browser-summary-single.html
+          test -f tests/integration/quarto-browser-summary.html
+          test -f tests/integration/summary-report-one.html
+          test -f tests/integration/summary-report-two.html
+          test -f tests/integration/lib/rtichoke-viz-0.5.0/rtichoke-viz.css
+
+      - name: Execute Quarto hosts in real Chrome
+        run: |
+          python3 -m http.server 8765 --directory tests/integration > /tmp/rtichoke-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
+          run_browser() {
+            name="$1"
+            url="$2"
+            stderr="/tmp/${name}-chrome-stderr.log"
+            dom="/tmp/${name}-dom.html"
+            set +e
+            google-chrome \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --virtual-time-budget=5000 \
+              --dump-dom \
+              "$url" > "$dom" 2> "$stderr"
+            status=$?
+            set -e
+            cat "$stderr"
+            test "$status" -eq 0
+            ! grep -E 'ERROR:CONSOLE|Uncaught|Invalid ReportSpec|ReferenceError|TypeError|SyntaxError' "$stderr"
+            grep -q 'id="acceptance-status" data-ready="true"' "$dom"
+          }
+
+          run_browser single http://127.0.0.1:8765/quarto-browser-summary-single.html
+          run_browser double http://127.0.0.1:8765/quarto-browser-summary.html
