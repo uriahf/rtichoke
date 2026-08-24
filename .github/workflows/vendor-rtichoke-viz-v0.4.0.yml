@@ -1,0 +1,63 @@
+name: Vendor immutable rtichoke_viz v0.4.0
+
+on:
+  push:
+    branches:
+      - feat/browser-lift-v0.4.0
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/browser-lift-v0.4.0
+          fetch-depth: 0
+      - name: Download and verify immutable release
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=0.4.0
+          SOURCE_COMMIT=2125c7099839cadd536c6f38f3f7e23a17ca4348
+          ARCHIVE=rtichoke-viz-${VERSION}.tar.gz
+          SHA256=9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1
+          URL=https://github.com/uriahf/rtichoke_viz/releases/download/v${VERSION}/${ARCHIVE}
+          curl --fail --location --retry 3 "$URL" --output "/tmp/${ARCHIVE}"
+          echo "${SHA256}  /tmp/${ARCHIVE}" | sha256sum --check --strict
+          rm -rf /tmp/rtichoke-viz-release
+          mkdir -p /tmp/rtichoke-viz-release
+          tar -xzf "/tmp/${ARCHIVE}" -C /tmp/rtichoke-viz-release
+          RELEASE_DIR="/tmp/rtichoke-viz-release/rtichoke-viz-${VERSION}"
+          grep -Fx "version=${VERSION}" "${RELEASE_DIR}/MANIFEST"
+          grep -Fx "commit=${SOURCE_COMMIT}" "${RELEASE_DIR}/MANIFEST"
+          rm -f inst/rtichoke-viz/rtichoke-viz-*.tar.gz
+          cp "/tmp/${ARCHIVE}" inst/rtichoke-viz/
+          cp "${RELEASE_DIR}/MANIFEST" inst/rtichoke-viz/MANIFEST
+          cp "${RELEASE_DIR}/rtichoke-viz.js" inst/rtichoke-viz/rtichoke-viz.js
+          cp "${RELEASE_DIR}/rtichoke-viz.css" inst/rtichoke-viz/rtichoke-viz.css
+          cp "${RELEASE_DIR}/rtichoke-viz.schema.json" inst/rtichoke-viz/rtichoke-viz.schema.json
+          cp "${RELEASE_DIR}/rtichoke-viz-v2.schema.json" inst/rtichoke-viz/rtichoke-viz-v2.schema.json
+          cat > inst/rtichoke-viz/PROVENANCE <<EOF
+          release=https://github.com/uriahf/rtichoke_viz/releases/tag/v0.4.0
+          version=0.4.0
+          commit=${SOURCE_COMMIT}
+          archive=${ARCHIVE}
+          sha256=${SHA256}
+          EOF
+      - name: Commit exact vendored payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add inst/rtichoke-viz
+          if git diff --cached --quiet; then
+            echo 'No vendoring changes to commit'
+          else
+            git commit -m 'Vendor rtichoke_viz v0.4.0 immutable release'
+            git push origin HEAD:feat/browser-lift-v0.4.0
+          fi
