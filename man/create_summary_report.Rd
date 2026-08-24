@@ -9,7 +9,8 @@ create_summary_report(
   reals,
   interactive = TRUE,
   output_file = "summary_report.html",
-  output_dir = getwd()
+  output_dir = getwd(),
+  renderer = c("rmarkdown", "browser")
 )
 }
 \arguments{
@@ -21,7 +22,7 @@ create_summary_report(
 \item{interactive}{whether the plot should be interactive
 plots}
 
-\item{output_file}{The name of the output file}
+\item{output_file}{The name of the output file.}
 
 \item{output_dir}{The output directory for the rendered \code{output_file}.
 This allows for a choice of an alternate directory to which the output file
@@ -29,6 +30,11 @@ should be written (the default output directory of that of the input file).
 If a path is provided with a filename in \code{output_file} the directory
 specified here will take precedence. Please note that any directory path
 provided will create any necessary directories if they do not exist.}
+
+\item{renderer}{Summary-report rendering backend. \code{"rmarkdown"} preserves
+the existing report and remains the default. \code{"browser"} renders the
+canonical PerformanceTable, ROC, and discrete calibration components via
+the vendored rtichoke_viz ReportSpec renderer.}
 }
 \description{
 Create a summary report
@@ -38,6 +44,12 @@ Create a summary report
 create_summary_report(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome)
+)
+
+create_summary_report(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  renderer = "browser"
 )
 
 create_summary_report(
