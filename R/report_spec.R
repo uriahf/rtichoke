@@ -71,37 +71,44 @@ rtichoke_viz_report_spec <- function(
   )
   seen <- integer(0)
   names(seen) <- character(0)
-  component_ids <- vapply(base_ids, function(base_id) {
-    count <- if (base_id %in% names(seen)) {
-      seen[[base_id]] + 1L
-    } else {
-      1L
-    }
-    seen[[base_id]] <<- count
-    if (count == 1L) {
-      base_id
-    } else {
-      paste0(base_id, "-", count)
-    }
-  }, character(1))
-
-  components <- lapply(seq_along(specs), function(i) {
-    component <- list(
-      id = component_ids[[i]],
-      spec = specs[[i]]
-    )
-    component_title <- component_titles[[i]]
-    if (!is.null(component_title)) {
-      if (!is.character(component_title) || length(component_title) != 1L) {
-        stop(
-          "Each component title must be NULL or a single string",
-          call. = FALSE
-        )
+  component_ids <- vapply(
+    base_ids,
+    function(base_id) {
+      count <- if (base_id %in% names(seen)) {
+        seen[[base_id]] + 1L
+      } else {
+        1L
       }
-      component$title <- component_title
+      seen[[base_id]] <<- count
+      if (count == 1L) {
+        base_id
+      } else {
+        paste0(base_id, "-", count)
+      }
+    },
+    character(1)
+  )
+
+  components <- lapply(
+    seq_along(specs),
+    function(i) {
+      component <- list(
+        id = component_ids[[i]],
+        spec = specs[[i]]
+      )
+      component_title <- component_titles[[i]]
+      if (!is.null(component_title)) {
+        if (!is.character(component_title) || length(component_title) != 1L) {
+          stop(
+            "Each component title must be NULL or a single string",
+            call. = FALSE
+          )
+        }
+        component$title <- component_title
+      }
+      component
     }
-    component
-  })
+  )
 
   report <- list(
     schemaVersion = "1.0",
