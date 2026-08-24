@@ -1,4 +1,7 @@
-report_test_specs <- function(model_known = TRUE, multiple_populations = FALSE) {
+report_test_specs <- function(
+  model_known = TRUE,
+  multiple_populations = FALSE
+) {
   if (multiple_populations) {
     metadata <- data.frame(
       model = c(NA_character_, NA_character_),
@@ -108,28 +111,25 @@ test_that("report assembler composes performance table, ROC, and calibration", {
   expect_identical(report$components[[3]]$spec, calibration)
 })
 
-test_that(
-  "component IDs are deterministic, unique, and independent of series IDs",
-  {
-    specs <- report_test_specs()
-    first <- rtichoke:::rtichoke_viz_report_spec(
-      specs$roc,
-      specs$roc,
-      specs$performance_table
-    )
-    second <- rtichoke:::rtichoke_viz_report_spec(
-      specs$roc,
-      specs$roc,
-      specs$performance_table
-    )
+test_that("component IDs are deterministic, unique, and independent of series IDs", {
+  specs <- report_test_specs()
+  first <- rtichoke:::rtichoke_viz_report_spec(
+    specs$roc,
+    specs$roc,
+    specs$performance_table
+  )
+  second <- rtichoke:::rtichoke_viz_report_spec(
+    specs$roc,
+    specs$roc,
+    specs$performance_table
+  )
 
-    ids <- vapply(first$components, `[[`, "", "id")
-    expect_identical(ids, c("roc", "roc-2", "performance-table"))
-    expect_identical(ids, vapply(second$components, `[[`, "", "id"))
-    expect_length(unique(ids), length(ids))
-    expect_false(any(ids %in% c("series-1", "series-2")))
-  }
-)
+  ids <- vapply(first$components, `[[`, "", "id")
+  expect_identical(ids, c("roc", "roc-2", "performance-table"))
+  expect_identical(ids, vapply(second$components, `[[`, "", "id"))
+  expect_length(unique(ids), length(ids))
+  expect_false(any(ids %in% c("series-1", "series-2")))
+})
 
 test_that("component order and optional titles are presentation metadata", {
   specs <- report_test_specs()
