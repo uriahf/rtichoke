@@ -1,0 +1,36 @@
+name: Air-fix report adoption files (temporary)
+
+on:
+  push:
+    branches:
+      - feature/browser-report-viz-0.5.0
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/browser-report-viz-0.5.0
+      - uses: posit-dev/setup-air@v1
+        with:
+          version: 0.11.0
+      - name: Format changed R files and commit
+        run: |
+          set -euo pipefail
+          air format R/report_browser.R
+          air format R/rtichoke_viz_v2.R
+          air format tests/testthat/test-report-browser.R
+          air format tests/testthat/test-rtichoke-viz-vendor.R
+          air format tools/verify-rtichoke-viz.R
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add R/report_browser.R R/rtichoke_viz_v2.R tests/testthat/test-report-browser.R tests/testthat/test-rtichoke-viz-vendor.R tools/verify-rtichoke-viz.R
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Format report adoption files"
+          git push origin HEAD:feature/browser-report-viz-0.5.0
