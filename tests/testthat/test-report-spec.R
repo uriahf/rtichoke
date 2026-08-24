@@ -14,9 +14,17 @@ report_test_specs <- function(model_known = TRUE, multiple_populations = FALSE) 
     )
   } else {
     metadata <- data.frame(
-      model = if (model_known) "Model A" else NA_character_,
+      model = if (model_known) {
+        "Model A"
+      } else {
+        NA_character_
+      },
       population = "Population A",
-      evaluation = if (model_known) "Model A" else "Population A"
+      evaluation = if (model_known) {
+        "Model A"
+      } else {
+        "Population A"
+      }
     )
     performance_data <- tibble::tibble(
       probability_threshold = c(0.25, 0.75),
