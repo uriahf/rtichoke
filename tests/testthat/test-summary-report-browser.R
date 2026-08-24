@@ -154,7 +154,11 @@ test_that("browser output_dir still takes precedence over output_file path", {
   )
 
   expect_true(file.exists(file.path(output_dir, "browser.html")))
-  expect_false(file.exists(file.path(output_dir, "ignored-subdir", "browser.html")))
+  expect_false(file.exists(file.path(
+    output_dir,
+    "ignored-subdir",
+    "browser.html"
+  )))
 })
 
 
@@ -190,7 +194,7 @@ test_that("public browser report initializes from a local file", {
       shQuote(url)
     ),
     stdout = TRUE,
-    stderr = TRUE,
+    stderr = FALSE,
     timeout = 20
   )
   dom <- paste(dom, collapse = "\n")
