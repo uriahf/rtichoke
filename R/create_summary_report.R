@@ -58,16 +58,10 @@ create_summary_report <- function(
   renderer <- match.arg(renderer)
 
   if (renderer == "rmarkdown") {
-    rmarkdown::render(
-      file.path(
-        system.file(package = "rtichoke"),
-        "summary_report_template.Rmd"
-      ),
-      params = list(
-        probs = probs,
-        reals = reals,
-        interactive = interactive
-      ),
+    render_summary_report_rmarkdown(
+      probs = probs,
+      reals = reals,
+      interactive = interactive,
       output_file = output_file,
       output_dir = output_dir
     )
@@ -78,12 +72,42 @@ create_summary_report <- function(
     dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
     htmltools::save_html(
       report,
-      file = file.path(output_dir, output_file),
+      file = file.path(output_dir, basename(output_file)),
       libdir = "lib"
     )
   }
 
   print(glue::glue("{output_file} was rendered in {output_dir}"))
+}
+
+
+#' Render the historical RMarkdown summary report
+#'
+#' Keep the pre-existing summary-report lifecycle isolated so the public
+#' renderer switch cannot accidentally migrate the default backend.
+#'
+#' @inheritParams create_summary_report
+#' @noRd
+render_summary_report_rmarkdown <- function(
+  probs,
+  reals,
+  interactive,
+  output_file,
+  output_dir
+) {
+  rmarkdown::render(
+    file.path(
+      system.file(package = "rtichoke"),
+      "summary_report_template.Rmd"
+    ),
+    params = list(
+      probs = probs,
+      reals = reals,
+      interactive = interactive
+    ),
+    output_file = output_file,
+    output_dir = output_dir
+  )
 }
 
 
