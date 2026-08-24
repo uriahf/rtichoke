@@ -97,24 +97,34 @@ rtichoke_viz_performance_table_v2_spec <- function(
     ppcr = "Predicted Positives Condition Rate",
     net_benefit = "Net Benefit"
   )
-  source_metrics <- names(metric_map)[names(metric_map) %in% names(performance_data)]
+  source_metrics <- names(metric_map)[
+    names(metric_map) %in% names(performance_data)
+  ]
   metrics <- lapply(source_metrics, function(source) {
     id <- unname(metric_map[[source]])
     list(id = id, label = unname(metric_labels[[id]]))
   })
 
-  operating_column <- if (stratified_by == "ppcr") "ppcr" else {
+  operating_column <- if (stratified_by == "ppcr") {
+    "ppcr"
+  } else {
     "probability_threshold"
   }
   if (!operating_column %in% names(performance_data)) {
-    stop("Performance data is missing operating-point column: ", operating_column,
+    stop(
+      "Performance data is missing operating-point column: ",
+      operating_column,
       call. = FALSE
     )
   }
 
   canonical_number <- function(value) {
     value <- as.numeric(value)
-    if (length(value) == 0L || is.na(value) || is.nan(value)) NULL else value
+    if (length(value) == 0L || is.na(value) || is.nan(value)) {
+      NULL
+    } else {
+      value
+    }
   }
 
   rows <- lapply(seq_len(nrow(performance_data)), function(i) {
