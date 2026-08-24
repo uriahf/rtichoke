@@ -20,7 +20,6 @@ stopifnot(all(file.path(root, payload) %in% files))
 
 extracted <- tempfile("rtichoke-viz-")
 dir.create(extracted)
-on.exit(unlink(extracted, recursive = TRUE), add = TRUE)
 utils::untar(archive, exdir = extracted)
 release_dir <- file.path(extracted, root)
 manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
@@ -60,4 +59,5 @@ for (name in names(schemas)) {
   )
   stopifnot(grepl(unname(schemas[[name]]), schema, fixed = TRUE))
 }
+unlink(extracted, recursive = TRUE)
 message("Verified rtichoke_viz v0.4.0: ", actual)
