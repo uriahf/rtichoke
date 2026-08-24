@@ -1,4 +1,4 @@
-name: Vendor immutable rtichoke_viz v0.4.0
+name: Apply immutable rtichoke_viz v0.4.0 integration
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  vendor:
+  integrate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -17,47 +17,201 @@ jobs:
         with:
           ref: feat/browser-lift-v0.4.0
           fetch-depth: 0
-      - name: Download and verify immutable release
+      - name: Re-verify immutable release payload
         shell: bash
         run: |
           set -euo pipefail
-          VERSION=0.4.0
-          SOURCE_COMMIT=2125c7099839cadd536c6f38f3f7e23a17ca4348
-          ARCHIVE=rtichoke-viz-${VERSION}.tar.gz
+          ARCHIVE=inst/rtichoke-viz/rtichoke-viz-0.4.0.tar.gz
           SHA256=9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1
-          URL=https://github.com/uriahf/rtichoke_viz/releases/download/v${VERSION}/${ARCHIVE}
-          curl --fail --location --retry 3 "$URL" --output "/tmp/${ARCHIVE}"
-          echo "${SHA256}  /tmp/${ARCHIVE}" | sha256sum --check --strict
-          rm -rf /tmp/rtichoke-viz-release
-          mkdir -p /tmp/rtichoke-viz-release
-          tar -xzf "/tmp/${ARCHIVE}" -C /tmp/rtichoke-viz-release
-          RELEASE_DIR="/tmp/rtichoke-viz-release/rtichoke-viz-${VERSION}"
-          grep -Fx "version=${VERSION}" "${RELEASE_DIR}/MANIFEST"
-          grep -Fx "commit=${SOURCE_COMMIT}" "${RELEASE_DIR}/MANIFEST"
-          rm -f inst/rtichoke-viz/rtichoke-viz-*.tar.gz
-          cp "/tmp/${ARCHIVE}" inst/rtichoke-viz/
-          cp "${RELEASE_DIR}/MANIFEST" inst/rtichoke-viz/MANIFEST
-          cp "${RELEASE_DIR}/rtichoke-viz.js" inst/rtichoke-viz/rtichoke-viz.js
-          cp "${RELEASE_DIR}/rtichoke-viz.css" inst/rtichoke-viz/rtichoke-viz.css
-          cp "${RELEASE_DIR}/rtichoke-viz.schema.json" inst/rtichoke-viz/rtichoke-viz.schema.json
-          cp "${RELEASE_DIR}/rtichoke-viz-v2.schema.json" inst/rtichoke-viz/rtichoke-viz-v2.schema.json
-          cat > inst/rtichoke-viz/PROVENANCE <<EOF
-          release=https://github.com/uriahf/rtichoke_viz/releases/tag/v0.4.0
-          version=0.4.0
-          commit=${SOURCE_COMMIT}
-          archive=${ARCHIVE}
-          sha256=${SHA256}
-          EOF
-      - name: Commit exact vendored payload
+          echo "${SHA256}  ${ARCHIVE}" | sha256sum --check --strict
+          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'version=0.4.0'
+          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/MANIFEST | grep -Fx 'commit=2125c7099839cadd536c6f38f3f7e23a17ca4348'
+          tar -xOf "${ARCHIVE}" rtichoke-viz-0.4.0/rtichoke-viz.js | grep -q 'renderLiftV2'
+      - name: Wire Lift and update focused tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('R/rtichoke_viz_v2.R')
+          text = path.read_text()
+          text = text.replace(
+              '    roc = "renderRocV2",\n    gains = "renderGainsV2"',
+              '    roc = "renderRocV2",\n    gains = "renderGainsV2",\n    lift = "renderLiftV2"',
+          )
+          text = text.replace('    version = "0.3.0",', '    version = "0.4.0",')
+          text = text.replace(
+              "./lib/rtichoke-viz-0.3.0/rtichoke-viz.js",
+              "./lib/rtichoke-viz-0.4.0/rtichoke-viz.js",
+          )
+          path.write_text(text)
+
+          test_path = Path('tests/testthat/test-rtichoke-viz-v2.R')
+          tests = test_path.read_text()
+          old = '''test_that("Lift default public Plotly behavior remains unchanged and browser Lift fails clearly", {
+            probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+            reals <- list("Population A" = c(0, 0, 1, 1))
+
+            plotly_plot <- create_lift_curve(probs, reals, by = 0.25)
+            expect_s3_class(plotly_plot, "plotly")
+
+            ggplot_plot <- create_lift_curve(probs, reals, by = 0.25, interactive = FALSE)
+            expect_s3_class(ggplot_plot, "ggplot")
+
+            expect_error(
+              create_lift_curve(probs, reals, by = 0.25, renderer = "browser"),
+              "Browser rendering is not available for chart type: lift"
+            )
+          })'''
+          new = '''test_that("Lift browser uses canonical v2 without changing existing defaults", {
+            probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+            reals <- list("Population A" = c(0, 0, 1, 1))
+
+            plotly_plot <- create_lift_curve(probs, reals, by = 0.25)
+            expect_s3_class(plotly_plot, "plotly")
+
+            ggplot_plot <- create_lift_curve(probs, reals, by = 0.25, interactive = FALSE)
+            expect_s3_class(ggplot_plot, "ggplot")
+
+            browser <- create_lift_curve(
+              probs,
+              reals,
+              by = 0.25,
+              renderer = "browser"
+            )
+            html <- as.character(browser)
+
+            expect_s3_class(browser, "shiny.tag.list")
+            expect_match(html, "renderLiftV2", fixed = TRUE)
+            expect_match(html, '\"schemaVersion\":\"2.0\"', fixed = TRUE)
+            expect_match(html, '\"type\":\"lift\"', fixed = TRUE)
+            expect_match(html, '\"x\":\"ppcr\"', fixed = TRUE)
+            expect_match(html, '\"y\":\"lift\"', fixed = TRUE)
+          })'''
+          if old not in tests:
+              raise SystemExit('expected temporary Lift browser gate test not found')
+          test_path.write_text(tests.replace(old, new))
+          PY
+          cat > tools/verify-rtichoke-viz.R <<'RSCRIPT'
+          archive <- "inst/rtichoke-viz/rtichoke-viz-0.4.0.tar.gz"
+          expected <- "9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1"
+          sha256 <- system2("sha256sum", archive, stdout = TRUE)
+          if (!length(sha256)) {
+            stop("sha256sum did not return a digest", call. = FALSE)
+          }
+          actual <- strsplit(sha256[[1]], "[[:space:]]+")[[1]][[1]]
+          stopifnot(identical(actual, expected))
+
+          files <- utils::untar(archive, list = TRUE)
+          root <- "rtichoke-viz-0.4.0"
+          payload <- c(
+            "MANIFEST",
+            "rtichoke-viz.js",
+            "rtichoke-viz.css",
+            "rtichoke-viz.schema.json",
+            "rtichoke-viz-v2.schema.json"
+          )
+          required <- file.path(root, payload)
+          stopifnot(all(required %in% files))
+
+          extracted <- tempfile("rtichoke-viz-")
+          dir.create(extracted)
+          on.exit(unlink(extracted, recursive = TRUE), add = TRUE)
+          utils::untar(archive, exdir = extracted)
+          release_dir <- file.path(extracted, root)
+
+          manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
+          stopifnot(
+            "version=0.4.0" %in% manifest,
+            "commit=2125c7099839cadd536c6f38f3f7e23a17ca4348" %in% manifest
+          )
+
+          read_raw <- function(path) {
+            size <- file.info(path)$size
+            readBin(path, what = "raw", n = size)
+          }
+          for (name in payload) {
+            stopifnot(identical(
+              read_raw(file.path(release_dir, name)),
+              read_raw(file.path("inst/rtichoke-viz", name))
+            ))
+          }
+
+          js <- paste(
+            readLines(file.path(release_dir, "rtichoke-viz.js"), warn = FALSE),
+            collapse = "\n"
+          )
+          stopifnot(
+            grepl("renderRocV2", js, fixed = TRUE),
+            grepl("renderGainsV2", js, fixed = TRUE),
+            grepl("renderLiftV2", js, fixed = TRUE)
+          )
+
+          schemas <- c(
+            "rtichoke-viz.schema.json" = "https://rtichoke.dev/schema/viz/1.0.json",
+            "rtichoke-viz-v2.schema.json" = "https://rtichoke.dev/schema/viz/2.0.json"
+          )
+          for (name in names(schemas)) {
+            schema <- paste(
+              readLines(file.path(release_dir, name), warn = FALSE),
+              collapse = "\n"
+            )
+            stopifnot(grepl(unname(schemas[[name]]), schema, fixed = TRUE))
+          }
+
+          message("Verified rtichoke_viz v0.4.0: ", actual)
+          RSCRIPT
+          cat > tests/testthat/test-rtichoke-viz-vendor.R <<'RTEST'
+          test_that("vendored rtichoke_viz v0.4.0 provenance and exports are intact", {
+            vendor <- system.file("rtichoke-viz", package = "rtichoke")
+            provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
+
+            expect_true("version=0.4.0" %in% provenance)
+            expect_true(
+              "commit=2125c7099839cadd536c6f38f3f7e23a17ca4348" %in% provenance
+            )
+            expect_true(
+              paste0(
+                "sha256=",
+                "9a687cd938f1875d577e592664ca75447455166169f6132dd7f79406515e14e1"
+              ) %in% provenance
+            )
+
+            js <- paste(
+              readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE),
+              collapse = "\n"
+            )
+            expect_match(js, "renderRocV2", fixed = TRUE)
+            expect_match(js, "renderGainsV2", fixed = TRUE)
+            expect_match(js, "renderLiftV2", fixed = TRUE)
+          })
+
+          test_that("vendored rtichoke_viz schemas preserve canonical ids", {
+            vendor <- system.file("rtichoke-viz", package = "rtichoke")
+            v1 <- paste(
+              readLines(file.path(vendor, "rtichoke-viz.schema.json"), warn = FALSE),
+              collapse = "\n"
+            )
+            v2 <- paste(
+              readLines(file.path(vendor, "rtichoke-viz-v2.schema.json"), warn = FALSE),
+              collapse = "\n"
+            )
+
+            expect_match(v1, "https://rtichoke.dev/schema/viz/1.0.json", fixed = TRUE)
+            expect_match(v2, "https://rtichoke.dev/schema/viz/2.0.json", fixed = TRUE)
+          })
+          RTEST
+      - name: Commit integration changes
         shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add inst/rtichoke-viz
+          git add R/rtichoke_viz_v2.R tools/verify-rtichoke-viz.R tests/testthat
           if git diff --cached --quiet; then
-            echo 'No vendoring changes to commit'
+            echo 'No integration changes to commit'
           else
-            git commit -m 'Vendor rtichoke_viz v0.4.0 immutable release'
+            git commit -m 'Enable canonical browser Lift with rtichoke_viz v0.4.0'
             git push origin HEAD:feat/browser-lift-v0.4.0
           fi
