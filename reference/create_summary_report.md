@@ -10,7 +10,8 @@ create_summary_report(
   reals,
   interactive = TRUE,
   output_file = "summary_report.html",
-  output_dir = getwd()
+  output_dir = getwd(),
+  renderer = c("rmarkdown", "browser")
 )
 ```
 
@@ -31,7 +32,7 @@ create_summary_report(
 
 - output_file:
 
-  The name of the output file
+  The name of the output file.
 
 - output_dir:
 
@@ -43,6 +44,13 @@ create_summary_report(
   path provided will create any necessary directories if they do not
   exist.
 
+- renderer:
+
+  Summary-report rendering backend. `"rmarkdown"` preserves the existing
+  report and remains the default. `"browser"` renders the canonical
+  PerformanceTable, ROC, and discrete calibration components via the
+  vendored rtichoke_viz ReportSpec renderer.
+
 ## Examples
 
 ``` r
@@ -50,6 +58,12 @@ if (FALSE) { # \dontrun{
 create_summary_report(
   probs = list(example_dat$estimated_probabilities),
   reals = list(example_dat$outcome)
+)
+
+create_summary_report(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  renderer = "browser"
 )
 
 create_summary_report(

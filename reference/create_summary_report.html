@@ -55,7 +55,8 @@
 <span>  <span class="va">reals</span>,</span>
 <span>  interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output_file <span class="op">=</span> <span class="st">"summary_report.html"</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  renderer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rmarkdown"</span>, <span class="st">"browser"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -78,7 +79,7 @@ plots</p></dd>
 
 
 <dt id="arg-output-file">output_file<a class="anchor" aria-label="anchor" href="#arg-output-file"></a></dt>
-<dd><p>The name of the output file</p></dd>
+<dd><p>The name of the output file.</p></dd>
 
 
 <dt id="arg-output-dir">output_dir<a class="anchor" aria-label="anchor" href="#arg-output-dir"></a></dt>
@@ -89,6 +90,13 @@ If a path is provided with a filename in <code>output_file</code> the directory
 specified here will take precedence. Please note that any directory path
 provided will create any necessary directories if they do not exist.</p></dd>
 
+
+<dt id="arg-renderer">renderer<a class="anchor" aria-label="anchor" href="#arg-renderer"></a></dt>
+<dd><p>Summary-report rendering backend. <code>"rmarkdown"</code> preserves
+the existing report and remains the default. <code>"browser"</code> renders the
+canonical PerformanceTable, ROC, and discrete calibration components via
+the vendored rtichoke_viz ReportSpec renderer.</p></dd>
+
 </dl></div>
 
     <div class="section level2">
@@ -97,6 +105,12 @@ provided will create any necessary directories if they do not exist.</p></dd>
 <span class="r-in"><span><span class="fu">create_summary_report</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">create_summary_report</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">estimated_probabilities</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">example_dat</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  renderer <span class="op">=</span> <span class="st">"browser"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">create_summary_report</span><span class="op">(</span></span></span>
