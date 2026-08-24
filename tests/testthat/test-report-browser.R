@@ -53,16 +53,26 @@ test_that("browser ReportSpec path delegates complete report to renderReport", {
 
   browser <- rtichoke:::render_rtichoke_viz_report_browser(report)
   html <- as.character(browser)
-  expected_json <- jsonlite::toJSON(report, auto_unbox = TRUE, digits = NA)
+  expected_json <- jsonlite::toJSON(
+    report,
+    auto_unbox = TRUE,
+    digits = NA,
+    null = "null"
+  )
+  renderer_source <- paste(
+    deparse(body(rtichoke:::render_rtichoke_viz_report_browser)),
+    collapse = "\n"
+  )
 
   expect_s3_class(browser, "shiny.tag.list")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.5.0", fixed = TRUE)
+  expect_equal(htmltools::htmlDependencies(browser)[[1]]$version, "0.5.0")
   expect_match(html, expected_json, fixed = TRUE)
   expect_identical(report, before)
-  expect_false(grepl("renderRocV2", html, fixed = TRUE))
-  expect_false(grepl("renderCalibrationV2", html, fixed = TRUE))
-  expect_false(grepl("renderPerformanceTable", html, fixed = TRUE))
+  expect_false(grepl("renderRocV2", renderer_source, fixed = TRUE))
+  expect_false(grepl("renderCalibrationV2", renderer_source, fixed = TRUE))
+  expect_false(grepl("renderPerformanceTable", renderer_source, fixed = TRUE))
+  expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
 })
 
 test_that("browser report preserves component order and deterministic ids", {

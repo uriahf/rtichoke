@@ -5,6 +5,31 @@ summary_report_test_data <- function() {
   )
 }
 
+find_headless_browser <- function() {
+  candidates <- Sys.which(c(
+    "chromium",
+    "chromium-browser",
+    "google-chrome",
+    "google-chrome-stable"
+  ))
+  candidates <- unname(candidates[nzchar(candidates)])
+  for (candidate in candidates) {
+    res <- tryCatch(
+      suppressWarnings(system2(
+        candidate,
+        args = "--version",
+        stdout = FALSE,
+        stderr = FALSE
+      )),
+      error = function(...) 1L
+    )
+    if (identical(res, 0L)) {
+      return(candidate)
+    }
+  }
+  ""
+}
+
 
 test_that("summary report keeps RMarkdown as the default backend", {
   dat <- summary_report_test_data()
@@ -84,23 +109,21 @@ test_that("browser summary report preserves component-local evaluation identity"
 })
 
 
-test_that("public browser renderer writes shared renderReport HTML", {
-  dat <- summary_report_test_data()
+test_that("public browser renderer writes file-safe shared renderReport HTML", {
   output_dir <- tempfile("rtichoke-summary-")
-  output_file <- file.path("ignored-subdir", "browser.html")
 
   expect_message(
     create_summary_report(
-      probs = dat$probs,
-      reals = dat$reals,
-      output_file = output_file,
-      output_dir = output_dir,
-      renderer = "browser"
+      probs = list(example_dat$estimated_probabilities),
+      reals = list(example_dat$outcome),
+      renderer = "browser",
+      output_file = "browser_report.html",
+      output_dir = output_dir
     ),
     NA
   )
 
-  rendered_file <- file.path(output_dir, "browser.html")
+  rendered_file <- file.path(output_dir, "browser_report.html")
   expect_true(file.exists(rendered_file))
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
@@ -109,7 +132,74 @@ test_that("public browser renderer writes shared renderReport HTML", {
   expect_match(html, '"id":"performance-table"', fixed = TRUE)
   expect_match(html, '"id":"roc"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
-  expect_false(grepl("renderRocV2", html, fixed = TRUE))
-  expect_false(grepl("renderCalibrationV2", html, fixed = TRUE))
-  expect_false(grepl("renderPerformanceTable", html, fixed = TRUE))
+  expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
+  expect_false(grepl(
+    'src="lib/rtichoke-viz-0.5.0/rtichoke-viz.js"',
+    html,
+    fixed = TRUE
+  ))
+})
+
+
+test_that("browser output_dir still takes precedence over output_file path", {
+  dat <- summary_report_test_data()
+  output_dir <- tempfile("rtichoke-summary-path-")
+
+  create_summary_report(
+    probs = dat$probs,
+    reals = dat$reals,
+    renderer = "browser",
+    output_file = file.path("ignored-subdir", "browser.html"),
+    output_dir = output_dir
+  )
+
+  expect_true(file.exists(file.path(output_dir, "browser.html")))
+  expect_false(file.exists(file.path(
+    output_dir,
+    "ignored-subdir",
+    "browser.html"
+  )))
+})
+
+
+test_that("public browser report initializes from a local file", {
+  skip_on_os("windows")
+  browser <- find_headless_browser()
+  skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
+
+  output_dir <- tempfile("rtichoke-summary-browser-")
+  create_summary_report(
+    probs = list(example_dat$estimated_probabilities),
+    reals = list(example_dat$outcome),
+    renderer = "browser",
+    output_file = "browser_report.html",
+    output_dir = output_dir
+  )
+
+  rendered_file <- normalizePath(
+    file.path(output_dir, "browser_report.html"),
+    winslash = "/",
+    mustWork = TRUE
+  )
+  url <- paste0("file://", rendered_file)
+  dom <- system2(
+    browser,
+    args = c(
+      "--headless=new",
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--virtual-time-budget=3000",
+      "--dump-dom",
+      shQuote(url)
+    ),
+    stdout = TRUE,
+    stderr = FALSE,
+    timeout = 20
+  )
+  dom <- paste(dom, collapse = "\n")
+
+  expect_match(dom, 'data-component-id="performance-table"', fixed = TRUE)
+  expect_match(dom, 'data-component-id="roc"', fixed = TRUE)
+  expect_match(dom, 'data-component-id="calibration"', fixed = TRUE)
 })
