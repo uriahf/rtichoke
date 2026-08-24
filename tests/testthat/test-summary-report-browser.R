@@ -1,7 +1,7 @@
 summary_report_test_data <- function() {
   list(
     probs = list("Model A" = seq(0.01, 0.99, length.out = 100)),
-    reals = list("Population A" = c(rep(0, 50), rep(1, 50)))
+    reals = list("Population A" = rep(c(0, 1), 50))
   )
 }
 
@@ -31,7 +31,10 @@ test_that("summary report keeps RMarkdown as the default backend", {
     NA
   )
   expect_true(rmarkdown_called)
-  expect_identical(formals(create_summary_report)$renderer, c("rmarkdown", "browser"))
+  expect_identical(
+    eval(formals(create_summary_report)$renderer),
+    c("rmarkdown", "browser")
+  )
 })
 
 
