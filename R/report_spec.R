@@ -33,15 +33,22 @@ rtichoke_viz_report_spec <- function(
     spec <- specs[[i]]
     if (!is.list(spec) || !identical(spec$schemaVersion, "2.0")) {
       stop(
-        "Report component ", i,
+        "Report component ",
+        i,
         " must be a complete canonical schemaVersion 2.0 specification",
         call. = FALSE
       )
     }
     if (is.null(spec$type) || !spec$type %in% supported_types) {
       stop(
-        "Report component ", i, " has unsupported type: ",
-        if (is.null(spec$type)) "<missing>" else spec$type,
+        "Report component ",
+        i,
+        " has unsupported type: ",
+        if (is.null(spec$type)) {
+          "<missing>"
+        } else {
+          spec$type
+        },
         call. = FALSE
       )
     }
@@ -65,9 +72,17 @@ rtichoke_viz_report_spec <- function(
   seen <- integer(0)
   names(seen) <- character(0)
   component_ids <- vapply(base_ids, function(base_id) {
-    count <- if (base_id %in% names(seen)) seen[[base_id]] + 1L else 1L
+    count <- if (base_id %in% names(seen)) {
+      seen[[base_id]] + 1L
+    } else {
+      1L
+    }
     seen[[base_id]] <<- count
-    if (count == 1L) base_id else paste0(base_id, "-", count)
+    if (count == 1L) {
+      base_id
+    } else {
+      paste0(base_id, "-", count)
+    }
   }, character(1))
 
   components <- lapply(seq_along(specs), function(i) {
