@@ -11,7 +11,8 @@ test_that("vendored rtichoke_viz v0.5.0 provenance and exports are intact", {
     paste0(
       "sha256=",
       "ab36ae71f9090b4de62da8f552ebe84ac35885ab04958667faaf070db2c98f65"
-    ) %in% provenance
+    ) %in%
+      provenance
   )
 
   js <- paste(
