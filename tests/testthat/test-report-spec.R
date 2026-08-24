@@ -100,25 +100,28 @@ test_that("report assembler composes performance table, ROC, and calibration", {
   expect_identical(report$components[[3]]$spec, calibration)
 })
 
-test_that("component IDs are deterministic, unique, and independent of series IDs", {
-  specs <- report_test_specs()
-  first <- rtichoke:::rtichoke_viz_report_spec(
-    specs$roc,
-    specs$roc,
-    specs$performance_table
-  )
-  second <- rtichoke:::rtichoke_viz_report_spec(
-    specs$roc,
-    specs$roc,
-    specs$performance_table
-  )
+test_that(
+  "component IDs are deterministic, unique, and independent of series IDs",
+  {
+    specs <- report_test_specs()
+    first <- rtichoke:::rtichoke_viz_report_spec(
+      specs$roc,
+      specs$roc,
+      specs$performance_table
+    )
+    second <- rtichoke:::rtichoke_viz_report_spec(
+      specs$roc,
+      specs$roc,
+      specs$performance_table
+    )
 
-  ids <- vapply(first$components, `[[`, "", "id")
-  expect_identical(ids, c("roc", "roc-2", "performance-table"))
-  expect_identical(ids, vapply(second$components, `[[`, "", "id"))
-  expect_length(unique(ids), length(ids))
-  expect_false(any(ids %in% c("series-1", "series-2")))
-})
+    ids <- vapply(first$components, `[[`, "", "id")
+    expect_identical(ids, c("roc", "roc-2", "performance-table"))
+    expect_identical(ids, vapply(second$components, `[[`, "", "id"))
+    expect_length(unique(ids), length(ids))
+    expect_false(any(ids %in% c("series-1", "series-2")))
+  }
+)
 
 test_that("component order and optional titles are presentation metadata", {
   specs <- report_test_specs()
@@ -146,9 +149,13 @@ test_that("evaluation IDs remain component-local", {
   )
 
   expect_identical(
-    vapply(report$components, function(component) {
-      component$spec$evaluations[[1]]$id
-    }, character(1)),
+    vapply(
+      report$components,
+      function(component) {
+        component$spec$evaluations[[1]]$id
+      },
+      character(1)
+    ),
     rep("evaluation-1", 3)
   )
   expect_false("evaluations" %in% names(report))
