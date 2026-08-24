@@ -1,3 +1,5 @@
+# fmt: skip file
+
 calibration_v2_fixture <- function(groups = "Model A") {
   deciles <- do.call(
     rbind,
