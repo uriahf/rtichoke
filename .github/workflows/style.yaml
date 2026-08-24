@@ -46,5 +46,7 @@ jobs:
         shell: bash
         run: |
           while IFS= read -r file; do
-            air format "$file" --check
+            air format "$file"
           done < changed-r-files.txt
+          git diff -- tests/testthat/test-report-spec.R
+          exit 1
