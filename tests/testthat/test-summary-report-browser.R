@@ -127,7 +127,25 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 })
 
 
+test_that("browser output_dir still takes precedence over output_file path", {
+  dat <- summary_report_test_data()
+  output_dir <- tempfile("rtichoke-summary-path-")
+
+  create_summary_report(
+    probs = dat$probs,
+    reals = dat$reals,
+    renderer = "browser",
+    output_file = file.path("ignored-subdir", "browser.html"),
+    output_dir = output_dir
+  )
+
+  expect_true(file.exists(file.path(output_dir, "browser.html")))
+  expect_false(file.exists(file.path(output_dir, "ignored-subdir", "browser.html")))
+})
+
+
 test_that("public browser report initializes from a local file", {
+  skip_on_os("windows")
   browser <- find_headless_browser()
   skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
 
