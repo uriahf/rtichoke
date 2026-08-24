@@ -31,6 +31,17 @@ find_headless_browser <- function() {
 }
 
 
+component_contains <- function(dom, component_id, pattern) {
+  component_pattern <- paste0(
+    'data-component-id="',
+    component_id,
+    '"(?:(?!</section>).)*',
+    pattern
+  )
+  grepl(component_pattern, dom, perl = TRUE)
+}
+
+
 test_that("summary report keeps RMarkdown as the default backend", {
   dat <- summary_report_test_data()
   rmarkdown_called <- FALSE
@@ -162,7 +173,7 @@ test_that("browser output_dir still takes precedence over output_file path", {
 })
 
 
-test_that("public browser report initializes from a local file", {
+test_that("public browser report renders populated components from a local file", {
   skip_on_os("windows")
   browser <- find_headless_browser()
   skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
@@ -182,7 +193,8 @@ test_that("public browser report initializes from a local file", {
     mustWork = TRUE
   )
   url <- paste0("file://", rendered_file)
-  dom <- system2(
+  stderr_file <- tempfile("rtichoke-browser-stderr-")
+  dom_lines <- system2(
     browser,
     args = c(
       "--headless=new",
@@ -194,12 +206,37 @@ test_that("public browser report initializes from a local file", {
       shQuote(url)
     ),
     stdout = TRUE,
-    stderr = FALSE,
+    stderr = stderr_file,
     timeout = 20
   )
-  dom <- paste(dom, collapse = "\n")
+  status <- attr(dom_lines, "status")
+  dom <- paste(dom_lines, collapse = "\n")
+  browser_stderr <- paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
 
-  expect_match(dom, 'data-component-id="performance-table"', fixed = TRUE)
-  expect_match(dom, 'data-component-id="roc"', fixed = TRUE)
-  expect_match(dom, 'data-component-id="calibration"', fixed = TRUE)
+  expect_null(status, info = browser_stderr)
+  expect_false(
+    grepl(
+      "ERROR:CONSOLE|Uncaught|Invalid ReportSpec|ReferenceError|TypeError|SyntaxError",
+      browser_stderr,
+      perl = TRUE
+    ),
+    info = browser_stderr
+  )
+
+  expect_true(
+    component_contains(
+      dom,
+      "performance-table",
+      '<table class="rtichoke-performance-table__table"'
+    ),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(dom, "roc", "<svg"),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(dom, "calibration", "<svg"),
+    info = browser_stderr
+  )
 })
