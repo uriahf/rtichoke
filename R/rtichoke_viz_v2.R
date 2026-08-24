@@ -43,7 +43,8 @@ rtichoke_viz_browser_id <- local({
 render_rtichoke_viz_browser <- function(spec) {
   renderers <- c(
     roc = "renderRocV2",
-    gains = "renderGainsV2"
+    gains = "renderGainsV2",
+    lift = "renderLiftV2"
   )
   renderer <- if (spec$type %in% names(renderers)) {
     unname(renderers[[spec$type]])
@@ -63,7 +64,7 @@ render_rtichoke_viz_browser <- function(spec) {
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.3.0",
+    version = "0.4.0",
     src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
@@ -71,7 +72,7 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.3.0/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-0.4.0/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",

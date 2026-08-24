@@ -478,7 +478,7 @@ test_that("Lift v2 preserves unknown model semantics when model is unknown", {
   expect_identical(spec$series[[1]]$display$label, "Population A")
 })
 
-test_that("Lift default public Plotly behavior remains unchanged and browser Lift fails clearly", {
+test_that("Lift browser uses canonical v2 without changing existing defaults", {
   probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
   reals <- list("Population A" = c(0, 0, 1, 1))
 
@@ -488,8 +488,18 @@ test_that("Lift default public Plotly behavior remains unchanged and browser Lif
   ggplot_plot <- create_lift_curve(probs, reals, by = 0.25, interactive = FALSE)
   expect_s3_class(ggplot_plot, "ggplot")
 
-  expect_error(
-    create_lift_curve(probs, reals, by = 0.25, renderer = "browser"),
-    "Browser rendering is not available for chart type: lift"
+  browser <- create_lift_curve(
+    probs,
+    reals,
+    by = 0.25,
+    renderer = "browser"
   )
+  html <- as.character(browser)
+
+  expect_s3_class(browser, "shiny.tag.list")
+  expect_match(html, "renderLiftV2", fixed = TRUE)
+  expect_match(html, '"schemaVersion":"2.0"', fixed = TRUE)
+  expect_match(html, '"type":"lift"', fixed = TRUE)
+  expect_match(html, '"x":"ppcr"', fixed = TRUE)
+  expect_match(html, '"y":"lift"', fixed = TRUE)
 })
