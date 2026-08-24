@@ -3,6 +3,7 @@ test_that("vendored rtichoke_viz v0.4.0 provenance and exports are intact", {
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
   expect_true("version=0.4.0" %in% provenance)
+  expect_true("archive=rtichoke-viz-0.4.0.tar.gz" %in% provenance)
   expect_true(
     "commit=2125c7099839cadd536c6f38f3f7e23a17ca4348" %in% provenance
   )
