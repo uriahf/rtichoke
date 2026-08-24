@@ -2817,6 +2817,23 @@ var GainsV2SpecSchema = Type.Intersect([
   })
 ]);
 
+// src/spec/v2/lift.ts
+var LiftV2DatumSchema = Type.Object({
+  seriesId: Type.String(),
+  cutoff: Type.Number(),
+  ppcr: Type.Number({ minimum: 0, maximum: 1 }),
+  lift: Type.Number()
+});
+var LiftV2SpecSchema = Type.Intersect([
+  BaseChartV2SpecSchema,
+  Type.Object({
+    type: Type.Literal("lift"),
+    data: Type.Array(LiftV2DatumSchema),
+    x: Type.Literal("ppcr"),
+    y: Type.Literal("lift")
+  })
+]);
+
 // src/spec/v2/precision_recall.ts
 var PrecisionRecallV2DatumSchema = Type.Object({
   seriesId: Type.String(),
@@ -2857,13 +2874,99 @@ var RtichokeChartSpecV2Schema = Type.Union(
     RocV2SpecSchema,
     CalibrationV2SpecSchema,
     PrecisionRecallV2SpecSchema,
-    GainsV2SpecSchema
+    GainsV2SpecSchema,
+    LiftV2SpecSchema
   ],
   {
     $id: "https://rtichoke.dev/schema/viz/2.0.json",
     title: "rtichoke visualization specification v2"
   }
 );
+
+// src/spec/v2/performance-table.ts
+var PerformanceMetricIdSchema = Type.Union([
+  Type.Literal("true_positives"),
+  Type.Literal("true_negatives"),
+  Type.Literal("false_positives"),
+  Type.Literal("false_negatives"),
+  Type.Literal("sensitivity"),
+  Type.Literal("specificity"),
+  Type.Literal("false_positive_rate"),
+  Type.Literal("ppv"),
+  Type.Literal("npv"),
+  Type.Literal("lift"),
+  Type.Literal("predicted_positives"),
+  Type.Literal("ppcr"),
+  Type.Literal("net_benefit"),
+  Type.Literal("net_benefit_interventions_avoided")
+]);
+var PerformanceMetricDefinitionSchema = Type.Object({
+  id: PerformanceMetricIdSchema,
+  label: Type.String()
+});
+var PerformanceMetricValueSchema = Type.Object({
+  metricId: PerformanceMetricIdSchema,
+  estimate: Type.Union([Type.Number(), Type.Null()]),
+  lower: Type.Optional(Type.Union([Type.Number(), Type.Null()])),
+  upper: Type.Optional(Type.Union([Type.Number(), Type.Null()]))
+});
+var OperatingPointSchema = Type.Union([
+  Type.Object({
+    type: Type.Literal("probability_threshold"),
+    value: Type.Number()
+  }),
+  Type.Object({
+    type: Type.Literal("ppcr"),
+    value: Type.Number({ minimum: 0, maximum: 1 })
+  })
+]);
+var PerformanceEvaluationContextSchema = Type.Object({
+  censoringHeuristic: Type.Optional(Type.String()),
+  competingEventHeuristic: Type.Optional(Type.String())
+});
+var PerformanceTableRowSchema = Type.Object({
+  evaluationId: Type.String(),
+  horizon: Type.Optional(Type.Number({ minimum: 0 })),
+  operatingPoint: OperatingPointSchema,
+  context: Type.Optional(PerformanceEvaluationContextSchema),
+  values: Type.Array(PerformanceMetricValueSchema)
+});
+var PerformanceTableSpecSchema = Type.Object({
+  schemaVersion: Type.Literal("2.0"),
+  type: Type.Literal("performance_table"),
+  title: Type.Optional(Type.String()),
+  evaluations: Type.Array(EvaluationSpecSchema),
+  metrics: Type.Array(PerformanceMetricDefinitionSchema),
+  rows: Type.Array(PerformanceTableRowSchema)
+});
+
+// src/spec/v2/validate-performance-table.ts
+function assertPerformanceTableReferentialIntegrity(spec) {
+  const evaluationIds = /* @__PURE__ */ new Set();
+  for (const evaluation of spec.evaluations) {
+    if (evaluationIds.has(evaluation.id)) {
+      throw new Error(`duplicate evaluation id: ${evaluation.id}`);
+    }
+    evaluationIds.add(evaluation.id);
+  }
+  const metricIds = /* @__PURE__ */ new Set();
+  for (const metric of spec.metrics) {
+    if (metricIds.has(metric.id)) {
+      throw new Error(`duplicate metric id: ${metric.id}`);
+    }
+    metricIds.add(metric.id);
+  }
+  for (const row of spec.rows) {
+    if (!evaluationIds.has(row.evaluationId)) {
+      throw new Error(`unknown evaluation id: ${row.evaluationId}`);
+    }
+    for (const value of row.values) {
+      if (!metricIds.has(value.metricId)) {
+        throw new Error(`unknown metric id: ${value.metricId}`);
+      }
+    }
+  }
+}
 
 // src/spec/v2/validate.ts
 function assertV2ReferentialIntegrity(spec) {
@@ -18637,26 +18740,85 @@ var RTICHOKE_COLORS3 = [
   "#006E90",
   "#BC96E6"
 ];
-var BASE_STYLE2 = {
-  background: "transparent",
-  color: "#222",
-  fontFamily: "Arial, Helvetica, sans-serif",
-  fontSize: "13px"
+var RTICHOKE_BROWSER_THEME = {
+  width: 600,
+  height: 600,
+  margins: { top: 28, right: 28, bottom: 58, left: 66 },
+  background: "#ffffff",
+  frame: { color: "#444444", width: 1 },
+  typography: {
+    fontFamily: "Arial, Helvetica, sans-serif",
+    fontSize: 12,
+    axisTitleSize: 14,
+    axisTitleWeight: 400,
+    legendSize: 12
+  },
+  axis: {
+    color: "#444444",
+    tickSize: 5,
+    tickPadding: 7,
+    ticks: 6,
+    numberFormat: ".1f"
+  },
+  colors: RTICHOKE_COLORS3,
+  line: { width: 2, dash: null },
+  marker: { radius: 5, fill: null, stroke: "#ffffff", strokeWidth: 1.5 },
+  reference: { color: "#BEBEBE", width: 2, dash: "4,4" },
+  legend: { position: "top", swatchWidth: 15, columns: null },
+  tip: { digits: 3 }
 };
-function resolveV2RenderOptions(groupCount, options = {}) {
-  const width = options.width ?? 600;
-  const height = options.height ?? 600;
-  if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
-    throw new Error("Renderer width and height must be positive finite numbers");
-  }
-  const colors = groupCount <= 1 ? ["#000000"] : [...options.colors ?? RTICHOKE_COLORS3];
-  if (colors.length < groupCount) {
-    throw new Error("Renderer colors must contain at least one color per display group");
-  }
-  return { width, height, colors: colors.slice(0, Math.max(groupCount, 1)) };
+function mergeTheme(options) {
+  const custom8 = options.theme ?? {};
+  return {
+    ...RTICHOKE_BROWSER_THEME,
+    width: options.width ?? RTICHOKE_BROWSER_THEME.width,
+    height: options.height ?? RTICHOKE_BROWSER_THEME.height,
+    background: custom8.background ?? RTICHOKE_BROWSER_THEME.background,
+    colors: options.colors ?? RTICHOKE_BROWSER_THEME.colors,
+    margins: { ...RTICHOKE_BROWSER_THEME.margins, ...custom8.margins },
+    frame: { ...RTICHOKE_BROWSER_THEME.frame, ...custom8.frame },
+    typography: { ...RTICHOKE_BROWSER_THEME.typography, ...custom8.typography },
+    axis: { ...RTICHOKE_BROWSER_THEME.axis, ...custom8.axis },
+    line: { ...RTICHOKE_BROWSER_THEME.line, ...custom8.line },
+    marker: { ...RTICHOKE_BROWSER_THEME.marker, ...custom8.marker },
+    reference: { ...RTICHOKE_BROWSER_THEME.reference, ...custom8.reference },
+    legend: { ...RTICHOKE_BROWSER_THEME.legend, ...custom8.legend },
+    tip: { ...RTICHOKE_BROWSER_THEME.tip, ...custom8.tip }
+  };
+}
+function resolveV2RenderOptions(groupsOrCount, options = {}) {
+  const groups2 = typeof groupsOrCount === "number" ? Array.from(
+    { length: groupsOrCount },
+    (_, index2) => `group-${index2 + 1}`
+  ) : [...groupsOrCount];
+  const theme = mergeTheme(options);
+  if (!Number.isFinite(theme.width) || theme.width <= 0 || !Number.isFinite(theme.height) || theme.height <= 0)
+    throw new Error(
+      "Renderer width and height must be positive finite numbers"
+    );
+  if (!Number.isInteger(theme.tip.digits) || theme.tip.digits < 0 || theme.tip.digits > 20)
+    throw new Error("Renderer tip digits must be an integer between 0 and 20");
+  const colors = groups2.length <= 1 ? ["#000000"] : [...theme.colors];
+  if (colors.length < groups2.length)
+    throw new Error(
+      "Renderer colors must contain at least one color per display group"
+    );
+  const assigned = colors.slice(0, Math.max(groups2.length, 1));
+  return {
+    theme: { ...theme, colors: assigned },
+    groups: groups2,
+    colors: assigned,
+    colorByGroup: new Map(
+      groups2.map((group2, index2) => [group2, assigned[index2]])
+    ),
+    showLegend: groups2.length > 1
+  };
 }
 function displayBySeries(spec) {
   return new Map(spec.series.map((series) => [series.id, series.display]));
+}
+function displayGroups(spec) {
+  return [...new Set(spec.series.map((series) => series.display.group))];
 }
 function seriesRenderData(spec, data) {
   const displays = displayBySeries(spec);
@@ -18666,137 +18828,360 @@ function seriesRenderData(spec, data) {
     label: displays.get(datum2.seriesId).label
   }));
 }
-function referenceMarks(spec) {
+function tooltip(digits, fields) {
+  return fields.filter(([, value]) => value !== void 0).map(
+    ([label, value]) => `${label}: ${typeof value === "number" ? value.toFixed(digits) : String(value)}`
+  ).join("\n");
+}
+function basePlotOptions(resolved, spec) {
+  const { theme } = resolved;
+  const labelByGroup = new Map(
+    spec.series.map((series) => [series.display.group, series.display.label])
+  );
+  return {
+    width: theme.width,
+    height: theme.height,
+    marginTop: theme.margins.top,
+    marginRight: theme.margins.right,
+    marginBottom: theme.margins.bottom,
+    marginLeft: theme.margins.left,
+    style: {
+      background: theme.background,
+      color: theme.axis.color,
+      fontFamily: theme.typography.fontFamily,
+      fontSize: `${theme.typography.fontSize}px`
+    },
+    color: {
+      legend: resolved.showLegend,
+      domain: resolved.groups,
+      range: resolved.colors,
+      tickFormat: (group2) => labelByGroup.get(group2) ?? group2
+    }
+  };
+}
+function axisOptions2(theme, label, domain) {
+  return {
+    label,
+    domain,
+    grid: false,
+    line: true,
+    ticks: theme.axis.ticks,
+    tickSize: theme.axis.tickSize,
+    tickPadding: theme.axis.tickPadding,
+    tickFormat: theme.axis.numberFormat
+  };
+}
+function frameMark(theme) {
+  return frame2({
+    stroke: theme.frame.color,
+    strokeWidth: theme.frame.width
+  });
+}
+function referenceMarks(spec, theme) {
+  const style = {
+    stroke: theme.reference.color,
+    strokeWidth: theme.reference.width,
+    strokeDasharray: theme.reference.dash
+  };
   const marks2 = [];
   for (const reference of spec.references ?? []) {
-    if (reference.type === "identity") {
-      marks2.push(line([{ x: 0, y: 0 }, { x: 1, y: 1 }], {
-        x: "x",
-        y: "y",
-        stroke: "#BEBEBE",
-        strokeWidth: 2,
-        strokeDasharray: "4,4"
-      }));
-    } else if (reference.type === "path" && reference.points) {
-      marks2.push(line(reference.points, {
-        x: "x",
-        y: "y",
-        stroke: "#BEBEBE",
-        strokeWidth: 2,
-        strokeDasharray: "4,4"
-      }));
-    }
+    if (reference.type === "identity")
+      marks2.push(
+        line(
+          [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 }
+          ],
+          { x: "x", y: "y", ...style, title: reference.label }
+        )
+      );
+    else if (reference.type === "horizontal" && reference.value !== void 0)
+      marks2.push(
+        ruleY([reference.value], { ...style, title: reference.label })
+      );
+    else if (reference.type === "path" && reference.points)
+      marks2.push(
+        line(reference.points, {
+          x: "x",
+          y: "y",
+          ...style,
+          title: reference.label
+        })
+      );
   }
   return marks2;
 }
-function renderRocV2(spec) {
-  assertV2ReferentialIntegrity(spec);
-  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const showLegend = groups2.length > 1;
-  const data = seriesRenderData(spec, spec.data).map((datum2) => ({ ...datum2, false_positive_rate: 1 - datum2.specificity }));
-  const marks2 = [];
-  if (spec.references?.some((reference) => reference.type === "identity")) {
-    marks2.push(line([{ x: 0, y: 0 }, { x: 1, y: 1 }], { x: "x", y: "y", stroke: "#BEBEBE", strokeWidth: 2 }));
-  }
-  marks2.push(line(data, { x: "false_positive_rate", y: "sensitivity", z: "seriesId", stroke: "group", strokeWidth: 2, tip: true }));
-  return plot({
-    width: 600,
-    height: 600,
-    marginLeft: 64,
-    marginBottom: 56,
-    style: BASE_STYLE2,
-    x: { label: spec.xAxis.label, domain: spec.xAxis.domain, grid: false, ticks: 6 },
-    y: { label: spec.yAxis.label, domain: spec.yAxis.domain, grid: false, ticks: 6 },
-    color: { legend: showLegend, range: showLegend ? RTICHOKE_COLORS3 : ["#000000"] },
-    marks: marks2
-  });
+function finishMarks(marks2, theme) {
+  marks2.push(frameMark(theme));
+  return marks2;
 }
-function renderCalibrationV2(spec) {
-  assertV2ReferentialIntegrity(spec);
-  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const showLegend = groups2.length > 1;
-  const colorRange = showLegend ? RTICHOKE_COLORS3 : ["#000000"];
-  const data = seriesRenderData(spec, spec.data);
-  const marks2 = [];
-  if (spec.references?.some((reference) => reference.type === "identity")) {
-    marks2.push(line([{ x: 0, y: 0 }, { x: 1, y: 1 }], { x: "x", y: "y", stroke: "#BEBEBE", strokeWidth: 2, strokeDasharray: "4,4" }));
+function themedPlot(options, theme) {
+  const plot2 = plot(options);
+  for (const label of plot2.querySelectorAll(
+    '[aria-label$="axis label"] text'
+  )) {
+    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
+    label.style.fontWeight = String(theme.typography.axisTitleWeight);
   }
-  marks2.push(line(data, { x: "predicted", y: "observed", z: "seriesId", stroke: "group", strokeWidth: 2, tip: true }));
+  for (const frame3 of plot2.querySelectorAll(
+    '[aria-label="frame"]'
+  )) {
+    frame3.setAttribute("stroke", theme.frame.color);
+  }
+  if (plot2 instanceof HTMLElement) {
+    plot2.style.fontSize = `${theme.typography.legendSize}px`;
+    for (const swatch of plot2.querySelectorAll(
+      'svg[width="15"]'
+    )) {
+      swatch.setAttribute("width", String(theme.legend.swatchWidth));
+    }
+  }
+  return plot2;
+}
+function renderRocV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
+    ...datum2,
+    false_positive_rate: 1 - datum2.specificity,
+    title: tooltip(theme.tip.digits, [
+      ["Series", datum2.label],
+      ["Cutoff", datum2.cutoff],
+      ["Sensitivity", datum2.sensitivity],
+      ["Specificity", datum2.specificity]
+    ])
+  }));
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: "false_positive_rate",
+      y: "sensitivity",
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
+  return themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
+}
+function renderCalibrationV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
+    ...datum2,
+    title: tooltip(theme.tip.digits, [
+      ["Series", datum2.label],
+      ["Predicted", datum2.predicted],
+      ["Observed", datum2.observed],
+      ["Events", datum2.events],
+      ["Total", datum2.total]
+    ])
+  }));
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: "predicted",
+      y: "observed",
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
   const discrete = data.filter((datum2) => datum2.method === "discrete");
-  if (discrete.length > 0) marks2.push(dot(discrete, { x: "predicted", y: "observed", fill: "group", stroke: "white", strokeWidth: 1.5, r: 5, tip: true }));
+  if (discrete.length > 0)
+    marks2.push(
+      dot(discrete, {
+        x: "predicted",
+        y: "observed",
+        fill: theme.marker.fill ?? "group",
+        stroke: theme.marker.stroke,
+        strokeWidth: theme.marker.strokeWidth,
+        r: theme.marker.radius,
+        title: "title",
+        tip: true
+      })
+    );
   const hasDistribution = (spec.distribution?.length ?? 0) > 0;
-  const calibration = plot({
-    width: 600,
-    height: hasDistribution ? 480 : 600,
-    marginLeft: 64,
-    marginBottom: hasDistribution ? 16 : 56,
-    style: BASE_STYLE2,
-    x: { label: hasDistribution ? null : spec.xAxis.label, domain: spec.xAxis.domain, grid: false, ticks: 6, axis: hasDistribution ? null : "bottom" },
-    y: { label: spec.yAxis.label, domain: spec.yAxis.domain, grid: false, ticks: 6 },
-    color: { legend: showLegend, range: colorRange },
-    marks: marks2
-  });
+  const mainHeight = hasDistribution ? Math.round(theme.height * 0.8) : theme.height;
+  const calibration = themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      height: mainHeight,
+      marginBottom: hasDistribution ? 8 : theme.margins.bottom,
+      x: hasDistribution ? {
+        ...axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+        axis: null,
+        label: null
+      } : axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
   if (!hasDistribution || !spec.distribution) return calibration;
-  const distribution = seriesRenderData(spec, spec.distribution);
-  const histogram = plot({
-    width: 600,
-    height: 120,
-    marginLeft: 64,
-    marginTop: 0,
-    marginBottom: 48,
-    style: BASE_STYLE2,
-    x: { label: spec.xAxis.label, domain: spec.xAxis.domain, grid: false, ticks: 6 },
-    y: { label: null, grid: false, ticks: 3 },
-    color: { legend: false, range: colorRange },
-    marks: [rectY(distribution, { x1: (datum2) => datum2.midpoint - datum2.binWidth / 2, x2: (datum2) => datum2.midpoint + datum2.binWidth / 2, y: "count", fill: "group", fillOpacity: 1 / Math.max(groups2.length, 1), tip: true })]
-  });
+  const distribution = seriesRenderData(spec, spec.distribution).map(
+    (datum2) => ({
+      ...datum2,
+      title: tooltip(theme.tip.digits, [
+        ["Series", datum2.label],
+        ["Midpoint", datum2.midpoint],
+        ["Count", datum2.count]
+      ])
+    })
+  );
+  const histogram = themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      height: theme.height - mainHeight,
+      marginTop: 0,
+      marginBottom: theme.margins.bottom,
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: {
+        label: null,
+        grid: false,
+        ticks: 3,
+        tickSize: theme.axis.tickSize,
+        tickPadding: theme.axis.tickPadding
+      },
+      color: { legend: false, domain: resolved.groups, range: resolved.colors },
+      marks: finishMarks(
+        [
+          rectY(distribution, {
+            x1: (datum2) => datum2.midpoint - datum2.binWidth / 2,
+            x2: (datum2) => datum2.midpoint + datum2.binWidth / 2,
+            y: "count",
+            fill: "group",
+            fillOpacity: 1 / Math.max(resolved.groups.length, 1),
+            title: "title",
+            tip: true
+          })
+        ],
+        theme
+      )
+    },
+    theme
+  );
   const container = document.createElement("div");
-  container.style.width = "600px";
+  container.className = "rtichoke-calibration";
+  container.style.width = `${theme.width}px`;
   container.style.maxWidth = "100%";
   container.append(calibration, histogram);
   return container;
 }
-function renderPrecisionRecallV2(spec) {
+function renderLineChart(spec, options, x2, y2) {
   assertV2ReferentialIntegrity(spec);
-  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const showLegend = groups2.length > 1;
-  const data = seriesRenderData(spec, spec.data);
-  const marks2 = [];
-  for (const reference of spec.references ?? []) if (reference.type === "horizontal" && reference.value !== void 0) marks2.push(ruleY([reference.value], { stroke: "#BEBEBE", strokeWidth: 2, strokeDasharray: "4,4" }));
-  marks2.push(line(data, { x: "sensitivity", y: "ppv", z: "seriesId", stroke: "group", strokeWidth: 2, tip: true }));
-  marks2.push(dot(data, { x: "sensitivity", y: "ppv", fill: "group", stroke: "white", strokeWidth: 1.5, r: 4, tip: true }));
-  return plot({
-    width: 600,
-    height: 600,
-    marginLeft: 64,
-    marginBottom: 56,
-    style: BASE_STYLE2,
-    x: { label: spec.xAxis.label, domain: spec.xAxis.domain, grid: false, ticks: 6 },
-    y: { label: spec.yAxis.label, domain: spec.yAxis.domain, grid: false, ticks: 6 },
-    color: { legend: showLegend, domain: groups2, range: showLegend ? RTICHOKE_COLORS3 : ["#000000"] },
-    marks: marks2
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(
+    spec,
+    spec.data
+  ).map((datum2) => {
+    const values2 = datum2;
+    const yLabel = y2 === "ppv" ? "PPV" : y2 === "sensitivity" ? "Sensitivity" : "Lift";
+    return {
+      ...datum2,
+      title: tooltip(theme.tip.digits, [
+        ["Series", datum2.label],
+        ["Cutoff", values2.cutoff],
+        [x2 === "ppcr" ? "PPCR" : "Sensitivity", values2[x2]],
+        [yLabel, values2[y2]]
+      ])
+    };
   });
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: x2,
+      y: y2,
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
+  return themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
+}
+function horizons(spec) {
+  return [
+    ...new Set(
+      spec.series.map((series) => series.horizon).filter((horizon) => horizon !== void 0)
+    )
+  ];
+}
+function selectHorizonSpec(spec, horizon) {
+  const series = spec.series.filter(
+    (item) => item.horizon === void 0 || item.horizon === horizon
+  );
+  const seriesIds = new Set(series.map((item) => item.id));
+  return {
+    ...spec,
+    series,
+    data: spec.data.filter((datum2) => seriesIds.has(datum2.seriesId)),
+    references: spec.references?.filter(
+      (reference) => reference.scope !== "population_horizon" || reference.horizon === horizon
+    )
+  };
+}
+function renderHorizonLineChart(spec, options, x2, y2) {
+  const availableHorizons = horizons(spec);
+  if (availableHorizons.length <= 1) return renderLineChart(spec, options, x2, y2);
+  const container = document.createElement("div");
+  container.className = "rtichoke-horizon-chart";
+  const control = document.createElement("label");
+  control.textContent = "Fixed Time Horizon: ";
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", "Fixed Time Horizon");
+  for (const horizon of availableHorizons) {
+    const option = document.createElement("option");
+    option.value = String(horizon);
+    option.textContent = String(horizon);
+    select.append(option);
+  }
+  control.append(select);
+  const chart = document.createElement("div");
+  const draw = (horizon) => {
+    chart.replaceChildren(
+      renderLineChart(selectHorizonSpec(spec, horizon), options, x2, y2)
+    );
+  };
+  select.addEventListener("change", () => draw(Number(select.value)));
+  container.append(control, chart);
+  draw(availableHorizons[0]);
+  return container;
+}
+function renderPrecisionRecallV2(spec, options = {}) {
+  return renderLineChart(spec, options, "sensitivity", "ppv");
 }
 function renderGainsV2(spec, options = {}) {
-  assertV2ReferentialIntegrity(spec);
-  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const showLegend = groups2.length > 1;
-  const resolved = resolveV2RenderOptions(groups2.length, options);
-  const data = seriesRenderData(spec, spec.data);
-  const marks2 = referenceMarks(spec);
-  marks2.push(line(data, { x: "ppcr", y: "sensitivity", z: "seriesId", stroke: "group", strokeWidth: 2, tip: true }));
-  marks2.push(dot(data, { x: "ppcr", y: "sensitivity", fill: "group", stroke: "white", strokeWidth: 1.5, r: 4, tip: true }));
-  return plot({
-    width: resolved.width,
-    height: resolved.height,
-    marginLeft: 64,
-    marginBottom: 56,
-    style: BASE_STYLE2,
-    x: { label: spec.xAxis.label, domain: spec.xAxis.domain, grid: false, ticks: 6 },
-    y: { label: spec.yAxis.label, domain: spec.yAxis.domain, grid: false, ticks: 6 },
-    color: { legend: showLegend, domain: groups2, range: resolved.colors },
-    marks: marks2
-  });
+  return renderHorizonLineChart(spec, options, "ppcr", "sensitivity");
+}
+function renderLiftV2(spec, options = {}) {
+  return renderHorizonLineChart(spec, options, "ppcr", "lift");
 }
 export {
   CalibrationSpecSchema,
@@ -18805,22 +19190,35 @@ export {
   DisplayRoleSchema,
   EvaluationSpecSchema,
   GainsV2SpecSchema,
+  LiftV2SpecSchema,
+  OperatingPointSchema,
+  PerformanceEvaluationContextSchema,
+  PerformanceMetricDefinitionSchema,
+  PerformanceMetricIdSchema,
+  PerformanceMetricValueSchema,
+  PerformanceTableRowSchema,
+  PerformanceTableSpecSchema,
   PrecisionRecallV2SpecSchema,
+  RTICHOKE_BROWSER_THEME,
+  RTICHOKE_COLORS3 as RTICHOKE_COLORS,
   ReferenceLineV2SpecSchema,
   RocSpecSchema,
   RocV2SpecSchema,
   RtichokeChartSpecSchema,
   RtichokeChartSpecV2Schema,
   SeriesSpecSchema,
+  assertPerformanceTableReferentialIntegrity,
   assertV2ReferentialIntegrity,
   calibrationSpecFromRtichokeRows,
   calibrationV2SpecFromRtichokeRows,
   renderCalibration,
   renderCalibrationV2,
   renderGainsV2,
+  renderLiftV2,
   renderPrecisionRecallV2,
   renderRoc,
   renderRocV2,
+  resolveV2RenderOptions,
   rocSpecFromRtichokePython,
   rocSpecFromRtichokeR,
   rocV2SpecFromRtichokePython,
