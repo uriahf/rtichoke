@@ -59,10 +59,13 @@ test_that("calibration v2 producer emits a complete canonical discrete spec", {
   expect_identical(spec$type, "calibration")
   expect_identical(spec$x, "predicted")
   expect_identical(spec$y, "observed")
-  expect_identical(spec$references, list(list(
-    type = "identity",
-    scope = "global"
-  )))
+  expect_identical(
+    spec$references,
+    list(list(
+      type = "identity",
+      scope = "global"
+    ))
+  )
   expect_true(all(vapply(spec$data, `[[`, "", "method") == "discrete"))
   expect_true(all(vapply(spec$data, function(x) {
     all(c("events", "total") %in% names(x))
