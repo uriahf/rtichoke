@@ -148,15 +148,20 @@ test_that("Treat All and Treat None geometry matches canonical IA semantics", {
     function(x) identical(x$benchmark, "treat_none"),
     spec$references
   )[[1]]
-  point <- Filter(function(x) identical(x$x, 0.25), none_ref$points)[[1]]
+  point_25 <- Filter(function(x) identical(x$x, 0.25), none_ref$points)[[1]]
+  point_50 <- Filter(function(x) identical(x$x, 0.5), none_ref$points)[[1]]
 
   expect_identical(all_ref$type, "horizontal")
   expect_identical(all_ref$scope, "global")
   expect_identical(all_ref$value, 0)
   expect_identical(none_ref$scope, "population")
   expect_equal(
-    point$y,
+    point_25$y,
     100 * (1 - 0.5 - 0.5 * (1 - 0.25) / 0.25)
+  )
+  expect_equal(
+    point_50$y,
+    100 * (1 - 0.5 - 0.5 * (1 - 0.5) / 0.5)
   )
 })
 
@@ -167,8 +172,8 @@ test_that("static cutoff equality remains predicted negative", {
     by = 0.5
   )
   row <- perf[perf$probability_threshold == 0.5, , drop = FALSE]
-  expect_identical(row$TP, 1L)
-  expect_identical(row$FN, 1L)
+  expect_equal(row$TP, 1)
+  expect_equal(row$FN, 1)
 })
 
 test_that("Interventions Avoided browser dispatch uses shared v0.7.0 renderer", {
