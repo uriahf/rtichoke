@@ -28,13 +28,11 @@ plots}
 
 \item{size}{the size of the curve}
 
-\item{renderer}{rendering backend. \code{"default"} preserves the existing
-\code{interactive} behavior; alternatives are \code{"ggplot2"}, \code{"plotly"}, and
-\code{"browser"}.}
+\item{renderer}{rendering backend. The default preserves the historical
+interactive behavior; alternatives are "ggplot2", "plotly", and "browser".}
 
-\item{evaluation_metadata}{explicit semantic evaluation metadata required
-when \code{renderer = "browser"}. It is supplied automatically by
-\code{create_roc_curve()}.}
+\item{evaluation_metadata}{explicit semantic evaluation metadata. Required for
+precomputed data when \code{renderer = "browser"}.}
 }
 \description{
 Plot a Precision Recall Curve
