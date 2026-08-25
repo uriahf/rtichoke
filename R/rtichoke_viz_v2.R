@@ -249,6 +249,11 @@ rtichoke_viz_precision_recall_v2_spec <- function(
   performance_data,
   evaluation_metadata
 ) {
+  valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
+    is.finite(as.numeric(performance_data$sensitivity)) &
+    is.finite(as.numeric(performance_data$PPV))
+  performance_data <- performance_data[valid_rows, , drop = FALSE]
+
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
