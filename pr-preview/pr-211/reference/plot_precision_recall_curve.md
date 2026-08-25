@@ -42,14 +42,13 @@ plot_precision_recall_curve(
 
 - renderer:
 
-  rendering backend. `"default"` preserves the existing `interactive`
-  behavior; alternatives are `"ggplot2"`, `"plotly"`, and `"browser"`.
+  rendering backend. The default preserves the historical interactive
+  behavior; alternatives are "ggplot2", "plotly", and "browser".
 
 - evaluation_metadata:
 
-  explicit semantic evaluation metadata required when
-  `renderer = "browser"`. It is supplied automatically by
-  [`create_roc_curve()`](https://uriahf.github.io/rtichoke/reference/create_roc_curve.md).
+  explicit semantic evaluation metadata. Required for precomputed data
+  when `renderer = "browser"`.
 
 ## Examples
 

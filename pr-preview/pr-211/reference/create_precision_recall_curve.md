@@ -58,8 +58,8 @@ create_precision_recall_curve(
 
 - renderer:
 
-  rendering backend. `"default"` preserves the existing `interactive`
-  behavior; alternatives are `"ggplot2"`, `"plotly"`, and `"browser"`.
+  rendering backend. The default preserves the historical interactive
+  behavior; alternatives are "ggplot2", "plotly", and "browser".
 
 ## Examples
 
