@@ -1,0 +1,43 @@
+name: Add verified viz archive once
+
+on:
+  push:
+    branches:
+      - feat/static-interventions-avoided-browser-v2
+    paths:
+      - '.github/workflows/add-viz-archive-once.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/static-interventions-avoided-browser-v2
+
+      - name: Download exact immutable archive and verify digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive=rtichoke-viz-0.7.0.tar.gz
+          expected=f09c30e231a8be39c2e89ba6ae39c90ed8cab67021213e17681a475066a9806e
+          curl --fail --location --retry 3 \
+            -o "inst/rtichoke-viz/${archive}" \
+            "https://github.com/uriahf/rtichoke_viz/releases/download/v0.7.0/${archive}"
+          actual="$(sha256sum "inst/rtichoke-viz/${archive}" | awk '{print $1}')"
+          test "${actual}" = "${expected}"
+
+      - name: Force-track archive and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/add-viz-archive-once.yaml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -f inst/rtichoke-viz/rtichoke-viz-0.7.0.tar.gz
+          git add -u .github/workflows/add-viz-archive-once.yaml
+          git commit -m 'Track immutable rtichoke_viz v0.7.0 archive'
+          git push origin HEAD:feat/static-interventions-avoided-browser-v2
