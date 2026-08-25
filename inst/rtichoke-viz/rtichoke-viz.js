@@ -3011,6 +3011,58 @@ var GainsV2SpecSchema = Type.Intersect([
   })
 ]);
 
+// src/spec/v2/interventions-avoided.ts
+var InterventionsAvoidedV2DatumSchema = Type.Object({
+  seriesId: Type.String(),
+  threshold: Type.Number({ minimum: 0, maximum: 1 }),
+  interventionsAvoided: Type.Number()
+});
+var InterventionsAvoidedV2EvaluationSchema = Type.Intersect([
+  EvaluationSpecSchema,
+  Type.Object({ id: Type.String({ pattern: "^evaluation-[1-9][0-9]*$" }) })
+]);
+var InterventionsAvoidedV2SeriesSchema = Type.Intersect([
+  SeriesSpecSchema,
+  Type.Object({
+    id: Type.String({ pattern: "^series-[1-9][0-9]*$" }),
+    evaluationId: Type.String({ pattern: "^evaluation-[1-9][0-9]*$" })
+  })
+]);
+var InterventionsAvoidedTreatAllReferenceSchema = Type.Object({
+  type: Type.Literal("horizontal"),
+  value: Type.Literal(0),
+  label: Type.Optional(Type.String()),
+  scope: Type.Literal("global"),
+  benchmark: Type.Literal("treat_all")
+});
+var InterventionsAvoidedTreatNoneReferenceSchema = Type.Object({
+  type: Type.Literal("path"),
+  points: Type.Array(
+    Type.Object({ x: Type.Number(), y: Type.Number() }),
+    { minItems: 2 }
+  ),
+  label: Type.Optional(Type.String()),
+  scope: Type.Literal("population"),
+  population: Type.String(),
+  benchmark: Type.Literal("treat_none")
+});
+var InterventionsAvoidedV2ReferenceSchema = Type.Union([
+  InterventionsAvoidedTreatAllReferenceSchema,
+  InterventionsAvoidedTreatNoneReferenceSchema
+]);
+var InterventionsAvoidedV2SpecSchema = Type.Intersect([
+  BaseChartV2SpecSchema,
+  Type.Object({
+    type: Type.Literal("interventions_avoided"),
+    evaluations: Type.Array(InterventionsAvoidedV2EvaluationSchema, { minItems: 1 }),
+    series: Type.Array(InterventionsAvoidedV2SeriesSchema, { minItems: 1 }),
+    data: Type.Array(InterventionsAvoidedV2DatumSchema),
+    x: Type.Literal("threshold"),
+    y: Type.Literal("interventionsAvoided"),
+    references: Type.Array(InterventionsAvoidedV2ReferenceSchema, { minItems: 2 })
+  })
+]);
+
 // src/spec/v2/lift.ts
 var LiftV2DatumSchema = Type.Object({
   seriesId: Type.String(),
@@ -3070,7 +3122,8 @@ var RtichokeChartSpecV2Schema = Type.Union(
     PrecisionRecallV2SpecSchema,
     GainsV2SpecSchema,
     LiftV2SpecSchema,
-    DecisionCurveV2SpecSchema
+    DecisionCurveV2SpecSchema,
+    InterventionsAvoidedV2SpecSchema
   ],
   {
     $id: "https://rtichoke.dev/schema/viz/2.0.json",
@@ -3240,6 +3293,42 @@ function assertV2ReferentialIntegrity(spec) {
     }
     if (treatAllPopulations.size !== populations.size || [...populations].some((population) => !treatAllPopulations.has(population))) {
       throw new Error("decision curve requires exactly one Treat All reference per population");
+    }
+  }
+  if (spec.type === "interventions_avoided") {
+    const interventionsAvoided = spec;
+    const references = interventionsAvoided.references;
+    interventionsAvoided.evaluations.forEach((evaluation, index2) => {
+      const expectedId = `evaluation-${index2 + 1}`;
+      if (evaluation.id !== expectedId) throw new Error(`interventions avoided evaluation ids must be ordinal: expected ${expectedId}`);
+      const expectedDisplay = evaluation.model ?? evaluation.population;
+      const expectedRole = evaluation.model === void 0 ? "population" : "model";
+      const series = interventionsAvoided.series[index2];
+      if (!series || series.id !== `series-${index2 + 1}` || series.evaluationId !== evaluation.id) {
+        throw new Error("interventions avoided series must map one-to-one in evaluation order");
+      }
+      if (series.display.label !== expectedDisplay || series.display.group !== expectedDisplay || series.display.role !== expectedRole) {
+        throw new Error("interventions avoided display must follow evaluation semantics");
+      }
+    });
+    if (interventionsAvoided.series.length !== interventionsAvoided.evaluations.length) throw new Error("interventions avoided requires exactly one series per evaluation");
+    const treatAll = references.filter(
+      (reference) => "benchmark" in reference && reference.benchmark === "treat_all"
+    );
+    if (treatAll.length !== 1) throw new Error("interventions avoided requires exactly one Treat All reference");
+    if (treatAll[0].scope !== "global" || treatAll[0].type !== "horizontal" || treatAll[0].value !== 0) {
+      throw new Error("interventions avoided Treat All must be the global zero reference");
+    }
+    const treatNone = references.filter(
+      (reference) => "benchmark" in reference && reference.benchmark === "treat_none"
+    );
+    const treatNonePopulations = /* @__PURE__ */ new Set();
+    for (const reference of treatNone) {
+      if (treatNonePopulations.has(reference.population)) throw new Error(`duplicate Treat None population: ${reference.population}`);
+      treatNonePopulations.add(reference.population);
+    }
+    if (treatNonePopulations.size !== populations.size || [...populations].some((population) => !treatNonePopulations.has(population))) {
+      throw new Error("interventions avoided requires exactly one Treat None reference per population");
     }
   }
 }
@@ -19414,6 +19503,56 @@ Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
   return plot2;
 }
 
+// src/render/interventions-avoided.ts
+function renderInterventionsAvoidedV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
+  const resolved = resolveV2RenderOptions(groups2, options);
+  const { theme } = resolved;
+  const displayBySeries2 = new Map(spec.series.map((series) => [series.id, series.display]));
+  const labelByGroup = new Map(spec.series.map((series) => [series.display.group, series.display.label]));
+  const data = spec.data.map((datum2) => ({
+    ...datum2,
+    group: displayBySeries2.get(datum2.seriesId).group,
+    label: displayBySeries2.get(datum2.seriesId).label,
+    title: `Series: ${displayBySeries2.get(datum2.seriesId).label}
+Threshold: ${datum2.threshold.toFixed(theme.tip.digits)}
+Interventions Avoided: ${datum2.interventionsAvoided.toFixed(theme.tip.digits)}`
+  }));
+  const referenceStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const marks2 = [];
+  for (const reference of spec.references) {
+    if (reference.benchmark === "treat_all") {
+      marks2.push(ruleY([0], { ...referenceStyle, title: reference.label ?? "Treat All" }));
+    } else {
+      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: reference.label ?? `Treat None \u2014 ${reference.population}` }));
+    }
+  }
+  marks2.push(
+    line(data, { x: "threshold", y: "interventionsAvoided", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0, title: "title", tip: true }),
+    frame2({ stroke: theme.frame.color, strokeWidth: theme.frame.width })
+  );
+  const axis2 = (label, domain) => ({ label, domain, grid: false, line: true, ticks: theme.axis.ticks, tickSize: theme.axis.tickSize, tickPadding: theme.axis.tickPadding, tickFormat: theme.axis.numberFormat });
+  const plot2 = plot({
+    width: theme.width,
+    height: theme.height,
+    marginTop: theme.margins.top,
+    marginRight: theme.margins.right,
+    marginBottom: theme.margins.bottom,
+    marginLeft: theme.margins.left,
+    style: { background: theme.background, color: theme.axis.color, fontFamily: theme.typography.fontFamily, fontSize: `${theme.typography.fontSize}px` },
+    color: { legend: resolved.showLegend, domain: resolved.groups, range: resolved.colors, tickFormat: (group2) => labelByGroup.get(group2) ?? group2 },
+    x: axis2(spec.xAxis.label, spec.xAxis.domain),
+    y: axis2(spec.yAxis.label, spec.yAxis.domain),
+    marks: marks2
+  });
+  for (const label of plot2.querySelectorAll('[aria-label$="axis label"] text')) {
+    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
+    label.style.fontWeight = String(theme.typography.axisTitleWeight);
+  }
+  return plot2;
+}
+
 // src/render/performance-table.ts
 var MISSING = "\u2014";
 function cell(document2, text2, className) {
@@ -22874,6 +23013,9 @@ function renderReport(spec) {
       case "decision_curve":
         content.append(renderDecisionCurveV2(component.spec));
         break;
+      case "interventions_avoided":
+        content.append(renderInterventionsAvoidedV2(component.spec));
+        break;
     }
     container.append(content);
     root2.append(container);
@@ -22958,6 +23100,13 @@ export {
   DisplayRoleSchema,
   EvaluationSpecSchema,
   GainsV2SpecSchema,
+  InterventionsAvoidedTreatAllReferenceSchema,
+  InterventionsAvoidedTreatNoneReferenceSchema,
+  InterventionsAvoidedV2DatumSchema,
+  InterventionsAvoidedV2EvaluationSchema,
+  InterventionsAvoidedV2ReferenceSchema,
+  InterventionsAvoidedV2SeriesSchema,
+  InterventionsAvoidedV2SpecSchema,
   LiftV2SpecSchema,
   OperatingPointSchema,
   PerformanceEvaluationContextSchema,
@@ -22988,6 +23137,7 @@ export {
   renderCalibrationV2,
   renderDecisionCurveV2,
   renderGainsV2,
+  renderInterventionsAvoidedV2,
   renderLiftV2,
   renderPerformanceTable,
   renderPrecisionRecallV2,

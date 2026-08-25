@@ -1,0 +1,103 @@
+# Static standalone Interventions Avoided public-browser acceptance.
+name: Interventions Avoided browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/decision.R'
+      - 'R/helpers.R'
+      - 'R/rtichoke_viz_v2.R'
+      - 'inst/**'
+      - 'tests/testthat/test-interventions-avoided-browser-v2.R'
+      - '.github/workflows/interventions-avoided-browser-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  interventions-avoided-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Generate real public Interventions Avoided browser artifact
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+          widget <- create_decision_curve(
+            probs = list(
+              "Population A" = c(0.05, 0.2, 0.7, 0.95),
+              "Population B" = c(0.1, 0.3, 0.6, 0.9)
+            ),
+            reals = list(
+              "Population A" = c(0, 0, 1, 1),
+              "Population B" = c(0, 0, 0, 1)
+            ),
+            by = 0.25,
+            type = "interventions avoided",
+            renderer = "browser"
+          )
+          dir.create("browser-acceptance", showWarnings = FALSE)
+          htmltools::save_html(
+            widget,
+            file = "browser-acceptance/interventions-avoided.html",
+            libdir = "lib"
+          )
+
+      - name: Execute browser artifact in real Chrome
+        run: |
+          python3 -m http.server 8768 --directory browser-acceptance > /tmp/rtichoke-ia-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
+          stderr="/tmp/interventions-avoided-chrome-stderr.log"
+          dom="/tmp/interventions-avoided-dom.html"
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --dump-dom \
+            "http://127.0.0.1:8768/interventions-avoided.html" > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError' "$stderr"
+          grep -q '"type":"interventions_avoided"' "$dom"
+          grep -q '"series-2"' "$dom"
+          test "$(grep -o '"benchmark":"treat_all"' "$dom" | wc -l)" -eq 1
+          test "$(grep -o '"benchmark":"treat_none"' "$dom" | wc -l)" -eq 2
+          grep -q 'Interventions Avoided (per 100)' "$dom"
+          grep -q 'Treat All' "$dom"
+          grep -q 'Treat None' "$dom"
+          grep -q '<svg' "$dom"
+          grep -q 'aria-label="rule"' "$dom"
+          grep -q 'aria-label="line"' "$dom"

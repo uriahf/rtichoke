@@ -902,6 +902,22 @@ create_reference_group_color_vector <- function(
   reference_group_color_vector
 }
 
+add_static_interventions_avoided_metric <- function(performance_data) {
+  performance_data |>
+    dplyr::mutate(
+      N = TP + TN + FP + FN,
+      prevalence = (TP + FN) / N,
+      NB_intervention_all = prevalence -
+        (1 - prevalence) *
+          (probability_threshold) /
+          (1 - probability_threshold),
+      NB_interventions_avoided = 100 *
+        (NB - NB_intervention_all) *
+        ((1 - probability_threshold) / probability_threshold)
+    )
+}
+
+
 prepare_performance_data_for_curve <- function(
   performance_data,
   x_performance_metric,
@@ -914,18 +930,7 @@ prepare_performance_data_for_curve <- function(
   performance_data |>
     (\(data) {
       if (y_performance_metric == "NB_interventions_avoided") {
-        dplyr::mutate(
-          data,
-          N = TP + TN + FP + FN,
-          prevalence = (TP + FN) / N,
-          NB_intervention_all = prevalence -
-            (1 - prevalence) *
-              (probability_threshold) /
-              (1 - probability_threshold),
-          NB_interventions_avoided = 100 *
-            (NB - NB_intervention_all) *
-            ((1 - probability_threshold) / probability_threshold)
-        )
+        add_static_interventions_avoided_metric(data)
       } else {
         data
       }
