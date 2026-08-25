@@ -1,0 +1,91 @@
+name: Vendor rtichoke_viz 0.7.0 once
+
+on:
+  push:
+    branches:
+      - feat/static-interventions-avoided-browser-v2
+    paths:
+      - '.github/workflows/vendor-rtichoke-viz-0.7.0.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/static-interventions-avoided-browser-v2
+
+      - name: Download and independently verify immutable release
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=0.7.0
+          tag=v${version}
+          commit=b3564d2824ec1791f791fda406c99b3d7865a68f
+          archive=rtichoke-viz-${version}.tar.gz
+          expected=f09c30e231a8be39c2e89ba6ae39c90ed8cab67021213e17681a475066a9806e
+          base=https://github.com/uriahf/rtichoke_viz/releases/download/${tag}
+
+          rm -rf /tmp/rtichoke-viz-release
+          mkdir -p /tmp/rtichoke-viz-release
+          cd /tmp/rtichoke-viz-release
+          curl --fail --location --retry 3 -o "${archive}" "${base}/${archive}"
+          curl --fail --location --retry 3 -o "${archive}.sha256" "${base}/${archive}.sha256"
+
+          sha256sum -c "${archive}.sha256"
+          actual="$(sha256sum "${archive}" | awk '{print $1}')"
+          test "${actual}" = "${expected}"
+
+          tar -xzf "${archive}"
+          root="rtichoke-viz-${version}"
+          test -f "${root}/MANIFEST"
+          grep -Fxq "version=${version}" "${root}/MANIFEST"
+          grep -Fxq "commit=${commit}" "${root}/MANIFEST"
+          test -f "${root}/rtichoke-viz.js"
+          test -f "${root}/rtichoke-viz.css"
+          test -f "${root}/rtichoke-viz.schema.json"
+          test -f "${root}/rtichoke-viz-v2.schema.json"
+          grep -Fq 'InterventionsAvoidedV2SpecSchema' "${root}/rtichoke-viz.js"
+          grep -Fq 'renderInterventionsAvoidedV2' "${root}/rtichoke-viz.js"
+          grep -Fq 'renderDecisionCurveV2' "${root}/rtichoke-viz.js"
+
+      - name: Vendor exact verified bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=0.7.0
+          commit=b3564d2824ec1791f791fda406c99b3d7865a68f
+          archive=rtichoke-viz-${version}.tar.gz
+          sha=f09c30e231a8be39c2e89ba6ae39c90ed8cab67021213e17681a475066a9806e
+          source=/tmp/rtichoke-viz-release
+          root=${source}/rtichoke-viz-${version}
+          target=inst/rtichoke-viz
+
+          rm -f "${target}"/rtichoke-viz-*.tar.gz
+          cp "${source}/${archive}" "${target}/${archive}"
+          cp "${root}/MANIFEST" "${target}/MANIFEST"
+          cp "${root}/rtichoke-viz.js" "${target}/rtichoke-viz.js"
+          cp "${root}/rtichoke-viz.css" "${target}/rtichoke-viz.css"
+          cp "${root}/rtichoke-viz.schema.json" "${target}/rtichoke-viz.schema.json"
+          cp "${root}/rtichoke-viz-v2.schema.json" "${target}/rtichoke-viz-v2.schema.json"
+          cat > "${target}/PROVENANCE" <<EOF
+          release=https://github.com/uriahf/rtichoke_viz/releases/tag/v0.7.0
+          version=0.7.0
+          commit=${commit}
+          archive=${archive}
+          sha256=${sha}
+          EOF
+
+      - name: Commit vendored release and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/vendor-rtichoke-viz-0.7.0.yaml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add inst/rtichoke-viz .github/workflows/vendor-rtichoke-viz-0.7.0.yaml
+          git commit -m 'Vendor immutable rtichoke_viz v0.7.0'
+          git push origin HEAD:feat/static-interventions-avoided-browser-v2
