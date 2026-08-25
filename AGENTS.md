@@ -49,3 +49,23 @@ The final handoff should include:
 - any remaining caveats or blockers.
 
 Do not ask the user to manually check whether CI passed.
+
+## Vendored dependency upgrades
+
+When upgrading a vendored dependency:
+
+1.  Search the entire repository for the previous version, tag, source
+    commit, archive name, checksum, and dependency path.
+2.  Classify each match before changing it; some consumers may
+    intentionally remain on an older version for compatibility.
+3.  Keep the archive, extracted payload, `MANIFEST`, `PROVENANCE`,
+    verification script, integrity tests, runtime dependency version,
+    and workflow pins synchronized in one change.
+4.  Run the full package test and check suite in addition to focused
+    feature tests.
+5.  Inspect failing CI logs and artifacts before changing code or
+    weakening a test. A browser timeout may be transient; corroborate it
+    with dedicated browser acceptance and rerun the failed job when
+    appropriate.
+6.  Prefer one verified implementation commit over temporary bootstrap
+    or “trigger CI” commits.

@@ -71,9 +71,20 @@
 <li>any remaining caveats or blockers.</li>
 </ul><p>Do not ask the user to manually check whether CI passed.</p>
 </div>
+<div class="section level2">
+<h2 id="vendored-dependency-upgrades">Vendored dependency upgrades<a class="anchor" aria-label="anchor" href="#vendored-dependency-upgrades"></a></h2>
+<p>When upgrading a vendored dependency:</p>
+<ol style="list-style-type: decimal"><li>Search the entire repository for the previous version, tag, source commit, archive name, checksum, and dependency path.</li>
+<li>Classify each match before changing it; some consumers may intentionally remain on an older version for compatibility.</li>
+<li>Keep the archive, extracted payload, <code>MANIFEST</code>, <code>PROVENANCE</code>, verification script, integrity tests, runtime dependency version, and workflow pins synchronized in one change.</li>
+<li>Run the full package test and check suite in addition to focused feature tests.</li>
+<li>Inspect failing CI logs and artifacts before changing code or weakening a test. A browser timeout may be transient; corroborate it with dedicated browser acceptance and rerun the failed job when appropriate.</li>
+<li>Prefer one verified implementation commit over temporary bootstrap or “trigger CI” commits.</li>
+</ol></div>
 </div>
 
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
