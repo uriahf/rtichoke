@@ -1,3 +1,4 @@
+# Static standalone Interventions Avoided consumer-adoption coverage.
 ia_v2_fixture <- function() {
   probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
   reals <- list("Population A" = c(0, 0, 1, 1))
