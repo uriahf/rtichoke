@@ -14,7 +14,9 @@ plot_decision_curve(
   size = NULL,
   type = "conventional",
   min_p_threshold = 0,
-  max_p_threshold = 1
+  max_p_threshold = 1,
+  renderer = "default",
+  evaluation_metadata = NULL
 )
 }
 \arguments{
@@ -38,6 +40,12 @@ displayed}
 
 \item{max_p_threshold}{The maximum Probability Threshold value to be
 displayed}
+
+\item{renderer}{rendering backend. \code{"default"} preserves the existing
+\code{interactive} behavior; alternatives are \code{"ggplot2"}, \code{"plotly"}, and
+\code{"browser"}.}
+
+\item{evaluation_metadata}{semantic metadata required for the precomputed browser path.}
 }
 \description{
 Plot a Precision decision Curve

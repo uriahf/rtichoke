@@ -1,0 +1,94 @@
+name: Decision Curve browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/decision.R'
+      - 'R/rtichoke_viz_v2.R'
+      - 'inst/**'
+      - 'tests/testthat/test-decision-browser-v2.R'
+      - '.github/workflows/decision-curve-browser-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  decision-curve-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Generate real public Decision Curve browser artifact
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+          widget <- create_decision_curve(
+            probs = list(
+              "Model A" = c(0.05, 0.2, 0.7, 0.95),
+              "Model B" = c(0.1, 0.3, 0.6, 0.9)
+            ),
+            reals = list("Population A" = c(0, 0, 1, 1)),
+            by = 0.25,
+            renderer = "browser"
+          )
+          dir.create("browser-acceptance", showWarnings = FALSE)
+          htmltools::save_html(
+            widget,
+            file = "browser-acceptance/decision-curve.html",
+            libdir = "lib"
+          )
+
+      - name: Execute browser artifact in real Chrome
+        run: |
+          python3 -m http.server 8767 --directory browser-acceptance > /tmp/rtichoke-decision-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
+          stderr="/tmp/decision-curve-chrome-stderr.log"
+          dom="/tmp/decision-curve-dom.html"
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --dump-dom \
+            "http://127.0.0.1:8767/decision-curve.html" > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError' "$stderr"
+          grep -q '"type":"decision_curve"' "$dom"
+          grep -q '"series-2"' "$dom"
+          grep -q '"benchmark":"treat_none"' "$dom"
+          test "$(grep -o '"benchmark":"treat_all"' "$dom" | wc -l)" -eq 1
+          grep -q '<svg' "$dom"
+          grep -q 'aria-label="rule"' "$dom"
+          grep -q 'aria-label="line"' "$dom"

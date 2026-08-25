@@ -45,7 +45,8 @@ render_rtichoke_viz_browser <- function(spec) {
     roc = "renderRocV2",
     precision_recall = "renderPrecisionRecallV2",
     gains = "renderGainsV2",
-    lift = "renderLiftV2"
+    lift = "renderLiftV2",
+    decision_curve = "renderDecisionCurveV2"
   )
   renderer <- if (spec$type %in% names(renderers)) {
     unname(renderers[[spec$type]])
@@ -65,7 +66,7 @@ render_rtichoke_viz_browser <- function(spec) {
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.5.0",
+    version = "0.6.0",
     src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
@@ -73,7 +74,7 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.5.0/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-0.6.0/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -283,6 +284,74 @@ rtichoke_viz_precision_recall_v2_spec <- function(
   spec
 }
 
+#' Build a canonical rtichoke_viz v2 conventional Decision Curve specification
+#' @inheritParams rtichoke_viz_roc_v2_spec
+#' @param min_p_threshold Minimum displayed probability threshold.
+#' @param max_p_threshold Maximum displayed probability threshold.
+#' @return A canonical Decision Curve v2 specification.
+#' @noRd
+rtichoke_viz_decision_curve_v2_spec <- function(
+  performance_data,
+  evaluation_metadata,
+  min_p_threshold = 0,
+  max_p_threshold = 1
+) {
+  valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
+    is.finite(as.numeric(performance_data$NB))
+  performance_data <- performance_data[valid_rows, , drop = FALSE]
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "decision_curve"
+  )
+  spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    populations
+  )
+  compatibility_group <- roc_v2_compatibility_group(
+    performance_data,
+    evaluation_metadata
+  )
+  treat_all <- lapply(populations, function(population) {
+    groups <- as.character(evaluation_metadata$evaluation[
+      evaluation_metadata$population == population
+    ])
+    thresholds <- unique(as.numeric(performance_data$probability_threshold[
+      compatibility_group %in% groups
+    ]))
+    p <- as.numeric(prevalence[[population]])
+    list(
+      type = "path",
+      points = lapply(thresholds, function(threshold) {
+        list(x = threshold, y = p - (1 - p) * threshold / (1 - threshold))
+      }),
+      label = paste0("Treat All \u2014 ", population),
+      scope = "population",
+      population = population,
+      benchmark = "treat_all"
+    )
+  })
+  spec$references <- c(
+    list(list(
+      type = "horizontal",
+      value = 0,
+      label = "Treat None",
+      scope = "global",
+      benchmark = "treat_none"
+    )),
+    treat_all
+  )
+  spec
+}
+
 v2_population_prevalence <- function(
   performance_data,
   evaluation_metadata,
@@ -335,7 +404,7 @@ gains_v2_population_prevalence <- v2_population_prevalence
 rtichoke_viz_curve_v2_spec <- function(
   performance_data,
   evaluation_metadata,
-  type = c("roc", "precision_recall", "gains", "lift")
+  type = c("roc", "precision_recall", "gains", "lift", "decision_curve")
 ) {
   type <- match.arg(type)
   required_columns <- switch(
@@ -343,7 +412,8 @@ rtichoke_viz_curve_v2_spec <- function(
     roc = c("probability_threshold", "sensitivity", "specificity"),
     precision_recall = c("probability_threshold", "sensitivity", "PPV"),
     gains = c("probability_threshold", "ppcr", "sensitivity"),
-    lift = c("probability_threshold", "ppcr", "lift")
+    lift = c("probability_threshold", "ppcr", "lift"),
+    decision_curve = c("probability_threshold", "NB")
   )
   missing_columns <- setdiff(required_columns, names(performance_data))
   if (length(missing_columns) > 0L) {
@@ -444,22 +514,25 @@ rtichoke_viz_curve_v2_spec <- function(
 
   data <- lapply(seq_len(nrow(performance_data)), function(i) {
     group <- compatibility_group[[i]]
-    datum <- list(
-      seriesId = unname(series_ids[[group]]),
-      cutoff = as.numeric(performance_data$probability_threshold[[i]])
-    )
-    if (type == "roc") {
-      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
-      datum$specificity <- as.numeric(performance_data$specificity[[i]])
-    } else if (type == "precision_recall") {
-      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
-      datum$ppv <- as.numeric(performance_data$PPV[[i]])
-    } else if (type == "gains") {
-      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
-      datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
-    } else if (type == "lift") {
-      datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
-      datum$lift <- as.numeric(performance_data$lift[[i]])
+    datum <- list(seriesId = unname(series_ids[[group]]))
+    if (type == "decision_curve") {
+      datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
+      datum$netBenefit <- as.numeric(performance_data$NB[[i]])
+    } else {
+      datum$cutoff <- as.numeric(performance_data$probability_threshold[[i]])
+      if (type == "roc") {
+        datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
+        datum$specificity <- as.numeric(performance_data$specificity[[i]])
+      } else if (type == "precision_recall") {
+        datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
+        datum$ppv <- as.numeric(performance_data$PPV[[i]])
+      } else if (type == "gains") {
+        datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
+        datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+      } else if (type == "lift") {
+        datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+        datum$lift <- as.numeric(performance_data$lift[[i]])
+      }
     }
     datum
   })
@@ -505,6 +578,21 @@ rtichoke_viz_curve_v2_spec <- function(
       y = "sensitivity",
       xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
       yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+      references = list()
+    ))
+  }
+
+  if (type == "decision_curve") {
+    return(list(
+      schemaVersion = "2.0",
+      type = "decision_curve",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "threshold",
+      y = "netBenefit",
+      xAxis = list(label = "Probability threshold", domain = c(0, 1)),
+      yAxis = list(label = "Net benefit"),
       references = list()
     ))
   }
