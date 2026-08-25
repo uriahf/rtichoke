@@ -63,9 +63,13 @@ jobs:
             libdir = "lib"
           )
 
-      - name: Execute direct file artifact in real Chrome
+      - name: Execute browser artifact in real Chrome
         run: |
-          artifact="$(pwd)/browser-acceptance/precision-recall.html"
+          python3 -m http.server 8766 --directory browser-acceptance > /tmp/rtichoke-pr-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
           stderr="/tmp/precision-recall-chrome-stderr.log"
           dom="/tmp/precision-recall-dom.html"
 
@@ -77,7 +81,7 @@ jobs:
             --disable-dev-shm-usage \
             --virtual-time-budget=5000 \
             --dump-dom \
-            "file://${artifact}" > "$dom" 2> "$stderr"
+            "http://127.0.0.1:8766/precision-recall.html" > "$dom" 2> "$stderr"
           status=$?
           set -e
 
