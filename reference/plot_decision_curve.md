@@ -15,7 +15,9 @@ plot_decision_curve(
   size = NULL,
   type = "conventional",
   min_p_threshold = 0,
-  max_p_threshold = 1
+  max_p_threshold = 1,
+  renderer = "default",
+  evaluation_metadata = NULL
 )
 ```
 
@@ -54,6 +56,15 @@ plot_decision_curve(
 - max_p_threshold:
 
   The maximum Probability Threshold value to be displayed
+
+- renderer:
+
+  rendering backend. `"default"` preserves the existing `interactive`
+  behavior; alternatives are `"ggplot2"`, `"plotly"`, and `"browser"`.
+
+- evaluation_metadata:
+
+  semantic metadata required for the precomputed browser path.
 
 ## Examples
 
