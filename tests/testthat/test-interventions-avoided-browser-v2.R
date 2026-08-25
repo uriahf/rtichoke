@@ -44,7 +44,8 @@ test_that("Interventions Avoided production metric keeps established formula", {
     perf$probability_threshold > 0
   expected <- with(
     perf[valid, ],
-    100 * (TN / N - FN / N * (1 - probability_threshold) / probability_threshold)
+    100 *
+      (TN / N - FN / N * (1 - probability_threshold) / probability_threshold)
   )
   expect_equal(perf$NB_interventions_avoided[valid], expected)
 })
@@ -91,7 +92,10 @@ test_that("distinct populations keep population-owned Treat None references", {
   perf <- prepare_performance_data(probs, reals, by = 0.25) |>
     rtichoke:::add_static_interventions_avoided_metric()
   spec <- ia_v2_spec(perf, rtichoke:::build_evaluation_metadata(probs, reals))
-  refs <- Filter(function(x) identical(x$benchmark, "treat_none"), spec$references)
+  refs <- Filter(
+    function(x) identical(x$benchmark, "treat_none"),
+    spec$references
+  )
 
   expect_length(refs, 2)
   expect_identical(
@@ -113,12 +117,19 @@ test_that("equal-prevalence populations remain distinct Treat None owners", {
   perf <- prepare_performance_data(probs, reals, by = 0.25) |>
     rtichoke:::add_static_interventions_avoided_metric()
   spec <- ia_v2_spec(perf, rtichoke:::build_evaluation_metadata(probs, reals))
-  refs <- Filter(function(x) identical(x$benchmark, "treat_none"), spec$references)
+  refs <- Filter(
+    function(x) identical(x$benchmark, "treat_none"),
+    spec$references
+  )
 
   expect_length(refs, 2)
   expect_identical(refs[[1]]$points, refs[[2]]$points)
   expect_false(identical(refs[[1]]$population, refs[[2]]$population))
-  expect_true(all(vapply(spec$evaluations, function(x) is.null(x$model), logical(1))))
+  expect_true(all(vapply(
+    spec$evaluations,
+    function(x) is.null(x$model),
+    logical(1)
+  )))
   expect_identical(
     vapply(spec$series, function(x) x$display$role, character(1)),
     c("population", "population")
@@ -129,10 +140,12 @@ test_that("Treat All and Treat None geometry matches canonical IA semantics", {
   dat <- ia_v2_fixture()
   spec <- ia_v2_spec(dat$ia_performance_data, dat$metadata)
   all_ref <- Filter(
-    function(x) identical(x$benchmark, "treat_all"), spec$references
+    function(x) identical(x$benchmark, "treat_all"),
+    spec$references
   )[[1]]
   none_ref <- Filter(
-    function(x) identical(x$benchmark, "treat_none"), spec$references
+    function(x) identical(x$benchmark, "treat_none"),
+    spec$references
   )[[1]]
   point <- Filter(function(x) identical(x$x, 0.25), none_ref$points)[[1]]
 

@@ -487,7 +487,11 @@ rtichoke_viz_curve_v2_spec <- function(
   performance_data,
   evaluation_metadata,
   type = c(
-    "roc", "precision_recall", "gains", "lift", "decision_curve",
+    "roc",
+    "precision_recall",
+    "gains",
+    "lift",
+    "decision_curve",
     "interventions_avoided"
   )
 ) {
@@ -500,7 +504,8 @@ rtichoke_viz_curve_v2_spec <- function(
     lift = c("probability_threshold", "ppcr", "lift"),
     decision_curve = c("probability_threshold", "NB"),
     interventions_avoided = c(
-      "probability_threshold", "NB_interventions_avoided"
+      "probability_threshold",
+      "NB_interventions_avoided"
     )
   )
   missing_columns <- setdiff(required_columns, names(performance_data))
