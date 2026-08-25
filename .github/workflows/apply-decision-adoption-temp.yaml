@@ -19,6 +19,11 @@ jobs:
           ref: feat/static-decision-curve-browser-v2
       - name: Apply focused patch
         run: python3 .github/apply_decision_adoption.py
+      - name: Keep workflow YAML for API-managed update
+        run: |
+          git restore .github/workflows/pkgdown-preview.yaml
+          git restore .github/workflows/quarto-browser-summary-acceptance.yaml
+          git restore .github/workflows/apply-decision-adoption-temp.yaml
       - name: Commit focused adoption
         run: |
           git config user.name "github-actions[bot]"
