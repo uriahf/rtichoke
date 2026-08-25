@@ -1,0 +1,35 @@
+name: Add vendored v0.6.0 archive temporary
+
+on:
+  push:
+    branches:
+      - feat/static-decision-curve-browser-v2
+    paths:
+      - '.github/workflows/add-viz-archive-temp.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/static-decision-curve-browser-v2
+      - name: Download and verify exact release archive
+        run: |
+          archive="rtichoke-viz-0.6.0.tar.gz"
+          expected="625613c7f692ff50b7757a27bb6caf84e311971bde92593141393dbd897af3a2"
+          curl -fL --retry 3 \
+            -o "inst/rtichoke-viz/${archive}" \
+            "https://github.com/uriahf/rtichoke_viz/releases/download/v0.6.0/${archive}"
+          actual="$(sha256sum "inst/rtichoke-viz/${archive}" | awk '{print $1}')"
+          test "${actual}" = "${expected}"
+      - name: Commit ignored immutable archive explicitly
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f inst/rtichoke-viz/rtichoke-viz-0.6.0.tar.gz
+          git commit -m "Track immutable rtichoke_viz v0.6.0 archive"
+          git push origin HEAD:feat/static-decision-curve-browser-v2
