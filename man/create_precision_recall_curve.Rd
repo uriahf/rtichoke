@@ -38,9 +38,8 @@ plots}
 
 \item{size}{the size of the curve}
 
-\item{renderer}{rendering backend. \code{"default"} preserves the existing
-\code{interactive} behavior; alternatives are \code{"ggplot2"}, \code{"plotly"}, and
-\code{"browser"}.}
+\item{renderer}{rendering backend. The default preserves the historical
+interactive behavior; alternatives are "ggplot2", "plotly", and "browser".}
 }
 \description{
 Create a Precision Recall Curve
