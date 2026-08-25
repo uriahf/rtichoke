@@ -333,7 +333,7 @@ rtichoke_viz_decision_curve_v2_spec <- function(
       points = lapply(thresholds, function(threshold) {
         list(x = threshold, y = p - (1 - p) * threshold / (1 - threshold))
       }),
-      label = paste0("Treat All — ", population),
+      label = paste0("Treat All \u2014 ", population),
       scope = "population",
       population = population,
       benchmark = "treat_all"
