@@ -13,7 +13,6 @@
 #' @param max_p_threshold The maximum Probability Threshold value to be
 #' displayed
 #' @param renderer rendering backend; `"default"` preserves `interactive`, with `"ggplot2"`, `"plotly"`, or `"browser"` alternatives.
-#' @param evaluation_metadata semantic metadata required for the precomputed browser path.
 #'
 #' @export
 #'
@@ -191,6 +190,7 @@ create_decision_curve <- function(
 #'
 #' @inheritParams plot_roc_curve
 #' @inheritParams create_decision_curve
+#' @param evaluation_metadata semantic metadata required for the precomputed browser path.
 #'
 #' @examples
 #' \dontrun{
