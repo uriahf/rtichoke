@@ -41,9 +41,11 @@ displayed}
 \item{max_p_threshold}{The maximum Probability Threshold value to be
 displayed}
 
-\item{renderer}{rendering backend; \code{"default"} preserves existing behavior, with \code{"ggplot2"}, \code{"plotly"}, and \code{"browser"} alternatives.}
+\item{renderer}{rendering backend. \code{"default"} preserves the existing
+\code{interactive} behavior; alternatives are \code{"ggplot2"}, \code{"plotly"}, and
+\code{"browser"}.}
 
-\item{evaluation_metadata}{semantic evaluation metadata required when \code{renderer = "browser"}.}
+\item{evaluation_metadata}{semantic metadata required for the precomputed browser path.}
 }
 \description{
 Plot a Precision decision Curve

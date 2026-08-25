@@ -51,7 +51,7 @@ displayed}
 \item{max_p_threshold}{The maximum Probability Threshold value to be
 displayed}
 
-\item{renderer}{rendering backend; \code{"default"} preserves existing behavior, with \code{"ggplot2"}, \code{"plotly"}, and \code{"browser"} alternatives.}
+\item{renderer}{rendering backend; \code{"default"} preserves \code{interactive}, with \code{"ggplot2"}, \code{"plotly"}, or \code{"browser"} alternatives.}
 }
 \description{
 Create a decision Curve
