@@ -1,0 +1,676 @@
+name: Implement static IA browser adoption once
+
+on:
+  push:
+    branches:
+      - feat/static-interventions-avoided-browser-v2
+    paths:
+      - '.github/workflows/implement-static-ia-browser-once.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/static-interventions-avoided-browser-v2
+
+      - name: Apply focused consumer adoption
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one match, found {count}")
+              p.write_text(text.replace(old, new, 1))
+
+          helpers = Path("R/helpers.R")
+          h = helpers.read_text()
+          marker = "prepare_performance_data_for_curve <- function(\n"
+          helper = '''add_static_interventions_avoided_metric <- function(performance_data) {
+            performance_data |>
+              dplyr::mutate(
+                N = TP + TN + FP + FN,
+                prevalence = (TP + FN) / N,
+                NB_intervention_all = prevalence -
+                  (1 - prevalence) *
+                    (probability_threshold) /
+                    (1 - probability_threshold),
+                NB_interventions_avoided = 100 *
+                  (NB - NB_intervention_all) *
+                  ((1 - probability_threshold) / probability_threshold)
+              )
+          }
+
+
+          '''
+          if h.count(marker) != 1:
+              raise SystemExit("helpers.R: prepare_performance_data_for_curve marker mismatch")
+          h = h.replace(marker, helper + marker, 1)
+          old_calc = '''      if (y_performance_metric == "NB_interventions_avoided") {
+                dplyr::mutate(
+                  data,
+                  N = TP + TN + FP + FN,
+                  prevalence = (TP + FN) / N,
+                  NB_intervention_all = prevalence -
+                    (1 - prevalence) *
+                      (probability_threshold) /
+                      (1 - probability_threshold),
+                  NB_interventions_avoided = 100 *
+                    (NB - NB_intervention_all) *
+                    ((1 - probability_threshold) / probability_threshold)
+                )
+              } else {
+          '''
+          new_calc = '''      if (y_performance_metric == "NB_interventions_avoided") {
+                add_static_interventions_avoided_metric(data)
+              } else {
+          '''
+          if h.count(old_calc) != 1:
+              raise SystemExit(f"helpers.R: IA calculation block mismatch ({h.count(old_calc)})")
+          helpers.write_text(h.replace(old_calc, new_calc, 1))
+
+          viz = Path("R/rtichoke_viz_v2.R")
+          v = viz.read_text()
+          old_renderers = '''    gains = "renderGainsV2",
+              lift = "renderLiftV2",
+              decision_curve = "renderDecisionCurveV2"
+          '''
+          new_renderers = '''    gains = "renderGainsV2",
+              lift = "renderLiftV2",
+              decision_curve = "renderDecisionCurveV2",
+              interventions_avoided = "renderInterventionsAvoidedV2"
+          '''
+          if v.count(old_renderers) != 1:
+              raise SystemExit("rtichoke_viz_v2.R: renderer map mismatch")
+          v = v.replace(old_renderers, new_renderers, 1)
+          v = v.replace('version = "0.6.0"', 'version = "0.7.0"')
+          v = v.replace("rtichoke-viz-0.6.0/rtichoke-viz.js", "rtichoke-viz-0.7.0/rtichoke-viz.js")
+
+          decision_end = '''  spec
+          }
+
+          v2_population_prevalence <- function(
+          '''
+          ia_builder = '''  spec
+          }
+
+          #' Build a canonical rtichoke_viz v2 Interventions Avoided specification
+          #' @inheritParams rtichoke_viz_decision_curve_v2_spec
+          #' @return A canonical Interventions Avoided v2 specification.
+          #' @noRd
+          rtichoke_viz_interventions_avoided_v2_spec <- function(
+            performance_data,
+            evaluation_metadata,
+            min_p_threshold = 0,
+            max_p_threshold = 1
+          ) {
+            required <- c("probability_threshold", "NB_interventions_avoided")
+            missing <- setdiff(required, names(performance_data))
+            if (length(missing) > 0L) {
+              stop(
+                "INTERVENTIONS_AVOIDED performance data is missing columns: ",
+                paste(missing, collapse = ", "),
+                call. = FALSE
+              )
+            }
+
+            prevalence_data <- performance_data
+            valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
+              is.finite(as.numeric(performance_data$NB_interventions_avoided))
+            performance_data <- performance_data[valid_rows, , drop = FALSE]
+            spec <- rtichoke_viz_curve_v2_spec(
+              performance_data,
+              evaluation_metadata,
+              type = "interventions_avoided"
+            )
+            spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
+
+            populations <- unique(vapply(
+              spec$evaluations,
+              `[[`,
+              character(1),
+              "population"
+            ))
+            prevalence <- v2_population_prevalence(
+              prevalence_data,
+              evaluation_metadata,
+              populations
+            )
+            compatibility_group <- roc_v2_compatibility_group(
+              performance_data,
+              evaluation_metadata
+            )
+            treat_none <- lapply(populations, function(population) {
+              groups <- as.character(evaluation_metadata$evaluation[
+                evaluation_metadata$population == population
+              ])
+              thresholds <- unique(as.numeric(performance_data$probability_threshold[
+                compatibility_group %in% groups
+              ]))
+              p <- as.numeric(prevalence[[population]])
+              list(
+                type = "path",
+                points = lapply(thresholds, function(threshold) {
+                  list(
+                    x = threshold,
+                    y = 100 * (1 - p - p * (1 - threshold) / threshold)
+                  )
+                }),
+                label = paste0("Treat None \\u2014 ", population),
+                scope = "population",
+                population = population,
+                benchmark = "treat_none"
+              )
+            })
+            spec$references <- c(
+              list(list(
+                type = "horizontal",
+                value = 0,
+                label = "Treat All",
+                scope = "global",
+                benchmark = "treat_all"
+              )),
+              treat_none
+            )
+            spec
+          }
+
+          v2_population_prevalence <- function(
+          '''
+          if v.count(decision_end) != 1:
+              raise SystemExit("rtichoke_viz_v2.R: decision builder end mismatch")
+          v = v.replace(decision_end, ia_builder, 1)
+
+          v = v.replace(
+              'type = c("roc", "precision_recall", "gains", "lift", "decision_curve")',
+              'type = c("roc", "precision_recall", "gains", "lift", "decision_curve", "interventions_avoided")',
+              1,
+          )
+          old_req = '''    lift = c("probability_threshold", "ppcr", "lift"),
+              decision_curve = c("probability_threshold", "NB")
+          '''
+          new_req = '''    lift = c("probability_threshold", "ppcr", "lift"),
+              decision_curve = c("probability_threshold", "NB"),
+              interventions_avoided = c(
+                "probability_threshold",
+                "NB_interventions_avoided"
+              )
+          '''
+          if v.count(old_req) != 1:
+              raise SystemExit("rtichoke_viz_v2.R: required-column switch mismatch")
+          v = v.replace(old_req, new_req, 1)
+
+          old_data = '''    if (type == "decision_curve") {
+                datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
+                datum$netBenefit <- as.numeric(performance_data$NB[[i]])
+              } else {
+          '''
+          new_data = '''    if (type == "decision_curve") {
+                datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
+                datum$netBenefit <- as.numeric(performance_data$NB[[i]])
+              } else if (type == "interventions_avoided") {
+                datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
+                datum$interventionsAvoided <- as.numeric(
+                  performance_data$NB_interventions_avoided[[i]]
+                )
+              } else {
+          '''
+          if v.count(old_data) != 1:
+              raise SystemExit("rtichoke_viz_v2.R: datum mapping mismatch")
+          v = v.replace(old_data, new_data, 1)
+
+          lift_tail = '''  list(
+              schemaVersion = "2.0",
+              type = "lift",
+          '''
+          ia_spec = '''  if (type == "interventions_avoided") {
+              return(list(
+                schemaVersion = "2.0",
+                type = "interventions_avoided",
+                evaluations = evaluations,
+                series = series,
+                data = data,
+                x = "threshold",
+                y = "interventionsAvoided",
+                xAxis = list(label = "Probability Threshold", domain = c(0, 1)),
+                yAxis = list(label = "Interventions Avoided (per 100)"),
+                references = list()
+              ))
+            }
+
+            list(
+              schemaVersion = "2.0",
+              type = "lift",
+          '''
+          if v.count(lift_tail) != 1:
+              raise SystemExit("rtichoke_viz_v2.R: lift tail mismatch")
+          viz.write_text(v.replace(lift_tail, ia_spec, 1))
+
+          decision = Path("R/decision.R")
+          d = decision.read_text()
+          old_browser = '''  if (renderer == "browser") {
+              if (!identical(type, "conventional")) {
+                stop(
+                  "Browser rendering is available only for conventional static Decision Curves",
+                  call. = FALSE
+                )
+              }
+              if (is.null(evaluation_metadata)) {
+                stop(
+                  "Browser rendering requires explicit evaluation_metadata",
+                  call. = FALSE
+                )
+              }
+              return(render_rtichoke_viz_browser(rtichoke_viz_decision_curve_v2_spec(
+                performance_data,
+                evaluation_metadata,
+                min_p_threshold,
+                max_p_threshold
+              )))
+            }
+          '''
+          new_browser = '''  if (renderer == "browser") {
+              if (identical(type, "combined")) {
+                stop(
+                  "Browser rendering is not available for combined static Decision Curves",
+                  call. = FALSE
+                )
+              }
+              if (is.null(evaluation_metadata)) {
+                stop(
+                  "Browser rendering requires explicit evaluation_metadata",
+                  call. = FALSE
+                )
+              }
+              spec <- if (identical(type, "conventional")) {
+                rtichoke_viz_decision_curve_v2_spec(
+                  performance_data,
+                  evaluation_metadata,
+                  min_p_threshold,
+                  max_p_threshold
+                )
+              } else {
+                ia_performance_data <- add_static_interventions_avoided_metric(
+                  performance_data
+                )
+                rtichoke_viz_interventions_avoided_v2_spec(
+                  ia_performance_data,
+                  evaluation_metadata,
+                  min_p_threshold,
+                  max_p_threshold
+                )
+              }
+              return(render_rtichoke_viz_browser(spec))
+            }
+          '''
+          if d.count(old_browser) != 1:
+              raise SystemExit("decision.R: browser block mismatch")
+          decision.write_text(d.replace(old_browser, new_browser, 1))
+
+          test_decision = Path("tests/testthat/test-decision-browser-v2.R")
+          td = test_decision.read_text().replace(
+              "Decision Curve browser dispatch uses shared v0.6.0 renderer",
+              "Decision Curve browser dispatch uses shared v0.7.0 renderer",
+          ).replace(
+              "rtichoke-viz-0.6.0/rtichoke-viz.js",
+              "rtichoke-viz-0.7.0/rtichoke-viz.js",
+          )
+          old_error = '''  expect_error(
+              plot_decision_curve(
+                dat$performance_data,
+                type = "interventions avoided",
+                renderer = "browser",
+                evaluation_metadata = dat$metadata
+              ),
+              "only for conventional static Decision Curves"
+            )
+          '''
+          new_error = '''  expect_error(
+              plot_decision_curve(
+                dat$performance_data,
+                type = "combined",
+                renderer = "browser",
+                evaluation_metadata = dat$metadata
+              ),
+              "not available for combined static Decision Curves"
+            )
+          '''
+          if td.count(old_error) != 1:
+              raise SystemExit("test-decision-browser-v2.R: old browser rejection mismatch")
+          test_decision.write_text(td.replace(old_error, new_error, 1))
+
+          verifier = Path("tools/verify-rtichoke-viz.R")
+          vr = verifier.read_text()
+          vr = vr.replace("0.6.0", "0.7.0")
+          vr = vr.replace(
+              "625613c7f692ff50b7757a27bb6caf84e311971bde92593141393dbd897af3a2",
+              "f09c30e231a8be39c2e89ba6ae39c90ed8cab67021213e17681a475066a9806e",
+          )
+          vr = vr.replace(
+              "3abb3f07a598c3e22d5362a3f88e52bb6b52b083",
+              "b3564d2824ec1791f791fda406c99b3d7865a68f",
+          )
+          needle = '''  grepl("renderDecisionCurveV2", js, fixed = TRUE),
+          '''
+          replacement = '''  grepl("renderDecisionCurveV2", js, fixed = TRUE),
+            grepl("InterventionsAvoidedV2SpecSchema", js, fixed = TRUE),
+            grepl("renderInterventionsAvoidedV2", js, fixed = TRUE),
+          '''
+          if vr.count(needle) != 1:
+              raise SystemExit("verify-rtichoke-viz.R: renderer assertion mismatch")
+          verifier.write_text(vr.replace(needle, replacement, 1))
+
+          Path("tests/testthat/test-interventions-avoided-browser-v2.R").write_text(r'''ia_v2_fixture <- function() {
+            probs <- list("Model A" = c(0.05, 0.2, 0.7, 0.95))
+            reals <- list("Population A" = c(0, 0, 1, 1))
+            performance_data <- prepare_performance_data(probs, reals, by = 0.25)
+            list(
+              probs = probs,
+              reals = reals,
+              performance_data = performance_data,
+              ia_performance_data = rtichoke:::add_static_interventions_avoided_metric(
+                performance_data
+              ),
+              metadata = rtichoke:::build_evaluation_metadata(probs, reals)
+            )
+          }
+
+          ia_v2_spec <- function(performance_data, metadata) {
+            rtichoke:::rtichoke_viz_interventions_avoided_v2_spec(
+              performance_data,
+              metadata
+            )
+          }
+
+          test_that("Interventions Avoided v2 passes through existing thresholds and IA", {
+            dat <- ia_v2_fixture()
+            dat$ia_performance_data$NB_interventions_avoided[
+              dat$ia_performance_data$probability_threshold == 0.25
+            ] <- 37.25
+            spec <- ia_v2_spec(dat$ia_performance_data, dat$metadata)
+            thresholds <- vapply(spec$data, `[[`, numeric(1), "threshold")
+            ia <- vapply(spec$data, `[[`, numeric(1), "interventionsAvoided")
+
+            expect_identical(spec$schemaVersion, "2.0")
+            expect_identical(spec$type, "interventions_avoided")
+            expect_identical(spec$x, "threshold")
+            expect_identical(spec$y, "interventionsAvoided")
+            expect_equal(ia[thresholds == 0.25], 37.25)
+          })
+
+          test_that("Interventions Avoided production metric keeps established formula", {
+            dat <- ia_v2_fixture()
+            perf <- dat$ia_performance_data
+            valid <- is.finite(perf$probability_threshold) &
+              is.finite(perf$NB_interventions_avoided) &
+              perf$probability_threshold > 0
+            expected <- with(
+              perf[valid, ],
+              100 * (TN / N - FN / N * (1 - probability_threshold) / probability_threshold)
+            )
+            expect_equal(perf$NB_interventions_avoided[valid], expected)
+          })
+
+          test_that("Interventions Avoided ids are deterministic and independent", {
+            dat <- ia_v2_fixture()
+            spec <- ia_v2_spec(dat$ia_performance_data, dat$metadata)
+            expect_identical(
+              vapply(spec$evaluations, `[[`, character(1), "id"),
+              "evaluation-1"
+            )
+            expect_identical(
+              vapply(spec$series, `[[`, character(1), "id"),
+              "series-1"
+            )
+            expect_identical(spec$series[[1]]$evaluationId, "evaluation-1")
+            expect_false(identical(spec$series[[1]]$id, spec$series[[1]]$evaluationId))
+          })
+
+          test_that("two models sharing one population share one Treat None", {
+            probs <- list(
+              "Model A" = c(0.05, 0.2, 0.7, 0.95),
+              "Model B" = c(0.1, 0.3, 0.6, 0.9)
+            )
+            reals <- list("Population A" = c(0, 0, 1, 1))
+            perf <- prepare_performance_data(probs, reals, by = 0.25) |>
+              rtichoke:::add_static_interventions_avoided_metric()
+            spec <- ia_v2_spec(perf, rtichoke:::build_evaluation_metadata(probs, reals))
+            benchmarks <- vapply(spec$references, `[[`, character(1), "benchmark")
+
+            expect_length(spec$evaluations, 2)
+            expect_length(spec$series, 2)
+            expect_equal(sum(benchmarks == "treat_all"), 1)
+            expect_equal(sum(benchmarks == "treat_none"), 1)
+            expect_identical(spec$references[[2]]$population, "Population A")
+          })
+
+          test_that("distinct populations keep population-owned Treat None references", {
+            probs <- list(
+              "Population A" = c(0.05, 0.2, 0.7, 0.95),
+              "Population B" = c(0.1, 0.3, 0.6, 0.9)
+            )
+            reals <- list(
+              "Population A" = c(0, 0, 1, 1),
+              "Population B" = c(0, 0, 0, 1)
+            )
+            perf <- prepare_performance_data(probs, reals, by = 0.25) |>
+              rtichoke:::add_static_interventions_avoided_metric()
+            spec <- ia_v2_spec(perf, rtichoke:::build_evaluation_metadata(probs, reals))
+            refs <- Filter(function(x) identical(x$benchmark, "treat_none"), spec$references)
+
+            expect_length(refs, 2)
+            expect_identical(
+              vapply(refs, `[[`, character(1), "population"),
+              c("Population A", "Population B")
+            )
+            expect_false(identical(refs[[1]]$points, refs[[2]]$points))
+          })
+
+          test_that("equal-prevalence populations remain distinct Treat None owners", {
+            probs <- list(
+              "Population A" = c(0.05, 0.2, 0.7, 0.95),
+              "Population B" = c(0.1, 0.3, 0.6, 0.9)
+            )
+            reals <- list(
+              "Population A" = c(0, 0, 1, 1),
+              "Population B" = c(0, 1, 0, 1)
+            )
+            perf <- prepare_performance_data(probs, reals, by = 0.25) |>
+              rtichoke:::add_static_interventions_avoided_metric()
+            spec <- ia_v2_spec(perf, rtichoke:::build_evaluation_metadata(probs, reals))
+            refs <- Filter(function(x) identical(x$benchmark, "treat_none"), spec$references)
+
+            expect_length(refs, 2)
+            expect_identical(refs[[1]]$points, refs[[2]]$points)
+            expect_false(identical(refs[[1]]$population, refs[[2]]$population))
+            expect_true(all(vapply(spec$evaluations, function(x) is.null(x$model), logical(1))))
+          })
+
+          test_that("Treat All and Treat None geometry matches canonical IA semantics", {
+            dat <- ia_v2_fixture()
+            spec <- ia_v2_spec(dat$ia_performance_data, dat$metadata)
+            all_ref <- Filter(function(x) identical(x$benchmark, "treat_all"), spec$references)[[1]]
+            none_ref <- Filter(function(x) identical(x$benchmark, "treat_none"), spec$references)[[1]]
+            point <- Filter(function(x) identical(x$x, 0.25), none_ref$points)[[1]]
+
+            expect_identical(all_ref$type, "horizontal")
+            expect_identical(all_ref$scope, "global")
+            expect_identical(all_ref$value, 0)
+            expect_identical(none_ref$scope, "population")
+            expect_equal(point$y, 100 * (1 - 0.5 - 0.5 * (1 - 0.25) / 0.25))
+          })
+
+          test_that("static cutoff equality remains predicted negative", {
+            perf <- prepare_performance_data(
+              probs = list(c(0.5, 0.9)),
+              reals = list(c(1, 1)),
+              by = 0.5
+            )
+            row <- perf[perf$probability_threshold == 0.5, , drop = FALSE]
+            expect_identical(row$TP, 1L)
+            expect_identical(row$FN, 1L)
+          })
+
+          test_that("Interventions Avoided browser dispatch uses shared v0.7.0 renderer", {
+            dat <- ia_v2_fixture()
+            widget <- plot_decision_curve(
+              dat$performance_data,
+              type = "interventions avoided",
+              renderer = "browser",
+              evaluation_metadata = dat$metadata
+            )
+            html <- paste(as.character(widget), collapse = "\n")
+            expect_match(html, "renderInterventionsAvoidedV2", fixed = TRUE)
+            expect_match(html, "rtichoke-viz-0.7.0/rtichoke-viz.js", fixed = TRUE)
+            expect_match(html, '"type":"interventions_avoided"', fixed = TRUE)
+          })
+
+          test_that("Interventions Avoided browser mode is opt-in and Plotly stays default", {
+            dat <- ia_v2_fixture()
+            expect_s3_class(
+              create_decision_curve(
+                dat$probs,
+                dat$reals,
+                by = 0.25,
+                type = "interventions avoided"
+              ),
+              "plotly"
+            )
+            expect_s3_class(
+              create_decision_curve(
+                dat$probs,
+                dat$reals,
+                by = 0.25,
+                type = "interventions avoided",
+                renderer = "plotly"
+              ),
+              "plotly"
+            )
+          })
+          ''')
+
+          Path(".github/workflows/interventions-avoided-browser-acceptance.yaml").write_text(r'''name: Interventions Avoided browser acceptance
+
+          on:
+            pull_request:
+              branches: [main]
+              paths:
+                - 'R/decision.R'
+                - 'R/helpers.R'
+                - 'R/rtichoke_viz_v2.R'
+                - 'inst/**'
+                - 'tests/testthat/test-interventions-avoided-browser-v2.R'
+                - '.github/workflows/interventions-avoided-browser-acceptance.yaml'
+                - 'DESCRIPTION'
+
+          permissions: read-all
+
+          concurrency:
+            group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+            cancel-in-progress: true
+
+          jobs:
+            interventions-avoided-browser:
+              runs-on: ubuntu-latest
+              timeout-minutes: 15
+              env:
+                GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+                R_KEEP_PKG_SOURCE: yes
+
+              steps:
+                - uses: actions/checkout@v6
+
+                - uses: r-lib/actions/setup-r@v2
+                  with:
+                    r-version: release
+                    use-public-rspm: true
+
+                - uses: r-lib/actions/setup-r-dependencies@v2
+                  with:
+                    needs: check
+                    pak-version: stable
+
+                - name: Install package
+                  run: R CMD INSTALL .
+
+                - name: Generate real public Interventions Avoided browser artifact
+                  shell: Rscript {0}
+                  run: |
+                    library(rtichoke)
+                    widget <- create_decision_curve(
+                      probs = list(
+                        "Population A" = c(0.05, 0.2, 0.7, 0.95),
+                        "Population B" = c(0.1, 0.3, 0.6, 0.9)
+                      ),
+                      reals = list(
+                        "Population A" = c(0, 0, 1, 1),
+                        "Population B" = c(0, 0, 0, 1)
+                      ),
+                      by = 0.25,
+                      type = "interventions avoided",
+                      renderer = "browser"
+                    )
+                    dir.create("browser-acceptance", showWarnings = FALSE)
+                    htmltools::save_html(
+                      widget,
+                      file = "browser-acceptance/interventions-avoided.html",
+                      libdir = "lib"
+                    )
+
+                - name: Execute browser artifact in real Chrome
+                  run: |
+                    python3 -m http.server 8768 --directory browser-acceptance > /tmp/rtichoke-ia-http.log 2>&1 &
+                    server_pid=$!
+                    trap 'kill $server_pid || true' EXIT
+                    sleep 1
+
+                    stderr="/tmp/interventions-avoided-chrome-stderr.log"
+                    dom="/tmp/interventions-avoided-dom.html"
+                    set +e
+                    google-chrome \
+                      --headless=new \
+                      --no-sandbox \
+                      --disable-gpu \
+                      --disable-dev-shm-usage \
+                      --virtual-time-budget=5000 \
+                      --dump-dom \
+                      "http://127.0.0.1:8768/interventions-avoided.html" > "$dom" 2> "$stderr"
+                    status=$?
+                    set -e
+
+                    cat "$stderr"
+                    test "$status" -eq 0
+                    ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError' "$stderr"
+                    grep -q '"type":"interventions_avoided"' "$dom"
+                    grep -q '"series-2"' "$dom"
+                    test "$(grep -o '"benchmark":"treat_all"' "$dom" | wc -l)" -eq 1
+                    test "$(grep -o '"benchmark":"treat_none"' "$dom" | wc -l)" -eq 2
+                    grep -q 'Interventions Avoided (per 100)' "$dom"
+                    grep -q 'Treat All' "$dom"
+                    grep -q 'Treat None' "$dom"
+                    grep -q '<svg' "$dom"
+                    grep -q 'aria-label="rule"' "$dom"
+                    grep -q 'aria-label="line"' "$dom"
+          ''')
+          PY
+
+      - name: Commit implementation and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/implement-static-ia-browser-once.yaml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add R tests tools .github/workflows inst/rtichoke-viz
+          git commit -m 'Add static Interventions Avoided browser rendering'
+          git push origin HEAD:feat/static-interventions-avoided-browser-v2
