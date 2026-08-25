@@ -161,9 +161,27 @@ create_decision_curve <- function(
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  performance_data <- prepare_performance_data(probs = probs, reals = reals, by = by, stratified_by = stratified_by)
-  evaluation_metadata <- if (identical(renderer, "browser")) build_evaluation_metadata(probs, reals)
-  plot_decision_curve(performance_data, chosen_threshold = chosen_threshold, interactive = interactive, color_values = color_values, size = size, type = type, min_p_threshold = min_p_threshold, max_p_threshold = max_p_threshold, renderer = renderer, evaluation_metadata = evaluation_metadata)
+  performance_data <- prepare_performance_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = stratified_by
+  )
+  evaluation_metadata <- if (identical(renderer, "browser")) {
+    build_evaluation_metadata(probs, reals)
+  }
+  plot_decision_curve(
+    performance_data,
+    chosen_threshold = chosen_threshold,
+    interactive = interactive,
+    color_values = color_values,
+    size = size,
+    type = type,
+    min_p_threshold = min_p_threshold,
+    max_p_threshold = max_p_threshold,
+    renderer = renderer,
+    evaluation_metadata = evaluation_metadata
+  )
 }
 
 
@@ -246,9 +264,24 @@ plot_decision_curve <- function(
 
   renderer <- rtichoke_viz_renderer(renderer, interactive)
   if (renderer == "browser") {
-    if (!identical(type, "conventional")) stop("Browser rendering is available only for conventional static Decision Curves", call. = FALSE)
-    if (is.null(evaluation_metadata)) stop("Browser rendering requires explicit evaluation_metadata", call. = FALSE)
-    return(render_rtichoke_viz_browser(rtichoke_viz_decision_curve_v2_spec(performance_data, evaluation_metadata, min_p_threshold, max_p_threshold)))
+    if (!identical(type, "conventional")) {
+      stop(
+        "Browser rendering is available only for conventional static Decision Curves",
+        call. = FALSE
+      )
+    }
+    if (is.null(evaluation_metadata)) {
+      stop(
+        "Browser rendering requires explicit evaluation_metadata",
+        call. = FALSE
+      )
+    }
+    return(render_rtichoke_viz_browser(rtichoke_viz_decision_curve_v2_spec(
+      performance_data,
+      evaluation_metadata,
+      min_p_threshold,
+      max_p_threshold
+    )))
   }
 
   if (renderer == "ggplot2") {

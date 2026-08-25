@@ -290,21 +290,65 @@ rtichoke_viz_precision_recall_v2_spec <- function(
 #' @param max_p_threshold Maximum displayed probability threshold.
 #' @return A canonical Decision Curve v2 specification.
 #' @noRd
-rtichoke_viz_decision_curve_v2_spec <- function(performance_data, evaluation_metadata, min_p_threshold = 0, max_p_threshold = 1) {
-  valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) & is.finite(as.numeric(performance_data$NB))
+rtichoke_viz_decision_curve_v2_spec <- function(
+  performance_data,
+  evaluation_metadata,
+  min_p_threshold = 0,
+  max_p_threshold = 1
+) {
+  valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
+    is.finite(as.numeric(performance_data$NB))
   performance_data <- performance_data[valid_rows, , drop = FALSE]
-  spec <- rtichoke_viz_curve_v2_spec(performance_data, evaluation_metadata, type = "decision_curve")
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "decision_curve"
+  )
   spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
-  populations <- unique(vapply(spec$evaluations, `[[`, character(1), "population"))
-  prevalence <- v2_population_prevalence(performance_data, evaluation_metadata, populations)
-  compatibility_group <- roc_v2_compatibility_group(performance_data, evaluation_metadata)
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    populations
+  )
+  compatibility_group <- roc_v2_compatibility_group(
+    performance_data,
+    evaluation_metadata
+  )
   treat_all <- lapply(populations, function(population) {
-    groups <- as.character(evaluation_metadata$evaluation[evaluation_metadata$population == population])
-    thresholds <- unique(as.numeric(performance_data$probability_threshold[compatibility_group %in% groups]))
+    groups <- as.character(evaluation_metadata$evaluation[
+      evaluation_metadata$population == population
+    ])
+    thresholds <- unique(as.numeric(performance_data$probability_threshold[
+      compatibility_group %in% groups
+    ]))
     p <- as.numeric(prevalence[[population]])
-    list(type = "path", points = lapply(thresholds, function(threshold) list(x = threshold, y = p - (1 - p) * threshold / (1 - threshold))), label = paste0("Treat All — ", population), scope = "population", population = population, benchmark = "treat_all")
+    list(
+      type = "path",
+      points = lapply(thresholds, function(threshold) {
+        list(x = threshold, y = p - (1 - p) * threshold / (1 - threshold))
+      }),
+      label = paste0("Treat All — ", population),
+      scope = "population",
+      population = population,
+      benchmark = "treat_all"
+    )
   })
-  spec$references <- c(list(list(type = "horizontal", value = 0, label = "Treat None", scope = "global", benchmark = "treat_none")), treat_all)
+  spec$references <- c(
+    list(list(
+      type = "horizontal",
+      value = 0,
+      label = "Treat None",
+      scope = "global",
+      benchmark = "treat_none"
+    )),
+    treat_all
+  )
   spec
 }
 
@@ -540,11 +584,16 @@ rtichoke_viz_curve_v2_spec <- function(
 
   if (type == "decision_curve") {
     return(list(
-      schemaVersion = "2.0", type = "decision_curve",
-      evaluations = evaluations, series = series, data = data,
-      x = "threshold", y = "netBenefit",
+      schemaVersion = "2.0",
+      type = "decision_curve",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "threshold",
+      y = "netBenefit",
       xAxis = list(label = "Probability threshold", domain = c(0, 1)),
-      yAxis = list(label = "Net benefit"), references = list()
+      yAxis = list(label = "Net benefit"),
+      references = list()
     ))
   }
 
