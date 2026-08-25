@@ -40,6 +40,9 @@ test_that("Precision-Recall v2 is a pure adapter over existing performance rows"
     dat$performance_data,
     dat$metadata
   )
+  valid <- is.finite(as.numeric(dat$performance_data$probability_threshold)) &
+    is.finite(as.numeric(dat$performance_data$sensitivity)) &
+    is.finite(as.numeric(dat$performance_data$PPV))
 
   expect_identical(spec$schemaVersion, "2.0")
   expect_identical(spec$type, "precision_recall")
@@ -47,16 +50,21 @@ test_that("Precision-Recall v2 is a pure adapter over existing performance rows"
   expect_identical(spec$y, "ppv")
   expect_identical(
     vapply(spec$data, `[[`, numeric(1), "cutoff"),
-    as.numeric(dat$performance_data$probability_threshold)
+    as.numeric(dat$performance_data$probability_threshold[valid])
   )
   expect_identical(
     vapply(spec$data, `[[`, numeric(1), "sensitivity"),
-    as.numeric(dat$performance_data$sensitivity)
+    as.numeric(dat$performance_data$sensitivity[valid])
   )
   expect_identical(
     vapply(spec$data, `[[`, numeric(1), "ppv"),
-    as.numeric(dat$performance_data$PPV)
+    as.numeric(dat$performance_data$PPV[valid])
   )
+  expect_true(all(vapply(
+    spec$data,
+    function(x) all(is.finite(c(x$cutoff, x$sensitivity, x$ppv))),
+    logical(1)
+  )))
   expect_true(all(
     c("seriesId", "cutoff", "sensitivity", "ppv") %in% names(spec$data[[1]])
   ))
