@@ -2942,6 +2942,58 @@ var CalibrationV2SpecSchema = Type.Intersect([
   })
 ]);
 
+// src/spec/v2/decision-curve.ts
+var DecisionCurveV2DatumSchema = Type.Object({
+  seriesId: Type.String(),
+  threshold: Type.Number({ minimum: 0, maximum: 1 }),
+  netBenefit: Type.Number()
+});
+var DecisionCurveV2EvaluationSchema = Type.Intersect([
+  EvaluationSpecSchema,
+  Type.Object({ id: Type.String({ pattern: "^evaluation-[1-9][0-9]*$" }) })
+]);
+var DecisionCurveV2SeriesSchema = Type.Intersect([
+  SeriesSpecSchema,
+  Type.Object({
+    id: Type.String({ pattern: "^series-[1-9][0-9]*$" }),
+    evaluationId: Type.String({ pattern: "^evaluation-[1-9][0-9]*$" })
+  })
+]);
+var TreatNoneReferenceSchema = Type.Object({
+  type: Type.Literal("horizontal"),
+  value: Type.Literal(0),
+  label: Type.Optional(Type.String()),
+  scope: Type.Literal("global"),
+  benchmark: Type.Literal("treat_none")
+});
+var TreatAllReferenceSchema = Type.Object({
+  type: Type.Literal("path"),
+  points: Type.Array(
+    Type.Object({ x: Type.Number(), y: Type.Number() }),
+    { minItems: 2 }
+  ),
+  label: Type.Optional(Type.String()),
+  scope: Type.Literal("population"),
+  population: Type.String(),
+  benchmark: Type.Literal("treat_all")
+});
+var DecisionCurveV2ReferenceSchema = Type.Union([
+  TreatNoneReferenceSchema,
+  TreatAllReferenceSchema
+]);
+var DecisionCurveV2SpecSchema = Type.Intersect([
+  BaseChartV2SpecSchema,
+  Type.Object({
+    type: Type.Literal("decision_curve"),
+    evaluations: Type.Array(DecisionCurveV2EvaluationSchema, { minItems: 1 }),
+    series: Type.Array(DecisionCurveV2SeriesSchema, { minItems: 1 }),
+    data: Type.Array(DecisionCurveV2DatumSchema),
+    x: Type.Literal("threshold"),
+    y: Type.Literal("netBenefit"),
+    references: Type.Array(DecisionCurveV2ReferenceSchema, { minItems: 2 })
+  })
+]);
+
 // src/spec/v2/gains.ts
 var GainsV2DatumSchema = Type.Object({
   seriesId: Type.String(),
@@ -3017,7 +3069,8 @@ var RtichokeChartSpecV2Schema = Type.Union(
     CalibrationV2SpecSchema,
     PrecisionRecallV2SpecSchema,
     GainsV2SpecSchema,
-    LiftV2SpecSchema
+    LiftV2SpecSchema,
+    DecisionCurveV2SpecSchema
   ],
   {
     $id: "https://rtichoke.dev/schema/viz/2.0.json",
@@ -3138,28 +3191,55 @@ function assertPerformanceTableReferentialIntegrity(spec) {
 function assertV2ReferentialIntegrity(spec) {
   const evaluationIds = new Set(spec.evaluations.map((evaluation) => evaluation.id));
   const seriesIds = /* @__PURE__ */ new Set();
-  if (evaluationIds.size !== spec.evaluations.length) {
-    throw new Error("duplicate evaluation id");
-  }
+  if (evaluationIds.size !== spec.evaluations.length) throw new Error("duplicate evaluation id");
   for (const series of spec.series) {
-    if (seriesIds.has(series.id)) {
-      throw new Error(`duplicate series id: ${series.id}`);
-    }
+    if (seriesIds.has(series.id)) throw new Error(`duplicate series id: ${series.id}`);
     seriesIds.add(series.id);
-    if (!evaluationIds.has(series.evaluationId)) {
-      throw new Error(`unknown evaluation id: ${series.evaluationId}`);
-    }
+    if (!evaluationIds.has(series.evaluationId)) throw new Error(`unknown evaluation id: ${series.evaluationId}`);
   }
   for (const datum2 of spec.data) {
-    if (!seriesIds.has(datum2.seriesId)) {
-      throw new Error(`unknown series id: ${datum2.seriesId}`);
-    }
+    if (!seriesIds.has(datum2.seriesId)) throw new Error(`unknown series id: ${datum2.seriesId}`);
   }
   if (spec.type === "calibration") {
     for (const datum2 of spec.distribution ?? []) {
-      if (!seriesIds.has(datum2.seriesId)) {
-        throw new Error(`unknown distribution series id: ${datum2.seriesId}`);
+      if (!seriesIds.has(datum2.seriesId)) throw new Error(`unknown distribution series id: ${datum2.seriesId}`);
+    }
+  }
+  const populations = new Set(spec.evaluations.map((evaluation) => evaluation.population));
+  for (const reference of spec.references ?? []) {
+    if ((reference.scope === "population" || reference.scope === "population_horizon") && !populations.has(reference.population)) {
+      throw new Error(`unknown reference population: ${reference.population}`);
+    }
+  }
+  if (spec.type === "decision_curve") {
+    const decisionCurve = spec;
+    const references = decisionCurve.references;
+    decisionCurve.evaluations.forEach((evaluation, index2) => {
+      const expectedId = `evaluation-${index2 + 1}`;
+      if (evaluation.id !== expectedId) throw new Error(`decision curve evaluation ids must be ordinal: expected ${expectedId}`);
+      const expectedDisplay = evaluation.model ?? evaluation.population;
+      const expectedRole = evaluation.model === void 0 ? "population" : "model";
+      const series = decisionCurve.series[index2];
+      if (!series || series.id !== `series-${index2 + 1}` || series.evaluationId !== evaluation.id) {
+        throw new Error("decision curve series must map one-to-one in evaluation order");
       }
+      if (series.display.label !== expectedDisplay || series.display.group !== expectedDisplay || series.display.role !== expectedRole) {
+        throw new Error("decision curve display must follow evaluation semantics");
+      }
+    });
+    if (decisionCurve.series.length !== decisionCurve.evaluations.length) throw new Error("decision curve requires exactly one series per evaluation");
+    const treatNone = references.filter((reference) => "benchmark" in reference && reference.benchmark === "treat_none");
+    if (treatNone.length !== 1) throw new Error("decision curve requires exactly one Treat None reference");
+    const treatAll = references.filter(
+      (reference) => "benchmark" in reference && reference.benchmark === "treat_all"
+    );
+    const treatAllPopulations = /* @__PURE__ */ new Set();
+    for (const reference of treatAll) {
+      if (treatAllPopulations.has(reference.population)) throw new Error(`duplicate Treat All population: ${reference.population}`);
+      treatAllPopulations.add(reference.population);
+    }
+    if (treatAllPopulations.size !== populations.size || [...populations].some((population) => !treatAllPopulations.has(population))) {
+      throw new Error("decision curve requires exactly one Treat All reference per population");
     }
   }
 }
@@ -18827,6 +18907,513 @@ function renderCalibration(spec) {
   return container;
 }
 
+// src/render/v2.ts
+var RTICHOKE_COLORS2 = [
+  "#1b9e77",
+  "#d95f02",
+  "#7570b3",
+  "#e7298a",
+  "#07004D",
+  "#E6AB02",
+  "#FE5F55",
+  "#54494B",
+  "#006E90",
+  "#BC96E6"
+];
+var RTICHOKE_BROWSER_THEME = {
+  width: 600,
+  height: 600,
+  margins: { top: 28, right: 28, bottom: 58, left: 66 },
+  background: "#ffffff",
+  frame: { color: "#444444", width: 1 },
+  typography: {
+    fontFamily: "Arial, Helvetica, sans-serif",
+    fontSize: 12,
+    axisTitleSize: 14,
+    axisTitleWeight: 400,
+    legendSize: 12
+  },
+  axis: {
+    color: "#444444",
+    tickSize: 5,
+    tickPadding: 7,
+    ticks: 6,
+    numberFormat: ".1f"
+  },
+  colors: RTICHOKE_COLORS2,
+  line: { width: 2, dash: null },
+  marker: { radius: 5, fill: null, stroke: "#ffffff", strokeWidth: 1.5 },
+  reference: { color: "#BEBEBE", width: 2, dash: "4,4" },
+  legend: { position: "top", swatchWidth: 15, columns: null },
+  tip: { digits: 3 }
+};
+function mergeTheme(options) {
+  const custom8 = options.theme ?? {};
+  return {
+    ...RTICHOKE_BROWSER_THEME,
+    width: options.width ?? RTICHOKE_BROWSER_THEME.width,
+    height: options.height ?? RTICHOKE_BROWSER_THEME.height,
+    background: custom8.background ?? RTICHOKE_BROWSER_THEME.background,
+    colors: options.colors ?? RTICHOKE_BROWSER_THEME.colors,
+    margins: { ...RTICHOKE_BROWSER_THEME.margins, ...custom8.margins },
+    frame: { ...RTICHOKE_BROWSER_THEME.frame, ...custom8.frame },
+    typography: { ...RTICHOKE_BROWSER_THEME.typography, ...custom8.typography },
+    axis: { ...RTICHOKE_BROWSER_THEME.axis, ...custom8.axis },
+    line: { ...RTICHOKE_BROWSER_THEME.line, ...custom8.line },
+    marker: { ...RTICHOKE_BROWSER_THEME.marker, ...custom8.marker },
+    reference: { ...RTICHOKE_BROWSER_THEME.reference, ...custom8.reference },
+    legend: { ...RTICHOKE_BROWSER_THEME.legend, ...custom8.legend },
+    tip: { ...RTICHOKE_BROWSER_THEME.tip, ...custom8.tip }
+  };
+}
+function resolveV2RenderOptions(groupsOrCount, options = {}) {
+  const groups2 = typeof groupsOrCount === "number" ? Array.from(
+    { length: groupsOrCount },
+    (_, index2) => `group-${index2 + 1}`
+  ) : [...groupsOrCount];
+  const theme = mergeTheme(options);
+  if (!Number.isFinite(theme.width) || theme.width <= 0 || !Number.isFinite(theme.height) || theme.height <= 0)
+    throw new Error(
+      "Renderer width and height must be positive finite numbers"
+    );
+  if (!Number.isInteger(theme.tip.digits) || theme.tip.digits < 0 || theme.tip.digits > 20)
+    throw new Error("Renderer tip digits must be an integer between 0 and 20");
+  const colors = groups2.length <= 1 ? ["#000000"] : [...theme.colors];
+  if (colors.length < groups2.length)
+    throw new Error(
+      "Renderer colors must contain at least one color per display group"
+    );
+  const assigned = colors.slice(0, Math.max(groups2.length, 1));
+  return {
+    theme: { ...theme, colors: assigned },
+    groups: groups2,
+    colors: assigned,
+    colorByGroup: new Map(
+      groups2.map((group2, index2) => [group2, assigned[index2]])
+    ),
+    showLegend: groups2.length > 1
+  };
+}
+function displayBySeries(spec) {
+  return new Map(spec.series.map((series) => [series.id, series.display]));
+}
+function displayGroups(spec) {
+  return [...new Set(spec.series.map((series) => series.display.group))];
+}
+function seriesRenderData(spec, data) {
+  const displays = displayBySeries(spec);
+  return data.map((datum2) => ({
+    ...datum2,
+    group: displays.get(datum2.seriesId).group,
+    label: displays.get(datum2.seriesId).label
+  }));
+}
+function tooltip(digits, fields) {
+  return fields.filter(([, value]) => value !== void 0).map(
+    ([label, value]) => `${label}: ${typeof value === "number" ? value.toFixed(digits) : String(value)}`
+  ).join("\n");
+}
+function basePlotOptions(resolved, spec) {
+  const { theme } = resolved;
+  const labelByGroup = new Map(
+    spec.series.map((series) => [series.display.group, series.display.label])
+  );
+  return {
+    width: theme.width,
+    height: theme.height,
+    marginTop: theme.margins.top,
+    marginRight: theme.margins.right,
+    marginBottom: theme.margins.bottom,
+    marginLeft: theme.margins.left,
+    style: {
+      background: theme.background,
+      color: theme.axis.color,
+      fontFamily: theme.typography.fontFamily,
+      fontSize: `${theme.typography.fontSize}px`
+    },
+    color: {
+      legend: resolved.showLegend,
+      domain: resolved.groups,
+      range: resolved.colors,
+      tickFormat: (group2) => labelByGroup.get(group2) ?? group2
+    }
+  };
+}
+function axisOptions2(theme, label, domain) {
+  return {
+    label,
+    domain,
+    grid: false,
+    line: true,
+    ticks: theme.axis.ticks,
+    tickSize: theme.axis.tickSize,
+    tickPadding: theme.axis.tickPadding,
+    tickFormat: theme.axis.numberFormat
+  };
+}
+function frameMark(theme) {
+  return frame2({
+    stroke: theme.frame.color,
+    strokeWidth: theme.frame.width
+  });
+}
+function referenceMarks(spec, theme) {
+  const style = {
+    stroke: theme.reference.color,
+    strokeWidth: theme.reference.width,
+    strokeDasharray: theme.reference.dash
+  };
+  const marks2 = [];
+  for (const reference of spec.references ?? []) {
+    if (reference.type === "identity")
+      marks2.push(
+        line(
+          [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 }
+          ],
+          { x: "x", y: "y", ...style, title: reference.label }
+        )
+      );
+    else if (reference.type === "horizontal" && reference.value !== void 0)
+      marks2.push(
+        ruleY([reference.value], { ...style, title: reference.label })
+      );
+    else if (reference.type === "path" && reference.points)
+      marks2.push(
+        line(reference.points, {
+          x: "x",
+          y: "y",
+          ...style,
+          title: reference.label
+        })
+      );
+  }
+  return marks2;
+}
+function finishMarks(marks2, theme) {
+  marks2.push(frameMark(theme));
+  return marks2;
+}
+function themedPlot(options, theme) {
+  const plot2 = plot(options);
+  for (const label of plot2.querySelectorAll(
+    '[aria-label$="axis label"] text'
+  )) {
+    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
+    label.style.fontWeight = String(theme.typography.axisTitleWeight);
+  }
+  for (const frame3 of plot2.querySelectorAll(
+    '[aria-label="frame"]'
+  )) {
+    frame3.setAttribute("stroke", theme.frame.color);
+  }
+  if (plot2 instanceof HTMLElement) {
+    plot2.style.fontSize = `${theme.typography.legendSize}px`;
+    for (const swatch of plot2.querySelectorAll(
+      'svg[width="15"]'
+    )) {
+      swatch.setAttribute("width", String(theme.legend.swatchWidth));
+    }
+  }
+  return plot2;
+}
+function renderRocV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
+    ...datum2,
+    false_positive_rate: 1 - datum2.specificity,
+    title: tooltip(theme.tip.digits, [
+      ["Series", datum2.label],
+      ["Cutoff", datum2.cutoff],
+      ["Sensitivity", datum2.sensitivity],
+      ["Specificity", datum2.specificity]
+    ])
+  }));
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: "false_positive_rate",
+      y: "sensitivity",
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
+  return themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
+}
+function renderCalibrationV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
+    ...datum2,
+    title: tooltip(theme.tip.digits, [
+      ["Series", datum2.label],
+      ["Predicted", datum2.predicted],
+      ["Observed", datum2.observed],
+      ["Events", datum2.events],
+      ["Total", datum2.total]
+    ])
+  }));
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: "predicted",
+      y: "observed",
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
+  const discrete = data.filter((datum2) => datum2.method === "discrete");
+  if (discrete.length > 0)
+    marks2.push(
+      dot(discrete, {
+        x: "predicted",
+        y: "observed",
+        fill: theme.marker.fill ?? "group",
+        stroke: theme.marker.stroke,
+        strokeWidth: theme.marker.strokeWidth,
+        r: theme.marker.radius,
+        title: "title",
+        tip: true
+      })
+    );
+  const hasDistribution = (spec.distribution?.length ?? 0) > 0;
+  const mainHeight = hasDistribution ? Math.round(theme.height * 0.8) : theme.height;
+  const calibration = themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      height: mainHeight,
+      marginBottom: hasDistribution ? 8 : theme.margins.bottom,
+      x: hasDistribution ? {
+        ...axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+        axis: null,
+        label: null
+      } : axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
+  if (!hasDistribution || !spec.distribution) return calibration;
+  const distribution = seriesRenderData(spec, spec.distribution).map(
+    (datum2) => ({
+      ...datum2,
+      title: tooltip(theme.tip.digits, [
+        ["Series", datum2.label],
+        ["Midpoint", datum2.midpoint],
+        ["Count", datum2.count]
+      ])
+    })
+  );
+  const histogram = themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      height: theme.height - mainHeight,
+      marginTop: 0,
+      marginBottom: theme.margins.bottom,
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: {
+        label: null,
+        grid: false,
+        ticks: 3,
+        tickSize: theme.axis.tickSize,
+        tickPadding: theme.axis.tickPadding
+      },
+      color: { legend: false, domain: resolved.groups, range: resolved.colors },
+      marks: finishMarks(
+        [
+          rectY(distribution, {
+            x1: (datum2) => datum2.midpoint - datum2.binWidth / 2,
+            x2: (datum2) => datum2.midpoint + datum2.binWidth / 2,
+            y: "count",
+            fill: "group",
+            fillOpacity: 1 / Math.max(resolved.groups.length, 1),
+            title: "title",
+            tip: true
+          })
+        ],
+        theme
+      )
+    },
+    theme
+  );
+  const container = document.createElement("div");
+  container.className = "rtichoke-calibration";
+  container.style.width = `${theme.width}px`;
+  container.style.maxWidth = "100%";
+  container.append(calibration, histogram);
+  return container;
+}
+function renderLineChart(spec, options, x2, y2) {
+  assertV2ReferentialIntegrity(spec);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const data = seriesRenderData(
+    spec,
+    spec.data
+  ).map((datum2) => {
+    const values2 = datum2;
+    const yLabel = y2 === "ppv" ? "PPV" : y2 === "sensitivity" ? "Sensitivity" : "Lift";
+    return {
+      ...datum2,
+      title: tooltip(theme.tip.digits, [
+        ["Series", datum2.label],
+        ["Cutoff", values2.cutoff],
+        [x2 === "ppcr" ? "PPCR" : "Sensitivity", values2[x2]],
+        [yLabel, values2[y2]]
+      ])
+    };
+  });
+  const marks2 = referenceMarks(spec, theme);
+  marks2.push(
+    line(data, {
+      x: x2,
+      y: y2,
+      z: "seriesId",
+      stroke: "group",
+      strokeWidth: theme.line.width,
+      strokeDasharray: theme.line.dash ?? void 0,
+      title: "title",
+      tip: true
+    })
+  );
+  return themedPlot(
+    {
+      ...basePlotOptions(resolved, spec),
+      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
+      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
+      marks: finishMarks(marks2, theme)
+    },
+    theme
+  );
+}
+function horizons(spec) {
+  return [
+    ...new Set(
+      spec.series.map((series) => series.horizon).filter((horizon) => horizon !== void 0)
+    )
+  ];
+}
+function selectHorizonSpec(spec, horizon) {
+  const series = spec.series.filter(
+    (item) => item.horizon === void 0 || item.horizon === horizon
+  );
+  const seriesIds = new Set(series.map((item) => item.id));
+  return {
+    ...spec,
+    series,
+    data: spec.data.filter((datum2) => seriesIds.has(datum2.seriesId)),
+    references: spec.references?.filter(
+      (reference) => reference.scope !== "population_horizon" || reference.horizon === horizon
+    )
+  };
+}
+function renderHorizonLineChart(spec, options, x2, y2) {
+  const availableHorizons = horizons(spec);
+  if (availableHorizons.length <= 1) return renderLineChart(spec, options, x2, y2);
+  const container = document.createElement("div");
+  container.className = "rtichoke-horizon-chart";
+  const control = document.createElement("label");
+  control.textContent = "Fixed Time Horizon: ";
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", "Fixed Time Horizon");
+  for (const horizon of availableHorizons) {
+    const option = document.createElement("option");
+    option.value = String(horizon);
+    option.textContent = String(horizon);
+    select.append(option);
+  }
+  control.append(select);
+  const chart = document.createElement("div");
+  const draw = (horizon) => {
+    chart.replaceChildren(
+      renderLineChart(selectHorizonSpec(spec, horizon), options, x2, y2)
+    );
+  };
+  select.addEventListener("change", () => draw(Number(select.value)));
+  container.append(control, chart);
+  draw(availableHorizons[0]);
+  return container;
+}
+function renderPrecisionRecallV2(spec, options = {}) {
+  return renderLineChart(spec, options, "sensitivity", "ppv");
+}
+function renderGainsV2(spec, options = {}) {
+  return renderHorizonLineChart(spec, options, "ppcr", "sensitivity");
+}
+function renderLiftV2(spec, options = {}) {
+  return renderHorizonLineChart(spec, options, "ppcr", "lift");
+}
+
+// src/render/decision-curve.ts
+function renderDecisionCurveV2(spec, options = {}) {
+  assertV2ReferentialIntegrity(spec);
+  const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
+  const resolved = resolveV2RenderOptions(groups2, options);
+  const { theme } = resolved;
+  const displayBySeries2 = new Map(spec.series.map((series) => [series.id, series.display]));
+  const labelByGroup = new Map(spec.series.map((series) => [series.display.group, series.display.label]));
+  const data = spec.data.map((datum2) => ({
+    ...datum2,
+    group: displayBySeries2.get(datum2.seriesId).group,
+    label: displayBySeries2.get(datum2.seriesId).label,
+    title: `Series: ${displayBySeries2.get(datum2.seriesId).label}
+Threshold: ${datum2.threshold.toFixed(theme.tip.digits)}
+Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
+  }));
+  const referenceStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const marks2 = [];
+  for (const reference of spec.references) {
+    if (reference.benchmark === "treat_none") {
+      marks2.push(ruleY([0], { ...referenceStyle, title: reference.label ?? "Treat None" }));
+    } else {
+      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: reference.label ?? `Treat All \u2014 ${reference.population}` }));
+    }
+  }
+  marks2.push(
+    line(data, { x: "threshold", y: "netBenefit", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0, title: "title", tip: true }),
+    frame2({ stroke: theme.frame.color, strokeWidth: theme.frame.width })
+  );
+  const axis2 = (label, domain) => ({ label, domain, grid: false, line: true, ticks: theme.axis.ticks, tickSize: theme.axis.tickSize, tickPadding: theme.axis.tickPadding, tickFormat: theme.axis.numberFormat });
+  const plot2 = plot({
+    width: theme.width,
+    height: theme.height,
+    marginTop: theme.margins.top,
+    marginRight: theme.margins.right,
+    marginBottom: theme.margins.bottom,
+    marginLeft: theme.margins.left,
+    style: { background: theme.background, color: theme.axis.color, fontFamily: theme.typography.fontFamily, fontSize: `${theme.typography.fontSize}px` },
+    color: { legend: resolved.showLegend, domain: resolved.groups, range: resolved.colors, tickFormat: (group2) => labelByGroup.get(group2) ?? group2 },
+    x: axis2(spec.xAxis.label, spec.xAxis.domain),
+    y: axis2(spec.yAxis.label, spec.yAxis.domain),
+    marks: marks2
+  });
+  for (const label of plot2.querySelectorAll('[aria-label$="axis label"] text')) {
+    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
+    label.style.fontWeight = String(theme.typography.axisTitleWeight);
+  }
+  return plot2;
+}
+
 // src/render/performance-table.ts
 var MISSING = "\u2014";
 function cell(document2, text2, className) {
@@ -22241,468 +22828,9 @@ __export(value_exports2, {
   ValueErrorIterator: () => ValueErrorIterator
 });
 
-// src/render/v2.ts
-var RTICHOKE_COLORS2 = [
-  "#1b9e77",
-  "#d95f02",
-  "#7570b3",
-  "#e7298a",
-  "#07004D",
-  "#E6AB02",
-  "#FE5F55",
-  "#54494B",
-  "#006E90",
-  "#BC96E6"
-];
-var RTICHOKE_BROWSER_THEME = {
-  width: 600,
-  height: 600,
-  margins: { top: 28, right: 28, bottom: 58, left: 66 },
-  background: "#ffffff",
-  frame: { color: "#444444", width: 1 },
-  typography: {
-    fontFamily: "Arial, Helvetica, sans-serif",
-    fontSize: 12,
-    axisTitleSize: 14,
-    axisTitleWeight: 400,
-    legendSize: 12
-  },
-  axis: {
-    color: "#444444",
-    tickSize: 5,
-    tickPadding: 7,
-    ticks: 6,
-    numberFormat: ".1f"
-  },
-  colors: RTICHOKE_COLORS2,
-  line: { width: 2, dash: null },
-  marker: { radius: 5, fill: null, stroke: "#ffffff", strokeWidth: 1.5 },
-  reference: { color: "#BEBEBE", width: 2, dash: "4,4" },
-  legend: { position: "top", swatchWidth: 15, columns: null },
-  tip: { digits: 3 }
-};
-function mergeTheme(options) {
-  const custom8 = options.theme ?? {};
-  return {
-    ...RTICHOKE_BROWSER_THEME,
-    width: options.width ?? RTICHOKE_BROWSER_THEME.width,
-    height: options.height ?? RTICHOKE_BROWSER_THEME.height,
-    background: custom8.background ?? RTICHOKE_BROWSER_THEME.background,
-    colors: options.colors ?? RTICHOKE_BROWSER_THEME.colors,
-    margins: { ...RTICHOKE_BROWSER_THEME.margins, ...custom8.margins },
-    frame: { ...RTICHOKE_BROWSER_THEME.frame, ...custom8.frame },
-    typography: { ...RTICHOKE_BROWSER_THEME.typography, ...custom8.typography },
-    axis: { ...RTICHOKE_BROWSER_THEME.axis, ...custom8.axis },
-    line: { ...RTICHOKE_BROWSER_THEME.line, ...custom8.line },
-    marker: { ...RTICHOKE_BROWSER_THEME.marker, ...custom8.marker },
-    reference: { ...RTICHOKE_BROWSER_THEME.reference, ...custom8.reference },
-    legend: { ...RTICHOKE_BROWSER_THEME.legend, ...custom8.legend },
-    tip: { ...RTICHOKE_BROWSER_THEME.tip, ...custom8.tip }
-  };
-}
-function resolveV2RenderOptions(groupsOrCount, options = {}) {
-  const groups2 = typeof groupsOrCount === "number" ? Array.from(
-    { length: groupsOrCount },
-    (_, index2) => `group-${index2 + 1}`
-  ) : [...groupsOrCount];
-  const theme = mergeTheme(options);
-  if (!Number.isFinite(theme.width) || theme.width <= 0 || !Number.isFinite(theme.height) || theme.height <= 0)
-    throw new Error(
-      "Renderer width and height must be positive finite numbers"
-    );
-  if (!Number.isInteger(theme.tip.digits) || theme.tip.digits < 0 || theme.tip.digits > 20)
-    throw new Error("Renderer tip digits must be an integer between 0 and 20");
-  const colors = groups2.length <= 1 ? ["#000000"] : [...theme.colors];
-  if (colors.length < groups2.length)
-    throw new Error(
-      "Renderer colors must contain at least one color per display group"
-    );
-  const assigned = colors.slice(0, Math.max(groups2.length, 1));
-  return {
-    theme: { ...theme, colors: assigned },
-    groups: groups2,
-    colors: assigned,
-    colorByGroup: new Map(
-      groups2.map((group2, index2) => [group2, assigned[index2]])
-    ),
-    showLegend: groups2.length > 1
-  };
-}
-function displayBySeries(spec) {
-  return new Map(spec.series.map((series) => [series.id, series.display]));
-}
-function displayGroups(spec) {
-  return [...new Set(spec.series.map((series) => series.display.group))];
-}
-function seriesRenderData(spec, data) {
-  const displays = displayBySeries(spec);
-  return data.map((datum2) => ({
-    ...datum2,
-    group: displays.get(datum2.seriesId).group,
-    label: displays.get(datum2.seriesId).label
-  }));
-}
-function tooltip(digits, fields) {
-  return fields.filter(([, value]) => value !== void 0).map(
-    ([label, value]) => `${label}: ${typeof value === "number" ? value.toFixed(digits) : String(value)}`
-  ).join("\n");
-}
-function basePlotOptions(resolved, spec) {
-  const { theme } = resolved;
-  const labelByGroup = new Map(
-    spec.series.map((series) => [series.display.group, series.display.label])
-  );
-  return {
-    width: theme.width,
-    height: theme.height,
-    marginTop: theme.margins.top,
-    marginRight: theme.margins.right,
-    marginBottom: theme.margins.bottom,
-    marginLeft: theme.margins.left,
-    style: {
-      background: theme.background,
-      color: theme.axis.color,
-      fontFamily: theme.typography.fontFamily,
-      fontSize: `${theme.typography.fontSize}px`
-    },
-    color: {
-      legend: resolved.showLegend,
-      domain: resolved.groups,
-      range: resolved.colors,
-      tickFormat: (group2) => labelByGroup.get(group2) ?? group2
-    }
-  };
-}
-function axisOptions2(theme, label, domain) {
-  return {
-    label,
-    domain,
-    grid: false,
-    line: true,
-    ticks: theme.axis.ticks,
-    tickSize: theme.axis.tickSize,
-    tickPadding: theme.axis.tickPadding,
-    tickFormat: theme.axis.numberFormat
-  };
-}
-function frameMark(theme) {
-  return frame2({
-    stroke: theme.frame.color,
-    strokeWidth: theme.frame.width
-  });
-}
-function referenceMarks(spec, theme) {
-  const style = {
-    stroke: theme.reference.color,
-    strokeWidth: theme.reference.width,
-    strokeDasharray: theme.reference.dash
-  };
-  const marks2 = [];
-  for (const reference of spec.references ?? []) {
-    if (reference.type === "identity")
-      marks2.push(
-        line(
-          [
-            { x: 0, y: 0 },
-            { x: 1, y: 1 }
-          ],
-          { x: "x", y: "y", ...style, title: reference.label }
-        )
-      );
-    else if (reference.type === "horizontal" && reference.value !== void 0)
-      marks2.push(
-        ruleY([reference.value], { ...style, title: reference.label })
-      );
-    else if (reference.type === "path" && reference.points)
-      marks2.push(
-        line(reference.points, {
-          x: "x",
-          y: "y",
-          ...style,
-          title: reference.label
-        })
-      );
-  }
-  return marks2;
-}
-function finishMarks(marks2, theme) {
-  marks2.push(frameMark(theme));
-  return marks2;
-}
-function themedPlot(options, theme) {
-  const plot2 = plot(options);
-  for (const label of plot2.querySelectorAll(
-    '[aria-label$="axis label"] text'
-  )) {
-    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
-    label.style.fontWeight = String(theme.typography.axisTitleWeight);
-  }
-  for (const frame3 of plot2.querySelectorAll(
-    '[aria-label="frame"]'
-  )) {
-    frame3.setAttribute("stroke", theme.frame.color);
-  }
-  if (plot2 instanceof HTMLElement) {
-    plot2.style.fontSize = `${theme.typography.legendSize}px`;
-    for (const swatch of plot2.querySelectorAll(
-      'svg[width="15"]'
-    )) {
-      swatch.setAttribute("width", String(theme.legend.swatchWidth));
-    }
-  }
-  return plot2;
-}
-function renderRocV2(spec, options = {}) {
-  assertV2ReferentialIntegrity(spec);
-  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
-  const { theme } = resolved;
-  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
-    ...datum2,
-    false_positive_rate: 1 - datum2.specificity,
-    title: tooltip(theme.tip.digits, [
-      ["Series", datum2.label],
-      ["Cutoff", datum2.cutoff],
-      ["Sensitivity", datum2.sensitivity],
-      ["Specificity", datum2.specificity]
-    ])
-  }));
-  const marks2 = referenceMarks(spec, theme);
-  marks2.push(
-    line(data, {
-      x: "false_positive_rate",
-      y: "sensitivity",
-      z: "seriesId",
-      stroke: "group",
-      strokeWidth: theme.line.width,
-      strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
-      tip: true
-    })
-  );
-  return themedPlot(
-    {
-      ...basePlotOptions(resolved, spec),
-      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
-      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
-      marks: finishMarks(marks2, theme)
-    },
-    theme
-  );
-}
-function renderCalibrationV2(spec, options = {}) {
-  assertV2ReferentialIntegrity(spec);
-  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
-  const { theme } = resolved;
-  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
-    ...datum2,
-    title: tooltip(theme.tip.digits, [
-      ["Series", datum2.label],
-      ["Predicted", datum2.predicted],
-      ["Observed", datum2.observed],
-      ["Events", datum2.events],
-      ["Total", datum2.total]
-    ])
-  }));
-  const marks2 = referenceMarks(spec, theme);
-  marks2.push(
-    line(data, {
-      x: "predicted",
-      y: "observed",
-      z: "seriesId",
-      stroke: "group",
-      strokeWidth: theme.line.width,
-      strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
-      tip: true
-    })
-  );
-  const discrete = data.filter((datum2) => datum2.method === "discrete");
-  if (discrete.length > 0)
-    marks2.push(
-      dot(discrete, {
-        x: "predicted",
-        y: "observed",
-        fill: theme.marker.fill ?? "group",
-        stroke: theme.marker.stroke,
-        strokeWidth: theme.marker.strokeWidth,
-        r: theme.marker.radius,
-        title: "title",
-        tip: true
-      })
-    );
-  const hasDistribution = (spec.distribution?.length ?? 0) > 0;
-  const mainHeight = hasDistribution ? Math.round(theme.height * 0.8) : theme.height;
-  const calibration = themedPlot(
-    {
-      ...basePlotOptions(resolved, spec),
-      height: mainHeight,
-      marginBottom: hasDistribution ? 8 : theme.margins.bottom,
-      x: hasDistribution ? {
-        ...axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
-        axis: null,
-        label: null
-      } : axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
-      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
-      marks: finishMarks(marks2, theme)
-    },
-    theme
-  );
-  if (!hasDistribution || !spec.distribution) return calibration;
-  const distribution = seriesRenderData(spec, spec.distribution).map(
-    (datum2) => ({
-      ...datum2,
-      title: tooltip(theme.tip.digits, [
-        ["Series", datum2.label],
-        ["Midpoint", datum2.midpoint],
-        ["Count", datum2.count]
-      ])
-    })
-  );
-  const histogram = themedPlot(
-    {
-      ...basePlotOptions(resolved, spec),
-      height: theme.height - mainHeight,
-      marginTop: 0,
-      marginBottom: theme.margins.bottom,
-      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
-      y: {
-        label: null,
-        grid: false,
-        ticks: 3,
-        tickSize: theme.axis.tickSize,
-        tickPadding: theme.axis.tickPadding
-      },
-      color: { legend: false, domain: resolved.groups, range: resolved.colors },
-      marks: finishMarks(
-        [
-          rectY(distribution, {
-            x1: (datum2) => datum2.midpoint - datum2.binWidth / 2,
-            x2: (datum2) => datum2.midpoint + datum2.binWidth / 2,
-            y: "count",
-            fill: "group",
-            fillOpacity: 1 / Math.max(resolved.groups.length, 1),
-            title: "title",
-            tip: true
-          })
-        ],
-        theme
-      )
-    },
-    theme
-  );
-  const container = document.createElement("div");
-  container.className = "rtichoke-calibration";
-  container.style.width = `${theme.width}px`;
-  container.style.maxWidth = "100%";
-  container.append(calibration, histogram);
-  return container;
-}
-function renderLineChart(spec, options, x2, y2) {
-  assertV2ReferentialIntegrity(spec);
-  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
-  const { theme } = resolved;
-  const data = seriesRenderData(
-    spec,
-    spec.data
-  ).map((datum2) => {
-    const values2 = datum2;
-    const yLabel = y2 === "ppv" ? "PPV" : y2 === "sensitivity" ? "Sensitivity" : "Lift";
-    return {
-      ...datum2,
-      title: tooltip(theme.tip.digits, [
-        ["Series", datum2.label],
-        ["Cutoff", values2.cutoff],
-        [x2 === "ppcr" ? "PPCR" : "Sensitivity", values2[x2]],
-        [yLabel, values2[y2]]
-      ])
-    };
-  });
-  const marks2 = referenceMarks(spec, theme);
-  marks2.push(
-    line(data, {
-      x: x2,
-      y: y2,
-      z: "seriesId",
-      stroke: "group",
-      strokeWidth: theme.line.width,
-      strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
-      tip: true
-    })
-  );
-  return themedPlot(
-    {
-      ...basePlotOptions(resolved, spec),
-      x: axisOptions2(theme, spec.xAxis.label, spec.xAxis.domain),
-      y: axisOptions2(theme, spec.yAxis.label, spec.yAxis.domain),
-      marks: finishMarks(marks2, theme)
-    },
-    theme
-  );
-}
-function horizons(spec) {
-  return [
-    ...new Set(
-      spec.series.map((series) => series.horizon).filter((horizon) => horizon !== void 0)
-    )
-  ];
-}
-function selectHorizonSpec(spec, horizon) {
-  const series = spec.series.filter(
-    (item) => item.horizon === void 0 || item.horizon === horizon
-  );
-  const seriesIds = new Set(series.map((item) => item.id));
-  return {
-    ...spec,
-    series,
-    data: spec.data.filter((datum2) => seriesIds.has(datum2.seriesId)),
-    references: spec.references?.filter(
-      (reference) => reference.scope !== "population_horizon" || reference.horizon === horizon
-    )
-  };
-}
-function renderHorizonLineChart(spec, options, x2, y2) {
-  const availableHorizons = horizons(spec);
-  if (availableHorizons.length <= 1) return renderLineChart(spec, options, x2, y2);
-  const container = document.createElement("div");
-  container.className = "rtichoke-horizon-chart";
-  const control = document.createElement("label");
-  control.textContent = "Fixed Time Horizon: ";
-  const select = document.createElement("select");
-  select.setAttribute("aria-label", "Fixed Time Horizon");
-  for (const horizon of availableHorizons) {
-    const option = document.createElement("option");
-    option.value = String(horizon);
-    option.textContent = String(horizon);
-    select.append(option);
-  }
-  control.append(select);
-  const chart = document.createElement("div");
-  const draw = (horizon) => {
-    chart.replaceChildren(
-      renderLineChart(selectHorizonSpec(spec, horizon), options, x2, y2)
-    );
-  };
-  select.addEventListener("change", () => draw(Number(select.value)));
-  container.append(control, chart);
-  draw(availableHorizons[0]);
-  return container;
-}
-function renderPrecisionRecallV2(spec, options = {}) {
-  return renderLineChart(spec, options, "sensitivity", "ppv");
-}
-function renderGainsV2(spec, options = {}) {
-  return renderHorizonLineChart(spec, options, "ppcr", "sensitivity");
-}
-function renderLiftV2(spec, options = {}) {
-  return renderHorizonLineChart(spec, options, "ppcr", "lift");
-}
-
 // src/render/report.ts
 function renderReport(spec) {
-  if (!value_exports2.Check(ReportSpecSchema, spec)) {
-    throw new Error("Invalid ReportSpec");
-  }
+  if (!value_exports2.Check(ReportSpecSchema, spec)) throw new Error("Invalid ReportSpec");
   assertReportReferentialIntegrity(spec);
   const root2 = document.createElement("div");
   root2.className = "rtichoke-report";
@@ -22742,6 +22870,9 @@ function renderReport(spec) {
         break;
       case "lift":
         content.append(renderLiftV2(component.spec));
+        break;
+      case "decision_curve":
+        content.append(renderDecisionCurveV2(component.spec));
         break;
     }
     container.append(content);
@@ -22818,6 +22949,11 @@ function renderRoc(spec) {
 export {
   CalibrationSpecSchema,
   CalibrationV2SpecSchema,
+  DecisionCurveV2DatumSchema,
+  DecisionCurveV2EvaluationSchema,
+  DecisionCurveV2ReferenceSchema,
+  DecisionCurveV2SeriesSchema,
+  DecisionCurveV2SpecSchema,
   DisplayGroupingSpecSchema,
   DisplayRoleSchema,
   EvaluationSpecSchema,
@@ -22841,6 +22977,8 @@ export {
   RtichokeChartSpecSchema,
   RtichokeChartSpecV2Schema,
   SeriesSpecSchema,
+  TreatAllReferenceSchema,
+  TreatNoneReferenceSchema,
   assertPerformanceTableReferentialIntegrity,
   assertReportReferentialIntegrity,
   assertV2ReferentialIntegrity,
@@ -22848,6 +22986,7 @@ export {
   calibrationV2SpecFromRtichokeRows,
   renderCalibration,
   renderCalibrationV2,
+  renderDecisionCurveV2,
   renderGainsV2,
   renderLiftV2,
   renderPerformanceTable,
