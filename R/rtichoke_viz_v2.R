@@ -43,6 +43,7 @@ rtichoke_viz_browser_id <- local({
 render_rtichoke_viz_browser <- function(spec) {
   renderers <- c(
     roc = "renderRocV2",
+    precision_recall = "renderPrecisionRecallV2",
     gains = "renderGainsV2",
     lift = "renderLiftV2"
   )
@@ -232,6 +233,51 @@ rtichoke_viz_gains_v2_spec <- function(
   spec
 }
 
+#' Build a canonical rtichoke_viz v2 Precision-Recall specification
+#'
+#' Translate already-computed Precision-Recall performance data plus explicit
+#' semantic evaluation metadata into the canonical rtichoke_viz v2 contract.
+#' Population prevalence references are derived from the same production
+#' prevalence helper used by the existing canonical curve builders.
+#'
+#' @inheritParams rtichoke_viz_roc_v2_spec
+#'
+#' @return A nested list representing a canonical Precision-Recall v2
+#'   specification.
+#' @noRd
+rtichoke_viz_precision_recall_v2_spec <- function(
+  performance_data,
+  evaluation_metadata
+) {
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "precision_recall"
+  )
+
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    populations
+  )
+
+  spec$references <- lapply(populations, function(population) {
+    list(
+      type = "horizontal",
+      scope = "population",
+      population = population,
+      value = as.numeric(prevalence[[population]])
+    )
+  })
+  spec
+}
+
 v2_population_prevalence <- function(
   performance_data,
   evaluation_metadata,
@@ -284,12 +330,13 @@ gains_v2_population_prevalence <- v2_population_prevalence
 rtichoke_viz_curve_v2_spec <- function(
   performance_data,
   evaluation_metadata,
-  type = c("roc", "gains", "lift")
+  type = c("roc", "precision_recall", "gains", "lift")
 ) {
   type <- match.arg(type)
   required_columns <- switch(
     type,
     roc = c("probability_threshold", "sensitivity", "specificity"),
+    precision_recall = c("probability_threshold", "sensitivity", "PPV"),
     gains = c("probability_threshold", "ppcr", "sensitivity"),
     lift = c("probability_threshold", "ppcr", "lift")
   )
@@ -399,6 +446,9 @@ rtichoke_viz_curve_v2_spec <- function(
     if (type == "roc") {
       datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
       datum$specificity <- as.numeric(performance_data$specificity[[i]])
+    } else if (type == "precision_recall") {
+      datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
+      datum$ppv <- as.numeric(performance_data$PPV[[i]])
     } else if (type == "gains") {
       datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
       datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
@@ -421,6 +471,21 @@ rtichoke_viz_curve_v2_spec <- function(
       xAxis = list(label = "1 - Specificity", domain = c(0, 1)),
       yAxis = list(label = "Sensitivity", domain = c(0, 1)),
       references = list(list(type = "identity", scope = "global"))
+    ))
+  }
+
+  if (type == "precision_recall") {
+    return(list(
+      schemaVersion = "2.0",
+      type = "precision_recall",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "sensitivity",
+      y = "ppv",
+      xAxis = list(label = "Sensitivity", domain = c(0, 1)),
+      yAxis = list(label = "PPV", domain = c(0, 1)),
+      references = list()
     ))
   }
 
