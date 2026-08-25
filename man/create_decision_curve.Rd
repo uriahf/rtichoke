@@ -17,7 +17,8 @@ create_decision_curve(
   size = NULL,
   type = "conventional",
   min_p_threshold = 0,
-  max_p_threshold = 1
+  max_p_threshold = 1,
+  renderer = "default"
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ displayed}
 
 \item{max_p_threshold}{The maximum Probability Threshold value to be
 displayed}
+
+\item{renderer}{rendering backend; \code{"default"} preserves existing behavior, with \code{"ggplot2"}, \code{"plotly"}, and \code{"browser"} alternatives.}
 }
 \description{
 Create a decision Curve

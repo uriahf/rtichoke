@@ -12,6 +12,8 @@
 #' displayed
 #' @param max_p_threshold The maximum Probability Threshold value to be
 #' displayed
+#' @param renderer rendering backend; `"default"` preserves `interactive`, with `"ggplot2"`, `"plotly"`, or `"browser"` alternatives.
+#' @param evaluation_metadata semantic metadata required for the precomputed browser path.
 #'
 #' @export
 #'
@@ -147,7 +149,8 @@ create_decision_curve <- function(
   size = NULL,
   type = "conventional",
   min_p_threshold = 0,
-  max_p_threshold = 1
+  max_p_threshold = 1,
+  renderer = "default"
 ) {
   match.arg(
     arg = type,
@@ -158,21 +161,9 @@ create_decision_curve <- function(
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  prepare_performance_data(
-    probs = probs,
-    reals = reals,
-    by = by,
-    stratified_by = stratified_by
-  ) |>
-    plot_decision_curve(
-      chosen_threshold = chosen_threshold,
-      interactive = interactive,
-      color_values = color_values,
-      size = size,
-      type = type,
-      min_p_threshold = min_p_threshold,
-      max_p_threshold = max_p_threshold
-    )
+  performance_data <- prepare_performance_data(probs = probs, reals = reals, by = by, stratified_by = stratified_by)
+  evaluation_metadata <- if (identical(renderer, "browser")) build_evaluation_metadata(probs, reals)
+  plot_decision_curve(performance_data, chosen_threshold = chosen_threshold, interactive = interactive, color_values = color_values, size = size, type = type, min_p_threshold = min_p_threshold, max_p_threshold = max_p_threshold, renderer = renderer, evaluation_metadata = evaluation_metadata)
 }
 
 
@@ -245,13 +236,22 @@ plot_decision_curve <- function(
   size = NULL,
   type = "conventional",
   min_p_threshold = 0,
-  max_p_threshold = 1
+  max_p_threshold = 1,
+  renderer = "default",
+  evaluation_metadata = NULL
 ) {
   if (!is.na(chosen_threshold)) {
     check_chosen_threshold_input(chosen_threshold)
   }
 
-  if (interactive == FALSE) {
+  renderer <- rtichoke_viz_renderer(renderer, interactive)
+  if (renderer == "browser") {
+    if (!identical(type, "conventional")) stop("Browser rendering is available only for conventional static Decision Curves", call. = FALSE)
+    if (is.null(evaluation_metadata)) stop("Browser rendering requires explicit evaluation_metadata", call. = FALSE)
+    return(render_rtichoke_viz_browser(rtichoke_viz_decision_curve_v2_spec(performance_data, evaluation_metadata, min_p_threshold, max_p_threshold)))
+  }
+
+  if (renderer == "ggplot2") {
     decision_curve <- performance_data |>
       create_ggplot_for_performance_metrics("threshold", "NB", color_values) |>
       add_reference_lines_to_ggplot(
@@ -261,7 +261,7 @@ plot_decision_curve <- function(
       ggplot2::xlab("Probability Threshold") +
       ggplot2::ylab("Net Benefit")
   }
-  if (interactive == TRUE) {
+  if (renderer == "plotly") {
     if (type == "conventional") {
       decision_curve <- performance_data |>
         create_rtichoke_curve_list(

@@ -26,7 +26,7 @@ format:
     const calibration = component("calibration")?.querySelector("svg");
     const report = doc.querySelector(".rtichoke-viz-report");
     const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
-      (sheet.href || "").includes("rtichoke-viz-0.5.0/rtichoke-viz.css")
+      (sheet.href || "").includes("rtichoke-viz-0.6.0/rtichoke-viz.css")
     );
     const styled = report && getComputedStyle(report).display !== "none";
     return { table: !!table, roc: !!roc, calibration: !!calibration, cssLoaded, styled };
