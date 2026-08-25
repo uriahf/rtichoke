@@ -1,0 +1,88 @@
+name: Precision-Recall browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/precision_recall.R'
+      - 'R/rtichoke_viz_v2.R'
+      - 'inst/**'
+      - 'tests/testthat/test-precision-recall-browser-v2.R'
+      - '.github/workflows/precision-recall-browser-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  precision-recall-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Record browser version
+        run: google-chrome --version
+
+      - name: Generate real public Precision-Recall browser artifact
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+
+          widget <- create_precision_recall_curve(
+            probs = list("Model A" = c(0.05, 0.2, 0.7, 0.95)),
+            reals = list("Population A" = c(0, 0, 1, 1)),
+            by = 0.25,
+            renderer = "browser"
+          )
+
+          dir.create("browser-acceptance", showWarnings = FALSE)
+          htmltools::save_html(
+            widget,
+            file = "browser-acceptance/precision-recall.html",
+            libdir = "lib"
+          )
+
+      - name: Execute direct file artifact in real Chrome
+        run: |
+          artifact="$(pwd)/browser-acceptance/precision-recall.html"
+          stderr="/tmp/precision-recall-chrome-stderr.log"
+          dom="/tmp/precision-recall-dom.html"
+
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --dump-dom \
+            "file://${artifact}" > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError' "$stderr"
+          grep -q '"type":"precision_recall"' "$dom"
+          grep -q '<svg' "$dom"
