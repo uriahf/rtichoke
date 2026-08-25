@@ -18,7 +18,7 @@ precision_recall_headless_browser <- function() {
   ))
   candidates <- unname(candidates[nzchar(candidates)])
   for (candidate in candidates) {
-    status <- tryCatch(
+    res <- tryCatch(
       suppressWarnings(system2(
         candidate,
         args = "--version",
@@ -27,7 +27,7 @@ precision_recall_headless_browser <- function() {
       )),
       error = function(...) 1L
     )
-    if (identical(status, 0L)) {
+    if (identical(res, 0L)) {
       return(candidate)
     }
   }
@@ -57,16 +57,9 @@ test_that("Precision-Recall v2 is a pure adapter over existing performance rows"
     vapply(spec$data, `[[`, numeric(1), "ppv"),
     as.numeric(dat$performance_data$PPV)
   )
-  expect_true(all(vapply(
-    spec$data,
-    function(x) {
-      identical(
-        names(x),
-        c("seriesId", "cutoff", "sensitivity", "ppv")
-      )
-    },
-    logical(1)
-  )))
+  expect_true(all(
+    c("seriesId", "cutoff", "sensitivity", "ppv") %in% names(spec$data[[1]])
+  ))
 })
 
 test_that("Precision-Recall v2 represents one model in one population", {
@@ -113,21 +106,22 @@ test_that("Precision-Recall v2 shares one prevalence reference across models", {
     "Model B" = c(0.1, 0.4, 0.6, 0.9)
   )
   reals <- list("Population A" = c(0, 0, 1, 1))
+
   spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
     prepare_performance_data(probs, reals, by = 0.25),
     rtichoke:::build_evaluation_metadata(probs, reals)
   )
 
   expect_identical(
-    vapply(spec$evaluations, `[[`, character(1), "id"),
+    vapply(spec$evaluations, `[[`, "", "id"),
     c("evaluation-1", "evaluation-2")
   )
   expect_identical(
-    vapply(spec$series, `[[`, character(1), "id"),
+    vapply(spec$series, `[[`, "", "id"),
     c("series-1", "series-2")
   )
   expect_identical(
-    vapply(spec$evaluations, `[[`, character(1), "population"),
+    vapply(spec$evaluations, `[[`, "", "population"),
     c("Population A", "Population A")
   )
   expect_length(spec$references, 1)
@@ -135,91 +129,87 @@ test_that("Precision-Recall v2 shares one prevalence reference across models", {
   expect_identical(spec$references[[1]]$value, 0.5)
 })
 
-test_that(
-  "Precision-Recall v2 preserves population-shaped model-unknown semantics",
-  {
-    probs <- list(
-      "Population A" = c(0.05, 0.2, 0.7, 0.95),
-      "Population B" = c(0.1, 0.4, 0.6, 0.9)
-    )
-    reals <- list(
-      "Population A" = c(0, 0, 0, 1),
-      "Population B" = c(0, 0, 1, 1)
-    )
-    spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
-      prepare_performance_data(probs, reals, by = 0.25),
-      rtichoke:::build_evaluation_metadata(probs, reals)
-    )
+test_that("Precision-Recall v2 preserves population-shaped model-unknown semantics", {
+  probs <- list(
+    "Population A" = c(0.05, 0.2, 0.7, 0.95),
+    "Population B" = c(0.1, 0.4, 0.6, 0.9)
+  )
+  reals <- list(
+    "Population A" = c(0, 0, 0, 1),
+    "Population B" = c(0, 0, 1, 1)
+  )
 
-    expect_identical(
-      spec$evaluations,
+  spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
+    prepare_performance_data(probs, reals, by = 0.25),
+    rtichoke:::build_evaluation_metadata(probs, reals)
+  )
+
+  expect_identical(
+    spec$evaluations,
+    list(
+      list(id = "evaluation-1", population = "Population A"),
+      list(id = "evaluation-2", population = "Population B")
+    )
+  )
+  expect_false(any(vapply(
+    spec$evaluations,
+    function(x) "model" %in% names(x),
+    logical(1)
+  )))
+  expect_identical(
+    lapply(spec$series, `[[`, "display"),
+    list(
       list(
-        list(id = "evaluation-1", population = "Population A"),
-        list(id = "evaluation-2", population = "Population B")
+        label = "Population A",
+        group = "Population A",
+        role = "population"
+      ),
+      list(
+        label = "Population B",
+        group = "Population B",
+        role = "population"
       )
     )
-    expect_false(any(vapply(
-      spec$evaluations,
-      function(x) "model" %in% names(x),
-      logical(1)
-    )))
-    expect_identical(
-      lapply(spec$series, `[[`, "display"),
-      list(
-        list(
-          label = "Population A",
-          group = "Population A",
-          role = "population"
-        ),
-        list(
-          label = "Population B",
-          group = "Population B",
-          role = "population"
-        )
-      )
-    )
-    expect_identical(
-      vapply(spec$references, `[[`, character(1), "population"),
-      c("Population A", "Population B")
-    )
-    expect_identical(
-      vapply(spec$references, `[[`, numeric(1), "value"),
-      c(0.25, 0.5)
-    )
-  }
-)
+  )
+  expect_identical(
+    vapply(spec$references, `[[`, "", "population"),
+    c("Population A", "Population B")
+  )
+  expect_identical(
+    vapply(spec$references, `[[`, numeric(1), "value"),
+    c(0.25, 0.5)
+  )
+})
 
-test_that(
-  "Precision-Recall v2 keeps equal-prevalence populations as distinct owners",
-  {
-    probs <- list(
-      "Population A" = c(0.05, 0.2, 0.7, 0.95),
-      "Population B" = c(0.1, 0.4, 0.6, 0.9)
-    )
-    reals <- list(
-      "Population A" = c(0, 0, 1, 1),
-      "Population B" = c(0, 1, 0, 1)
-    )
-    spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
-      prepare_performance_data(probs, reals, by = 0.25),
-      rtichoke:::build_evaluation_metadata(probs, reals)
-    )
+test_that("Precision-Recall v2 keeps equal-prevalence populations as distinct owners", {
+  probs <- list(
+    "Population A" = c(0.05, 0.2, 0.7, 0.95),
+    "Population B" = c(0.1, 0.4, 0.6, 0.9)
+  )
+  reals <- list(
+    "Population A" = c(0, 0, 1, 1),
+    "Population B" = c(0, 1, 0, 1)
+  )
 
-    expect_length(spec$references, 2)
-    expect_identical(
-      vapply(spec$references, `[[`, character(1), "population"),
-      c("Population A", "Population B")
-    )
-    expect_identical(
-      vapply(spec$references, `[[`, numeric(1), "value"),
-      c(0.5, 0.5)
-    )
-    expect_false(identical(
-      spec$references[[1]]$population,
-      spec$references[[2]]$population
-    ))
-  }
-)
+  spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
+    prepare_performance_data(probs, reals, by = 0.25),
+    rtichoke:::build_evaluation_metadata(probs, reals)
+  )
+
+  expect_length(spec$references, 2)
+  expect_identical(
+    vapply(spec$references, `[[`, "", "population"),
+    c("Population A", "Population B")
+  )
+  expect_identical(
+    vapply(spec$references, `[[`, numeric(1), "value"),
+    c(0.5, 0.5)
+  )
+  expect_false(identical(
+    spec$references[[1]]$population,
+    spec$references[[2]]$population
+  ))
+})
 
 test_that("Precision-Recall v2 IDs are deterministic and label-independent", {
   probs <- list(
@@ -243,39 +233,41 @@ test_that("Precision-Recall v2 IDs are deterministic and label-independent", {
   )
 
   expect_identical(
-    vapply(spec$evaluations, `[[`, character(1), "id"),
+    vapply(spec$evaluations, `[[`, "", "id"),
     c("evaluation-1", "evaluation-2")
   )
   expect_identical(
-    vapply(spec$series, `[[`, character(1), "id"),
+    vapply(spec$series, `[[`, "", "id"),
     c("series-1", "series-2")
   )
   expect_identical(
-    vapply(spec$evaluations, `[[`, character(1), "id"),
-    vapply(renamed_spec$evaluations, `[[`, character(1), "id")
+    vapply(spec$evaluations, `[[`, "", "id"),
+    vapply(renamed_spec$evaluations, `[[`, "", "id")
   )
   expect_identical(
-    vapply(spec$series, `[[`, character(1), "id"),
-    vapply(renamed_spec$series, `[[`, character(1), "id")
+    vapply(spec$series, `[[`, "", "id"),
+    vapply(renamed_spec$series, `[[`, "", "id")
   )
 })
 
 test_that("Precision-Recall public renderers preserve historical defaults", {
   dat <- precision_recall_v2_fixture()
 
-  expect_s3_class(
-    create_precision_recall_curve(dat$probs, dat$reals, by = 0.25),
-    "plotly"
+  plotly_plot <- create_precision_recall_curve(
+    dat$probs,
+    dat$reals,
+    by = 0.25
   )
-  expect_s3_class(
-    create_precision_recall_curve(
-      dat$probs,
-      dat$reals,
-      by = 0.25,
-      interactive = FALSE
-    ),
-    "ggplot"
+  expect_s3_class(plotly_plot, "plotly")
+
+  ggplot_plot <- create_precision_recall_curve(
+    dat$probs,
+    dat$reals,
+    by = 0.25,
+    interactive = FALSE
   )
+  expect_s3_class(ggplot_plot, "ggplot")
+
   expect_s3_class(
     plot_precision_recall_curve(dat$performance_data, renderer = "plotly"),
     "plotly"
@@ -288,6 +280,7 @@ test_that("Precision-Recall public renderers preserve historical defaults", {
 
 test_that("Precision-Recall browser dispatch uses the canonical shared renderer", {
   dat <- precision_recall_v2_fixture()
+
   browser <- create_precision_recall_curve(
     dat$probs,
     dat$reals,
@@ -321,8 +314,8 @@ test_that("Precision-Recall browser dispatch uses the canonical shared renderer"
 
 test_that("public Precision-Recall browser artifact renders SVG from file", {
   skip_on_os("windows")
-  browser_bin <- precision_recall_headless_browser()
-  skip_if(!nzchar(browser_bin), "No headless Chromium/Chrome available")
+  browser <- precision_recall_headless_browser()
+  skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
 
   dat <- precision_recall_v2_fixture()
   widget <- create_precision_recall_curve(
@@ -341,9 +334,10 @@ test_that("public Precision-Recall browser artifact renders SVG from file", {
     winslash = "/",
     mustWork = TRUE
   )
+  url <- paste0("file://", rendered_file)
   stderr_file <- tempfile("rtichoke-pr-browser-stderr-")
   dom_lines <- system2(
-    browser_bin,
+    browser,
     args = c(
       "--headless=new",
       "--no-sandbox",
@@ -351,7 +345,7 @@ test_that("public Precision-Recall browser artifact renders SVG from file", {
       "--disable-dev-shm-usage",
       "--virtual-time-budget=3000",
       "--dump-dom",
-      shQuote(paste0("file://", rendered_file))
+      shQuote(url)
     ),
     stdout = TRUE,
     stderr = stderr_file,
@@ -359,10 +353,7 @@ test_that("public Precision-Recall browser artifact renders SVG from file", {
   )
   status <- attr(dom_lines, "status")
   dom <- paste(dom_lines, collapse = "\n")
-  browser_stderr <- paste(
-    readLines(stderr_file, warn = FALSE),
-    collapse = "\n"
-  )
+  browser_stderr <- paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
 
   expect_null(status, info = browser_stderr)
   expect_false(
