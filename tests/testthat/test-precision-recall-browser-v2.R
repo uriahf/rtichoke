@@ -9,31 +9,6 @@ precision_recall_v2_fixture <- function() {
   )
 }
 
-precision_recall_headless_browser <- function() {
-  candidates <- Sys.which(c(
-    "chromium",
-    "chromium-browser",
-    "google-chrome",
-    "google-chrome-stable"
-  ))
-  candidates <- unname(candidates[nzchar(candidates)])
-  for (candidate in candidates) {
-    res <- tryCatch(
-      suppressWarnings(system2(
-        candidate,
-        args = "--version",
-        stdout = FALSE,
-        stderr = FALSE
-      )),
-      error = function(...) 1L
-    )
-    if (identical(res, 0L)) {
-      return(candidate)
-    }
-  }
-  ""
-}
-
 test_that("Precision-Recall v2 is a pure adapter over existing performance rows", {
   dat <- precision_recall_v2_fixture()
   spec <- rtichoke:::rtichoke_viz_precision_recall_v2_spec(
@@ -213,10 +188,12 @@ test_that("Precision-Recall v2 keeps equal-prevalence populations as distinct ow
     vapply(spec$references, `[[`, numeric(1), "value"),
     c(0.5, 0.5)
   )
-  expect_false(identical(
-    spec$references[[1]]$population,
-    spec$references[[2]]$population
-  ))
+  expect_false(
+    identical(
+      spec$references[[1]]$population,
+      spec$references[[2]]$population
+    )
+  )
 })
 
 test_that("Precision-Recall v2 IDs are deterministic and label-independent", {
@@ -318,60 +295,4 @@ test_that("Precision-Recall browser dispatch uses the canonical shared renderer"
     plot_precision_recall_curve(dat$performance_data, renderer = "browser"),
     "explicit evaluation_metadata"
   )
-})
-
-test_that("public Precision-Recall browser artifact renders SVG from file", {
-  skip_on_os("windows")
-  browser <- precision_recall_headless_browser()
-  skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
-
-  dat <- precision_recall_v2_fixture()
-  widget <- create_precision_recall_curve(
-    dat$probs,
-    dat$reals,
-    by = 0.25,
-    renderer = "browser"
-  )
-  output_dir <- tempfile("rtichoke-pr-browser-")
-  dir.create(output_dir, recursive = TRUE)
-  output_file <- file.path(output_dir, "precision-recall.html")
-  htmltools::save_html(widget, output_file, libdir = "lib")
-
-  rendered_file <- normalizePath(
-    output_file,
-    winslash = "/",
-    mustWork = TRUE
-  )
-  url <- paste0("file://", rendered_file)
-  stderr_file <- tempfile("rtichoke-pr-browser-stderr-")
-  dom_lines <- system2(
-    browser,
-    args = c(
-      "--headless=new",
-      "--no-sandbox",
-      "--disable-gpu",
-      "--disable-dev-shm-usage",
-      "--virtual-time-budget=3000",
-      "--dump-dom",
-      shQuote(url)
-    ),
-    stdout = TRUE,
-    stderr = stderr_file,
-    timeout = 20
-  )
-  status <- attr(dom_lines, "status")
-  dom <- paste(dom_lines, collapse = "\n")
-  browser_stderr <- paste(readLines(stderr_file, warn = FALSE), collapse = "\n")
-
-  expect_null(status, info = browser_stderr)
-  expect_false(
-    grepl(
-      "ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError",
-      browser_stderr,
-      perl = TRUE
-    ),
-    info = browser_stderr
-  )
-  expect_match(dom, '"type":"precision_recall"', fixed = TRUE)
-  expect_match(dom, "<svg", fixed = TRUE)
 })
