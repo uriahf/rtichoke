@@ -264,9 +264,9 @@ plot_decision_curve <- function(
 
   renderer <- rtichoke_viz_renderer(renderer, interactive)
   if (renderer == "browser") {
-    if (!identical(type, "conventional")) {
+    if (identical(type, "combined")) {
       stop(
-        "Browser rendering is available only for conventional static Decision Curves",
+        "Browser rendering is not available for combined static Decision Curves",
         call. = FALSE
       )
     }
@@ -276,12 +276,25 @@ plot_decision_curve <- function(
         call. = FALSE
       )
     }
-    return(render_rtichoke_viz_browser(rtichoke_viz_decision_curve_v2_spec(
-      performance_data,
-      evaluation_metadata,
-      min_p_threshold,
-      max_p_threshold
-    )))
+    spec <- if (identical(type, "conventional")) {
+      rtichoke_viz_decision_curve_v2_spec(
+        performance_data,
+        evaluation_metadata,
+        min_p_threshold,
+        max_p_threshold
+      )
+    } else {
+      ia_performance_data <- add_static_interventions_avoided_metric(
+        performance_data
+      )
+      rtichoke_viz_interventions_avoided_v2_spec(
+        ia_performance_data,
+        evaluation_metadata,
+        min_p_threshold,
+        max_p_threshold
+      )
+    }
+    return(render_rtichoke_viz_browser(spec))
   }
 
   if (renderer == "ggplot2") {

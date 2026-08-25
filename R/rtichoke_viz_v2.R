@@ -46,7 +46,8 @@ render_rtichoke_viz_browser <- function(spec) {
     precision_recall = "renderPrecisionRecallV2",
     gains = "renderGainsV2",
     lift = "renderLiftV2",
-    decision_curve = "renderDecisionCurveV2"
+    decision_curve = "renderDecisionCurveV2",
+    interventions_avoided = "renderInterventionsAvoidedV2"
   )
   renderer <- if (spec$type %in% names(renderers)) {
     unname(renderers[[spec$type]])
@@ -66,7 +67,7 @@ render_rtichoke_viz_browser <- function(spec) {
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.6.0",
+    version = "0.7.0",
     src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
@@ -74,7 +75,7 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.6.0/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-0.7.0/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -352,6 +353,87 @@ rtichoke_viz_decision_curve_v2_spec <- function(
   spec
 }
 
+#' Build a canonical rtichoke_viz v2 Interventions Avoided specification
+#' @inheritParams rtichoke_viz_decision_curve_v2_spec
+#' @return A canonical Interventions Avoided v2 specification.
+#' @noRd
+rtichoke_viz_interventions_avoided_v2_spec <- function(
+  performance_data,
+  evaluation_metadata,
+  min_p_threshold = 0,
+  max_p_threshold = 1
+) {
+  required <- c("probability_threshold", "NB_interventions_avoided")
+  missing <- setdiff(required, names(performance_data))
+  if (length(missing) > 0L) {
+    stop(
+      "INTERVENTIONS_AVOIDED performance data is missing columns: ",
+      paste(missing, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  prevalence_data <- performance_data
+  valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
+    is.finite(as.numeric(performance_data$NB_interventions_avoided))
+  performance_data <- performance_data[valid_rows, , drop = FALSE]
+  spec <- rtichoke_viz_curve_v2_spec(
+    performance_data,
+    evaluation_metadata,
+    type = "interventions_avoided"
+  )
+  spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
+
+  populations <- unique(vapply(
+    spec$evaluations,
+    `[[`,
+    character(1),
+    "population"
+  ))
+  prevalence <- v2_population_prevalence(
+    prevalence_data,
+    evaluation_metadata,
+    populations
+  )
+  compatibility_group <- roc_v2_compatibility_group(
+    performance_data,
+    evaluation_metadata
+  )
+  treat_none <- lapply(populations, function(population) {
+    groups <- as.character(evaluation_metadata$evaluation[
+      evaluation_metadata$population == population
+    ])
+    thresholds <- unique(as.numeric(performance_data$probability_threshold[
+      compatibility_group %in% groups
+    ]))
+    p <- as.numeric(prevalence[[population]])
+    list(
+      type = "path",
+      points = lapply(thresholds, function(threshold) {
+        list(
+          x = threshold,
+          y = 100 * (1 - p - p * (1 - threshold) / threshold)
+        )
+      }),
+      label = paste0("Treat None \u2014 ", population),
+      scope = "population",
+      population = population,
+      benchmark = "treat_none"
+    )
+  })
+  spec$references <- c(
+    list(list(
+      type = "horizontal",
+      value = 0,
+      label = "Treat All",
+      scope = "global",
+      benchmark = "treat_all"
+    )),
+    treat_none
+  )
+  spec
+}
+
 v2_population_prevalence <- function(
   performance_data,
   evaluation_metadata,
@@ -404,7 +486,10 @@ gains_v2_population_prevalence <- v2_population_prevalence
 rtichoke_viz_curve_v2_spec <- function(
   performance_data,
   evaluation_metadata,
-  type = c("roc", "precision_recall", "gains", "lift", "decision_curve")
+  type = c(
+    "roc", "precision_recall", "gains", "lift", "decision_curve",
+    "interventions_avoided"
+  )
 ) {
   type <- match.arg(type)
   required_columns <- switch(
@@ -413,7 +498,10 @@ rtichoke_viz_curve_v2_spec <- function(
     precision_recall = c("probability_threshold", "sensitivity", "PPV"),
     gains = c("probability_threshold", "ppcr", "sensitivity"),
     lift = c("probability_threshold", "ppcr", "lift"),
-    decision_curve = c("probability_threshold", "NB")
+    decision_curve = c("probability_threshold", "NB"),
+    interventions_avoided = c(
+      "probability_threshold", "NB_interventions_avoided"
+    )
   )
   missing_columns <- setdiff(required_columns, names(performance_data))
   if (length(missing_columns) > 0L) {
@@ -518,6 +606,11 @@ rtichoke_viz_curve_v2_spec <- function(
     if (type == "decision_curve") {
       datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
       datum$netBenefit <- as.numeric(performance_data$NB[[i]])
+    } else if (type == "interventions_avoided") {
+      datum$threshold <- as.numeric(performance_data$probability_threshold[[i]])
+      datum$interventionsAvoided <- as.numeric(
+        performance_data$NB_interventions_avoided[[i]]
+      )
     } else {
       datum$cutoff <- as.numeric(performance_data$probability_threshold[[i]])
       if (type == "roc") {
@@ -593,6 +686,21 @@ rtichoke_viz_curve_v2_spec <- function(
       y = "netBenefit",
       xAxis = list(label = "Probability threshold", domain = c(0, 1)),
       yAxis = list(label = "Net benefit"),
+      references = list()
+    ))
+  }
+
+  if (type == "interventions_avoided") {
+    return(list(
+      schemaVersion = "2.0",
+      type = "interventions_avoided",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "threshold",
+      y = "interventionsAvoided",
+      xAxis = list(label = "Probability Threshold", domain = c(0, 1)),
+      yAxis = list(label = "Interventions Avoided (per 100)"),
       references = list()
     ))
   }
