@@ -75,8 +75,8 @@ create_decision_curve(
 
 - renderer:
 
-  rendering backend; `"default"` preserves existing behavior, with
-  `"ggplot2"`, `"plotly"`, and `"browser"` alternatives.
+  rendering backend; `"default"` preserves `interactive`, with
+  `"ggplot2"`, `"plotly"`, or `"browser"` alternatives.
 
 ## Examples
 

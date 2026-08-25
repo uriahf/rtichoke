@@ -59,12 +59,12 @@ plot_decision_curve(
 
 - renderer:
 
-  rendering backend; `"default"` preserves existing behavior, with
-  `"ggplot2"`, `"plotly"`, and `"browser"` alternatives.
+  rendering backend. `"default"` preserves the existing `interactive`
+  behavior; alternatives are `"ggplot2"`, `"plotly"`, and `"browser"`.
 
 - evaluation_metadata:
 
-  semantic evaluation metadata required when `renderer = "browser"`.
+  semantic metadata required for the precomputed browser path.
 
 ## Examples
 
