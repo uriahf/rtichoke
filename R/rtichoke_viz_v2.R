@@ -116,6 +116,9 @@ rtichoke_viz_lift_v2_spec <- function(
   performance_data,
   evaluation_metadata
 ) {
+  valid_rows <- is.finite(as.numeric(performance_data$ppcr)) &
+    is.finite(as.numeric(performance_data$lift))
+  performance_data <- performance_data[valid_rows, , drop = FALSE]
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
