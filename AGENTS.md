@@ -1,71 +1,125 @@
-# rtichoke Agent Information
+# rtichoke repository rules
 
-This document provides guidance for AI agents working on the `rtichoke`
-R repository.
+## Role and ownership
 
-## PR completion protocol
+This repository owns the R implementation of rtichoke: R statistical
+calculations and public APIs, performance-data preparation,
+model/population/evaluation semantics, canonical visualization adapters,
+immutable `rtichoke_viz` vendoring and browser-renderer adoption, Plotly
+and ggplot2 compatibility, R tests, package checks, pkgdown, and
+CRAN-related work.
 
-Do not consider an implementation task complete merely because code has
-been pushed or a pull request has been opened.
+It does not own shared TypeScript visualization contracts or renderers.
 
-After creating or updating a pull request:
+## Start from fresh state
 
-1.  Inspect all required GitHub Actions checks for the current PR head.
-2.  If checks are still running, re-check them while the session is
-    active rather than handing the PR back to the user for manual
-    monitoring.
-3.  If a required check fails, inspect the failing job and logs and
-    determine whether the failure is caused by the PR.
-4.  If the fix is within the stated task scope, make the fix, push it,
-    and inspect CI again.
-5.  Repeat the diagnose/fix/re-check loop until all required checks pass
-    or a genuine blocker requires user input.
+Before modifying anything, inspect actual current `main`, relevant open
+pull requests and recent merges, and, when relevant, tags and releases.
+Check whether equivalent work already exists. Do not work from stale
+assumptions. If actual repository state materially contradicts the task,
+stop before broadening scope and report the discrepancy.
 
-Escalate to the user only when resolving the failure would require one
-or more of the following:
+## Scope and compatibility
 
-- changing frozen statistical semantics, contracts, or architecture;
-- broadening the agreed task scope;
-- weakening or removing a meaningful test or quality gate;
-- changing a public API or backward-compatibility promise beyond the
-  task;
-- making a product or technical decision with multiple legitimate
-  choices;
-- resolving an external service, permissions, infrastructure, or
-  credential problem that the agent cannot fix safely.
+Make the smallest required change. Do not opportunistically redesign
+unrelated public APIs, change statistics outside scope, edit
+`rtichoke_viz` source, expand summary-report behavior, add unrelated
+dependencies, or broadly refactor during focused adoption work. Stop and
+report any materially broader architectural or statistical decision.
 
-Routine failures such as lint errors, formatting errors, test
-regressions caused by the PR, snapshots/fixtures that legitimately need
-updating, packaging errors, documentation-build errors, and similar
-mechanical issues should be fixed without asking the user to manually
-inspect GitHub Actions.
+Preserve public APIs and defaults unless explicitly requested. Do not
+add Python-like or time-dependent APIs merely for cross-language
+symmetry. Keep Plotly, ggplot2, and default rendering backward
+compatible; canonical browser rendering remains opt-in unless explicitly
+changed. Reuse established renderer vocabulary and browser
+infrastructure, and never silently change default return types or
+renderer selection.
 
-The final handoff should include:
+## Statistical and semantic boundaries
 
-- pull request link;
-- final PR head commit;
-- tests/checks run locally when applicable;
-- final GitHub Actions status;
-- any remaining caveats or blockers.
+Existing R production statistical calculations are authoritative unless
+the task explicitly targets a statistical bug or methodology change.
+Browser and canonical-viz adapters consume already-computed R
+quantities: do not recompute statistics or change cutoff,
+decision-curve, calibration, ROC, precision-recall, Gains, or Lift
+calculations unless explicitly requested. Preserve established behavior
+and regression coverage.
 
-Do not ask the user to manually check whether CI passed.
+Preserve semantic identity:
 
-## Vendored dependency upgrades
+- model identity is the prediction source when known;
+- population identity is the evaluated subjects and outcomes;
+- evaluation identity is semantic model × population;
+- rendered series identity is distinct from evaluation identity; and
+- horizon, if applicable, is context or geometry metadata, not
+  evaluation identity.
 
-When upgrading a vendored dependency:
+Never infer population identity from numerical equality. Distinct
+populations remain distinct even when prevalence or reference geometry
+is equal. Reuse the current evaluation/model/population helpers rather
+than creating a parallel identity system.
 
-1.  Search the entire repository for the previous version, tag, source
-    commit, archive name, checksum, and dependency path.
-2.  Classify each match before changing it; some consumers may
-    intentionally remain on an older version for compatibility.
-3.  Keep the archive, extracted payload, `MANIFEST`, `PROVENANCE`,
-    verification script, integrity tests, runtime dependency version,
-    and workflow pins synchronized in one change.
-4.  Run the full package test and check suite in addition to focused
-    feature tests.
-5.  Inspect failing CI logs and artifacts before changing code or
-    weakening a test. A browser timeout may be transient; corroborate it
-    with dedicated browser acceptance and rerun the failed job when
-    appropriate.
-6.  Prefer one verified implementation commit over temporary bootstrap
-    or “trigger CI” commits.
+Population-dependent references are owned by semantic population.
+Multiple models evaluated in one population share population-owned
+references where required; distinct populations remain distinct owners
+even when their numeric reference geometry matches. Ownership must not
+be derived from numeric equality.
+
+Canonical adapters map already-computed R output into the shared
+contract, preserve evaluation identity and reference ownership, and
+create deterministic series geometry identity without statistical
+recomputation. Extend or reuse the existing v2 builder/adapter
+architecture instead of adding one-off parallel implementations.
+
+## Immutable `rtichoke_viz` consumption
+
+Never consume `rtichoke_viz/main`; use only immutable verified releases
+and the established vendoring mechanism. Do not manually edit vendored
+renderer bytes.
+
+Before vendoring a release, verify its tag, exact source commit, archive
+name, SHA-256 and published checksum, `MANIFEST` version and source
+commit, required packaged JS/CSS/schema files, and required public
+renderer exports. Search the whole repository for stale version, tag,
+archive, commit, checksum, and path pins. Classify each match, since
+some consumers may intentionally remain older, and keep the archive,
+extracted payload, `MANIFEST`, `PROVENANCE`, verification script,
+integrity tests, runtime dependency version, and workflow guards in
+sync.
+
+## Validation
+
+Inspect the actual scripts and workflows before choosing commands. Run
+focused tests and the complete relevant suite, including R CMD check as
+appropriate; run pkgdown/docs checks for documentation changes,
+real-browser acceptance for browser-rendering changes, and
+packaging/provenance guards for vendored assets. Do not weaken tests to
+obtain green CI. For vendoring changes, run the full package test and
+check suite. Inspect CI logs and artifacts before changing code;
+corroborate apparently transient browser timeouts with dedicated
+acceptance and rerun when appropriate.
+
+## Pull requests and releases
+
+For mutation tasks, implement and validate one focused change, open one
+focused pull request, and inspect all required GitHub Actions checks for
+its current head. While the session is active, recheck running jobs.
+Diagnose failed jobs and fix in-scope lint, formatting, tests,
+snapshots, packaging, docs, and similar routine failures; push and
+repeat until green or genuinely blocked. Do not ask the user to monitor
+CI, and do not merge unless explicitly instructed.
+
+Escalate only when resolution requires a broader statistical,
+architectural, compatibility, dependency, product, CRAN, or
+infrastructure decision; a public API change; weakening a meaningful
+quality gate; or unavailable permissions or credentials. Do not publish
+an R package release unless explicitly requested. Consumer-adoption
+tasks normally stop at an unmerged focused pull request.
+
+## Completion report
+
+For mutation work, report starting `main`, branch and head, package
+version, files changed, whether statistical behavior changed, canonical
+identity and reference behavior, vendored provenance when applicable,
+local validation, final CI status, pull request number/link/state, and
+anything deliberately deferred.
