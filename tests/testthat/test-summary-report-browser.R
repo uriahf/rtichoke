@@ -45,7 +45,6 @@ component_contains <- function(dom, component_id, pattern) {
 summary_report_component_types <- c(
   "performance_table",
   "calibration",
-  "calibration",
   "roc",
   "precision_recall",
   "gains",
@@ -63,7 +62,6 @@ summary_report_component_types <- c(
 summary_report_component_ids <- c(
   "performance-table",
   "calibration",
-  "calibration-2",
   "roc",
   "precision-recall",
   "gains",
@@ -129,7 +127,6 @@ test_that("browser summary report composes all canonical static components", {
     vapply(report$components, `[[`, "", "title"),
     c(
       "Performance Table \u2014 Probability Threshold",
-      "Calibration \u2014 Smooth",
       "Calibration \u2014 Discrete",
       "ROC \u2014 Probability Threshold",
       "Precision-Recall \u2014 Probability Threshold",
@@ -144,9 +141,8 @@ test_that("browser summary report composes all canonical static components", {
       "Lift \u2014 PPCR"
     )
   )
-  expect_identical(report$components[[2]]$spec$data[[1]]$method, "smooth")
-  expect_identical(report$components[[3]]$spec$data[[1]]$method, "discrete")
-  expect_length(unique(summary_report_component_ids), 14L)
+  expect_identical(report$components[[2]]$spec$data[[1]]$method, "discrete")
+  expect_length(unique(summary_report_component_ids), 13L)
 })
 
 
@@ -160,10 +156,10 @@ test_that("browser summary report preserves component-local evaluation identity"
     character(1)
   )
 
-  expect_identical(evaluation_ids, rep("evaluation-1", 14))
+  expect_identical(evaluation_ids, rep("evaluation-1", 13))
   expect_false("evaluations" %in% names(report))
   expect_identical(
-    report$components[[4]]$spec$evaluations[[1]]$population,
+    report$components[[3]]$spec$evaluations[[1]]$population,
     "Population A"
   )
   expect_identical(
@@ -184,7 +180,7 @@ test_that("browser summary uses authoritative threshold and PPCR data", {
   )
 
   threshold_table <- report$components[[1]]$spec
-  ppcr_table <- report$components[[10]]$spec
+  ppcr_table <- report$components[[9]]$spec
   expect_true(all(vapply(
     threshold_table$rows,
     function(row) identical(row$operatingPoint$type, "probability_threshold"),
@@ -205,15 +201,15 @@ test_that("browser summary uses authoritative threshold and PPCR data", {
   )
 
   expect_equal(
-    vapply(report$components[[4]]$spec$data, `[[`, 0, "cutoff"),
+    vapply(report$components[[3]]$spec$data, `[[`, 0, "cutoff"),
     threshold_data$probability_threshold
   )
   expect_equal(
-    vapply(report$components[[11]]$spec$data, `[[`, 0, "cutoff"),
+    vapply(report$components[[10]]$spec$data, `[[`, 0, "cutoff"),
     unname(ppcr_data$probability_threshold)
   )
   expect_equal(
-    vapply(report$components[[13]]$spec$data, `[[`, 0, "ppcr"),
+    vapply(report$components[[12]]$spec$data, `[[`, 0, "ppcr"),
     ppcr_data$ppcr
   )
 })
@@ -233,10 +229,13 @@ test_that("summary report embedding leaves standalone specs unchanged", {
 
   expect_identical(report$components[[1]]$spec, roc)
   expect_identical(report$components[[2]]$spec, decision)
-  expect_identical(roc, rtichoke:::rtichoke_viz_roc_v2_spec(
-    performance_data,
-    metadata
-  ))
+  expect_identical(
+    roc,
+    rtichoke:::rtichoke_viz_roc_v2_spec(
+      performance_data,
+      metadata
+    )
+  )
 })
 
 

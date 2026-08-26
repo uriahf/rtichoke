@@ -19,4 +19,3 @@ $run_dev.*
 ^air\.toml$
 ^Makefile$
 ^\.pre-commit-config\.yaml$
-^\.posit/assistant$

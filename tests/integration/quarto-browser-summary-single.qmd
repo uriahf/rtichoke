@@ -19,7 +19,7 @@ format:
       const component = id => doc.querySelector(`[data-component-id="${id}"]`);
       const table = component("performance-table")?.querySelector("table.rtichoke-performance-table__table");
       const ppcrTable = component("performance-table-2")?.querySelector("table.rtichoke-performance-table__table");
-      const smoothCalibration = component("calibration")?.querySelector("svg");
+      const discreteCalibration = component("calibration")?.querySelector("svg");
       const precisionRecall = component("precision-recall")?.querySelector("svg");
       const decisionCurve = component("decision-curve")?.querySelector("svg");
       const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
@@ -28,11 +28,11 @@ format:
         (sheet.href || "").includes("rtichoke-viz-0.6.0/rtichoke-viz.css")
       );
       const styled = report && getComputedStyle(report).display !== "none";
-      if (table && ppcrTable && smoothCalibration && precisionRecall && decisionCurve && interventionsAvoided && cssLoaded && styled) {
+      if (table && ppcrTable && discreteCalibration && precisionRecall && decisionCurve && interventionsAvoided && cssLoaded && styled) {
         status.dataset.ready = "true";
         status.dataset.table = "true";
         status.dataset.ppcrTable = "true";
-        status.dataset.smoothCalibration = "true";
+        status.dataset.discreteCalibration = "true";
         status.dataset.precisionRecall = "true";
         status.dataset.decisionCurve = "true";
         status.dataset.interventionsAvoided = "true";

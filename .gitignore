@@ -11,4 +11,3 @@ summary_report.html
 cache/
 *.tar.gz
 *.Rcheck/
-.posit/assistant

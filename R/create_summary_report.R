@@ -149,11 +149,6 @@ summary_report_browser_spec <- function(probs, reals) {
     threshold_performance_data,
     evaluation_metadata
   )
-  smooth_calibration <- rtichoke_viz_calibration_v2_spec(
-    calibration_curve_list,
-    evaluation_metadata,
-    method = "smooth"
-  )
   discrete_calibration <- rtichoke_viz_calibration_v2_spec(
     calibration_curve_list,
     evaluation_metadata,
@@ -207,7 +202,6 @@ summary_report_browser_spec <- function(probs, reals) {
 
   rtichoke_viz_report_spec(
     threshold_performance_table,
-    smooth_calibration,
     discrete_calibration,
     threshold_roc,
     threshold_precision_recall,
@@ -223,7 +217,6 @@ summary_report_browser_spec <- function(probs, reals) {
     title = "Summary Report",
     component_titles = list(
       "Performance Table \u2014 Probability Threshold",
-      "Calibration \u2014 Smooth",
       "Calibration \u2014 Discrete",
       "ROC \u2014 Probability Threshold",
       "Precision-Recall \u2014 Probability Threshold",
