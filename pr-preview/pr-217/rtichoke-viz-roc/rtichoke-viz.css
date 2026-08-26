@@ -1,0 +1,23 @@
+.rtichoke-viz-chart {
+  overflow-x: auto;
+  min-height: 600px;
+}
+
+.rtichoke-viz-chart > * {
+  display: block;
+}
+
+.rtichoke-report {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.rtichoke-report__title,
+.rtichoke-report__component-title {
+  margin: 0 0 1rem;
+}
+
+.rtichoke-report__component-content {
+  overflow-x: auto;
+}
