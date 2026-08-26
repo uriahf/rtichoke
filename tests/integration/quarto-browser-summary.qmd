@@ -22,14 +22,26 @@ format:
     if (!doc) return null;
     const component = id => doc.querySelector(`[data-component-id="${id}"]`);
     const table = component("performance-table")?.querySelector("table.rtichoke-performance-table__table");
-    const roc = component("roc")?.querySelector("svg");
-    const calibration = component("calibration")?.querySelector("svg");
-    const report = doc.querySelector(".rtichoke-viz-report");
+    const ppcrTable = component("performance-table-2")?.querySelector("table.rtichoke-performance-table__table");
+    const smoothCalibration = component("calibration")?.querySelector("svg");
+    const precisionRecall = component("precision-recall")?.querySelector("svg");
+    const decisionCurve = component("decision-curve")?.querySelector("svg");
+    const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
+    const report = doc.querySelector(".rtichoke-report");
     const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
       (sheet.href || "").includes("rtichoke-viz-0.6.0/rtichoke-viz.css")
     );
     const styled = report && getComputedStyle(report).display !== "none";
-    return { table: !!table, roc: !!roc, calibration: !!calibration, cssLoaded, styled };
+    return {
+      table: !!table,
+      ppcrTable: !!ppcrTable,
+      smoothCalibration: !!smoothCalibration,
+      precisionRecall: !!precisionRecall,
+      decisionCurve: !!decisionCurve,
+      interventionsAvoided: !!interventionsAvoided,
+      cssLoaded,
+      styled
+    };
   }
 
   function poll() {
