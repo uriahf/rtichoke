@@ -3525,53 +3525,111 @@
                     }
                   },
                   {
-                    "type": "object",
-                    "required": [
-                      "type",
-                      "points",
-                      "scope",
-                      "population",
-                      "benchmark"
-                    ],
-                    "properties": {
-                      "type": {
-                        "const": "path",
-                        "type": "string"
-                      },
-                      "points": {
-                        "minItems": 2,
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "required": [
-                            "x",
-                            "y"
-                          ],
-                          "properties": {
-                            "x": {
-                              "type": "number"
-                            },
-                            "y": {
-                              "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "points",
+                          "benchmark",
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "type": {
+                            "const": "path",
+                            "type": "string"
+                          },
+                          "points": {
+                            "minItems": 2,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              }
                             }
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "benchmark": {
+                            "const": "treat_all",
+                            "type": "string"
+                          },
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
                           }
                         }
                       },
-                      "label": {
-                        "type": "string"
-                      },
-                      "scope": {
-                        "const": "population",
-                        "type": "string"
-                      },
-                      "population": {
-                        "type": "string"
-                      },
-                      "benchmark": {
-                        "const": "treat_all",
-                        "type": "string"
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "points",
+                          "benchmark",
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "type": {
+                            "const": "path",
+                            "type": "string"
+                          },
+                          "points": {
+                            "minItems": 2,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "benchmark": {
+                            "const": "treat_all",
+                            "type": "string"
+                          },
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
                       }
-                    }
+                    ]
                   }
                 ]
               }
@@ -4287,53 +4345,111 @@
                     }
                   },
                   {
-                    "type": "object",
-                    "required": [
-                      "type",
-                      "points",
-                      "scope",
-                      "population",
-                      "benchmark"
-                    ],
-                    "properties": {
-                      "type": {
-                        "const": "path",
-                        "type": "string"
-                      },
-                      "points": {
-                        "minItems": 2,
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "required": [
-                            "x",
-                            "y"
-                          ],
-                          "properties": {
-                            "x": {
-                              "type": "number"
-                            },
-                            "y": {
-                              "type": "number"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "points",
+                          "benchmark",
+                          "scope",
+                          "population"
+                        ],
+                        "properties": {
+                          "type": {
+                            "const": "path",
+                            "type": "string"
+                          },
+                          "points": {
+                            "minItems": 2,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              }
                             }
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "benchmark": {
+                            "const": "treat_none",
+                            "type": "string"
+                          },
+                          "scope": {
+                            "const": "population",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
                           }
                         }
                       },
-                      "label": {
-                        "type": "string"
-                      },
-                      "scope": {
-                        "const": "population",
-                        "type": "string"
-                      },
-                      "population": {
-                        "type": "string"
-                      },
-                      "benchmark": {
-                        "const": "treat_none",
-                        "type": "string"
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "points",
+                          "benchmark",
+                          "scope",
+                          "population",
+                          "horizon"
+                        ],
+                        "properties": {
+                          "type": {
+                            "const": "path",
+                            "type": "string"
+                          },
+                          "points": {
+                            "minItems": 2,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "benchmark": {
+                            "const": "treat_none",
+                            "type": "string"
+                          },
+                          "scope": {
+                            "const": "population_horizon",
+                            "type": "string"
+                          },
+                          "population": {
+                            "type": "string"
+                          },
+                          "horizon": {
+                            "minimum": 0,
+                            "type": "number"
+                          }
+                        }
                       }
-                    }
+                    ]
                   }
                 ]
               }

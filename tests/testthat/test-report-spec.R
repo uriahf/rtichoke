@@ -253,3 +253,56 @@ test_that("report assembler rejects invalid report-level inputs", {
     "schemaVersion 2.0"
   )
 })
+
+test_that("structured report assembler validates v1.1 wrappers and ids", {
+  specs <- report_test_specs()
+  component <- list(
+    type = "component",
+    id = "roc",
+    title = "ROC",
+    spec = specs$roc
+  )
+  group <- list(
+    type = "group",
+    id = "discrimination-threshold",
+    title = "By Probability Threshold",
+    components = list(component)
+  )
+  section <- list(
+    id = "discrimination",
+    title = "Discrimination",
+    items = list(group)
+  )
+
+  report <- rtichoke:::rtichoke_viz_report_spec_v1_1(
+    section,
+    title = "Summary Report"
+  )
+  expect_identical(report$schemaVersion, "1.1")
+  expect_identical(report$sections[[1]], section)
+
+  invalid_component <- component
+  invalid_component$type <- NULL
+  invalid_section <- section
+  invalid_section$items[[1]]$components[[1]] <- invalid_component
+  expect_error(
+    rtichoke:::rtichoke_viz_report_spec_v1_1(invalid_section),
+    'type = "component"'
+  )
+
+  duplicate_group_section <- section
+  duplicate_group_section$items <- list(group, group)
+  expect_error(
+    rtichoke:::rtichoke_viz_report_spec_v1_1(duplicate_group_section),
+    "group ids must be unique"
+  )
+
+  duplicate_component_group <- group
+  duplicate_component_group$components <- list(component, component)
+  duplicate_component_section <- section
+  duplicate_component_section$items <- list(duplicate_component_group)
+  expect_error(
+    rtichoke:::rtichoke_viz_report_spec_v1_1(duplicate_component_section),
+    "component ids must be unique"
+  )
+})

@@ -22,14 +22,18 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   vendor_dir <- system.file("rtichoke-viz", package = "rtichoke")
   bundle <- paste(
-    readLines(file.path(vendor_dir, "rtichoke-viz.js"), warn = FALSE),
+    readLines(
+      file.path(vendor_dir, "rtichoke-viz.js"),
+      warn = FALSE,
+      encoding = "UTF-8"
+    ),
     collapse = "\n"
   )
   bundle <- gsub("</", "<\\/", bundle, fixed = TRUE)
 
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.6.0",
+    version = "0.11.0",
     src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )

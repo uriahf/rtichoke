@@ -200,35 +200,89 @@ summary_report_browser_spec <- function(probs, reals) {
     evaluation_metadata
   )
 
-  rtichoke_viz_report_spec(
-    threshold_performance_table,
-    discrete_calibration,
-    threshold_roc,
-    threshold_precision_recall,
-    threshold_gains,
-    threshold_lift,
-    decision_curve,
-    interventions_avoided,
-    ppcr_performance_table,
-    ppcr_roc,
-    ppcr_precision_recall,
-    ppcr_gains,
-    ppcr_lift,
-    title = "Summary Report",
-    component_titles = list(
-      "Performance Table \u2014 Probability Threshold",
-      "Calibration \u2014 Discrete",
-      "ROC \u2014 Probability Threshold",
-      "Precision-Recall \u2014 Probability Threshold",
-      "Gains \u2014 Probability Threshold",
-      "Lift \u2014 Probability Threshold",
-      "Decision Curve",
-      "Interventions Avoided",
-      "Performance Table \u2014 PPCR",
-      "ROC \u2014 PPCR",
-      "Precision-Recall \u2014 PPCR",
-      "Gains \u2014 PPCR",
-      "Lift \u2014 PPCR"
-    )
+  component <- function(id, title, spec) {
+    list(type = "component", id = id, title = title, spec = spec)
+  }
+  group <- function(id, title, components) {
+    list(type = "group", id = id, title = title, components = components)
+  }
+
+  rtichoke_viz_report_spec_v1_1(
+    list(
+      id = "calibration",
+      title = "Calibration",
+      items = list(component("calibration", "Discrete", discrete_calibration))
+    ),
+    list(
+      id = "discrimination",
+      title = "Discrimination",
+      items = list(
+        group(
+          "discrimination-probability-threshold",
+          "By Probability Threshold",
+          list(
+            component("roc", "ROC", threshold_roc),
+            component(
+              "precision-recall",
+              "Precision-Recall",
+              threshold_precision_recall
+            ),
+            component("gains", "Gains", threshold_gains),
+            component("lift", "Lift", threshold_lift)
+          )
+        ),
+        group(
+          "discrimination-ppcr",
+          "By PPCR",
+          list(
+            component("roc-2", "ROC", ppcr_roc),
+            component(
+              "precision-recall-2",
+              "Precision-Recall",
+              ppcr_precision_recall
+            ),
+            component("gains-2", "Gains", ppcr_gains),
+            component("lift-2", "Lift", ppcr_lift)
+          )
+        )
+      )
+    ),
+    list(
+      id = "utility",
+      title = "Utility",
+      items = list(
+        component("decision-curve", "Decision Curve", decision_curve),
+        component(
+          "interventions-avoided",
+          "Interventions Avoided",
+          interventions_avoided
+        )
+      )
+    ),
+    list(
+      id = "performance-table",
+      title = "Performance Table",
+      items = list(
+        group(
+          "performance-table-probability-threshold",
+          "By Probability Threshold",
+          list(component(
+            "performance-table",
+            "Performance Table",
+            threshold_performance_table
+          ))
+        ),
+        group(
+          "performance-table-ppcr",
+          "By PPCR",
+          list(component(
+            "performance-table-2",
+            "Performance Table",
+            ppcr_performance_table
+          ))
+        )
+      )
+    ),
+    title = "Summary Report"
   )
 }
