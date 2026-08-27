@@ -47,9 +47,9 @@ create_summary_report(
 - renderer:
 
   Summary-report rendering backend. `"rmarkdown"` preserves the existing
-  report and remains the default. `"browser"` renders the canonical
-  PerformanceTable, ROC, and discrete calibration components via the
-  vendored rtichoke_viz ReportSpec renderer.
+  report and remains the default. `"browser"` renders the existing
+  canonical static report components via the vendored rtichoke_viz
+  ReportSpec renderer.
 
 ## Examples
 
