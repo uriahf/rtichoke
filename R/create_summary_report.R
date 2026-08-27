@@ -5,8 +5,8 @@
 #' @param output_file The name of the output file.
 #' @param renderer Summary-report rendering backend. `"rmarkdown"` preserves
 #'   the existing report and remains the default. `"browser"` renders the
-#'   canonical PerformanceTable, ROC, and discrete calibration components via
-#'   the vendored rtichoke_viz ReportSpec renderer.
+#'   existing canonical static report components via the vendored rtichoke_viz
+#'   ReportSpec renderer.
 #'
 #' @export
 #'
@@ -111,7 +111,7 @@ render_summary_report_rmarkdown <- function(
 }
 
 
-#' Build the canonical first public browser summary report
+#' Build the canonical static browser summary report
 #'
 #' Reuse the package's existing statistical preparation and canonical component
 #' builders, then assemble the resulting complete standalone specs into a
@@ -127,39 +127,108 @@ summary_report_browser_spec <- function(probs, reals) {
   check_probs_input(probs)
   check_real_input(reals)
 
-  performance_data <- prepare_performance_data(
+  threshold_performance_data <- prepare_performance_data(
     probs = probs,
     reals = reals
+  )
+  ppcr_performance_data <- prepare_performance_data(
+    probs = probs,
+    reals = reals,
+    stratified_by = "ppcr"
   )
   evaluation_metadata <- build_evaluation_metadata(probs, reals)
   calibration_curve_list <- create_calibration_curve_list(
     probs = probs,
     reals = reals
   )
+  interventions_avoided_data <- add_static_interventions_avoided_metric(
+    threshold_performance_data
+  )
 
-  performance_table <- rtichoke_viz_performance_table_v2_spec(
-    performance_data,
+  threshold_performance_table <- rtichoke_viz_performance_table_v2_spec(
+    threshold_performance_data,
     evaluation_metadata
   )
-  roc <- rtichoke_viz_roc_v2_spec(
-    performance_data,
-    evaluation_metadata
-  )
-  calibration <- rtichoke_viz_calibration_v2_spec(
+  discrete_calibration <- rtichoke_viz_calibration_v2_spec(
     calibration_curve_list,
     evaluation_metadata,
     method = "discrete"
   )
+  threshold_roc <- rtichoke_viz_roc_v2_spec(
+    threshold_performance_data,
+    evaluation_metadata
+  )
+  threshold_precision_recall <- rtichoke_viz_precision_recall_v2_spec(
+    threshold_performance_data,
+    evaluation_metadata
+  )
+  threshold_gains <- rtichoke_viz_gains_v2_spec(
+    threshold_performance_data,
+    evaluation_metadata
+  )
+  threshold_lift <- rtichoke_viz_lift_v2_spec(
+    threshold_performance_data,
+    evaluation_metadata
+  )
+  decision_curve <- rtichoke_viz_decision_curve_v2_spec(
+    threshold_performance_data,
+    evaluation_metadata
+  )
+  interventions_avoided <- rtichoke_viz_interventions_avoided_v2_spec(
+    interventions_avoided_data,
+    evaluation_metadata
+  )
+  ppcr_performance_table <- rtichoke_viz_performance_table_v2_spec(
+    ppcr_performance_data,
+    evaluation_metadata,
+    stratified_by = "ppcr"
+  )
+  ppcr_roc <- rtichoke_viz_roc_v2_spec(
+    ppcr_performance_data,
+    evaluation_metadata
+  )
+  ppcr_precision_recall <- rtichoke_viz_precision_recall_v2_spec(
+    ppcr_performance_data,
+    evaluation_metadata
+  )
+  ppcr_gains <- rtichoke_viz_gains_v2_spec(
+    ppcr_performance_data,
+    evaluation_metadata
+  )
+  ppcr_lift <- rtichoke_viz_lift_v2_spec(
+    ppcr_performance_data,
+    evaluation_metadata
+  )
 
   rtichoke_viz_report_spec(
-    performance_table,
-    roc,
-    calibration,
+    threshold_performance_table,
+    discrete_calibration,
+    threshold_roc,
+    threshold_precision_recall,
+    threshold_gains,
+    threshold_lift,
+    decision_curve,
+    interventions_avoided,
+    ppcr_performance_table,
+    ppcr_roc,
+    ppcr_precision_recall,
+    ppcr_gains,
+    ppcr_lift,
     title = "Summary Report",
     component_titles = list(
-      "Performance Table",
-      "ROC",
-      "Calibration"
+      "Performance Table \u2014 Probability Threshold",
+      "Calibration \u2014 Discrete",
+      "ROC \u2014 Probability Threshold",
+      "Precision-Recall \u2014 Probability Threshold",
+      "Gains \u2014 Probability Threshold",
+      "Lift \u2014 Probability Threshold",
+      "Decision Curve",
+      "Interventions Avoided",
+      "Performance Table \u2014 PPCR",
+      "ROC \u2014 PPCR",
+      "Precision-Recall \u2014 PPCR",
+      "Gains \u2014 PPCR",
+      "Lift \u2014 PPCR"
     )
   )
 }

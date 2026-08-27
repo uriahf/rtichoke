@@ -27,7 +27,9 @@ rtichoke_viz_report_spec <- function(
     "calibration",
     "precision_recall",
     "gains",
-    "lift"
+    "lift",
+    "decision_curve",
+    "interventions_avoided"
   )
   for (i in seq_along(specs)) {
     spec <- specs[[i]]

@@ -33,8 +33,8 @@ provided will create any necessary directories if they do not exist.}
 
 \item{renderer}{Summary-report rendering backend. \code{"rmarkdown"} preserves
 the existing report and remains the default. \code{"browser"} renders the
-canonical PerformanceTable, ROC, and discrete calibration components via
-the vendored rtichoke_viz ReportSpec renderer.}
+existing canonical static report components via the vendored rtichoke_viz
+ReportSpec renderer.}
 }
 \description{
 Create a summary report
