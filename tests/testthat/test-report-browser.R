@@ -66,7 +66,7 @@ test_that("browser ReportSpec path delegates complete report to renderReport", {
 
   expect_s3_class(browser, "shiny.tag.list")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_equal(htmltools::htmlDependencies(browser)[[1]]$version, "0.6.0")
+  expect_equal(htmltools::htmlDependencies(browser)[[1]]$version, "0.11.0")
   expect_match(html, expected_json, fixed = TRUE)
   expect_identical(report, before)
   expect_false(grepl("renderRocV2", renderer_source, fixed = TRUE))

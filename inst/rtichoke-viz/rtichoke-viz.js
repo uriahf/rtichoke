@@ -1053,7 +1053,7 @@ function Literal(value, options) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/boolean/boolean.mjs
-function Boolean(options) {
+function Boolean2(options) {
   return CreateType({ [Kind]: "Boolean", type: "boolean" }, options);
 }
 
@@ -1075,7 +1075,7 @@ function String2(options) {
 // node_modules/@sinclair/typebox/build/esm/type/template-literal/syntax.mjs
 function* FromUnion(syntax) {
   const trim = syntax.trim().replace(/"|'/g, "");
-  return trim === "boolean" ? yield Boolean() : trim === "number" ? yield Number2() : trim === "bigint" ? yield BigInt2() : trim === "string" ? yield String2() : yield (() => {
+  return trim === "boolean" ? yield Boolean2() : trim === "number" ? yield Number2() : trim === "bigint" ? yield BigInt2() : trim === "string" ? yield String2() : yield (() => {
     const literals = trim.split("|").map((literal) => Literal(literal.trim()));
     return literals.length === 0 ? Never() : literals.length === 1 ? literals[0] : UnionEvaluated(literals);
   })();
@@ -2691,7 +2691,7 @@ __export(type_exports3, {
   AsyncIterator: () => AsyncIterator,
   Awaited: () => Awaited,
   BigInt: () => BigInt2,
-  Boolean: () => Boolean,
+  Boolean: () => Boolean2,
   Capitalize: () => Capitalize,
   Composite: () => Composite,
   Const: () => Const,
@@ -2966,17 +2966,28 @@ var TreatNoneReferenceSchema = Type.Object({
   scope: Type.Literal("global"),
   benchmark: Type.Literal("treat_none")
 });
-var TreatAllReferenceSchema = Type.Object({
+var TreatAllGeometry = {
   type: Type.Literal("path"),
   points: Type.Array(
     Type.Object({ x: Type.Number(), y: Type.Number() }),
     { minItems: 2 }
   ),
   label: Type.Optional(Type.String()),
-  scope: Type.Literal("population"),
-  population: Type.String(),
   benchmark: Type.Literal("treat_all")
-});
+};
+var TreatAllReferenceSchema = Type.Union([
+  Type.Object({
+    ...TreatAllGeometry,
+    scope: Type.Literal("population"),
+    population: Type.String()
+  }),
+  Type.Object({
+    ...TreatAllGeometry,
+    scope: Type.Literal("population_horizon"),
+    population: Type.String(),
+    horizon: Type.Number({ minimum: 0 })
+  })
+]);
 var DecisionCurveV2ReferenceSchema = Type.Union([
   TreatNoneReferenceSchema,
   TreatAllReferenceSchema
@@ -3035,17 +3046,28 @@ var InterventionsAvoidedTreatAllReferenceSchema = Type.Object({
   scope: Type.Literal("global"),
   benchmark: Type.Literal("treat_all")
 });
-var InterventionsAvoidedTreatNoneReferenceSchema = Type.Object({
+var TreatNoneGeometry = {
   type: Type.Literal("path"),
   points: Type.Array(
     Type.Object({ x: Type.Number(), y: Type.Number() }),
     { minItems: 2 }
   ),
   label: Type.Optional(Type.String()),
-  scope: Type.Literal("population"),
-  population: Type.String(),
   benchmark: Type.Literal("treat_none")
-});
+};
+var InterventionsAvoidedTreatNoneReferenceSchema = Type.Union([
+  Type.Object({
+    ...TreatNoneGeometry,
+    scope: Type.Literal("population"),
+    population: Type.String()
+  }),
+  Type.Object({
+    ...TreatNoneGeometry,
+    scope: Type.Literal("population_horizon"),
+    population: Type.String(),
+    horizon: Type.Number({ minimum: 0 })
+  })
+]);
 var InterventionsAvoidedV2ReferenceSchema = Type.Union([
   InterventionsAvoidedTreatAllReferenceSchema,
   InterventionsAvoidedTreatNoneReferenceSchema
@@ -3189,26 +3211,88 @@ var PerformanceTableSpecSchema = Type.Object({
 });
 
 // src/spec/report.ts
+var StandaloneCanonicalSpecSchema = Type.Union([
+  RtichokeChartSpecV2Schema,
+  PerformanceTableSpecSchema
+]);
 var ReportComponentSchema = Type.Object({
   id: Type.String(),
   title: Type.Optional(Type.String()),
-  spec: Type.Union([RtichokeChartSpecV2Schema, PerformanceTableSpecSchema])
+  spec: StandaloneCanonicalSpecSchema
 });
-var ReportSpecSchema = Type.Object({
+var ReportSpecV1_0Schema = Type.Object({
   schemaVersion: Type.Literal("1.0"),
   type: Type.Literal("report"),
   title: Type.Optional(Type.String()),
   components: Type.Array(ReportComponentSchema, { minItems: 1 })
 });
+var ReportComponentV1_1Schema = Type.Object({
+  type: Type.Literal("component"),
+  id: Type.String(),
+  title: Type.Optional(Type.String()),
+  spec: StandaloneCanonicalSpecSchema
+});
+var ReportGroupSchema = Type.Object({
+  type: Type.Literal("group"),
+  id: Type.String(),
+  title: Type.String(),
+  components: Type.Array(ReportComponentV1_1Schema, { minItems: 1 })
+});
+var ReportSectionSchema = Type.Object({
+  id: Type.String(),
+  title: Type.String(),
+  items: Type.Array(
+    Type.Union([ReportComponentV1_1Schema, ReportGroupSchema]),
+    { minItems: 1 }
+  )
+});
+var ReportSpecV1_1Schema = Type.Object({
+  schemaVersion: Type.Literal("1.1"),
+  type: Type.Literal("report"),
+  title: Type.Optional(Type.String()),
+  sections: Type.Array(ReportSectionSchema, { minItems: 1 })
+});
+var ReportSpecSchema = Type.Union(
+  [ReportSpecV1_0Schema, ReportSpecV1_1Schema],
+  {
+    $id: "https://rtichoke.dev/schema/viz/report.json",
+    title: "rtichoke report specification"
+  }
+);
 
 // src/spec/validate-report.ts
 function assertReportReferentialIntegrity(spec) {
   const componentIds = /* @__PURE__ */ new Set();
-  for (const component of spec.components) {
+  const assertUniqueComponent = (component) => {
     if (componentIds.has(component.id)) {
       throw new Error(`duplicate component id: ${component.id}`);
     }
     componentIds.add(component.id);
+  };
+  if (spec.schemaVersion === "1.0") {
+    for (const component of spec.components) assertUniqueComponent(component);
+    return;
+  }
+  const sectionIds = /* @__PURE__ */ new Set();
+  const groupIds = /* @__PURE__ */ new Set();
+  for (const section of spec.sections) {
+    if (sectionIds.has(section.id)) {
+      throw new Error(`duplicate section id: ${section.id}`);
+    }
+    sectionIds.add(section.id);
+    for (const item of section.items) {
+      if (item.type === "component") {
+        assertUniqueComponent(item);
+        continue;
+      }
+      if (groupIds.has(item.id)) {
+        throw new Error(`duplicate group id: ${item.id}`);
+      }
+      groupIds.add(item.id);
+      for (const component of item.components) {
+        assertUniqueComponent(component);
+      }
+    }
   }
 }
 
@@ -3270,29 +3354,56 @@ function assertV2ReferentialIntegrity(spec) {
     decisionCurve.evaluations.forEach((evaluation, index2) => {
       const expectedId = `evaluation-${index2 + 1}`;
       if (evaluation.id !== expectedId) throw new Error(`decision curve evaluation ids must be ordinal: expected ${expectedId}`);
+    });
+    const horizonCount = decisionCurve.series.filter((series) => series.horizon !== void 0).length;
+    if (horizonCount !== 0 && horizonCount !== decisionCurve.series.length) {
+      throw new Error("decision curve cannot mix static and horizon-qualified series");
+    }
+    const isTimeDependent = horizonCount > 0;
+    const horizons2 = [...new Set(decisionCurve.series.map((series) => series.horizon).filter((horizon) => horizon !== void 0))];
+    const seriesCoverage = /* @__PURE__ */ new Set();
+    decisionCurve.series.forEach((series, index2) => {
+      if (series.id !== `series-${index2 + 1}`) throw new Error(`decision curve series ids must be ordinal: expected series-${index2 + 1}`);
+      const evaluation = decisionCurve.evaluations.find((candidate) => candidate.id === series.evaluationId);
       const expectedDisplay = evaluation.model ?? evaluation.population;
       const expectedRole = evaluation.model === void 0 ? "population" : "model";
-      const series = decisionCurve.series[index2];
-      if (!series || series.id !== `series-${index2 + 1}` || series.evaluationId !== evaluation.id) {
-        throw new Error("decision curve series must map one-to-one in evaluation order");
-      }
       if (series.display.label !== expectedDisplay || series.display.group !== expectedDisplay || series.display.role !== expectedRole) {
         throw new Error("decision curve display must follow evaluation semantics");
       }
+      const coverageKey = `${series.evaluationId}\0${series.horizon ?? "static"}`;
+      if (seriesCoverage.has(coverageKey)) throw new Error(`duplicate decision curve evaluation-horizon series: ${series.evaluationId}`);
+      seriesCoverage.add(coverageKey);
     });
-    if (decisionCurve.series.length !== decisionCurve.evaluations.length) throw new Error("decision curve requires exactly one series per evaluation");
+    if (isTimeDependent) {
+      const complete = decisionCurve.evaluations.every(
+        (evaluation) => horizons2.every((horizon) => seriesCoverage.has(`${evaluation.id}\0${horizon}`))
+      );
+      if (!complete || decisionCurve.series.length !== decisionCurve.evaluations.length * horizons2.length) {
+        throw new Error("decision curve requires exactly one series per evaluation and horizon");
+      }
+    } else if (decisionCurve.series.length !== decisionCurve.evaluations.length || decisionCurve.evaluations.some((evaluation) => !seriesCoverage.has(`${evaluation.id}\0static`))) {
+      throw new Error("decision curve requires exactly one series per evaluation");
+    }
     const treatNone = references.filter((reference) => "benchmark" in reference && reference.benchmark === "treat_none");
     if (treatNone.length !== 1) throw new Error("decision curve requires exactly one Treat None reference");
     const treatAll = references.filter(
       (reference) => "benchmark" in reference && reference.benchmark === "treat_all"
     );
-    const treatAllPopulations = /* @__PURE__ */ new Set();
+    const treatAllOwners = /* @__PURE__ */ new Set();
     for (const reference of treatAll) {
-      if (treatAllPopulations.has(reference.population)) throw new Error(`duplicate Treat All population: ${reference.population}`);
-      treatAllPopulations.add(reference.population);
+      if (isTimeDependent && reference.scope !== "population_horizon") {
+        throw new Error("time-dependent decision curve Treat All must use population_horizon scope");
+      }
+      if (!isTimeDependent && reference.scope !== "population") {
+        throw new Error("static decision curve Treat All must use population scope");
+      }
+      const owner = reference.scope === "population_horizon" ? `${reference.population}\0${reference.horizon}` : reference.population;
+      if (treatAllOwners.has(owner)) throw new Error(`duplicate Treat All owner: ${reference.population}`);
+      treatAllOwners.add(owner);
     }
-    if (treatAllPopulations.size !== populations.size || [...populations].some((population) => !treatAllPopulations.has(population))) {
-      throw new Error("decision curve requires exactly one Treat All reference per population");
+    const expectedTreatAllOwners = isTimeDependent ? [...populations].flatMap((population) => horizons2.map((horizon) => `${population}\0${horizon}`)) : [...populations];
+    if (treatAllOwners.size !== expectedTreatAllOwners.length || expectedTreatAllOwners.some((owner) => !treatAllOwners.has(owner))) {
+      throw new Error(isTimeDependent ? "decision curve requires exactly one Treat All reference per population and horizon" : "decision curve requires exactly one Treat All reference per population");
     }
   }
   if (spec.type === "interventions_avoided") {
@@ -3301,17 +3412,37 @@ function assertV2ReferentialIntegrity(spec) {
     interventionsAvoided.evaluations.forEach((evaluation, index2) => {
       const expectedId = `evaluation-${index2 + 1}`;
       if (evaluation.id !== expectedId) throw new Error(`interventions avoided evaluation ids must be ordinal: expected ${expectedId}`);
+    });
+    const horizonCount = interventionsAvoided.series.filter((series) => series.horizon !== void 0).length;
+    if (horizonCount !== 0 && horizonCount !== interventionsAvoided.series.length) {
+      throw new Error("interventions avoided cannot mix static and horizon-qualified series");
+    }
+    const isTimeDependent = horizonCount > 0;
+    const horizons2 = [...new Set(interventionsAvoided.series.map((series) => series.horizon).filter((horizon) => horizon !== void 0))];
+    const seriesCoverage = /* @__PURE__ */ new Set();
+    interventionsAvoided.series.forEach((series, index2) => {
+      if (series.id !== `series-${index2 + 1}`) throw new Error(`interventions avoided series ids must be ordinal: expected series-${index2 + 1}`);
+      const evaluation = interventionsAvoided.evaluations.find((candidate) => candidate.id === series.evaluationId);
+      if (!evaluation) throw new Error(`unknown evaluation id: ${series.evaluationId}`);
       const expectedDisplay = evaluation.model ?? evaluation.population;
       const expectedRole = evaluation.model === void 0 ? "population" : "model";
-      const series = interventionsAvoided.series[index2];
-      if (!series || series.id !== `series-${index2 + 1}` || series.evaluationId !== evaluation.id) {
-        throw new Error("interventions avoided series must map one-to-one in evaluation order");
-      }
       if (series.display.label !== expectedDisplay || series.display.group !== expectedDisplay || series.display.role !== expectedRole) {
         throw new Error("interventions avoided display must follow evaluation semantics");
       }
+      const coverageKey = `${series.evaluationId}\0${series.horizon ?? "static"}`;
+      if (seriesCoverage.has(coverageKey)) throw new Error(`duplicate interventions avoided evaluation-horizon series: ${series.evaluationId}`);
+      seriesCoverage.add(coverageKey);
     });
-    if (interventionsAvoided.series.length !== interventionsAvoided.evaluations.length) throw new Error("interventions avoided requires exactly one series per evaluation");
+    if (isTimeDependent) {
+      const complete = interventionsAvoided.evaluations.every(
+        (evaluation) => horizons2.every((horizon) => seriesCoverage.has(`${evaluation.id}\0${horizon}`))
+      );
+      if (!complete || interventionsAvoided.series.length !== interventionsAvoided.evaluations.length * horizons2.length) {
+        throw new Error("interventions avoided requires exactly one series per evaluation and horizon");
+      }
+    } else if (interventionsAvoided.series.length !== interventionsAvoided.evaluations.length || interventionsAvoided.evaluations.some((evaluation) => !seriesCoverage.has(`${evaluation.id}\0static`))) {
+      throw new Error("interventions avoided requires exactly one series per evaluation");
+    }
     const treatAll = references.filter(
       (reference) => "benchmark" in reference && reference.benchmark === "treat_all"
     );
@@ -3322,13 +3453,21 @@ function assertV2ReferentialIntegrity(spec) {
     const treatNone = references.filter(
       (reference) => "benchmark" in reference && reference.benchmark === "treat_none"
     );
-    const treatNonePopulations = /* @__PURE__ */ new Set();
+    const treatNoneOwners = /* @__PURE__ */ new Set();
     for (const reference of treatNone) {
-      if (treatNonePopulations.has(reference.population)) throw new Error(`duplicate Treat None population: ${reference.population}`);
-      treatNonePopulations.add(reference.population);
+      if (isTimeDependent && reference.scope !== "population_horizon") {
+        throw new Error("time-dependent interventions avoided Treat None must use population_horizon scope");
+      }
+      if (!isTimeDependent && reference.scope !== "population") {
+        throw new Error("static interventions avoided Treat None must use population scope");
+      }
+      const owner = reference.scope === "population_horizon" ? `${reference.population}\0${reference.horizon}` : reference.population;
+      if (treatNoneOwners.has(owner)) throw new Error(`duplicate Treat None owner: ${reference.population}`);
+      treatNoneOwners.add(owner);
     }
-    if (treatNonePopulations.size !== populations.size || [...populations].some((population) => !treatNonePopulations.has(population))) {
-      throw new Error("interventions avoided requires exactly one Treat None reference per population");
+    const expectedTreatNoneOwners = isTimeDependent ? [...populations].flatMap((population) => horizons2.map((horizon) => `${population}\0${horizon}`)) : [...populations];
+    if (treatNoneOwners.size !== expectedTreatNoneOwners.length || expectedTreatNoneOwners.some((owner) => !treatNoneOwners.has(owner))) {
+      throw new Error(isTimeDependent ? "interventions avoided requires exactly one Treat None reference per population and horizon" : "interventions avoided requires exactly one Treat None reference per population");
     }
   }
 }
@@ -19416,9 +19555,9 @@ function selectHorizonSpec(spec, horizon) {
     )
   };
 }
-function renderHorizonLineChart(spec, options, x2, y2) {
+function renderWithHorizonSelection(spec, render) {
   const availableHorizons = horizons(spec);
-  if (availableHorizons.length <= 1) return renderLineChart(spec, options, x2, y2);
+  if (availableHorizons.length <= 1) return render(spec);
   const container = document.createElement("div");
   container.className = "rtichoke-horizon-chart";
   const control = document.createElement("label");
@@ -19434,17 +19573,21 @@ function renderHorizonLineChart(spec, options, x2, y2) {
   control.append(select);
   const chart = document.createElement("div");
   const draw = (horizon) => {
-    chart.replaceChildren(
-      renderLineChart(selectHorizonSpec(spec, horizon), options, x2, y2)
-    );
+    chart.replaceChildren(render(selectHorizonSpec(spec, horizon)));
   };
   select.addEventListener("change", () => draw(Number(select.value)));
   container.append(control, chart);
   draw(availableHorizons[0]);
   return container;
 }
+function renderHorizonLineChart(spec, options, x2, y2) {
+  return renderWithHorizonSelection(
+    spec,
+    (selected) => renderLineChart(selected, options, x2, y2)
+  );
+}
 function renderPrecisionRecallV2(spec, options = {}) {
-  return renderLineChart(spec, options, "sensitivity", "ppv");
+  return renderHorizonLineChart(spec, options, "sensitivity", "ppv");
 }
 function renderGainsV2(spec, options = {}) {
   return renderHorizonLineChart(spec, options, "ppcr", "sensitivity");
@@ -19456,6 +19599,9 @@ function renderLiftV2(spec, options = {}) {
 // src/render/decision-curve.ts
 function renderDecisionCurveV2(spec, options = {}) {
   assertV2ReferentialIntegrity(spec);
+  return renderWithHorizonSelection(spec, (selected) => renderDecisionCurveChart(selected, options));
+}
+function renderDecisionCurveChart(spec, options) {
   const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
   const resolved = resolveV2RenderOptions(groups2, options);
   const { theme } = resolved;
@@ -19473,9 +19619,9 @@ Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
   const marks2 = [];
   for (const reference of spec.references) {
     if (reference.benchmark === "treat_none") {
-      marks2.push(ruleY([0], { ...referenceStyle, title: reference.label ?? "Treat None" }));
+      marks2.push(ruleY([0], { ...referenceStyle, title: () => reference.label ?? "Treat None" }));
     } else {
-      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: reference.label ?? `Treat All \u2014 ${reference.population}` }));
+      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: () => reference.label ?? `Treat All \u2014 ${reference.population}` }));
     }
   }
   marks2.push(
@@ -19506,6 +19652,9 @@ Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
 // src/render/interventions-avoided.ts
 function renderInterventionsAvoidedV2(spec, options = {}) {
   assertV2ReferentialIntegrity(spec);
+  return renderWithHorizonSelection(spec, (selected) => renderInterventionsAvoidedChart(selected, options));
+}
+function renderInterventionsAvoidedChart(spec, options) {
   const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
   const resolved = resolveV2RenderOptions(groups2, options);
   const { theme } = resolved;
@@ -19523,9 +19672,9 @@ Interventions Avoided: ${datum2.interventionsAvoided.toFixed(theme.tip.digits)}`
   const marks2 = [];
   for (const reference of spec.references) {
     if (reference.benchmark === "treat_all") {
-      marks2.push(ruleY([0], { ...referenceStyle, title: reference.label ?? "Treat All" }));
+      marks2.push(ruleY([0], { ...referenceStyle, title: () => reference.label ?? "Treat All" }));
     } else {
-      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: reference.label ?? `Treat None \u2014 ${reference.population}` }));
+      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: () => reference.label ?? `Treat None \u2014 ${reference.population}` }));
     }
   }
   marks2.push(
@@ -22968,8 +23117,44 @@ __export(value_exports2, {
 });
 
 // src/render/report.ts
-function renderReport(spec) {
-  if (!value_exports2.Check(ReportSpecSchema, spec)) throw new Error("Invalid ReportSpec");
+function renderStandaloneComponentContent(spec) {
+  switch (spec.type) {
+    case "performance_table":
+      return renderPerformanceTable(spec);
+    case "roc":
+      return renderRocV2(spec);
+    case "calibration":
+      return renderCalibrationV2(spec);
+    case "precision_recall":
+      return renderPrecisionRecallV2(spec);
+    case "gains":
+      return renderGainsV2(spec);
+    case "lift":
+      return renderLiftV2(spec);
+    case "decision_curve":
+      return renderDecisionCurveV2(spec);
+    case "interventions_avoided":
+      return renderInterventionsAvoidedV2(spec);
+  }
+}
+function generateUniqueDomId(rawId, used) {
+  let base = rawId.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "id";
+  if (!/^[a-z]/i.test(base)) {
+    base = `id-${base}`;
+  }
+  let candidate = base;
+  let counter = 1;
+  while (used.has(candidate)) {
+    candidate = `${base}-${counter}`;
+    counter++;
+  }
+  used.add(candidate);
+  return candidate;
+}
+function renderReportV1_0(spec) {
+  if (!value_exports2.Check(ReportSpecV1_0Schema, spec)) {
+    throw new Error("Invalid ReportSpec");
+  }
   assertReportReferentialIntegrity(spec);
   const root2 = document.createElement("div");
   root2.className = "rtichoke-report";
@@ -22991,36 +23176,172 @@ function renderReport(spec) {
     }
     const content = document.createElement("div");
     content.className = "rtichoke-report__component-content";
-    switch (component.spec.type) {
-      case "performance_table":
-        content.append(renderPerformanceTable(component.spec));
-        break;
-      case "roc":
-        content.append(renderRocV2(component.spec));
-        break;
-      case "calibration":
-        content.append(renderCalibrationV2(component.spec));
-        break;
-      case "precision_recall":
-        content.append(renderPrecisionRecallV2(component.spec));
-        break;
-      case "gains":
-        content.append(renderGainsV2(component.spec));
-        break;
-      case "lift":
-        content.append(renderLiftV2(component.spec));
-        break;
-      case "decision_curve":
-        content.append(renderDecisionCurveV2(component.spec));
-        break;
-      case "interventions_avoided":
-        content.append(renderInterventionsAvoidedV2(component.spec));
-        break;
-    }
+    content.append(renderStandaloneComponentContent(component.spec));
     container.append(content);
     root2.append(container);
   }
   return root2;
+}
+function renderReportV1_1(spec) {
+  if (!value_exports2.Check(ReportSpecV1_1Schema, spec)) {
+    throw new Error("Invalid ReportSpec");
+  }
+  assertReportReferentialIntegrity(spec);
+  const hasTitle = Boolean(spec.title);
+  const usedDomIds = /* @__PURE__ */ new Set();
+  const root2 = document.createElement("article");
+  root2.className = "rtichoke-report";
+  if (spec.title) {
+    const header2 = document.createElement("header");
+    header2.className = "rtichoke-report__header";
+    const title = document.createElement("h1");
+    title.className = "rtichoke-report__title";
+    title.textContent = spec.title;
+    header2.append(title);
+    root2.append(header2);
+  }
+  const navSections = [];
+  let totalNavigableTargets = 0;
+  for (const section of spec.sections) {
+    const secDomId = generateUniqueDomId(section.id, usedDomIds);
+    totalNavigableTargets++;
+    const navGroups = [];
+    for (const item of section.items) {
+      if (item.type === "group") {
+        const grpDomId = generateUniqueDomId(item.id, usedDomIds);
+        totalNavigableTargets++;
+        navGroups.push({
+          rawId: item.id,
+          title: item.title,
+          domId: grpDomId
+        });
+      }
+    }
+    navSections.push({
+      rawId: section.id,
+      title: section.title,
+      domId: secDomId,
+      groups: navGroups
+    });
+  }
+  if (totalNavigableTargets > 1) {
+    const nav = document.createElement("nav");
+    nav.className = "rtichoke-report__nav";
+    nav.setAttribute("aria-label", "Report sections");
+    const navList = document.createElement("ul");
+    navList.className = "rtichoke-report__nav-list";
+    for (const sec of navSections) {
+      const navItem = document.createElement("li");
+      navItem.className = "rtichoke-report__nav-item";
+      const navLink = document.createElement("a");
+      navLink.className = "rtichoke-report__nav-link";
+      navLink.href = `#${sec.domId}`;
+      navLink.textContent = sec.title;
+      navItem.append(navLink);
+      if (sec.groups.length > 0) {
+        const subList = document.createElement("ul");
+        subList.className = "rtichoke-report__nav-sublist";
+        for (const grp of sec.groups) {
+          const subItem = document.createElement("li");
+          subItem.className = "rtichoke-report__nav-subitem";
+          const subLink = document.createElement("a");
+          subLink.className = "rtichoke-report__nav-link";
+          subLink.href = `#${grp.domId}`;
+          subLink.textContent = grp.title;
+          subItem.append(subLink);
+          subList.append(subItem);
+        }
+        navItem.append(subList);
+      }
+      navList.append(navItem);
+    }
+    nav.append(navList);
+    root2.append(nav);
+  }
+  const sectionHeadingTag = hasTitle ? "h2" : "h1";
+  const groupHeadingTag = hasTitle ? "h3" : "h2";
+  const directCompHeadingTag = hasTitle ? "h3" : "h2";
+  const groupCompHeadingTag = hasTitle ? "h4" : "h3";
+  const renderComponent = (comp, headingTag) => {
+    const container = document.createElement("section");
+    container.className = "rtichoke-report__component";
+    container.dataset.componentId = comp.id;
+    if (comp.title) {
+      const compHeadingDomId = generateUniqueDomId(
+        `heading-${comp.id}`,
+        usedDomIds
+      );
+      const titleEl = document.createElement(headingTag);
+      titleEl.className = "rtichoke-report__component-title";
+      titleEl.id = compHeadingDomId;
+      titleEl.textContent = comp.title;
+      container.setAttribute("aria-labelledby", compHeadingDomId);
+      container.append(titleEl);
+    }
+    const content = document.createElement("div");
+    content.className = "rtichoke-report__component-content";
+    content.append(renderStandaloneComponentContent(comp.spec));
+    container.append(content);
+    return container;
+  };
+  for (let i = 0; i < spec.sections.length; i++) {
+    const sectionSpec = spec.sections[i];
+    const secNav = navSections[i];
+    const secSection = document.createElement("section");
+    secSection.className = "rtichoke-report__section";
+    secSection.id = secNav.domId;
+    secSection.dataset.sectionId = sectionSpec.id;
+    const secHeadingDomId = generateUniqueDomId(
+      `heading-${sectionSpec.id}`,
+      usedDomIds
+    );
+    const secHeading = document.createElement(sectionHeadingTag);
+    secHeading.className = "rtichoke-report__section-title";
+    secHeading.id = secHeadingDomId;
+    secHeading.textContent = sectionSpec.title;
+    secSection.setAttribute("aria-labelledby", secHeadingDomId);
+    secSection.append(secHeading);
+    let groupIndex2 = 0;
+    for (const item of sectionSpec.items) {
+      if (item.type === "component") {
+        secSection.append(renderComponent(item, directCompHeadingTag));
+      } else if (item.type === "group") {
+        const grpNav = secNav.groups[groupIndex2++];
+        const grpSection = document.createElement("section");
+        grpSection.className = "rtichoke-report__group";
+        grpSection.id = grpNav.domId;
+        grpSection.dataset.groupId = item.id;
+        const grpHeadingDomId = generateUniqueDomId(
+          `heading-${item.id}`,
+          usedDomIds
+        );
+        const grpHeading = document.createElement(groupHeadingTag);
+        grpHeading.className = "rtichoke-report__group-title";
+        grpHeading.id = grpHeadingDomId;
+        grpHeading.textContent = item.title;
+        grpSection.setAttribute("aria-labelledby", grpHeadingDomId);
+        grpSection.append(grpHeading);
+        for (const comp of item.components) {
+          grpSection.append(renderComponent(comp, groupCompHeadingTag));
+        }
+        secSection.append(grpSection);
+      }
+    }
+    root2.append(secSection);
+  }
+  return root2;
+}
+function renderReport(spec) {
+  if (!spec || typeof spec !== "object") {
+    throw new Error("Invalid ReportSpec");
+  }
+  if (spec.schemaVersion === "1.0") {
+    return renderReportV1_0(spec);
+  }
+  if (spec.schemaVersion === "1.1") {
+    return renderReportV1_1(spec);
+  }
+  throw new Error("Invalid ReportSpec");
 }
 
 // src/render/roc.ts
@@ -23120,12 +23441,18 @@ export {
   RTICHOKE_COLORS2 as RTICHOKE_COLORS,
   ReferenceLineV2SpecSchema,
   ReportComponentSchema,
+  ReportComponentV1_1Schema,
+  ReportGroupSchema,
+  ReportSectionSchema,
   ReportSpecSchema,
+  ReportSpecV1_0Schema,
+  ReportSpecV1_1Schema,
   RocSpecSchema,
   RocV2SpecSchema,
   RtichokeChartSpecSchema,
   RtichokeChartSpecV2Schema,
   SeriesSpecSchema,
+  StandaloneCanonicalSpecSchema,
   TreatAllReferenceSchema,
   TreatNoneReferenceSchema,
   assertPerformanceTableReferentialIntegrity,

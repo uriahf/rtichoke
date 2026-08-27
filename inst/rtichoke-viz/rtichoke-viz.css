@@ -11,13 +11,128 @@
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #1a1a1a;
 }
 
-.rtichoke-report__title,
+.rtichoke-report__header {
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.rtichoke-report__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.rtichoke-report__nav {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+}
+
+.rtichoke-report__nav-list,
+.rtichoke-report__nav-sublist {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rtichoke-report__nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.rtichoke-report__nav-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rtichoke-report__nav-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.rtichoke-report__nav-link:hover,
+.rtichoke-report__nav-link:focus {
+  text-decoration: underline;
+}
+
+.rtichoke-report__nav-sublist {
+  padding-left: 0.75rem;
+  border-left: 2px solid #d1d5db;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rtichoke-report__nav-subitem .rtichoke-report__nav-link {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.rtichoke-report__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-top: 0.5rem;
+}
+
+.rtichoke-report__section-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.rtichoke-report__group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-left: 0.5rem;
+}
+
+.rtichoke-report__group-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.rtichoke-report__component {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .rtichoke-report__component-title {
-  margin: 0 0 1rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4b5563;
 }
 
 .rtichoke-report__component-content {
   overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .rtichoke-report__nav-list {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }

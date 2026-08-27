@@ -76,6 +76,27 @@ summary_report_component_ids <- c(
 )
 
 
+summary_report_components <- function(report) {
+  components <- list()
+  for (section in report$sections) {
+    for (item in section$items) {
+      if (identical(item$type, "component")) {
+        components <- c(components, list(item))
+      } else {
+        components <- c(components, item$components)
+      }
+    }
+  }
+  components
+}
+
+
+summary_report_component <- function(report, id) {
+  components <- summary_report_components(report)
+  components[[match(id, vapply(components, `[[`, "", "id"))]]
+}
+
+
 test_that("summary report keeps RMarkdown as the default backend", {
   dat <- summary_report_test_data()
   rmarkdown_called <- FALSE
@@ -108,50 +129,124 @@ test_that("summary report keeps RMarkdown as the default backend", {
 })
 
 
-test_that("browser summary report composes all canonical static components", {
+test_that("summary report keeps explicit RMarkdown rendering unchanged", {
+  dat <- summary_report_test_data()
+  rmarkdown_called <- FALSE
+
+  testthat::local_mocked_bindings(
+    render_summary_report_rmarkdown = function(...) {
+      rmarkdown_called <<- TRUE
+      invisible(NULL)
+    },
+    summary_report_browser_spec = function(...) {
+      stop("browser backend must not run")
+    },
+    .package = "rtichoke"
+  )
+
+  expect_message(
+    create_summary_report(
+      probs = dat$probs,
+      reals = dat$reals,
+      renderer = "rmarkdown",
+      output_file = "legacy.html",
+      output_dir = tempdir()
+    ),
+    NA
+  )
+  expect_true(rmarkdown_called)
+})
+
+
+test_that("browser summary report composes the structured v1.1 hierarchy", {
   dat <- summary_report_test_data()
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
+  components <- summary_report_components(report)
 
-  expect_identical(report$schemaVersion, "1.0")
+  expect_identical(report$schemaVersion, "1.1")
   expect_identical(report$type, "report")
   expect_identical(report$title, "Summary Report")
   expect_identical(
-    vapply(report$components, `[[`, "", "id"),
-    summary_report_component_ids
+    vapply(report$sections, `[[`, "", "id"),
+    c("calibration", "discrimination", "utility", "performance-table")
   )
   expect_identical(
-    vapply(report$components, function(x) x$spec$type, character(1)),
-    summary_report_component_types
+    vapply(report$sections, `[[`, "", "title"),
+    c("Calibration", "Discrimination", "Utility", "Performance Table")
+  )
+
+  calibration <- report$sections[[1]]
+  expect_identical(vapply(calibration$items, `[[`, "", "type"), "component")
+  expect_identical(calibration$items[[1]]$id, "calibration")
+  expect_identical(calibration$items[[1]]$title, "Discrete")
+
+  discrimination <- report$sections[[2]]
+  expect_identical(
+    vapply(discrimination$items, `[[`, "", "id"),
+    c("discrimination-probability-threshold", "discrimination-ppcr")
   )
   expect_identical(
-    vapply(report$components, `[[`, "", "title"),
+    vapply(discrimination$items, `[[`, "", "title"),
+    c("By Probability Threshold", "By PPCR")
+  )
+  for (group in discrimination$items) {
+    expect_identical(
+      vapply(group$components, `[[`, "", "title"),
+      c("ROC", "Precision-Recall", "Gains", "Lift")
+    )
+  }
+
+  utility <- report$sections[[3]]
+  expect_identical(
+    vapply(utility$items, `[[`, "", "title"),
+    c("Decision Curve", "Interventions Avoided")
+  )
+
+  tables <- report$sections[[4]]
+  expect_identical(
+    vapply(tables$items, `[[`, "", "id"),
     c(
-      "Performance Table \u2014 Probability Threshold",
-      "Calibration \u2014 Discrete",
-      "ROC \u2014 Probability Threshold",
-      "Precision-Recall \u2014 Probability Threshold",
-      "Gains \u2014 Probability Threshold",
-      "Lift \u2014 Probability Threshold",
-      "Decision Curve",
-      "Interventions Avoided",
-      "Performance Table \u2014 PPCR",
-      "ROC \u2014 PPCR",
-      "Precision-Recall \u2014 PPCR",
-      "Gains \u2014 PPCR",
-      "Lift \u2014 PPCR"
+      "performance-table-probability-threshold",
+      "performance-table-ppcr"
     )
   )
-  expect_identical(report$components[[2]]$spec$data[[1]]$method, "discrete")
-  expect_length(unique(summary_report_component_ids), 13L)
+  expect_identical(
+    vapply(tables$items, `[[`, "", "title"),
+    c("By Probability Threshold", "By PPCR")
+  )
+  expect_identical(
+    vapply(tables$items, function(x) x$components[[1]]$title, ""),
+    rep("Performance Table", 2)
+  )
+
+  expect_identical(
+    sort(vapply(components, `[[`, "", "id")),
+    sort(summary_report_component_ids)
+  )
+  expect_identical(
+    sort(vapply(components, function(x) x$spec$type, "")),
+    sort(summary_report_component_types)
+  )
+  expect_identical(
+    summary_report_component(report, "calibration")$spec$data[[1]]$method,
+    "discrete"
+  )
+  expect_true(all(vapply(components, function(x) x$type == "component", TRUE)))
+  groups <- c(discrimination$items, tables$items)
+  expect_true(all(vapply(groups, function(x) x$type == "group", TRUE)))
+  expect_length(unique(vapply(components, `[[`, "", "id")), 13L)
+  expect_length(unique(vapply(report$sections, `[[`, "", "id")), 4L)
+  expect_length(unique(vapply(groups, `[[`, "", "id")), 4L)
 })
 
 
 test_that("browser summary report preserves component-local evaluation identity", {
   dat <- summary_report_test_data()
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
+  components <- summary_report_components(report)
 
   evaluation_ids <- vapply(
-    report$components,
+    components,
     function(component) component$spec$evaluations[[1]]$id,
     character(1)
   )
@@ -159,11 +254,7 @@ test_that("browser summary report preserves component-local evaluation identity"
   expect_identical(evaluation_ids, rep("evaluation-1", 13))
   expect_false("evaluations" %in% names(report))
   expect_identical(
-    report$components[[3]]$spec$evaluations[[1]]$population,
-    "Population A"
-  )
-  expect_identical(
-    report$components[[3]]$spec$evaluations[[1]]$population,
+    summary_report_component(report, "roc")$spec$evaluations[[1]]$population,
     "Population A"
   )
 })
@@ -179,8 +270,8 @@ test_that("browser summary uses authoritative threshold and PPCR data", {
     stratified_by = "ppcr"
   )
 
-  threshold_table <- report$components[[1]]$spec
-  ppcr_table <- report$components[[9]]$spec
+  threshold_table <- summary_report_component(report, "performance-table")$spec
+  ppcr_table <- summary_report_component(report, "performance-table-2")$spec
   expect_true(all(vapply(
     threshold_table$rows,
     function(row) identical(row$operatingPoint$type, "probability_threshold"),
@@ -201,15 +292,30 @@ test_that("browser summary uses authoritative threshold and PPCR data", {
   )
 
   expect_equal(
-    vapply(report$components[[3]]$spec$data, `[[`, 0, "cutoff"),
+    vapply(
+      summary_report_component(report, "roc")$spec$data,
+      `[[`,
+      0,
+      "cutoff"
+    ),
     threshold_data$probability_threshold
   )
   expect_equal(
-    vapply(report$components[[10]]$spec$data, `[[`, 0, "cutoff"),
+    vapply(
+      summary_report_component(report, "roc-2")$spec$data,
+      `[[`,
+      0,
+      "cutoff"
+    ),
     unname(ppcr_data$probability_threshold)
   )
   expect_equal(
-    vapply(report$components[[12]]$spec$data, `[[`, 0, "ppcr"),
+    vapply(
+      summary_report_component(report, "gains-2")$spec$data,
+      `[[`,
+      0,
+      "ppcr"
+    ),
     ppcr_data$ppcr
   )
 })
@@ -239,6 +345,79 @@ test_that("summary report embedding leaves standalone specs unchanged", {
 })
 
 
+test_that("structured summary embeds the authoritative standalone specs", {
+  dat <- summary_report_test_data()
+  performance_data <- prepare_performance_data(dat$probs, dat$reals)
+  ppcr_data <- prepare_performance_data(
+    dat$probs,
+    dat$reals,
+    stratified_by = "ppcr"
+  )
+  metadata <- rtichoke:::build_evaluation_metadata(dat$probs, dat$reals)
+  calibration_data <- rtichoke:::create_calibration_curve_list(
+    dat$probs,
+    dat$reals
+  )
+  ia_data <- rtichoke:::add_static_interventions_avoided_metric(
+    performance_data
+  )
+  report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
+
+  expected <- list(
+    "performance-table" = rtichoke:::rtichoke_viz_performance_table_v2_spec(
+      performance_data,
+      metadata
+    ),
+    "calibration" = rtichoke:::rtichoke_viz_calibration_v2_spec(
+      calibration_data,
+      metadata,
+      method = "discrete"
+    ),
+    "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(performance_data, metadata),
+    "precision-recall" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
+      performance_data,
+      metadata
+    ),
+    "gains" = rtichoke:::rtichoke_viz_gains_v2_spec(
+      performance_data,
+      metadata
+    ),
+    "lift" = rtichoke:::rtichoke_viz_lift_v2_spec(
+      performance_data,
+      metadata
+    ),
+    "decision-curve" = rtichoke:::rtichoke_viz_decision_curve_v2_spec(
+      performance_data,
+      metadata
+    ),
+    "interventions-avoided" = rtichoke:::rtichoke_viz_interventions_avoided_v2_spec(
+      ia_data,
+      metadata
+    ),
+    "performance-table-2" = rtichoke:::rtichoke_viz_performance_table_v2_spec(
+      ppcr_data,
+      metadata,
+      stratified_by = "ppcr"
+    ),
+    "roc-2" = rtichoke:::rtichoke_viz_roc_v2_spec(ppcr_data, metadata),
+    "precision-recall-2" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
+      ppcr_data,
+      metadata
+    ),
+    "gains-2" = rtichoke:::rtichoke_viz_gains_v2_spec(ppcr_data, metadata),
+    "lift-2" = rtichoke:::rtichoke_viz_lift_v2_spec(ppcr_data, metadata)
+  )
+
+  for (id in names(expected)) {
+    expect_identical(summary_report_component(report, id)$spec, expected[[id]])
+  }
+  expect_false(identical(
+    summary_report_component(report, "decision-curve")$spec,
+    summary_report_component(report, "interventions-avoided")$spec
+  ))
+})
+
+
 test_that("summary report keeps models and populations semantically distinct", {
   probs <- list(
     train = seq(0.01, 0.99, length.out = 100),
@@ -250,7 +429,7 @@ test_that("summary report keeps models and populations semantically distinct", {
   )
   report <- rtichoke:::summary_report_browser_spec(probs, reals)
 
-  for (component in report$components) {
+  for (component in summary_report_components(report)) {
     expect_identical(
       vapply(component$spec$evaluations, `[[`, "", "population"),
       c("train", "test")
@@ -278,7 +457,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.6.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.11.0", fixed = TRUE)
   expect_match(html, '"id":"performance-table"', fixed = TRUE)
   expect_match(html, '"id":"roc"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -288,7 +467,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.6.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.11.0/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
