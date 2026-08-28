@@ -1112,48 +1112,78 @@
                               "data": {
                                 "type": "array",
                                 "items": {
-                                  "type": "object",
-                                  "required": [
-                                    "seriesId",
-                                    "predicted",
-                                    "observed",
-                                    "method"
-                                  ],
-                                  "properties": {
-                                    "seriesId": {
-                                      "type": "string"
-                                    },
-                                    "predicted": {
-                                      "minimum": 0,
-                                      "maximum": 1,
-                                      "type": "number"
-                                    },
-                                    "observed": {
-                                      "minimum": 0,
-                                      "maximum": 1,
-                                      "type": "number"
-                                    },
-                                    "method": {
-                                      "anyOf": [
-                                        {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "required": [
+                                        "seriesId",
+                                        "predicted",
+                                        "observed",
+                                        "method"
+                                      ],
+                                      "properties": {
+                                        "seriesId": {
+                                          "type": "string"
+                                        },
+                                        "predicted": {
+                                          "minimum": 0,
+                                          "maximum": 1,
+                                          "type": "number"
+                                        },
+                                        "observed": {
+                                          "minimum": 0,
+                                          "maximum": 1,
+                                          "type": "number"
+                                        },
+                                        "method": {
                                           "const": "discrete",
                                           "type": "string"
                                         },
-                                        {
+                                        "events": {
+                                          "minimum": 0,
+                                          "type": "number"
+                                        },
+                                        "total": {
+                                          "minimum": 0,
+                                          "type": "number"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "required": [
+                                        "seriesId",
+                                        "predicted",
+                                        "observed",
+                                        "method"
+                                      ],
+                                      "properties": {
+                                        "seriesId": {
+                                          "type": "string"
+                                        },
+                                        "predicted": {
+                                          "minimum": 0,
+                                          "maximum": 1,
+                                          "type": "number"
+                                        },
+                                        "observed": {
+                                          "type": "number"
+                                        },
+                                        "method": {
                                           "const": "smooth",
                                           "type": "string"
+                                        },
+                                        "events": {
+                                          "minimum": 0,
+                                          "type": "number"
+                                        },
+                                        "total": {
+                                          "minimum": 0,
+                                          "type": "number"
                                         }
-                                      ]
-                                    },
-                                    "events": {
-                                      "minimum": 0,
-                                      "type": "number"
-                                    },
-                                    "total": {
-                                      "minimum": 0,
-                                      "type": "number"
+                                      }
                                     }
-                                  }
+                                  ]
                                 }
                               },
                               "distribution": {
@@ -4793,6 +4823,160 @@
                         }
                       }
                     }
+                  },
+                  {
+                    "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
+                    "title": "rtichoke summary metrics specification",
+                    "type": "object",
+                    "required": [
+                      "schemaVersion",
+                      "type",
+                      "evaluations",
+                      "populations",
+                      "metrics"
+                    ],
+                    "properties": {
+                      "schemaVersion": {
+                        "const": "1.0",
+                        "type": "string"
+                      },
+                      "type": {
+                        "const": "summary_metrics",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "evaluations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "population"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "model": {
+                              "type": "string"
+                            },
+                            "population": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "populations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "label"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "metrics": {
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "required": [
+                                "metric",
+                                "owner",
+                                "estimate"
+                              ],
+                              "properties": {
+                                "metric": {
+                                  "const": "auroc",
+                                  "type": "string"
+                                },
+                                "owner": {
+                                  "type": "object",
+                                  "required": [
+                                    "type",
+                                    "evaluationId"
+                                  ],
+                                  "properties": {
+                                    "type": {
+                                      "const": "evaluation",
+                                      "type": "string"
+                                    },
+                                    "evaluationId": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "estimate": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "required": [
+                                "metric",
+                                "owner",
+                                "estimate"
+                              ],
+                              "properties": {
+                                "metric": {
+                                  "const": "prevalence",
+                                  "type": "string"
+                                },
+                                "owner": {
+                                  "type": "object",
+                                  "required": [
+                                    "type",
+                                    "populationId"
+                                  ],
+                                  "properties": {
+                                    "type": {
+                                      "const": "population",
+                                      "type": "string"
+                                    },
+                                    "populationId": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "estimate": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 ]
               }
@@ -5935,48 +6119,78 @@
                                         "data": {
                                           "type": "array",
                                           "items": {
-                                            "type": "object",
-                                            "required": [
-                                              "seriesId",
-                                              "predicted",
-                                              "observed",
-                                              "method"
-                                            ],
-                                            "properties": {
-                                              "seriesId": {
-                                                "type": "string"
-                                              },
-                                              "predicted": {
-                                                "minimum": 0,
-                                                "maximum": 1,
-                                                "type": "number"
-                                              },
-                                              "observed": {
-                                                "minimum": 0,
-                                                "maximum": 1,
-                                                "type": "number"
-                                              },
-                                              "method": {
-                                                "anyOf": [
-                                                  {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "required": [
+                                                  "seriesId",
+                                                  "predicted",
+                                                  "observed",
+                                                  "method"
+                                                ],
+                                                "properties": {
+                                                  "seriesId": {
+                                                    "type": "string"
+                                                  },
+                                                  "predicted": {
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "type": "number"
+                                                  },
+                                                  "observed": {
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "type": "number"
+                                                  },
+                                                  "method": {
                                                     "const": "discrete",
                                                     "type": "string"
                                                   },
-                                                  {
+                                                  "events": {
+                                                    "minimum": 0,
+                                                    "type": "number"
+                                                  },
+                                                  "total": {
+                                                    "minimum": 0,
+                                                    "type": "number"
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "required": [
+                                                  "seriesId",
+                                                  "predicted",
+                                                  "observed",
+                                                  "method"
+                                                ],
+                                                "properties": {
+                                                  "seriesId": {
+                                                    "type": "string"
+                                                  },
+                                                  "predicted": {
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                    "type": "number"
+                                                  },
+                                                  "observed": {
+                                                    "type": "number"
+                                                  },
+                                                  "method": {
                                                     "const": "smooth",
                                                     "type": "string"
+                                                  },
+                                                  "events": {
+                                                    "minimum": 0,
+                                                    "type": "number"
+                                                  },
+                                                  "total": {
+                                                    "minimum": 0,
+                                                    "type": "number"
                                                   }
-                                                ]
-                                              },
-                                              "events": {
-                                                "minimum": 0,
-                                                "type": "number"
-                                              },
-                                              "total": {
-                                                "minimum": 0,
-                                                "type": "number"
+                                                }
                                               }
-                                            }
+                                            ]
                                           }
                                         },
                                         "distribution": {
@@ -9616,6 +9830,160 @@
                                   }
                                 }
                               }
+                            },
+                            {
+                              "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
+                              "title": "rtichoke summary metrics specification",
+                              "type": "object",
+                              "required": [
+                                "schemaVersion",
+                                "type",
+                                "evaluations",
+                                "populations",
+                                "metrics"
+                              ],
+                              "properties": {
+                                "schemaVersion": {
+                                  "const": "1.0",
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "const": "summary_metrics",
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "evaluations": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "population"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "model": {
+                                        "type": "string"
+                                      },
+                                      "population": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "populations": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "label"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "metrics": {
+                                  "type": "array",
+                                  "items": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "required": [
+                                          "metric",
+                                          "owner",
+                                          "estimate"
+                                        ],
+                                        "properties": {
+                                          "metric": {
+                                            "const": "auroc",
+                                            "type": "string"
+                                          },
+                                          "owner": {
+                                            "type": "object",
+                                            "required": [
+                                              "type",
+                                              "evaluationId"
+                                            ],
+                                            "properties": {
+                                              "type": {
+                                                "const": "evaluation",
+                                                "type": "string"
+                                              },
+                                              "evaluationId": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "estimate": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "required": [
+                                          "metric",
+                                          "owner",
+                                          "estimate"
+                                        ],
+                                        "properties": {
+                                          "metric": {
+                                            "const": "prevalence",
+                                            "type": "string"
+                                          },
+                                          "owner": {
+                                            "type": "object",
+                                            "required": [
+                                              "type",
+                                              "populationId"
+                                            ],
+                                            "properties": {
+                                              "type": {
+                                                "const": "population",
+                                                "type": "string"
+                                              },
+                                              "populationId": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "estimate": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
                             }
                           ]
                         }
@@ -10736,48 +11104,78 @@
                                               "data": {
                                                 "type": "array",
                                                 "items": {
-                                                  "type": "object",
-                                                  "required": [
-                                                    "seriesId",
-                                                    "predicted",
-                                                    "observed",
-                                                    "method"
-                                                  ],
-                                                  "properties": {
-                                                    "seriesId": {
-                                                      "type": "string"
-                                                    },
-                                                    "predicted": {
-                                                      "minimum": 0,
-                                                      "maximum": 1,
-                                                      "type": "number"
-                                                    },
-                                                    "observed": {
-                                                      "minimum": 0,
-                                                      "maximum": 1,
-                                                      "type": "number"
-                                                    },
-                                                    "method": {
-                                                      "anyOf": [
-                                                        {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "seriesId",
+                                                        "predicted",
+                                                        "observed",
+                                                        "method"
+                                                      ],
+                                                      "properties": {
+                                                        "seriesId": {
+                                                          "type": "string"
+                                                        },
+                                                        "predicted": {
+                                                          "minimum": 0,
+                                                          "maximum": 1,
+                                                          "type": "number"
+                                                        },
+                                                        "observed": {
+                                                          "minimum": 0,
+                                                          "maximum": 1,
+                                                          "type": "number"
+                                                        },
+                                                        "method": {
                                                           "const": "discrete",
                                                           "type": "string"
                                                         },
-                                                        {
+                                                        "events": {
+                                                          "minimum": 0,
+                                                          "type": "number"
+                                                        },
+                                                        "total": {
+                                                          "minimum": 0,
+                                                          "type": "number"
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "seriesId",
+                                                        "predicted",
+                                                        "observed",
+                                                        "method"
+                                                      ],
+                                                      "properties": {
+                                                        "seriesId": {
+                                                          "type": "string"
+                                                        },
+                                                        "predicted": {
+                                                          "minimum": 0,
+                                                          "maximum": 1,
+                                                          "type": "number"
+                                                        },
+                                                        "observed": {
+                                                          "type": "number"
+                                                        },
+                                                        "method": {
                                                           "const": "smooth",
                                                           "type": "string"
+                                                        },
+                                                        "events": {
+                                                          "minimum": 0,
+                                                          "type": "number"
+                                                        },
+                                                        "total": {
+                                                          "minimum": 0,
+                                                          "type": "number"
                                                         }
-                                                      ]
-                                                    },
-                                                    "events": {
-                                                      "minimum": 0,
-                                                      "type": "number"
-                                                    },
-                                                    "total": {
-                                                      "minimum": 0,
-                                                      "type": "number"
+                                                      }
                                                     }
-                                                  }
+                                                  ]
                                                 }
                                               },
                                               "distribution": {
@@ -14414,6 +14812,160 @@
                                               }
                                             }
                                           }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
+                                    "title": "rtichoke summary metrics specification",
+                                    "type": "object",
+                                    "required": [
+                                      "schemaVersion",
+                                      "type",
+                                      "evaluations",
+                                      "populations",
+                                      "metrics"
+                                    ],
+                                    "properties": {
+                                      "schemaVersion": {
+                                        "const": "1.0",
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "const": "summary_metrics",
+                                        "type": "string"
+                                      },
+                                      "title": {
+                                        "type": "string"
+                                      },
+                                      "evaluations": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "id",
+                                            "population"
+                                          ],
+                                          "properties": {
+                                            "id": {
+                                              "type": "string"
+                                            },
+                                            "model": {
+                                              "type": "string"
+                                            },
+                                            "population": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "populations": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "id",
+                                            "label"
+                                          ],
+                                          "properties": {
+                                            "id": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "metrics": {
+                                        "type": "array",
+                                        "items": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "required": [
+                                                "metric",
+                                                "owner",
+                                                "estimate"
+                                              ],
+                                              "properties": {
+                                                "metric": {
+                                                  "const": "auroc",
+                                                  "type": "string"
+                                                },
+                                                "owner": {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "type",
+                                                    "evaluationId"
+                                                  ],
+                                                  "properties": {
+                                                    "type": {
+                                                      "const": "evaluation",
+                                                      "type": "string"
+                                                    },
+                                                    "evaluationId": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "estimate": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "type": "object",
+                                              "required": [
+                                                "metric",
+                                                "owner",
+                                                "estimate"
+                                              ],
+                                              "properties": {
+                                                "metric": {
+                                                  "const": "prevalence",
+                                                  "type": "string"
+                                                },
+                                                "owner": {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "type",
+                                                    "populationId"
+                                                  ],
+                                                  "properties": {
+                                                    "type": {
+                                                      "const": "population",
+                                                      "type": "string"
+                                                    },
+                                                    "populationId": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                },
+                                                "estimate": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
                                         }
                                       }
                                     }

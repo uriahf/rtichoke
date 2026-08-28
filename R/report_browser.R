@@ -33,7 +33,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.11.0",
+    version = "0.14.0",
     src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )
@@ -43,7 +43,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     "-spec').textContent);\n",
     "document.querySelector('#",
     id,
-    "').append(renderReport(spec));"
+    "').append(renderReport(spec, { sectionGroupPresentation: 'tabs', groupPresentation: 'stacked' }));"
   )
   script <- paste(bundle, initializer, sep = "\n")
 

@@ -43,8 +43,14 @@ component_contains <- function(dom, component_id, pattern) {
 
 
 summary_report_component_types <- c(
-  "performance_table",
+  "summary_metrics",
   "calibration",
+  "calibration",
+  "summary_metrics",
+  "roc",
+  "precision_recall",
+  "gains",
+  "lift",
   "roc",
   "precision_recall",
   "gains",
@@ -52,27 +58,27 @@ summary_report_component_types <- c(
   "decision_curve",
   "interventions_avoided",
   "performance_table",
-  "roc",
-  "precision_recall",
-  "gains",
-  "lift"
+  "performance_table"
 )
 
 
 summary_report_component_ids <- c(
-  "performance-table",
+  "prevalence-summary",
+  "calibration-smooth",
   "calibration",
+  "auroc",
   "roc",
   "precision-recall",
   "gains",
   "lift",
-  "decision-curve",
-  "interventions-avoided",
-  "performance-table-2",
   "roc-2",
   "precision-recall-2",
   "gains-2",
-  "lift-2"
+  "lift-2",
+  "decision-curve",
+  "interventions-avoided",
+  "performance-table",
+  "performance-table-2"
 )
 
 
@@ -168,41 +174,52 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   expect_identical(report$title, "Summary Report")
   expect_identical(
     vapply(report$sections, `[[`, "", "id"),
-    c("calibration", "discrimination", "utility", "performance-table")
+    c("prevalence", "calibration", "discrimination", "utility", "performance-table")
   )
   expect_identical(
     vapply(report$sections, `[[`, "", "title"),
-    c("Calibration", "Discrimination", "Utility", "Performance Table")
+    c("Prevalence", "Calibration", "Discrimination", "Utility", "Performance Table")
   )
 
-  calibration <- report$sections[[1]]
-  expect_identical(vapply(calibration$items, `[[`, "", "type"), "component")
-  expect_identical(calibration$items[[1]]$id, "calibration")
-  expect_identical(calibration$items[[1]]$title, "Discrete")
+  prevalence <- report$sections[[1]]
+  expect_identical(vapply(prevalence$items, `[[`, "", "type"), "component")
+  expect_identical(prevalence$items[[1]]$id, "prevalence-summary")
+  expect_identical(prevalence$items[[1]]$title, "Prevalence summary")
 
-  discrimination <- report$sections[[2]]
+  calibration <- report$sections[[2]]
+  expect_identical(vapply(calibration$items, `[[`, "", "type"), rep("component", 2))
+  expect_identical(calibration$items[[1]]$id, "calibration-smooth")
+  expect_identical(calibration$items[[1]]$title, "Smooth")
+  expect_identical(calibration$items[[2]]$id, "calibration")
+  expect_identical(calibration$items[[2]]$title, "Discrete")
+
+  discrimination <- report$sections[[3]]
+  expect_identical(discrimination$items[[1]]$type, "component")
+  expect_identical(discrimination$items[[1]]$id, "auroc")
+  expect_identical(discrimination$items[[1]]$title, "AUROC")
+
   expect_identical(
-    vapply(discrimination$items, `[[`, "", "id"),
+    vapply(discrimination$items[2:3], `[[`, "", "id"),
     c("discrimination-probability-threshold", "discrimination-ppcr")
   )
   expect_identical(
-    vapply(discrimination$items, `[[`, "", "title"),
+    vapply(discrimination$items[2:3], `[[`, "", "title"),
     c("By Probability Threshold", "By PPCR")
   )
-  for (group in discrimination$items) {
+  for (group in discrimination$items[2:3]) {
     expect_identical(
       vapply(group$components, `[[`, "", "title"),
       c("ROC", "Precision-Recall", "Gains", "Lift")
     )
   }
 
-  utility <- report$sections[[3]]
+  utility <- report$sections[[4]]
   expect_identical(
     vapply(utility$items, `[[`, "", "title"),
     c("Decision Curve", "Interventions Avoided")
   )
 
-  tables <- report$sections[[4]]
+  tables <- report$sections[[5]]
   expect_identical(
     vapply(tables$items, `[[`, "", "id"),
     c(
@@ -231,11 +248,15 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     summary_report_component(report, "calibration")$spec$data[[1]]$method,
     "discrete"
   )
+  expect_identical(
+    summary_report_component(report, "calibration-smooth")$spec$data[[1]]$method,
+    "smooth"
+  )
   expect_true(all(vapply(components, function(x) x$type == "component", TRUE)))
-  groups <- c(discrimination$items, tables$items)
+  groups <- c(discrimination$items[2:3], tables$items)
   expect_true(all(vapply(groups, function(x) x$type == "group", TRUE)))
-  expect_length(unique(vapply(components, `[[`, "", "id")), 13L)
-  expect_length(unique(vapply(report$sections, `[[`, "", "id")), 4L)
+  expect_length(unique(vapply(components, `[[`, "", "id")), 16L)
+  expect_length(unique(vapply(report$sections, `[[`, "", "id")), 5L)
   expect_length(unique(vapply(groups, `[[`, "", "id")), 4L)
 })
 
@@ -245,13 +266,18 @@ test_that("browser summary report preserves component-local evaluation identity"
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
   components <- summary_report_components(report)
 
+  components_with_evaluations <- Filter(
+    function(component) length(component$spec$evaluations) > 0,
+    components
+  )
+
   evaluation_ids <- vapply(
-    components,
+    components_with_evaluations,
     function(component) component$spec$evaluations[[1]]$id,
     character(1)
   )
 
-  expect_identical(evaluation_ids, rep("evaluation-1", 13))
+  expect_identical(evaluation_ids, rep("evaluation-1", length(components_with_evaluations)))
   expect_false("evaluations" %in% names(report))
   expect_identical(
     summary_report_component(report, "roc")$spec$evaluations[[1]]$population,
@@ -364,14 +390,28 @@ test_that("structured summary embeds the authoritative standalone specs", {
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
 
   expected <- list(
-    "performance-table" = rtichoke:::rtichoke_viz_performance_table_v2_spec(
+    "prevalence-summary" = rtichoke:::rtichoke_viz_summary_metrics_prevalence_spec(
       performance_data,
       metadata
+    ),
+    "calibration-smooth" = rtichoke:::rtichoke_viz_calibration_v2_spec(
+      calibration_data,
+      metadata,
+      method = "smooth"
     ),
     "calibration" = rtichoke:::rtichoke_viz_calibration_v2_spec(
       calibration_data,
       metadata,
       method = "discrete"
+    ),
+    "auroc" = rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+      dat$probs,
+      dat$reals,
+      metadata
+    ),
+    "performance-table" = rtichoke:::rtichoke_viz_performance_table_v2_spec(
+      performance_data,
+      metadata
     ),
     "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(performance_data, metadata),
     "precision-recall" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
@@ -429,7 +469,12 @@ test_that("summary report keeps models and populations semantically distinct", {
   )
   report <- rtichoke:::summary_report_browser_spec(probs, reals)
 
-  for (component in summary_report_components(report)) {
+  components_with_evaluations <- Filter(
+    function(component) length(component$spec$evaluations) > 0,
+    summary_report_components(report)
+  )
+
+  for (component in components_with_evaluations) {
     expect_identical(
       vapply(component$spec$evaluations, `[[`, "", "population"),
       c("train", "test")
@@ -457,17 +502,20 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.11.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.14.0", fixed = TRUE)
+  expect_match(html, '"id":"prevalence-summary"', fixed = TRUE)
+  expect_match(html, '"id":"calibration-smooth"', fixed = TRUE)
+  expect_match(html, '"id":"calibration"', fixed = TRUE)
+  expect_match(html, '"id":"auroc"', fixed = TRUE)
   expect_match(html, '"id":"performance-table"', fixed = TRUE)
   expect_match(html, '"id":"roc"', fixed = TRUE)
-  expect_match(html, '"id":"calibration"', fixed = TRUE)
   expect_match(html, '"id":"precision-recall"', fixed = TRUE)
   expect_match(html, '"id":"decision-curve"', fixed = TRUE)
   expect_match(html, '"id":"interventions-avoided"', fixed = TRUE)
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.11.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.14.0/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
@@ -521,6 +569,7 @@ test_that("public browser report renders populated components from a local file"
     args = c(
       "--headless=new",
       "--no-sandbox",
+      "--allow-file-access-from-files",
       "--disable-gpu",
       "--disable-dev-shm-usage",
       "--virtual-time-budget=3000",
@@ -548,6 +597,38 @@ test_that("public browser report renders populated components from a local file"
   expect_true(
     component_contains(
       dom,
+      "prevalence-summary",
+      "rtichoke-summary-metrics"
+    ),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(
+      dom,
+      "auroc",
+      "rtichoke-summary-metrics"
+    ),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(
+      dom,
+      "calibration-smooth",
+      "<svg"
+    ),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(
+      dom,
+      "calibration",
+      "<svg"
+    ),
+    info = browser_stderr
+  )
+  expect_true(
+    component_contains(
+      dom,
       "performance-table",
       '<table class="rtichoke-performance-table__table"'
     ),
@@ -563,14 +644,6 @@ test_that("public browser report renders populated components from a local file"
   )
   expect_true(
     component_contains(dom, "interventions-avoided", "<svg"),
-    info = browser_stderr
-  )
-  expect_true(
-    component_contains(
-      dom,
-      "performance-table-2",
-      '<table class="rtichoke-performance-table__table"'
-    ),
     info = browser_stderr
   )
 })

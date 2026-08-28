@@ -243,3 +243,20 @@ test_that("existing v1 calibration producer remains unchanged", {
   expect_true(all(vapply(v1$data, `[[`, "", "method") == "discrete"))
   expect_identical(v1$references, list(list(type = "identity")))
 })
+
+test_that("smooth calibration spec omits explicit yAxis domain to preserve finite LOWESS overshoot", {
+  calibration <- calibration_v2_fixture()
+  # Simulate smooth data with LOWESS overshoot outside [0, 1]
+  calibration$smooth_dat$y[[1]] <- -0.05
+  calibration$smooth_dat$y[[2]] <- 1.05
+
+  spec <- rtichoke:::rtichoke_viz_calibration_v2_spec(
+    calibration,
+    calibration_v2_metadata(),
+    method = "smooth"
+  )
+
+  expect_false("domain" %in% names(spec$yAxis))
+  expect_identical(spec$data[[1]]$observed, -0.05)
+  expect_identical(spec$data[[2]]$observed, 1.05)
+})

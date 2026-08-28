@@ -39,6 +39,10 @@ rtichoke_viz_calibration_v2_spec <- function(
   } else {
     calibration_curve_list$smooth_dat
   }
+  valid_data_rows <- is.finite(as.numeric(calibration_data$x)) &
+    is.finite(as.numeric(calibration_data$y))
+  calibration_data <- calibration_data[valid_data_rows, , drop = FALSE]
+
   histogram <- calibration_curve_list$histogram_for_calibration
 
   required_data_columns <- c("reference_group", "x", "y")
@@ -170,7 +174,11 @@ rtichoke_viz_calibration_v2_spec <- function(
     x = "predicted",
     y = "observed",
     xAxis = list(label = "Predicted probability", domain = c(0, 1)),
-    yAxis = list(label = "Observed probability", domain = c(0, 1)),
+    yAxis = if (method == "smooth") {
+      list(label = "Observed probability")
+    } else {
+      list(label = "Observed probability", domain = c(0, 1))
+    },
     references = list(list(type = "identity", scope = "global"))
   )
 }
