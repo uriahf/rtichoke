@@ -7,10 +7,10 @@ summary_report_test_data <- function() {
 
 find_headless_browser <- function() {
   candidates <- Sys.which(c(
-    "chromium",
-    "chromium-browser",
     "google-chrome",
-    "google-chrome-stable"
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser"
   ))
   candidates <- unname(candidates[nzchar(candidates)])
   for (candidate in candidates) {
