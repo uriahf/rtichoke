@@ -24,11 +24,41 @@ format:
       const decisionCurve = component("decision-curve")?.querySelector("svg");
       const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
       const report = doc.querySelector(".rtichoke-report");
+      const discrimination = doc.querySelector('[data-section-id="discrimination"]');
+      const utility = doc.querySelector('[data-section-id="utility"]');
+      const calibration = doc.querySelector('[data-section-id="calibration"]');
+      const performanceTable = doc.querySelector('[data-section-id="performance-table"]');
+      const discriminationTabs = discrimination?.querySelectorAll(':scope > .rtichoke-report__section-group-tablist > [role="tab"]');
+      const performanceTableTabs = performanceTable?.querySelectorAll(':scope > .rtichoke-report__section-group-tablist > [role="tab"]');
+      const discriminationGroups = discrimination?.querySelectorAll(':scope > [role="tabpanel"]');
+      const stackedComponents = discriminationGroups && Array.from(discriminationGroups).every(
+        group => group.querySelectorAll(':scope > [data-component-id]').length === 4 &&
+          !group.querySelector('.rtichoke-report__tablist')
+      );
+      const directSections = calibration && utility &&
+        !calibration.querySelector('.rtichoke-report__tablist') &&
+        !utility.querySelector('.rtichoke-report__tablist');
+      const uniqueComponents = doc.querySelectorAll('[data-component-id]').length === 13;
       const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
-        (sheet.href || "").includes("rtichoke-viz-0.11.0/rtichoke-viz.css")
+        (sheet.href || "").includes("rtichoke-viz-0.13.0/rtichoke-viz.css")
       );
       const styled = report && getComputedStyle(report).display !== "none";
-      if (table && ppcrTable && discreteCalibration && precisionRecall && decisionCurve && interventionsAvoided && cssLoaded && styled) {
+      if (table && ppcrTable && discreteCalibration && precisionRecall && decisionCurve && interventionsAvoided &&
+          discriminationTabs?.length === 2 && performanceTableTabs?.length === 2 &&
+          discriminationGroups?.length === 2 && stackedComponents && directSections && uniqueComponents &&
+          cssLoaded && styled) {
+        discriminationTabs[1].click();
+        const mouseSwitch = discriminationTabs[1].getAttribute("aria-selected") === "true" &&
+          !discriminationGroups[1].hidden && discriminationGroups[0].hidden &&
+          !!component("precision-recall-2")?.querySelector("svg");
+        discriminationTabs[1].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+        const keyboardSwitch = discriminationTabs[0].getAttribute("aria-selected") === "true" &&
+          !discriminationGroups[0].hidden && discriminationGroups[1].hidden &&
+          !!component("precision-recall")?.querySelector("svg");
+        performanceTableTabs[1].click();
+        const ppcrTableVisible = performanceTableTabs[1].getAttribute("aria-selected") === "true" &&
+          !component("performance-table-2")?.closest('[role="tabpanel"]')?.hidden;
+        if (!mouseSwitch || !keyboardSwitch || !ppcrTableVisible) return;
         status.dataset.ready = "true";
         status.dataset.table = "true";
         status.dataset.ppcrTable = "true";
@@ -37,6 +67,13 @@ format:
         status.dataset.decisionCurve = "true";
         status.dataset.interventionsAvoided = "true";
         status.dataset.css = "true";
+        status.dataset.sectionGroupTabs = "true";
+        status.dataset.stackedComponents = "true";
+        status.dataset.directSections = "true";
+        status.dataset.uniqueComponents = "true";
+        status.dataset.mouseSwitch = "true";
+        status.dataset.keyboardSwitch = "true";
+        status.dataset.ppcrTableVisible = "true";
         return;
       }
     }

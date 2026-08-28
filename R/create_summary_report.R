@@ -67,7 +67,10 @@ create_summary_report <- function(
     )
   } else {
     report_spec <- summary_report_browser_spec(probs, reals)
-    report <- render_rtichoke_viz_report_browser(report_spec)
+    report <- render_rtichoke_viz_report_browser(
+      report_spec,
+      section_group_tabs = TRUE
+    )
 
     dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
     htmltools::save_html(

@@ -23151,6 +23151,40 @@ function generateUniqueDomId(rawId, used) {
   used.add(candidate);
   return candidate;
 }
+function wireTabInteraction(tabs, panels) {
+  const activateTab = (index2, setFocus = true) => {
+    tabs.forEach((tab, tabIndex) => {
+      const isSelected = tabIndex === index2;
+      tab.setAttribute("aria-selected", isSelected ? "true" : "false");
+      tab.tabIndex = isSelected ? 0 : -1;
+      panels[tabIndex].hidden = !isSelected;
+    });
+    if (setFocus) {
+      tabs[index2].focus();
+    }
+  };
+  tabs.forEach((tab, index2) => {
+    tab.addEventListener("click", () => {
+      activateTab(index2, false);
+    });
+    tab.addEventListener("keydown", (event) => {
+      let targetIndex = null;
+      if (event.key === "ArrowRight") {
+        targetIndex = (index2 + 1) % tabs.length;
+      } else if (event.key === "ArrowLeft") {
+        targetIndex = (index2 - 1 + tabs.length) % tabs.length;
+      } else if (event.key === "Home") {
+        targetIndex = 0;
+      } else if (event.key === "End") {
+        targetIndex = tabs.length - 1;
+      }
+      if (targetIndex !== null) {
+        event.preventDefault();
+        activateTab(targetIndex, true);
+      }
+    });
+  });
+}
 function renderReportV1_0(spec) {
   if (!value_exports2.Check(ReportSpecV1_0Schema, spec)) {
     throw new Error("Invalid ReportSpec");
@@ -23182,7 +23216,7 @@ function renderReportV1_0(spec) {
   }
   return root2;
 }
-function renderReportV1_1(spec) {
+function renderReportV1_1(spec, options) {
   if (!value_exports2.Check(ReportSpecV1_1Schema, spec)) {
     throw new Error("Invalid ReportSpec");
   }
@@ -23284,6 +23318,77 @@ function renderReportV1_1(spec) {
     container.append(content);
     return container;
   };
+  const renderGroup = (item, grpNav, sectionPanelTabId) => {
+    const grpSection = document.createElement("section");
+    grpSection.className = "rtichoke-report__group";
+    grpSection.id = grpNav.domId;
+    grpSection.dataset.groupId = item.id;
+    const grpHeadingDomId = generateUniqueDomId(
+      `heading-${item.id}`,
+      usedDomIds
+    );
+    const grpHeading = document.createElement(groupHeadingTag);
+    grpHeading.className = "rtichoke-report__group-title";
+    if (sectionPanelTabId) {
+      grpHeading.classList.add("rtichoke-report__group-title--tab-panel");
+    }
+    grpHeading.id = grpHeadingDomId;
+    grpHeading.textContent = item.title;
+    grpSection.setAttribute(
+      "aria-labelledby",
+      sectionPanelTabId ?? grpHeadingDomId
+    );
+    grpSection.append(grpHeading);
+    if (options.groupPresentation === "tabs") {
+      const tablist = document.createElement("div");
+      tablist.className = "rtichoke-report__tablist";
+      tablist.setAttribute("role", "tablist");
+      tablist.setAttribute("aria-labelledby", grpHeadingDomId);
+      const tabs = [];
+      const panels = [];
+      item.components.forEach((comp, compIdx) => {
+        const tabDomId = generateUniqueDomId(
+          `tab-${item.id}-${comp.id}`,
+          usedDomIds
+        );
+        const panelDomId = generateUniqueDomId(
+          `panel-${item.id}-${comp.id}`,
+          usedDomIds
+        );
+        const tab = document.createElement("button");
+        tab.className = "rtichoke-report__tab";
+        tab.type = "button";
+        tab.id = tabDomId;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-controls", panelDomId);
+        tab.setAttribute("aria-selected", compIdx === 0 ? "true" : "false");
+        tab.tabIndex = compIdx === 0 ? 0 : -1;
+        tab.textContent = comp.title || comp.id;
+        const panel = document.createElement("section");
+        panel.className = "rtichoke-report__component rtichoke-report__tabpanel";
+        panel.id = panelDomId;
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", tabDomId);
+        panel.tabIndex = 0;
+        panel.dataset.componentId = comp.id;
+        panel.hidden = compIdx !== 0;
+        const content = document.createElement("div");
+        content.className = "rtichoke-report__component-content";
+        content.append(renderStandaloneComponentContent(comp.spec));
+        panel.append(content);
+        tabs.push(tab);
+        panels.push(panel);
+        tablist.append(tab);
+      });
+      wireTabInteraction(tabs, panels);
+      grpSection.append(tablist, ...panels);
+    } else {
+      for (const comp of item.components) {
+        grpSection.append(renderComponent(comp, groupCompHeadingTag));
+      }
+    }
+    return grpSection;
+  };
   for (let i = 0; i < spec.sections.length; i++) {
     const sectionSpec = spec.sections[i];
     const secNav = navSections[i];
@@ -23301,45 +23406,87 @@ function renderReportV1_1(spec) {
     secHeading.textContent = sectionSpec.title;
     secSection.setAttribute("aria-labelledby", secHeadingDomId);
     secSection.append(secHeading);
+    const groups2 = sectionSpec.items.filter(
+      (item) => item.type === "group"
+    );
+    const useSectionGroupTabs = options.sectionGroupPresentation === "tabs" && groups2.length > 1;
     let groupIndex2 = 0;
+    let renderedSectionGroupTabs = false;
     for (const item of sectionSpec.items) {
       if (item.type === "component") {
         secSection.append(renderComponent(item, directCompHeadingTag));
       } else if (item.type === "group") {
-        const grpNav = secNav.groups[groupIndex2++];
-        const grpSection = document.createElement("section");
-        grpSection.className = "rtichoke-report__group";
-        grpSection.id = grpNav.domId;
-        grpSection.dataset.groupId = item.id;
-        const grpHeadingDomId = generateUniqueDomId(
-          `heading-${item.id}`,
-          usedDomIds
-        );
-        const grpHeading = document.createElement(groupHeadingTag);
-        grpHeading.className = "rtichoke-report__group-title";
-        grpHeading.id = grpHeadingDomId;
-        grpHeading.textContent = item.title;
-        grpSection.setAttribute("aria-labelledby", grpHeadingDomId);
-        grpSection.append(grpHeading);
-        for (const comp of item.components) {
-          grpSection.append(renderComponent(comp, groupCompHeadingTag));
+        if (useSectionGroupTabs) {
+          if (renderedSectionGroupTabs) {
+            continue;
+          }
+          renderedSectionGroupTabs = true;
+          const tablist = document.createElement("div");
+          tablist.className = "rtichoke-report__tablist rtichoke-report__section-group-tablist";
+          tablist.setAttribute("role", "tablist");
+          tablist.setAttribute("aria-labelledby", secHeadingDomId);
+          const tabs = [];
+          const panels = [];
+          groups2.forEach((group2, tabIndex) => {
+            const groupNav = secNav.groups[tabIndex];
+            const tabDomId = generateUniqueDomId(
+              `section-group-tab-${sectionSpec.id}-${group2.id}`,
+              usedDomIds
+            );
+            const tab = document.createElement("button");
+            tab.className = "rtichoke-report__tab";
+            tab.type = "button";
+            tab.id = tabDomId;
+            tab.setAttribute("role", "tab");
+            tab.setAttribute("aria-controls", groupNav.domId);
+            tab.setAttribute("aria-selected", tabIndex === 0 ? "true" : "false");
+            tab.tabIndex = tabIndex === 0 ? 0 : -1;
+            tab.textContent = group2.title;
+            const panel = renderGroup(group2, groupNav, tabDomId);
+            panel.classList.add("rtichoke-report__tabpanel");
+            panel.setAttribute("role", "tabpanel");
+            panel.setAttribute("aria-labelledby", tabDomId);
+            panel.tabIndex = 0;
+            panel.hidden = tabIndex !== 0;
+            tabs.push(tab);
+            panels.push(panel);
+            tablist.append(tab);
+          });
+          wireTabInteraction(tabs, panels);
+          secSection.append(tablist, ...panels);
+        } else {
+          secSection.append(renderGroup(item, secNav.groups[groupIndex2++]));
         }
-        secSection.append(grpSection);
       }
     }
     root2.append(secSection);
   }
   return root2;
 }
-function renderReport(spec) {
+function renderReport(spec, options) {
   if (!spec || typeof spec !== "object") {
     throw new Error("Invalid ReportSpec");
+  }
+  const groupPresentation = options?.groupPresentation ?? "stacked";
+  const sectionGroupPresentation = options?.sectionGroupPresentation ?? "stacked";
+  if (options !== void 0 && (typeof options !== "object" || options === null || options.groupPresentation !== void 0 && options.groupPresentation !== "stacked" && options.groupPresentation !== "tabs")) {
+    throw new Error(
+      "Invalid render options: groupPresentation must be 'stacked' or 'tabs'"
+    );
+  }
+  if (options !== void 0 && options.sectionGroupPresentation !== void 0 && options.sectionGroupPresentation !== "stacked" && options.sectionGroupPresentation !== "tabs") {
+    throw new Error(
+      "Invalid render options: sectionGroupPresentation must be 'stacked' or 'tabs'"
+    );
   }
   if (spec.schemaVersion === "1.0") {
     return renderReportV1_0(spec);
   }
   if (spec.schemaVersion === "1.1") {
-    return renderReportV1_1(spec);
+    return renderReportV1_1(spec, {
+      groupPresentation,
+      sectionGroupPresentation
+    });
   }
   throw new Error("Invalid ReportSpec");
 }

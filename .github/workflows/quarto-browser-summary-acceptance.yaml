@@ -75,7 +75,7 @@ jobs:
           test -f tests/integration/quarto-browser-summary.html
           test -f tests/integration/summary-report-one.html
           test -f tests/integration/summary-report-two.html
-          test -f tests/integration/lib/rtichoke-viz-0.11.0/rtichoke-viz.css
+          test -f tests/integration/lib/rtichoke-viz-0.13.0/rtichoke-viz.css
 
       - name: Execute Quarto hosts in real Chrome
         run: |
@@ -95,6 +95,7 @@ jobs:
               --no-sandbox \
               --disable-gpu \
               --disable-dev-shm-usage \
+              --window-size=390,844 \
               --virtual-time-budget=5000 \
               --dump-dom \
               "$url" > "$dom" 2> "$stderr"

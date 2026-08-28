@@ -7,10 +7,15 @@
 #'
 #' @param report_spec A complete canonical ReportSpec produced by
 #'   [rtichoke_viz_report_spec()].
+#' @param section_group_tabs Whether sibling groups within a section should be
+#'   presented as tabs. Components within each group remain stacked.
 #'
 #' @return A browsable htmltools tag list.
 #' @noRd
-render_rtichoke_viz_report_browser <- function(report_spec) {
+render_rtichoke_viz_report_browser <- function(
+  report_spec,
+  section_group_tabs = FALSE
+) {
   id <- rtichoke_viz_browser_id()
   json <- jsonlite::toJSON(
     report_spec,
@@ -33,17 +38,29 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.11.0",
+    version = "0.13.0",
     src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )
+  render_options <- if (isTRUE(section_group_tabs)) {
+    paste0(
+      ", {\n",
+      "  sectionGroupPresentation: 'tabs',\n",
+      "  groupPresentation: 'stacked'\n",
+      "}"
+    )
+  } else {
+    ""
+  }
   initializer <- paste0(
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
     "document.querySelector('#",
     id,
-    "').append(renderReport(spec));"
+    "').append(renderReport(spec",
+    render_options,
+    "));"
   )
   script <- paste(bundle, initializer, sep = "\n")
 

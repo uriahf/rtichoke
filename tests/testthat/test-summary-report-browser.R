@@ -457,7 +457,10 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.11.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.13.0", fixed = TRUE)
+  expect_match(html, "sectionGroupPresentation: 'tabs'", fixed = TRUE)
+  expect_match(html, "groupPresentation: 'stacked'", fixed = TRUE)
+  expect_false(grepl("groupPresentation: 'tabs'", html, fixed = TRUE))
   expect_match(html, '"id":"performance-table"', fixed = TRUE)
   expect_match(html, '"id":"roc"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -467,7 +470,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.11.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.13.0/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
