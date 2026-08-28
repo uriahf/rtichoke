@@ -850,9 +850,36 @@ rtichoke_viz_summary_metrics_auroc_spec <- function(
     reals <- list(reals)
   }
 
-  evaluation_ids <- paste0("evaluation-", seq_len(nrow(evaluation_metadata)))
+  n_eval <- nrow(evaluation_metadata)
+  if (length(probs) != n_eval) {
+    stop(
+      "AUROC evaluation count (",
+      n_eval,
+      ") does not match probs length (",
+      length(probs),
+      ")",
+      call. = FALSE
+    )
+  }
 
-  evaluations <- lapply(seq_len(nrow(evaluation_metadata)), function(i) {
+  reals_mapped <- if (length(reals) == 1L) {
+    rep(reals, n_eval)
+  } else if (length(reals) == n_eval) {
+    reals
+  } else {
+    stop(
+      "AUROC reals length (",
+      length(reals),
+      ") must be 1 or match evaluation count (",
+      n_eval,
+      ")",
+      call. = FALSE
+    )
+  }
+
+  evaluation_ids <- paste0("evaluation-", seq_len(n_eval))
+
+  evaluations <- lapply(seq_len(n_eval), function(i) {
     metadata <- evaluation_metadata[i, , drop = FALSE]
     evaluation <- list(
       id = evaluation_ids[[i]],
@@ -864,48 +891,19 @@ rtichoke_viz_summary_metrics_auroc_spec <- function(
     evaluation
   })
 
-  metrics <- lapply(seq_len(nrow(evaluation_metadata)), function(i) {
-    metadata <- evaluation_metadata[i, , drop = FALSE]
-    model_name <- as.character(metadata$model)
-    pop_name <- as.character(metadata$population)
+  metrics <- lapply(seq_len(n_eval), function(i) {
+    p_vec <- probs[[i]]
+    r_vec <- reals_mapped[[i]]
 
-    prob_vec <- if (!is.na(model_name) && model_name %in% names(probs)) {
-      probs[[model_name]]
-    } else if (pop_name %in% names(probs)) {
-      probs[[pop_name]]
-    } else if (i <= length(probs)) {
-      probs[[i]]
+    estimate <- if (length(unique(r_vec)) < 2L) {
+      NULL
     } else {
-      probs[[1]]
+      auc_val <- tryCatch(
+        suppressMessages(as.numeric(pROC::auc(r_vec, p_vec, quiet = TRUE))),
+        error = function(...) NULL
+      )
+      if (!is.null(auc_val) && is.finite(auc_val)) auc_val else NULL
     }
-
-    real_vec <- if (pop_name %in% names(reals)) {
-      reals[[pop_name]]
-    } else if (length(reals) == 1L) {
-      reals[[1]]
-    } else if (i <= length(reals)) {
-      reals[[i]]
-    } else {
-      reals[[1]]
-    }
-
-    estimate <- tryCatch(
-      {
-        valid_mask <- !is.na(prob_vec) & !is.na(real_vec)
-        p_clean <- prob_vec[valid_mask]
-        r_clean <- real_vec[valid_mask]
-
-        if (length(unique(r_clean)) < 2L) {
-          NULL
-        } else {
-          auc_val <- as.numeric(suppressMessages(
-            pROC::auc(r_clean, p_clean, quiet = TRUE)
-          ))
-          if (is.finite(auc_val)) auc_val else NULL
-        }
-      },
-      error = function(...) NULL
-    )
 
     list(
       metric = "auroc",

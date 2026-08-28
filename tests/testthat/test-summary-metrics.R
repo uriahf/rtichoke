@@ -165,10 +165,10 @@ test_that("AUROC SummaryMetrics maps undefined or single-class calculations to c
   expect_match(json, '"estimate":null', fixed = TRUE)
 })
 
-test_that("AUROC SummaryMetrics correctly handles unlisted vector inputs and multi-population lists", {
-  # Unlisted vectors
-  p_vec <- c(0.1, 0.2, 0.8, 0.9)
-  r_vec <- c(0, 0, 1, 1)
+test_that("AUROC SummaryMetrics correctly handles single-model and multi-population lists", {
+  # Single model vector in list
+  p_vec <- list(c(0.1, 0.2, 0.8, 0.9))
+  r_vec <- list(c(0, 0, 1, 1))
   meta_vec <- rtichoke:::build_evaluation_metadata(p_vec, r_vec)
   spec_vec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
     p_vec,
@@ -177,7 +177,7 @@ test_that("AUROC SummaryMetrics correctly handles unlisted vector inputs and mul
   )
   expect_equal(
     spec_vec$metrics[[1]]$estimate,
-    as.numeric(pROC::auc(r_vec, p_vec))
+    as.numeric(pROC::auc(r_vec[[1]], p_vec[[1]]))
   )
 
   # Multi-population list
@@ -203,5 +203,33 @@ test_that("AUROC SummaryMetrics correctly handles unlisted vector inputs and mul
   expect_equal(
     spec_pop$metrics[[2]]$estimate,
     as.numeric(pROC::auc(reals_pop$test, probs_pop$test))
+  )
+})
+
+test_that("AUROC SummaryMetrics fails explicitly when inputs cannot be mapped unambiguously", {
+  probs <- list(
+    "Model 1" = c(0.1, 0.2, 0.8, 0.9),
+    "Model 2" = c(0.2, 0.3, 0.7, 0.8)
+  )
+  reals <- list(
+    "Pop 1" = c(0, 0, 1, 1),
+    "Pop 2" = c(0, 1, 0, 1),
+    "Pop 3" = c(1, 0, 1, 0)
+  ) # 3 reals vs 2 probs -> ambiguous
+  metadata <- rtichoke:::build_evaluation_metadata(probs, list(c(0, 0, 1, 1)))
+
+  expect_error(
+    rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(probs, reals, metadata),
+    "AUROC reals length"
+  )
+
+  # Probs length mismatch with evaluation metadata
+  expect_error(
+    rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+      probs[1],
+      list(c(0, 0, 1, 1)),
+      metadata
+    ),
+    "AUROC evaluation count"
   )
 })
