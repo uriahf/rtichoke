@@ -226,7 +226,11 @@ summary_report_browser_spec <- function(probs, reals) {
       id = "prevalence",
       title = "Prevalence",
       items = list(
-        component("prevalence-summary", "Prevalence summary", prevalence_summary)
+        component(
+          "prevalence-summary",
+          "Prevalence summary",
+          prevalence_summary
+        )
       )
     ),
     list(

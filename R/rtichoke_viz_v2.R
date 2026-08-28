@@ -791,7 +791,9 @@ rtichoke_viz_summary_metrics_prevalence_spec <- function(
   metrics <- lapply(seq_along(unique_pops), function(i) {
     pop_label <- unique_pops[[i]]
     prev_val <- unname(prevalences[[pop_label]])
-    estimate <- if (is.null(prev_val) || is.na(prev_val) || !is.finite(prev_val)) {
+    estimate <- if (
+      is.null(prev_val) || is.na(prev_val) || !is.finite(prev_val)
+    ) {
       NULL
     } else {
       as.numeric(prev_val)
@@ -835,7 +837,10 @@ rtichoke_viz_summary_metrics_auroc_spec <- function(
   evaluation_metadata
 ) {
   if (nrow(evaluation_metadata) == 0L) {
-    stop("AUROC evaluation metadata must contain at least one evaluation", call. = FALSE)
+    stop(
+      "AUROC evaluation metadata must contain at least one evaluation",
+      call. = FALSE
+    )
   }
 
   evaluation_ids <- paste0("evaluation-", seq_len(nrow(evaluation_metadata)))

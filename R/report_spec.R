@@ -17,16 +17,19 @@ expected_schema_version <- function(type) {
   }
   if (identical(type, "summary_metrics")) {
     "1.0"
-  } else if (type %in% c(
-    "performance_table",
-    "roc",
-    "calibration",
-    "precision_recall",
-    "gains",
-    "lift",
-    "decision_curve",
-    "interventions_avoided"
-  )) {
+  } else if (
+    type %in%
+      c(
+        "performance_table",
+        "roc",
+        "calibration",
+        "precision_recall",
+        "gains",
+        "lift",
+        "decision_curve",
+        "interventions_avoided"
+      )
+  ) {
     "2.0"
   } else {
     NULL
@@ -46,7 +49,12 @@ rtichoke_viz_report_spec <- function(
   for (i in seq_along(specs)) {
     spec <- specs[[i]]
     if (!is.list(spec)) {
-      stop("Report component ", i, " must be a specification list", call. = FALSE)
+      stop(
+        "Report component ",
+        i,
+        " must be a specification list",
+        call. = FALSE
+      )
     }
     expected_version <- expected_schema_version(spec$type)
     if (is.null(expected_version)) {
