@@ -50,18 +50,27 @@ test_that("SummaryMetrics validation accepts summary_metrics v1.0 and rejects in
 
 test_that("prevalence SummaryMetrics is population-owned and handles single/multiple populations", {
   dat <- list(
-    probs = list("Model 1" = c(0.1, 0.4, 0.7, 0.9), "Model 2" = c(0.2, 0.3, 0.6, 0.8)),
+    probs = list(
+      "Model 1" = c(0.1, 0.4, 0.7, 0.9),
+      "Model 2" = c(0.2, 0.3, 0.6, 0.8)
+    ),
     reals = list("Population 1" = c(0, 1, 0, 1))
   )
   perf_data <- prepare_performance_data(dat$probs, dat$reals)
   metadata <- rtichoke:::build_evaluation_metadata(dat$probs, dat$reals)
 
-  spec <- rtichoke:::rtichoke_viz_summary_metrics_prevalence_spec(perf_data, metadata)
+  spec <- rtichoke:::rtichoke_viz_summary_metrics_prevalence_spec(
+    perf_data,
+    metadata
+  )
 
   expect_identical(spec$schemaVersion, "1.0")
   expect_identical(spec$type, "summary_metrics")
   expect_length(spec$populations, 1L)
-  expect_identical(spec$populations[[1]], list(id = "population-1", label = "Population 1"))
+  expect_identical(
+    spec$populations[[1]],
+    list(id = "population-1", label = "Population 1")
+  )
   expect_length(spec$metrics, 1L)
   expect_identical(spec$metrics[[1]]$metric, "prevalence")
   expect_identical(spec$metrics[[1]]$owner$type, "population")
@@ -87,7 +96,10 @@ test_that("prevalence SummaryMetrics keeps distinct populations separate even wi
   perf_data <- prepare_performance_data(probs, reals)
   metadata <- rtichoke:::build_evaluation_metadata(probs, reals)
 
-  spec <- rtichoke:::rtichoke_viz_summary_metrics_prevalence_spec(perf_data, metadata)
+  spec <- rtichoke:::rtichoke_viz_summary_metrics_prevalence_spec(
+    perf_data,
+    metadata
+  )
 
   expect_length(spec$populations, 2L)
   expect_identical(spec$populations[[1]]$label, "train")
@@ -104,7 +116,11 @@ test_that("AUROC SummaryMetrics is evaluation-owned and matches pROC::auc", {
   reals <- list(c(0, 0, 1, 1))
   metadata <- rtichoke:::build_evaluation_metadata(probs, reals)
 
-  spec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(probs, reals, metadata)
+  spec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+    probs,
+    reals,
+    metadata
+  )
 
   expect_identical(spec$schemaVersion, "1.0")
   expect_identical(spec$type, "summary_metrics")
@@ -118,12 +134,18 @@ test_that("AUROC SummaryMetrics is evaluation-owned and matches pROC::auc", {
   expect_identical(spec$metrics[[1]]$metric, "auroc")
   expect_identical(spec$metrics[[1]]$owner$type, "evaluation")
   expect_identical(spec$metrics[[1]]$owner$evaluationId, "evaluation-1")
-  expect_equal(spec$metrics[[1]]$estimate, as.numeric(pROC::auc(reals[[1]], probs[[1]])))
+  expect_equal(
+    spec$metrics[[1]]$estimate,
+    as.numeric(pROC::auc(reals[[1]], probs[[1]]))
+  )
 
   expect_identical(spec$metrics[[2]]$metric, "auroc")
   expect_identical(spec$metrics[[2]]$owner$type, "evaluation")
   expect_identical(spec$metrics[[2]]$owner$evaluationId, "evaluation-2")
-  expect_equal(spec$metrics[[2]]$estimate, as.numeric(pROC::auc(reals[[1]], probs[[2]])))
+  expect_equal(
+    spec$metrics[[2]]$estimate,
+    as.numeric(pROC::auc(reals[[1]], probs[[2]]))
+  )
 })
 
 test_that("AUROC SummaryMetrics maps undefined or single-class calculations to canonical null", {
@@ -131,7 +153,11 @@ test_that("AUROC SummaryMetrics maps undefined or single-class calculations to c
   reals <- list(c(0, 0, 0)) # single-class outcome
   metadata <- rtichoke:::build_evaluation_metadata(probs, reals)
 
-  spec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(probs, reals, metadata)
+  spec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+    probs,
+    reals,
+    metadata
+  )
 
   expect_null(spec$metrics[[1]]$estimate)
 

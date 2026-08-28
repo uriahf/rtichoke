@@ -460,20 +460,20 @@
     {
       "type": "list",
       "attributes": {
-        "names": {
+        "class": {
           "type": "character",
           "attributes": {},
-          "value": ["quintile", "y", "x", "sum_reals", "total_obs"]
+          "value": ["tbl_df", "tbl", "data.frame"]
         },
         "row.names": {
           "type": "integer",
           "attributes": {},
           "value": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         },
-        "class": {
+        "names": {
           "type": "character",
           "attributes": {},
-          "value": ["tbl_df", "tbl", "data.frame"]
+          "value": ["quintile", "y", "x", "sum_reals", "total_obs"]
         }
       },
       "value": [

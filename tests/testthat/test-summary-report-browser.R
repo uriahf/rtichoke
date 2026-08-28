@@ -174,11 +174,23 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   expect_identical(report$title, "Summary Report")
   expect_identical(
     vapply(report$sections, `[[`, "", "id"),
-    c("prevalence", "calibration", "discrimination", "utility", "performance-table")
+    c(
+      "prevalence",
+      "calibration",
+      "discrimination",
+      "utility",
+      "performance-table"
+    )
   )
   expect_identical(
     vapply(report$sections, `[[`, "", "title"),
-    c("Prevalence", "Calibration", "Discrimination", "Utility", "Performance Table")
+    c(
+      "Prevalence",
+      "Calibration",
+      "Discrimination",
+      "Utility",
+      "Performance Table"
+    )
   )
 
   prevalence <- report$sections[[1]]
@@ -187,7 +199,10 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   expect_identical(prevalence$items[[1]]$title, "Prevalence summary")
 
   calibration <- report$sections[[2]]
-  expect_identical(vapply(calibration$items, `[[`, "", "type"), rep("component", 2))
+  expect_identical(
+    vapply(calibration$items, `[[`, "", "type"),
+    rep("component", 2)
+  )
   expect_identical(calibration$items[[1]]$id, "calibration-smooth")
   expect_identical(calibration$items[[1]]$title, "Smooth")
   expect_identical(calibration$items[[2]]$id, "calibration")
@@ -249,7 +264,9 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     "discrete"
   )
   expect_identical(
-    summary_report_component(report, "calibration-smooth")$spec$data[[1]]$method,
+    summary_report_component(report, "calibration-smooth")$spec$data[[
+      1
+    ]]$method,
     "smooth"
   )
   expect_true(all(vapply(components, function(x) x$type == "component", TRUE)))
@@ -277,7 +294,10 @@ test_that("browser summary report preserves component-local evaluation identity"
     character(1)
   )
 
-  expect_identical(evaluation_ids, rep("evaluation-1", length(components_with_evaluations)))
+  expect_identical(
+    evaluation_ids,
+    rep("evaluation-1", length(components_with_evaluations))
+  )
   expect_false("evaluations" %in% names(report))
   expect_identical(
     summary_report_component(report, "roc")$spec$evaluations[[1]]$population,
