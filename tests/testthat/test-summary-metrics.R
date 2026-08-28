@@ -164,3 +164,44 @@ test_that("AUROC SummaryMetrics maps undefined or single-class calculations to c
   json <- jsonlite::toJSON(spec, auto_unbox = TRUE, null = "null")
   expect_match(json, '"estimate":null', fixed = TRUE)
 })
+
+test_that("AUROC SummaryMetrics correctly handles unlisted vector inputs and multi-population lists", {
+  # Unlisted vectors
+  p_vec <- c(0.1, 0.2, 0.8, 0.9)
+  r_vec <- c(0, 0, 1, 1)
+  meta_vec <- rtichoke:::build_evaluation_metadata(p_vec, r_vec)
+  spec_vec <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+    p_vec,
+    r_vec,
+    meta_vec
+  )
+  expect_equal(
+    spec_vec$metrics[[1]]$estimate,
+    as.numeric(pROC::auc(r_vec, p_vec))
+  )
+
+  # Multi-population list
+  probs_pop <- list(
+    "train" = c(0.1, 0.2, 0.8, 0.9),
+    "test" = c(0.2, 0.3, 0.7, 0.8)
+  )
+  reals_pop <- list(
+    "train" = c(0, 0, 1, 1),
+    "test" = c(0, 1, 0, 1)
+  )
+  meta_pop <- rtichoke:::build_evaluation_metadata(probs_pop, reals_pop)
+  spec_pop <- rtichoke:::rtichoke_viz_summary_metrics_auroc_spec(
+    probs_pop,
+    reals_pop,
+    meta_pop
+  )
+  expect_length(spec_pop$metrics, 2L)
+  expect_equal(
+    spec_pop$metrics[[1]]$estimate,
+    as.numeric(pROC::auc(reals_pop$train, probs_pop$train))
+  )
+  expect_equal(
+    spec_pop$metrics[[2]]$estimate,
+    as.numeric(pROC::auc(reals_pop$test, probs_pop$test))
+  )
+})

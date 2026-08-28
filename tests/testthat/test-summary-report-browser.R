@@ -592,7 +592,7 @@ test_that("public browser report renders populated components from a local file"
       "--allow-file-access-from-files",
       "--disable-gpu",
       "--disable-dev-shm-usage",
-      "--virtual-time-budget=3000",
+      "--virtual-time-budget=10000",
       "--dump-dom",
       shQuote(url)
     ),

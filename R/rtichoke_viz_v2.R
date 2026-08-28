@@ -843,6 +843,13 @@ rtichoke_viz_summary_metrics_auroc_spec <- function(
     )
   }
 
+  if (!is.list(probs)) {
+    probs <- list(probs)
+  }
+  if (!is.list(reals)) {
+    reals <- list(reals)
+  }
+
   evaluation_ids <- paste0("evaluation-", seq_len(nrow(evaluation_metadata)))
 
   evaluations <- lapply(seq_len(nrow(evaluation_metadata)), function(i) {
@@ -858,8 +865,29 @@ rtichoke_viz_summary_metrics_auroc_spec <- function(
   })
 
   metrics <- lapply(seq_len(nrow(evaluation_metadata)), function(i) {
-    prob_vec <- probs[[i]]
-    real_vec <- if (length(reals) == 1L) reals[[1]] else reals[[i]]
+    metadata <- evaluation_metadata[i, , drop = FALSE]
+    model_name <- as.character(metadata$model)
+    pop_name <- as.character(metadata$population)
+
+    prob_vec <- if (!is.na(model_name) && model_name %in% names(probs)) {
+      probs[[model_name]]
+    } else if (pop_name %in% names(probs)) {
+      probs[[pop_name]]
+    } else if (i <= length(probs)) {
+      probs[[i]]
+    } else {
+      probs[[1]]
+    }
+
+    real_vec <- if (pop_name %in% names(reals)) {
+      reals[[pop_name]]
+    } else if (length(reals) == 1L) {
+      reals[[1]]
+    } else if (i <= length(reals)) {
+      reals[[i]]
+    } else {
+      reals[[1]]
+    }
 
     estimate <- tryCatch(
       {
