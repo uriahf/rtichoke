@@ -11,6 +11,31 @@
 #'
 #' @return A nested list representing a canonical ReportSpec.
 #' @noRd
+expected_schema_version <- function(type) {
+  if (is.null(type) || !is.character(type) || length(type) != 1L) {
+    return(NULL)
+  }
+  if (identical(type, "summary_metrics")) {
+    "1.0"
+  } else if (
+    type %in%
+      c(
+        "performance_table",
+        "roc",
+        "calibration",
+        "precision_recall",
+        "gains",
+        "lift",
+        "decision_curve",
+        "interventions_avoided"
+      )
+  ) {
+    "2.0"
+  } else {
+    NULL
+  }
+}
+
 rtichoke_viz_report_spec <- function(
   ...,
   title = NULL,
@@ -21,27 +46,18 @@ rtichoke_viz_report_spec <- function(
     stop("ReportSpec requires at least one component", call. = FALSE)
   }
 
-  supported_types <- c(
-    "performance_table",
-    "roc",
-    "calibration",
-    "precision_recall",
-    "gains",
-    "lift",
-    "decision_curve",
-    "interventions_avoided"
-  )
   for (i in seq_along(specs)) {
     spec <- specs[[i]]
-    if (!is.list(spec) || !identical(spec$schemaVersion, "2.0")) {
+    if (!is.list(spec)) {
       stop(
         "Report component ",
         i,
-        " must be a complete canonical schemaVersion 2.0 specification",
+        " must be a specification list",
         call. = FALSE
       )
     }
-    if (is.null(spec$type) || !spec$type %in% supported_types) {
+    expected_version <- expected_schema_version(spec$type)
+    if (is.null(expected_version)) {
       stop(
         "Report component ",
         i,
@@ -51,6 +67,17 @@ rtichoke_viz_report_spec <- function(
         } else {
           spec$type
         },
+        call. = FALSE
+      )
+    }
+    if (!identical(spec$schemaVersion, expected_version)) {
+      stop(
+        "Report component ",
+        i,
+        " (type '",
+        spec$type,
+        "') must have schemaVersion ",
+        expected_version,
         call. = FALSE
       )
     }
@@ -161,25 +188,22 @@ rtichoke_viz_report_spec_v1_1 <- function(..., title = NULL) {
       stop(location, " title must be a single string", call. = FALSE)
     }
     spec <- component$spec
-    if (!is.list(spec) || !identical(spec$schemaVersion, "2.0")) {
+    if (!is.list(spec)) {
+      stop(location, " must contain a specification list", call. = FALSE)
+    }
+    expected_version <- expected_schema_version(spec$type)
+    if (is.null(expected_version)) {
+      stop(location, " contains an unsupported canonical type", call. = FALSE)
+    }
+    if (!identical(spec$schemaVersion, expected_version)) {
       stop(
         location,
-        " must contain a complete canonical schemaVersion 2.0 specification",
+        " with type '",
+        spec$type,
+        "' must have schemaVersion ",
+        expected_version,
         call. = FALSE
       )
-    }
-    supported_types <- c(
-      "performance_table",
-      "roc",
-      "calibration",
-      "precision_recall",
-      "gains",
-      "lift",
-      "decision_curve",
-      "interventions_avoided"
-    )
-    if (is.null(spec$type) || !spec$type %in% supported_types) {
-      stop(location, " contains an unsupported canonical type", call. = FALSE)
     }
     invisible(NULL)
   }

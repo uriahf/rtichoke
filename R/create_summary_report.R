@@ -145,14 +145,24 @@ summary_report_browser_spec <- function(probs, reals) {
     threshold_performance_data
   )
 
-  threshold_performance_table <- rtichoke_viz_performance_table_v2_spec(
+  prevalence_summary <- rtichoke_viz_summary_metrics_prevalence_spec(
     threshold_performance_data,
     evaluation_metadata
+  )
+  smooth_calibration <- rtichoke_viz_calibration_v2_spec(
+    calibration_curve_list,
+    evaluation_metadata,
+    method = "smooth"
   )
   discrete_calibration <- rtichoke_viz_calibration_v2_spec(
     calibration_curve_list,
     evaluation_metadata,
     method = "discrete"
+  )
+  auroc_summary <- rtichoke_viz_summary_metrics_auroc_spec(
+    probs,
+    reals,
+    evaluation_metadata
   )
   threshold_roc <- rtichoke_viz_roc_v2_spec(
     threshold_performance_data,
@@ -176,6 +186,10 @@ summary_report_browser_spec <- function(probs, reals) {
   )
   interventions_avoided <- rtichoke_viz_interventions_avoided_v2_spec(
     interventions_avoided_data,
+    evaluation_metadata
+  )
+  threshold_performance_table <- rtichoke_viz_performance_table_v2_spec(
+    threshold_performance_data,
     evaluation_metadata
   )
   ppcr_performance_table <- rtichoke_viz_performance_table_v2_spec(
@@ -209,14 +223,29 @@ summary_report_browser_spec <- function(probs, reals) {
 
   rtichoke_viz_report_spec_v1_1(
     list(
+      id = "prevalence",
+      title = "Prevalence",
+      items = list(
+        component(
+          "prevalence-summary",
+          "Prevalence summary",
+          prevalence_summary
+        )
+      )
+    ),
+    list(
       id = "calibration",
       title = "Calibration",
-      items = list(component("calibration", "Discrete", discrete_calibration))
+      items = list(
+        component("calibration-smooth", "Smooth", smooth_calibration),
+        component("calibration", "Discrete", discrete_calibration)
+      )
     ),
     list(
       id = "discrimination",
       title = "Discrimination",
       items = list(
+        component("auroc", "AUROC", auroc_summary),
         group(
           "discrimination-probability-threshold",
           "By Probability Threshold",

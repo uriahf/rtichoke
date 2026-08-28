@@ -1071,48 +1071,78 @@
             "data": {
               "type": "array",
               "items": {
-                "type": "object",
-                "required": [
-                  "seriesId",
-                  "predicted",
-                  "observed",
-                  "method"
-                ],
-                "properties": {
-                  "seriesId": {
-                    "type": "string"
-                  },
-                  "predicted": {
-                    "minimum": 0,
-                    "maximum": 1,
-                    "type": "number"
-                  },
-                  "observed": {
-                    "minimum": 0,
-                    "maximum": 1,
-                    "type": "number"
-                  },
-                  "method": {
-                    "anyOf": [
-                      {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "required": [
+                      "seriesId",
+                      "predicted",
+                      "observed",
+                      "method"
+                    ],
+                    "properties": {
+                      "seriesId": {
+                        "type": "string"
+                      },
+                      "predicted": {
+                        "minimum": 0,
+                        "maximum": 1,
+                        "type": "number"
+                      },
+                      "observed": {
+                        "minimum": 0,
+                        "maximum": 1,
+                        "type": "number"
+                      },
+                      "method": {
                         "const": "discrete",
                         "type": "string"
                       },
-                      {
+                      "events": {
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "total": {
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "seriesId",
+                      "predicted",
+                      "observed",
+                      "method"
+                    ],
+                    "properties": {
+                      "seriesId": {
+                        "type": "string"
+                      },
+                      "predicted": {
+                        "minimum": 0,
+                        "maximum": 1,
+                        "type": "number"
+                      },
+                      "observed": {
+                        "type": "number"
+                      },
+                      "method": {
                         "const": "smooth",
                         "type": "string"
+                      },
+                      "events": {
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "total": {
+                        "minimum": 0,
+                        "type": "number"
                       }
-                    ]
-                  },
-                  "events": {
-                    "minimum": 0,
-                    "type": "number"
-                  },
-                  "total": {
-                    "minimum": 0,
-                    "type": "number"
+                    }
                   }
-                }
+                ]
               }
             },
             "distribution": {

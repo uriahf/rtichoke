@@ -67,7 +67,7 @@ render_rtichoke_viz_browser <- function(spec) {
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.11.0",
+    version = "0.14.0",
     src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
@@ -75,7 +75,7 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.11.0/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-0.14.0/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -755,5 +755,171 @@ roc_v2_compatibility_group <- function(
       "without an explicit compatibility grouping column"
     ),
     call. = FALSE
+  )
+}
+
+#' Build a canonical SummaryMetricsSpec v1.0 specification for prevalence
+#'
+#' Adapt already-computed prevalence statistics into the SummaryMetricsSpec v1.0
+#' contract. Prevalence is population-owned and represented as a numeric
+#' proportion.
+#'
+#' @param performance_data Output from [prepare_performance_data()].
+#' @param evaluation_metadata Output from [build_evaluation_metadata()].
+#'
+#' @return A nested list representing a SummaryMetricsSpec v1.0 for prevalence.
+#' @noRd
+rtichoke_viz_summary_metrics_prevalence_spec <- function(
+  performance_data,
+  evaluation_metadata
+) {
+  unique_pops <- unique(as.character(evaluation_metadata$population))
+  prevalences <- v2_population_prevalence(
+    performance_data,
+    evaluation_metadata,
+    unique_pops
+  )
+
+  populations <- lapply(seq_along(unique_pops), function(i) {
+    pop_label <- unique_pops[[i]]
+    list(
+      id = paste0("population-", i),
+      label = pop_label
+    )
+  })
+
+  metrics <- lapply(seq_along(unique_pops), function(i) {
+    pop_label <- unique_pops[[i]]
+    prev_val <- unname(prevalences[[pop_label]])
+    estimate <- if (
+      is.null(prev_val) || is.na(prev_val) || !is.finite(prev_val)
+    ) {
+      NULL
+    } else {
+      as.numeric(prev_val)
+    }
+
+    list(
+      metric = "prevalence",
+      owner = list(
+        type = "population",
+        populationId = paste0("population-", i)
+      ),
+      estimate = estimate
+    )
+  })
+
+  list(
+    schemaVersion = "1.0",
+    type = "summary_metrics",
+    evaluations = list(),
+    populations = populations,
+    metrics = metrics
+  )
+}
+
+#' Build a canonical SummaryMetricsSpec v1.0 specification for AUROC
+#'
+#' Calculate AUROC directly from raw estimated probabilities and binary outcomes
+#' using pROC::auc(), adapting the results into the SummaryMetricsSpec v1.0
+#' contract. AUROC is evaluation-owned. Undefined or single-class calculations
+#' are mapped to canonical JSON null.
+#'
+#' @param probs List of probability vectors.
+#' @param reals List of binary outcome vectors.
+#' @param evaluation_metadata Output from [build_evaluation_metadata()].
+#'
+#' @return A nested list representing a SummaryMetricsSpec v1.0 for AUROC.
+#' @noRd
+rtichoke_viz_summary_metrics_auroc_spec <- function(
+  probs,
+  reals,
+  evaluation_metadata
+) {
+  if (nrow(evaluation_metadata) == 0L) {
+    stop(
+      "AUROC evaluation metadata must contain at least one evaluation",
+      call. = FALSE
+    )
+  }
+
+  if (!is.list(probs)) {
+    probs <- list(probs)
+  }
+  if (!is.list(reals)) {
+    reals <- list(reals)
+  }
+
+  n_eval <- nrow(evaluation_metadata)
+  if (length(probs) != n_eval) {
+    stop(
+      "AUROC evaluation count (",
+      n_eval,
+      ") does not match probs length (",
+      length(probs),
+      ")",
+      call. = FALSE
+    )
+  }
+
+  reals_mapped <- if (length(reals) == 1L) {
+    rep(reals, n_eval)
+  } else if (length(reals) == n_eval) {
+    reals
+  } else {
+    stop(
+      "AUROC reals length (",
+      length(reals),
+      ") must be 1 or match evaluation count (",
+      n_eval,
+      ")",
+      call. = FALSE
+    )
+  }
+
+  evaluation_ids <- paste0("evaluation-", seq_len(n_eval))
+
+  evaluations <- lapply(seq_len(n_eval), function(i) {
+    metadata <- evaluation_metadata[i, , drop = FALSE]
+    evaluation <- list(
+      id = evaluation_ids[[i]],
+      population = as.character(metadata$population)
+    )
+    if (!is.na(metadata$model) && nzchar(metadata$model)) {
+      evaluation$model <- as.character(metadata$model)
+    }
+    evaluation
+  })
+
+  metrics <- lapply(seq_len(n_eval), function(i) {
+    p_vec <- probs[[i]]
+    r_vec <- reals_mapped[[i]]
+
+    estimate <- if (length(unique(r_vec)) < 2L) {
+      NULL
+    } else {
+      auc_val <- tryCatch(
+        suppressMessages(as.numeric(pROC::auc(r_vec, p_vec, quiet = TRUE))),
+        error = function(...) NULL
+      )
+      if (!is.null(auc_val) && is.finite(auc_val)) auc_val else NULL
+    }
+
+    list(
+      metric = "auroc",
+      owner = list(
+        type = "evaluation",
+        evaluationId = evaluation_ids[[i]]
+      ),
+      estimate = estimate
+    )
+  })
+
+  list(
+    schemaVersion = "1.0",
+    type = "summary_metrics",
+    evaluations = evaluations,
+    populations = list(),
+    metrics = metrics
   )
 }
