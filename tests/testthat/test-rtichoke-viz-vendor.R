@@ -1,16 +1,16 @@
-test_that("vendored rtichoke_viz v0.14.0 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.15.0 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version=0.14.0" %in% provenance)
-  expect_true("archive=rtichoke-viz-0.14.0.tar.gz" %in% provenance)
+  expect_true("version=0.15.0" %in% provenance)
+  expect_true("archive=rtichoke-viz-0.15.0.tar.gz" %in% provenance)
   expect_true(
-    "commit=ec3a382656ce5b1c735175d5a8fd1ceb4f153eaf" %in% provenance
+    "commit=8873e5d94d3c588891f7b8c62f7211bf1a642f59" %in% provenance
   )
   expect_true(
     paste0(
       "sha256=",
-      "b7c30d12db4b3f8008ef035bd4f7e04c09d599ced5bc8606a4a4141c5cdf48ee"
+      "7852b834a92ff92de419e56d20e40682db0ec006e8e974f0146e8aa7ca434445"
     ) %in%
       provenance
   )
@@ -28,6 +28,7 @@ test_that("vendored rtichoke_viz v0.14.0 provenance and exports are intact", {
   expect_match(js, "renderReport", fixed = TRUE)
   expect_match(js, "ReportSpecV1_1Schema", fixed = TRUE)
   expect_match(js, "SummaryMetricsSpecSchema", fixed = TRUE)
+  expect_match(js, "sectionComponentPresentation", fixed = TRUE)
 })
 
 test_that("vendored rtichoke_viz schemas preserve canonical ids", {

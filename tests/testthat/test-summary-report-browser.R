@@ -35,7 +35,7 @@ component_contains <- function(dom, component_id, pattern) {
   component_pattern <- paste0(
     'data-component-id="',
     component_id,
-    '"(?:(?!</section>).)*',
+    '"(?:(?!</section>)[\\s\\S])*?',
     pattern
   )
   grepl(component_pattern, dom, perl = TRUE)
@@ -536,7 +536,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.14.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.15.0", fixed = TRUE)
   expect_match(html, '"id":"prevalence-summary"', fixed = TRUE)
   expect_match(html, '"id":"calibration-smooth"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -549,7 +549,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.14.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.15.0/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
@@ -680,6 +680,63 @@ test_that("public browser report renders populated components from a local file"
     component_contains(dom, "interventions-avoided", "<svg"),
     info = browser_stderr
   )
+
+  # Check tab structure & accessibility attributes
+  expect_match(dom, 'role="tablist"', fixed = TRUE)
+  expect_match(dom, 'role="tab"', fixed = TRUE)
+  expect_match(dom, 'role="tabpanel"', fixed = TRUE)
+  expect_match(dom, 'aria-selected="true"', fixed = TRUE)
+  expect_match(dom, 'aria-controls=', fixed = TRUE)
+
+  # Calibration tabs: Smooth and Discrete in correct order
+  smooth_pos <- regexpr('id="tab-calibration-calibration-smooth"', dom)[[1]]
+  discrete_pos <- regexpr('id="tab-calibration-calibration"', dom)[[1]]
+  expect_true(smooth_pos > 0L)
+  expect_true(discrete_pos > 0L)
+  expect_true(smooth_pos < discrete_pos)
+
+  # Discrimination group tabs & curve tabs in exact order ROC -> Lift -> Precision-Recall -> Gains
+  disc_thresh_pos <- regexpr(
+    'id="section-group-tab-discrimination-discrimination-probability-threshold"',
+    dom
+  )[[1]]
+  disc_ppcr_pos <- regexpr(
+    'id="section-group-tab-discrimination-discrimination-ppcr"',
+    dom
+  )[[1]]
+  expect_true(disc_thresh_pos > 0L)
+  expect_true(disc_ppcr_pos > 0L)
+
+  roc_pos <- regexpr('id="tab-discrimination-probability-threshold-roc"', dom)[[
+    1
+  ]]
+  lift_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-lift"',
+    dom
+  )[[1]]
+  pr_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-precision-recall"',
+    dom
+  )[[1]]
+  gains_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-gains"',
+    dom
+  )[[1]]
+
+  expect_true(roc_pos > 0L)
+  expect_true(lift_pos > 0L)
+  expect_true(pr_pos > 0L)
+  expect_true(gains_pos > 0L)
+  expect_true(roc_pos < lift_pos)
+  expect_true(lift_pos < pr_pos)
+  expect_true(pr_pos < gains_pos)
+
+  # Utility direct sibling tabs
+  dc_pos <- regexpr('id="tab-utility-decision-curve"', dom)[[1]]
+  ia_pos <- regexpr('id="tab-utility-interventions-avoided"', dom)[[1]]
+  expect_true(dc_pos > 0L)
+  expect_true(ia_pos > 0L)
+  expect_true(dc_pos < ia_pos)
 })
 
 
@@ -760,6 +817,23 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
   expect_match(
     html,
     "insertBefore(cheatSheetNode, headerNode.nextSibling)",
+    fixed = TRUE
+  )
+
+  # Presentation options
+  expect_match(
+    html,
+    "sectionGroupPresentation: 'tabs'",
+    fixed = TRUE
+  )
+  expect_match(
+    html,
+    "groupPresentation: 'tabs'",
+    fixed = TRUE
+  )
+  expect_match(
+    html,
+    "sectionComponentPresentation: 'tabs'",
     fixed = TRUE
   )
 
