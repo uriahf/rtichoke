@@ -35,7 +35,7 @@ component_contains <- function(dom, component_id, pattern) {
   component_pattern <- paste0(
     'data-component-id="',
     component_id,
-    '"[\\s\\S]*?',
+    '"(?:(?!</section>)[\\s\\S])*?',
     pattern
   )
   grepl(component_pattern, dom, perl = TRUE)
