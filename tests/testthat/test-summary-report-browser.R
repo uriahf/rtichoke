@@ -681,3 +681,109 @@ test_that("public browser report renders populated components from a local file"
     info = browser_stderr
   )
 })
+
+
+test_that("browser summary report includes the Performance Metrics Cheat Sheet", {
+  dat <- summary_report_test_data()
+  output_dir <- tempfile("rtichoke-summary-cheatsheet-")
+
+  create_summary_report(
+    probs = dat$probs,
+    reals = dat$reals,
+    renderer = "browser",
+    output_file = "browser_report.html",
+    output_dir = output_dir
+  )
+
+  rendered_file <- file.path(output_dir, "browser_report.html")
+  expect_true(file.exists(rendered_file))
+
+  html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
+
+  cheat_sheet_occurrences <- length(gregexpr("Performance Metrics Cheat Sheet", html)[[1]])
+  expect_equal(cheat_sheet_occurrences, 1)
+
+  expect_match(html, "<details class=\\\"rtichoke-cheat-sheet\\\">", fixed = TRUE)
+  expect_match(html, "<summary>Performance Metrics Cheat Sheet<\\/summary>", fixed = TRUE)
+
+  # Confusion matrix labels
+  expect_match(html, "Real Positive", fixed = TRUE)
+  expect_match(html, "Real Negative", fixed = TRUE)
+  expect_match(html, "Predicted +", fixed = TRUE)
+  expect_match(html, "Predicted -", fixed = TRUE)
+  expect_match(html, "<td>TP<\\/td>", fixed = TRUE)
+  expect_match(html, "<td>FP<\\/td>", fixed = TRUE)
+  expect_match(html, "<td>TN<\\/td>", fixed = TRUE)
+  expect_match(html, "<td>FN<\\/td>", fixed = TRUE)
+
+  # Metric names
+  expect_match(html, "<dt>Prevalence<\\/dt>", fixed = TRUE)
+  expect_match(html, "<dt>PPCR<\\/dt>", fixed = TRUE)
+  expect_match(html, "Sensitivity", fixed = TRUE)
+  expect_match(html, "Specificity", fixed = TRUE)
+  expect_match(html, "Precision", fixed = TRUE)
+  expect_match(html, "<dt>NPV<\\/dt>", fixed = TRUE)
+  expect_match(html, "<dt>Lift<\\/dt>", fixed = TRUE)
+  expect_match(html, "<dt>Net Benefit<\\/dt>", fixed = TRUE)
+
+  # Metric formulas
+  expect_match(html, "(TP + FN) / (TP + FP + TN + FN)", fixed = TRUE)
+  expect_match(html, "(TP + FP) / (TP + FP + TN + FN)", fixed = TRUE)
+  expect_match(html, "TP / (TP + FN)", fixed = TRUE)
+  expect_match(html, "TP / Real Positives", fixed = TRUE)
+  expect_match(html, "P(Predicted Positive | Real Positive)", fixed = TRUE)
+  expect_match(html, "TN / (TN + FP)", fixed = TRUE)
+  expect_match(html, "TN / Real Negatives", fixed = TRUE)
+  expect_match(html, "P(Predicted Negative | Real Negative)", fixed = TRUE)
+  expect_match(html, "TP / (TP + FP)", fixed = TRUE)
+  expect_match(html, "TP / Predicted Positives", fixed = TRUE)
+  expect_match(html, "P(Real Positive | Predicted Positive)", fixed = TRUE)
+  expect_match(html, "TN / (TN + FN)", fixed = TRUE)
+  expect_match(html, "TN / Predicted Negatives", fixed = TRUE)
+  expect_match(html, "P(Real Negative | Predicted Negative)", fixed = TRUE)
+  expect_match(html, "PPV / Prevalence", fixed = TRUE)
+  expect_match(html, "TP / N - FP / N * p_t / (1 - p_t)", fixed = TRUE)
+  expect_match(html, "N = TP + FP + TN + FN", fixed = TRUE)
+
+  # DOM placement relative ordering
+  expect_match(
+    html,
+    "insertBefore(cheatSheetNode, headerNode.nextSibling)",
+    fixed = TRUE
+  )
+
+  browser <- find_headless_browser()
+  if (nzchar(browser)) {
+    rendered_file_norm <- normalizePath(rendered_file, winslash = "/", mustWork = TRUE)
+    url <- paste0("file://", rendered_file_norm)
+    stderr_file <- tempfile("rtichoke-browser-stderr-")
+    dom_lines <- system2(
+      browser,
+      args = c(
+        "--headless=new",
+        "--no-sandbox",
+        "--allow-file-access-from-files",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--run-all-tasks",
+        "--dump-dom",
+        shQuote(url)
+      ),
+      stdout = TRUE,
+      stderr = stderr_file,
+      timeout = 20
+    )
+    dom <- paste(dom_lines, collapse = "\n")
+
+    header_pos <- regexpr("class=\"rtichoke-report__header\"", dom)[1]
+    cs_pos <- regexpr("class=\"rtichoke-cheat-sheet\"", dom)[1]
+    nav_pos <- regexpr("class=\"rtichoke-report__nav\"", dom)[1]
+
+    expect_true(header_pos > 0, info = "Header node found")
+    expect_true(cs_pos > 0, info = "Cheat sheet node found")
+    expect_true(nav_pos > 0, info = "Nav node found")
+
+    expect_true(header_pos < cs_pos, info = "Cheat sheet is placed AFTER header")
+    expect_true(cs_pos < nav_pos, info = "Cheat sheet is placed BEFORE nav")
+  }
+})
