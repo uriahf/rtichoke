@@ -251,27 +251,27 @@ summary_report_browser_spec <- function(probs, reals) {
           "By Probability Threshold",
           list(
             component("roc", "ROC", threshold_roc),
+            component("lift", "Lift", threshold_lift),
             component(
               "precision-recall",
               "Precision-Recall",
               threshold_precision_recall
             ),
-            component("gains", "Gains", threshold_gains),
-            component("lift", "Lift", threshold_lift)
+            component("gains", "Gains", threshold_gains)
           )
         ),
         group(
           "discrimination-ppcr",
-          "By PPCR",
+          "By Predicted Positives Condition Rate (PPCR)",
           list(
             component("roc-2", "ROC", ppcr_roc),
+            component("lift-2", "Lift", ppcr_lift),
             component(
               "precision-recall-2",
               "Precision-Recall",
               ppcr_precision_recall
             ),
-            component("gains-2", "Gains", ppcr_gains),
-            component("lift-2", "Lift", ppcr_lift)
+            component("gains-2", "Gains", ppcr_gains)
           )
         )
       )
@@ -303,7 +303,7 @@ summary_report_browser_spec <- function(probs, reals) {
         ),
         group(
           "performance-table-ppcr",
-          "By PPCR",
+          "By Predicted Positives Condition Rate (PPCR)",
           list(component(
             "performance-table-2",
             "Performance Table",
