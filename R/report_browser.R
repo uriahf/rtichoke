@@ -33,7 +33,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.14.0",
+    version = "0.15.0",
     src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )
@@ -49,7 +49,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
-    "const reportNode = renderReport(spec, { sectionGroupPresentation: 'tabs', groupPresentation: 'stacked' });\n",
+    "const reportNode = renderReport(spec, { sectionGroupPresentation: 'tabs', groupPresentation: 'tabs', sectionComponentPresentation: 'tabs' });\n",
     "const headerNode = reportNode.querySelector('.rtichoke-report__header');\n",
     "const cheatSheetWrapper = document.createElement('div');\n",
     "cheatSheetWrapper.innerHTML = ",
