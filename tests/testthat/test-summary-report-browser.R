@@ -700,11 +700,22 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
 
-  cheat_sheet_occurrences <- length(gregexpr("Performance Metrics Cheat Sheet", html)[[1]])
+  cheat_sheet_occurrences <- length(gregexpr(
+    "Performance Metrics Cheat Sheet",
+    html
+  )[[1]])
   expect_equal(cheat_sheet_occurrences, 1)
 
-  expect_match(html, "<details class=\\\"rtichoke-cheat-sheet\\\">", fixed = TRUE)
-  expect_match(html, "<summary>Performance Metrics Cheat Sheet<\\/summary>", fixed = TRUE)
+  expect_match(
+    html,
+    "<details class=\\\"rtichoke-cheat-sheet\\\">",
+    fixed = TRUE
+  )
+  expect_match(
+    html,
+    "<summary>Performance Metrics Cheat Sheet<\\/summary>",
+    fixed = TRUE
+  )
 
   # Confusion matrix labels
   expect_match(html, "Real Positive", fixed = TRUE)
@@ -754,7 +765,11 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
 
   browser <- find_headless_browser()
   if (nzchar(browser)) {
-    rendered_file_norm <- normalizePath(rendered_file, winslash = "/", mustWork = TRUE)
+    rendered_file_norm <- normalizePath(
+      rendered_file,
+      winslash = "/",
+      mustWork = TRUE
+    )
     url <- paste0("file://", rendered_file_norm)
     stderr_file <- tempfile("rtichoke-browser-stderr-")
     dom_lines <- system2(
@@ -783,7 +798,10 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
     expect_true(cs_pos > 0, info = "Cheat sheet node found")
     expect_true(nav_pos > 0, info = "Nav node found")
 
-    expect_true(header_pos < cs_pos, info = "Cheat sheet is placed AFTER header")
+    expect_true(
+      header_pos < cs_pos,
+      info = "Cheat sheet is placed AFTER header"
+    )
     expect_true(cs_pos < nav_pos, info = "Cheat sheet is placed BEFORE nav")
   }
 })
