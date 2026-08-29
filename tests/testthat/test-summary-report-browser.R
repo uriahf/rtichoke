@@ -48,13 +48,13 @@ summary_report_component_types <- c(
   "calibration",
   "summary_metrics",
   "roc",
+  "lift",
   "precision_recall",
   "gains",
-  "lift",
   "roc",
+  "lift",
   "precision_recall",
   "gains",
-  "lift",
   "decision_curve",
   "interventions_avoided",
   "performance_table",
@@ -68,13 +68,13 @@ summary_report_component_ids <- c(
   "calibration",
   "auroc",
   "roc",
+  "lift",
   "precision-recall",
   "gains",
-  "lift",
   "roc-2",
+  "lift-2",
   "precision-recall-2",
   "gains-2",
-  "lift-2",
   "decision-curve",
   "interventions-avoided",
   "performance-table",
@@ -219,14 +219,25 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   )
   expect_identical(
     vapply(discrimination$items[2:3], `[[`, "", "title"),
-    c("By Probability Threshold", "By PPCR")
+    c(
+      "By Probability Threshold",
+      "By Predicted Positives Condition Rate (PPCR)"
+    )
   )
   for (group in discrimination$items[2:3]) {
     expect_identical(
       vapply(group$components, `[[`, "", "title"),
-      c("ROC", "Precision-Recall", "Gains", "Lift")
+      c("ROC", "Lift", "Precision-Recall", "Gains")
     )
   }
+  expect_identical(
+    vapply(discrimination$items[[2]]$components, `[[`, "", "id"),
+    c("roc", "lift", "precision-recall", "gains")
+  )
+  expect_identical(
+    vapply(discrimination$items[[3]]$components, `[[`, "", "id"),
+    c("roc-2", "lift-2", "precision-recall-2", "gains-2")
+  )
 
   utility <- report$sections[[4]]
   expect_identical(
@@ -244,7 +255,10 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   )
   expect_identical(
     vapply(tables$items, `[[`, "", "title"),
-    c("By Probability Threshold", "By PPCR")
+    c(
+      "By Probability Threshold",
+      "By Predicted Positives Condition Rate (PPCR)"
+    )
   )
   expect_identical(
     vapply(tables$items, function(x) x$components[[1]]$title, ""),
