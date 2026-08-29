@@ -35,7 +35,7 @@ component_contains <- function(dom, component_id, pattern) {
   component_pattern <- paste0(
     'data-component-id="',
     component_id,
-    '"(?:(?!</section>).)*',
+    '"[\\s\\S]*?',
     pattern
   )
   grepl(component_pattern, dom, perl = TRUE)
@@ -696,15 +696,32 @@ test_that("public browser report renders populated components from a local file"
   expect_true(smooth_pos < discrete_pos)
 
   # Discrimination group tabs & curve tabs in exact order ROC -> Lift -> Precision-Recall -> Gains
-  disc_thresh_pos <- regexpr('id="section-group-tab-discrimination-discrimination-probability-threshold"', dom)[[1]]
-  disc_ppcr_pos <- regexpr('id="section-group-tab-discrimination-discrimination-ppcr"', dom)[[1]]
+  disc_thresh_pos <- regexpr(
+    'id="section-group-tab-discrimination-discrimination-probability-threshold"',
+    dom
+  )[[1]]
+  disc_ppcr_pos <- regexpr(
+    'id="section-group-tab-discrimination-discrimination-ppcr"',
+    dom
+  )[[1]]
   expect_true(disc_thresh_pos > 0L)
   expect_true(disc_ppcr_pos > 0L)
 
-  roc_pos <- regexpr('id="tab-discrimination-probability-threshold-roc"', dom)[[1]]
-  lift_pos <- regexpr('id="tab-discrimination-probability-threshold-lift"', dom)[[1]]
-  pr_pos <- regexpr('id="tab-discrimination-probability-threshold-precision-recall"', dom)[[1]]
-  gains_pos <- regexpr('id="tab-discrimination-probability-threshold-gains"', dom)[[1]]
+  roc_pos <- regexpr('id="tab-discrimination-probability-threshold-roc"', dom)[[
+    1
+  ]]
+  lift_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-lift"',
+    dom
+  )[[1]]
+  pr_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-precision-recall"',
+    dom
+  )[[1]]
+  gains_pos <- regexpr(
+    'id="tab-discrimination-probability-threshold-gains"',
+    dom
+  )[[1]]
 
   expect_true(roc_pos > 0L)
   expect_true(lift_pos > 0L)
