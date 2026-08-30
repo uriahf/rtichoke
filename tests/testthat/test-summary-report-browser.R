@@ -742,6 +742,12 @@ test_that("public browser report renders populated components from a local file"
   expect_match(dom, "max-width: 1040px;", fixed = TRUE)
   expect_match(dom, "min-height: 500px;", fixed = TRUE)
   expect_match(dom, "min-height: 550px;", fixed = TRUE)
+  expect_match(
+    dom,
+    ".rtichoke-report__tabpanel .rtichoke-report__component-title",
+    fixed = TRUE
+  )
+  expect_match(dom, ".rtichoke-report .rtichoke-summary-metrics", fixed = TRUE)
 })
 
 
