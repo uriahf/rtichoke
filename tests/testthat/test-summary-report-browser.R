@@ -737,6 +737,11 @@ test_that("public browser report renders populated components from a local file"
   expect_true(dc_pos > 0L)
   expect_true(ia_pos > 0L)
   expect_true(dc_pos < ia_pos)
+
+  # Density layout styles assertions
+  expect_match(dom, "max-width: 1040px;", fixed = TRUE)
+  expect_match(dom, "min-height: 500px;", fixed = TRUE)
+  expect_match(dom, "min-height: 550px;", fixed = TRUE)
 })
 
 
