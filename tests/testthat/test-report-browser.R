@@ -68,6 +68,15 @@ test_that("browser ReportSpec path delegates complete report to renderReport", {
   expect_match(html, "renderReport", fixed = TRUE)
   expect_equal(htmltools::htmlDependencies(browser)[[1]]$version, "0.15.0")
   expect_match(html, expected_json, fixed = TRUE)
+  expect_match(html, "max-width: 1040px;", fixed = TRUE)
+  expect_match(html, "min-height: 500px;", fixed = TRUE)
+  expect_match(html, "min-height: 550px;", fixed = TRUE)
+  expect_match(
+    html,
+    ".rtichoke-report__tabpanel .rtichoke-report__component-title",
+    fixed = TRUE
+  )
+  expect_match(html, ".rtichoke-report .rtichoke-summary-metrics", fixed = TRUE)
   expect_identical(report, before)
   expect_false(grepl("renderRocV2", renderer_source, fixed = TRUE))
   expect_false(grepl("renderCalibrationV2", renderer_source, fixed = TRUE))

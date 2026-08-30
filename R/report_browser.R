@@ -69,6 +69,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   htmltools::browsable(htmltools::attachDependencies(
     htmltools::tagList(
+      htmltools::tags$style(htmltools::HTML(summary_report_density_css())),
       htmltools::tags$div(id = id, class = "rtichoke-viz-report"),
       htmltools::tags$script(
         id = paste0(id, "-spec"),
@@ -79,6 +80,61 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     ),
     dependency
   ))
+}
+
+#' Generate layout density CSS for browser summary reports
+#'
+#' @return A character string containing summary-report-scoped layout and
+#'   density CSS rules.
+#' @noRd
+summary_report_density_css <- function() {
+  paste0(
+    ".rtichoke-report {\n",
+    "  max-width: 1040px;\n",
+    "  gap: 1.5rem;\n",
+    "}\n",
+    ".rtichoke-report__section {\n",
+    "  gap: 1.25rem;\n",
+    "}\n",
+    ".rtichoke-report__group {\n",
+    "  gap: 0.875rem;\n",
+    "}\n",
+    ".rtichoke-report__component,\n",
+    ".rtichoke-report__tabpanel {\n",
+    "  gap: 0.5rem;\n",
+    "}\n",
+    ".rtichoke-report .rtichoke-viz-chart {\n",
+    "  min-height: 500px;\n",
+    "  height: 500px;\n",
+    "}\n",
+    ".rtichoke-report .rtichoke-calibration {\n",
+    "  min-height: 550px;\n",
+    "  height: 550px;\n",
+    "}\n",
+    ".rtichoke-report__tabpanel .rtichoke-report__component-title {\n",
+    "  display: none;\n",
+    "}\n",
+    ".rtichoke-report__nav {\n",
+    "  background-color: transparent;\n",
+    "  border: none;\n",
+    "  border-bottom: 1px solid #e5e7eb;\n",
+    "  border-radius: 0;\n",
+    "  padding: 0.5rem 0;\n",
+    "}\n",
+    ".rtichoke-report .rtichoke-summary-metrics {\n",
+    "  border: none;\n",
+    "  background: transparent;\n",
+    "  box-shadow: none;\n",
+    "}\n",
+    ".rtichoke-report .rtichoke-summary-metrics__title {\n",
+    "  display: none;\n",
+    "}\n",
+    ".rtichoke-report .rtichoke-summary-metrics__table th,\n",
+    ".rtichoke-report .rtichoke-summary-metrics__table td {\n",
+    "  padding: 0.35rem 0.65rem;\n",
+    "  border-bottom: 1px solid #e5e7eb;\n",
+    "}\n"
+  )
 }
 
 #' Generate Performance Metrics Cheat Sheet HTML for browser summary reports
