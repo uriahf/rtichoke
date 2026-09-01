@@ -1,0 +1,346 @@
+.rtichoke-viz-chart {
+  overflow-x: auto;
+  min-height: 600px;
+}
+
+.rtichoke-viz-chart > * {
+  display: block;
+}
+
+/* Plotly-like interactive legend styling */
+.rtichoke-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+.rtichoke-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  margin: 0;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: #2a2a2a;
+  cursor: pointer;
+  border-radius: 2px;
+  user-select: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.rtichoke-legend-item:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.rtichoke-legend-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.rtichoke-legend-line {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  transition: background-color 0.15s ease;
+}
+
+.rtichoke-legend-label {
+  font-size: 12px;
+}
+
+/* Hidden / disabled state matching Plotly legend muted appearance */
+.rtichoke-legend-item[aria-pressed="false"] {
+  color: #a0a0a0;
+}
+
+.rtichoke-legend-item[aria-pressed="false"] .rtichoke-legend-line {
+  background-color: #a0a0a0 !important;
+}
+
+.rtichoke-operating-point-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rtichoke-operating-point-content {
+  overflow-x: auto;
+}
+
+.rtichoke-operating-point-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-sizing: border-box;
+}
+
+.rtichoke-operating-point-label {
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.rtichoke-operating-point-value {
+  font-weight: 600;
+  color: #111827;
+}
+
+.rtichoke-operating-point-slider {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.rtichoke-horizon-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rtichoke-horizon-control {
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.rtichoke-horizon-select {
+  font-family: inherit;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #111827;
+  margin-left: 0.5rem;
+}
+
+.rtichoke-report {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #1a1a1a;
+}
+
+.rtichoke-report__header {
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.rtichoke-report__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.rtichoke-report__nav {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+}
+
+.rtichoke-report__nav-list,
+.rtichoke-report__nav-sublist {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rtichoke-report__nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.rtichoke-report__nav-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rtichoke-report__nav-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.rtichoke-report__nav-link:hover,
+.rtichoke-report__nav-link:focus {
+  text-decoration: underline;
+}
+
+.rtichoke-report__nav-sublist {
+  padding-left: 0.75rem;
+  border-left: 2px solid #d1d5db;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rtichoke-report__nav-subitem .rtichoke-report__nav-link {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.rtichoke-report__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-top: 0.5rem;
+}
+
+.rtichoke-report__section-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.rtichoke-report__group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-left: 0.5rem;
+}
+
+.rtichoke-report__group-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.rtichoke-report__group-title--tab-panel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rtichoke-report__component {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rtichoke-report__component-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.rtichoke-report__component-content {
+  overflow-x: auto;
+}
+
+.rtichoke-report__tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 0.5rem;
+}
+
+.rtichoke-report__tab {
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4b5563;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.rtichoke-report__tab:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.rtichoke-report__tab[aria-selected="true"] {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  font-weight: 600;
+  background-color: #eff6ff;
+}
+
+.rtichoke-report__tab:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+.rtichoke-report__tabpanel[hidden] {
+  display: none !important;
+}
+
+.rtichoke-report__tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .rtichoke-report__nav-list {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .rtichoke-report__tablist {
+    flex-direction: column;
+    border-bottom: none;
+    gap: 0.25rem;
+  }
+
+  .rtichoke-report__tab {
+    width: 100%;
+    text-align: left;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+
+  .rtichoke-report__tab[aria-selected="true"] {
+    border-bottom-color: transparent;
+    border-left-color: #2563eb;
+  }
+}
