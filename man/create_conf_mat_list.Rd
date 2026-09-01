@@ -9,6 +9,10 @@ create_conf_mat_list(
   stratified_by = "probability_threshold"
 )
 }
+\arguments{
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
+}
 \description{
 Create a list of confusion matrices
 }

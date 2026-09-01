@@ -33,7 +33,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.15.0",
+    version = "0.18.0",
     src = c(file = vendor_dir),
     stylesheet = "rtichoke-viz.css"
   )

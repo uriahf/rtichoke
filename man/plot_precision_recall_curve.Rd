@@ -13,7 +13,8 @@ plot_precision_recall_curve(
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   size = NULL,
   renderer = "default",
-  evaluation_metadata = NULL
+  evaluation_metadata = NULL,
+  stratified_by = "probability_threshold"
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ plots}
 \item{evaluation_metadata}{explicit semantic evaluation metadata required
 when \code{renderer = "browser"}. It is supplied automatically by
 \code{\link[=create_roc_curve]{create_roc_curve()}}.}
+
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \description{
 Plot a Precision Recall Curve

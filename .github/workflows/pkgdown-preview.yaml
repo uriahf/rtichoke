@@ -30,11 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RTICHOKE_VIZ_VERSION: "0.15.0"
-      RTICHOKE_VIZ_RELEASE_TAG: "v0.15.0"
-      RTICHOKE_VIZ_SOURCE_COMMIT: "8873e5d94d3c588891f7b8c62f7211bf1a642f59"
-      RTICHOKE_VIZ_ARCHIVE: "rtichoke-viz-0.15.0.tar.gz"
-      RTICHOKE_VIZ_SHA256: "7852b834a92ff92de419e56d20e40682db0ec006e8e974f0146e8aa7ca434445"
+      RTICHOKE_VIZ_VERSION: "0.18.0"
+      RTICHOKE_VIZ_RELEASE_TAG: "v0.18.0"
+      RTICHOKE_VIZ_SOURCE_COMMIT: "dbabedb495ab70062ee635cd9d59eefcafe55a43"
+      RTICHOKE_VIZ_ARCHIVE: "rtichoke-viz-0.18.0.tar.gz"
+      RTICHOKE_VIZ_SHA256: "1cd3af962be8357d0fd4c2f2ecf5e5953774683de8854ead2facbac807b6bc84"
     steps:
       - uses: actions/checkout@v6
 

@@ -447,18 +447,25 @@ test_that("structured summary embeds the authoritative standalone specs", {
       performance_data,
       metadata
     ),
-    "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(performance_data, metadata),
+    "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(
+      performance_data,
+      metadata,
+      operating_point = "probability_threshold"
+    ),
     "precision-recall" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "gains" = rtichoke:::rtichoke_viz_gains_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "lift" = rtichoke:::rtichoke_viz_lift_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "decision-curve" = rtichoke:::rtichoke_viz_decision_curve_v2_spec(
       performance_data,
@@ -473,13 +480,26 @@ test_that("structured summary embeds the authoritative standalone specs", {
       metadata,
       stratified_by = "ppcr"
     ),
-    "roc-2" = rtichoke:::rtichoke_viz_roc_v2_spec(ppcr_data, metadata),
+    "roc-2" = rtichoke:::rtichoke_viz_roc_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    ),
     "precision-recall-2" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
       ppcr_data,
-      metadata
+      metadata,
+      operating_point = "ppcr"
     ),
-    "gains-2" = rtichoke:::rtichoke_viz_gains_v2_spec(ppcr_data, metadata),
-    "lift-2" = rtichoke:::rtichoke_viz_lift_v2_spec(ppcr_data, metadata)
+    "gains-2" = rtichoke:::rtichoke_viz_gains_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    ),
+    "lift-2" = rtichoke:::rtichoke_viz_lift_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    )
   )
 
   for (id in names(expected)) {
@@ -536,7 +556,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.15.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.18.0", fixed = TRUE)
   expect_match(html, '"id":"prevalence-summary"', fixed = TRUE)
   expect_match(html, '"id":"calibration-smooth"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -549,7 +569,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.15.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.18.0/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
@@ -606,6 +626,7 @@ test_that("public browser report renders populated components from a local file"
       "--allow-file-access-from-files",
       "--disable-gpu",
       "--disable-dev-shm-usage",
+      "--virtual-time-budget=5000",
       "--run-all-tasks",
       "--dump-dom",
       shQuote(url)
@@ -865,6 +886,7 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
         "--allow-file-access-from-files",
         "--disable-gpu",
         "--disable-dev-shm-usage",
+        "--virtual-time-budget=5000",
         "--run-all-tasks",
         "--dump-dom",
         shQuote(url)

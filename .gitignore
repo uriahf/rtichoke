@@ -9,5 +9,5 @@ inst/doc
 /Meta/
 summary_report.html
 cache/
-*.tar.gz
+/*.tar.gz
 *.Rcheck/
