@@ -15,7 +15,8 @@ plot_roc_curve(
   title_included = FALSE,
   size = NULL,
   renderer = "default",
-  evaluation_metadata = NULL
+  evaluation_metadata = NULL,
+  stratified_by = "probability_threshold"
 )
 ```
 
@@ -55,6 +56,11 @@ plot_roc_curve(
   explicit semantic evaluation metadata required when
   `renderer = "browser"`. It is supplied automatically by
   [`create_roc_curve()`](https://uriahf.github.io/rtichoke/reference/create_roc_curve.md).
+
+- stratified_by:
+
+  Performance Metrics can be stratified by Probability Threshold or
+  alternatively by Predicted Positives Condition Rate
 
 ## Examples
 
