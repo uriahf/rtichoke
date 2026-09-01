@@ -633,7 +633,11 @@ rtichoke_viz_curve_v2_spec <- function(
       )
     } else {
       datum$cutoff <- as.numeric(performance_data$probability_threshold[[i]])
-      if ("ppcr" %in% names(performance_data) && !is.null(performance_data$ppcr[[i]])) {
+      if (
+        "ppcr" %in%
+          names(performance_data) &&
+          !is.null(performance_data$ppcr[[i]])
+      ) {
         datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
       }
       if (type == "roc") {

@@ -220,7 +220,11 @@ plot_roc_curve <- function(
         call. = FALSE
       )
     }
-    op_dim <- if (identical(stratified_by, "ppcr")) "ppcr" else "probability_threshold"
+    op_dim <- if (identical(stratified_by, "ppcr")) {
+      "ppcr"
+    } else {
+      "probability_threshold"
+    }
     return(render_rtichoke_viz_browser(rtichoke_viz_roc_v2_spec(
       performance_data,
       evaluation_metadata,
