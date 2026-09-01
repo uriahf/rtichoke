@@ -166,19 +166,23 @@ summary_report_browser_spec <- function(probs, reals) {
   )
   threshold_roc <- rtichoke_viz_roc_v2_spec(
     threshold_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "probability_threshold"
   )
   threshold_precision_recall <- rtichoke_viz_precision_recall_v2_spec(
     threshold_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "probability_threshold"
   )
   threshold_gains <- rtichoke_viz_gains_v2_spec(
     threshold_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "probability_threshold"
   )
   threshold_lift <- rtichoke_viz_lift_v2_spec(
     threshold_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "probability_threshold"
   )
   decision_curve <- rtichoke_viz_decision_curve_v2_spec(
     threshold_performance_data,
@@ -199,19 +203,23 @@ summary_report_browser_spec <- function(probs, reals) {
   )
   ppcr_roc <- rtichoke_viz_roc_v2_spec(
     ppcr_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "ppcr"
   )
   ppcr_precision_recall <- rtichoke_viz_precision_recall_v2_spec(
     ppcr_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "ppcr"
   )
   ppcr_gains <- rtichoke_viz_gains_v2_spec(
     ppcr_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "ppcr"
   )
   ppcr_lift <- rtichoke_viz_lift_v2_spec(
     ppcr_performance_data,
-    evaluation_metadata
+    evaluation_metadata,
+    operating_point = "ppcr"
   )
 
   component <- function(id, title, spec) {

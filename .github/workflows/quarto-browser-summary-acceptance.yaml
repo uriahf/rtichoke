@@ -75,7 +75,7 @@ jobs:
           test -f tests/integration/quarto-browser-summary.html
           test -f tests/integration/summary-report-one.html
           test -f tests/integration/summary-report-two.html
-          test -f tests/integration/lib/rtichoke-viz-0.15.0/rtichoke-viz.css
+          test -f tests/integration/lib/rtichoke-viz-0.18.0/rtichoke-viz.css
 
       - name: Execute Quarto hosts in real Chrome
         run: |
