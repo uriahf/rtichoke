@@ -12,12 +12,14 @@
 #' @noRd
 rtichoke_viz_roc_v2_spec <- function(
   performance_data,
-  evaluation_metadata
+  evaluation_metadata,
+  operating_point = "probability_threshold"
 ) {
   rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "roc"
+    type = "roc",
+    operating_point = operating_point
   )
 }
 
@@ -67,7 +69,7 @@ render_rtichoke_viz_browser <- function(spec) {
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.15.0",
+    version = "0.18.0",
     src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
@@ -75,7 +77,7 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.15.0/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-0.18.0/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -114,7 +116,8 @@ render_rtichoke_viz_browser <- function(spec) {
 #' @noRd
 rtichoke_viz_lift_v2_spec <- function(
   performance_data,
-  evaluation_metadata
+  evaluation_metadata,
+  operating_point = "probability_threshold"
 ) {
   valid_rows <- is.finite(as.numeric(performance_data$ppcr)) &
     is.finite(as.numeric(performance_data$lift))
@@ -122,7 +125,8 @@ rtichoke_viz_lift_v2_spec <- function(
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "lift"
+    type = "lift",
+    operating_point = operating_point
   )
 
   populations <- unique(vapply(
@@ -196,12 +200,14 @@ rtichoke_viz_lift_v2_spec <- function(
 #' @noRd
 rtichoke_viz_gains_v2_spec <- function(
   performance_data,
-  evaluation_metadata
+  evaluation_metadata,
+  operating_point = "probability_threshold"
 ) {
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "gains"
+    type = "gains",
+    operating_point = operating_point
   )
 
   populations <- unique(vapply(
@@ -252,7 +258,8 @@ rtichoke_viz_gains_v2_spec <- function(
 #' @noRd
 rtichoke_viz_precision_recall_v2_spec <- function(
   performance_data,
-  evaluation_metadata
+  evaluation_metadata,
+  operating_point = "probability_threshold"
 ) {
   valid_rows <- is.finite(as.numeric(performance_data$probability_threshold)) &
     is.finite(as.numeric(performance_data$sensitivity)) &
@@ -262,7 +269,8 @@ rtichoke_viz_precision_recall_v2_spec <- function(
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "precision_recall"
+    type = "precision_recall",
+    operating_point = operating_point
   )
 
   populations <- unique(vapply(
@@ -306,7 +314,8 @@ rtichoke_viz_decision_curve_v2_spec <- function(
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "decision_curve"
+    type = "decision_curve",
+    operating_point = "probability_threshold"
   )
   spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
   populations <- unique(vapply(
@@ -383,7 +392,8 @@ rtichoke_viz_interventions_avoided_v2_spec <- function(
   spec <- rtichoke_viz_curve_v2_spec(
     performance_data,
     evaluation_metadata,
-    type = "interventions_avoided"
+    type = "interventions_avoided",
+    operating_point = "probability_threshold"
   )
   spec$xAxis$domain <- c(min_p_threshold, max_p_threshold)
 
@@ -496,8 +506,10 @@ rtichoke_viz_curve_v2_spec <- function(
     "lift",
     "decision_curve",
     "interventions_avoided"
-  )
+  ),
+  operating_point = c("probability_threshold", "ppcr", "none")
 ) {
+  operating_point <- match.arg(operating_point)
   type <- match.arg(type)
   required_columns <- switch(
     type,
@@ -621,6 +633,13 @@ rtichoke_viz_curve_v2_spec <- function(
       )
     } else {
       datum$cutoff <- as.numeric(performance_data$probability_threshold[[i]])
+      if (
+        "ppcr" %in%
+          names(performance_data) &&
+          !is.null(performance_data$ppcr[[i]])
+      ) {
+        datum$ppcr <- as.numeric(performance_data$ppcr[[i]])
+      }
       if (type == "roc") {
         datum$sensitivity <- as.numeric(performance_data$sensitivity[[i]])
         datum$specificity <- as.numeric(performance_data$specificity[[i]])
@@ -638,92 +657,128 @@ rtichoke_viz_curve_v2_spec <- function(
     datum
   })
 
+  op_spec <- if (operating_point != "none") {
+    list(operatingPoint = list(dimension = operating_point))
+  } else {
+    list()
+  }
+
   if (type == "roc") {
-    return(list(
-      schemaVersion = "2.0",
-      type = "roc",
-      evaluations = evaluations,
-      series = series,
-      data = data,
-      x = "false_positive_rate",
-      y = "sensitivity",
-      xAxis = list(label = "1 - Specificity", domain = c(0, 1)),
-      yAxis = list(label = "Sensitivity", domain = c(0, 1)),
-      references = list(list(type = "identity", scope = "global"))
+    return(c(
+      list(
+        schemaVersion = "2.0",
+        type = "roc",
+        evaluations = evaluations,
+        series = series,
+        data = data,
+        x = "false_positive_rate",
+        y = "sensitivity"
+      ),
+      op_spec,
+      list(
+        xAxis = list(label = "1 - Specificity", domain = c(0, 1)),
+        yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+        references = list(list(type = "identity", scope = "global"))
+      )
     ))
   }
 
   if (type == "precision_recall") {
-    return(list(
-      schemaVersion = "2.0",
-      type = "precision_recall",
-      evaluations = evaluations,
-      series = series,
-      data = data,
-      x = "sensitivity",
-      y = "ppv",
-      xAxis = list(label = "Sensitivity", domain = c(0, 1)),
-      yAxis = list(label = "PPV", domain = c(0, 1)),
-      references = list()
+    return(c(
+      list(
+        schemaVersion = "2.0",
+        type = "precision_recall",
+        evaluations = evaluations,
+        series = series,
+        data = data,
+        x = "sensitivity",
+        y = "ppv"
+      ),
+      op_spec,
+      list(
+        xAxis = list(label = "Sensitivity", domain = c(0, 1)),
+        yAxis = list(label = "PPV", domain = c(0, 1)),
+        references = list()
+      )
     ))
   }
 
   if (type == "gains") {
-    return(list(
-      schemaVersion = "2.0",
-      type = "gains",
-      evaluations = evaluations,
-      series = series,
-      data = data,
-      x = "ppcr",
-      y = "sensitivity",
-      xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
-      yAxis = list(label = "Sensitivity", domain = c(0, 1)),
-      references = list()
+    return(c(
+      list(
+        schemaVersion = "2.0",
+        type = "gains",
+        evaluations = evaluations,
+        series = series,
+        data = data,
+        x = "ppcr",
+        y = "sensitivity"
+      ),
+      op_spec,
+      list(
+        xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
+        yAxis = list(label = "Sensitivity", domain = c(0, 1)),
+        references = list()
+      )
     ))
   }
 
   if (type == "decision_curve") {
-    return(list(
-      schemaVersion = "2.0",
-      type = "decision_curve",
-      evaluations = evaluations,
-      series = series,
-      data = data,
-      x = "threshold",
-      y = "netBenefit",
-      xAxis = list(label = "Probability threshold", domain = c(0, 1)),
-      yAxis = list(label = "Net benefit"),
-      references = list()
+    return(c(
+      list(
+        schemaVersion = "2.0",
+        type = "decision_curve",
+        evaluations = evaluations,
+        series = series,
+        data = data,
+        x = "threshold",
+        y = "netBenefit"
+      ),
+      op_spec,
+      list(
+        xAxis = list(label = "Probability threshold", domain = c(0, 1)),
+        yAxis = list(label = "Net benefit"),
+        references = list()
+      )
     ))
   }
 
   if (type == "interventions_avoided") {
-    return(list(
-      schemaVersion = "2.0",
-      type = "interventions_avoided",
-      evaluations = evaluations,
-      series = series,
-      data = data,
-      x = "threshold",
-      y = "interventionsAvoided",
-      xAxis = list(label = "Probability Threshold", domain = c(0, 1)),
-      yAxis = list(label = "Interventions Avoided (per 100)"),
-      references = list()
+    return(c(
+      list(
+        schemaVersion = "2.0",
+        type = "interventions_avoided",
+        evaluations = evaluations,
+        series = series,
+        data = data,
+        x = "threshold",
+        y = "interventionsAvoided"
+      ),
+      op_spec,
+      list(
+        xAxis = list(label = "Probability Threshold", domain = c(0, 1)),
+        yAxis = list(label = "Interventions Avoided (per 100)"),
+        references = list()
+      )
     ))
   }
 
-  list(
-    schemaVersion = "2.0",
-    type = "lift",
-    evaluations = evaluations,
-    series = series,
-    data = data,
-    x = "ppcr",
-    y = "lift",
-    xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
-    yAxis = list(label = "Lift"),
-    references = list()
+  c(
+    list(
+      schemaVersion = "2.0",
+      type = "lift",
+      evaluations = evaluations,
+      series = series,
+      data = data,
+      x = "ppcr",
+      y = "lift"
+    ),
+    op_spec,
+    list(
+      xAxis = list(label = "Predicted Positives (Rate)", domain = c(0, 1)),
+      yAxis = list(label = "Lift"),
+      references = list()
+    )
   )
 }
 
