@@ -59,7 +59,8 @@
 <span>    <span class="st">"#63768D"</span>, <span class="st">"#08A045"</span>, <span class="st">"#320A28"</span>, <span class="st">"#82FF9E"</span>, <span class="st">"#2176FF"</span>, <span class="st">"#D1603D"</span>, <span class="st">"#585123"</span><span class="op">)</span>,</span>
 <span>  size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  renderer <span class="op">=</span> <span class="st">"default"</span>,</span>
-<span>  evaluation_metadata <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  evaluation_metadata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stratified_by <span class="op">=</span> <span class="st">"probability_threshold"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,6 +99,11 @@ plots</p></dd>
 <dd><p>explicit semantic evaluation metadata required
 when <code>renderer = "browser"</code>. It is supplied automatically by
 <code><a href="create_roc_curve.html">create_roc_curve()</a></code>.</p></dd>
+
+
+<dt id="arg-stratified-by">stratified_by<a class="anchor" aria-label="anchor" href="#arg-stratified-by"></a></dt>
+<dd><p>Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate</p></dd>
 
 </dl></div>
 

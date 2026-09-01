@@ -11,6 +11,13 @@ create_conf_mat_list(
 )
 ```
 
+## Arguments
+
+- stratified_by:
+
+  Performance Metrics can be stratified by Probability Threshold or
+  alternatively by Predicted Positives Condition Rate
+
 ## Examples
 
 ``` r
