@@ -544,6 +544,31 @@
                           },
                           {
                             "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "anyOf": [
+                                      {
+                                        "const": "probability_threshold",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppcr",
+                                        "type": "string"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
                             "required": [
                               "type",
                               "data",
@@ -570,6 +595,11 @@
                                       "type": "string"
                                     },
                                     "cutoff": {
+                                      "type": "number"
+                                    },
+                                    "ppcr": {
+                                      "minimum": 0,
+                                      "maximum": 1,
                                       "type": "number"
                                     },
                                     "sensitivity": {
@@ -1730,6 +1760,31 @@
                           },
                           {
                             "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "anyOf": [
+                                      {
+                                        "const": "probability_threshold",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppcr",
+                                        "type": "string"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
                             "required": [
                               "type",
                               "data",
@@ -1756,6 +1811,11 @@
                                       "type": "string"
                                     },
                                     "cutoff": {
+                                      "type": "number"
+                                    },
+                                    "ppcr": {
+                                      "minimum": 0,
+                                      "maximum": 1,
                                       "type": "number"
                                     },
                                     "sensitivity": {
@@ -2278,6 +2338,31 @@
                                       ]
                                     }
                                   ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "anyOf": [
+                                      {
+                                        "const": "probability_threshold",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppcr",
+                                        "type": "string"
+                                      }
+                                    ]
+                                  }
                                 }
                               }
                             }
@@ -2838,6 +2923,31 @@
                           },
                           {
                             "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "anyOf": [
+                                      {
+                                        "const": "probability_threshold",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppcr",
+                                        "type": "string"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
                             "required": [
                               "type",
                               "data",
@@ -3384,6 +3494,23 @@
                                       ]
                                     }
                                   ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "const": "probability_threshold",
+                                    "type": "string"
+                                  }
                                 }
                               }
                             }
@@ -4204,6 +4331,23 @@
                                       ]
                                     }
                                   ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "operatingPoint": {
+                                "type": "object",
+                                "required": [
+                                  "dimension"
+                                ],
+                                "properties": {
+                                  "dimension": {
+                                    "const": "probability_threshold",
+                                    "type": "string"
+                                  }
                                 }
                               }
                             }
@@ -5551,6 +5695,31 @@
                                     },
                                     {
                                       "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "probability_threshold",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
                                       "required": [
                                         "type",
                                         "data",
@@ -5577,6 +5746,11 @@
                                                 "type": "string"
                                               },
                                               "cutoff": {
+                                                "type": "number"
+                                              },
+                                              "ppcr": {
+                                                "minimum": 0,
+                                                "maximum": 1,
                                                 "type": "number"
                                               },
                                               "sensitivity": {
@@ -6737,6 +6911,31 @@
                                     },
                                     {
                                       "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "probability_threshold",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
                                       "required": [
                                         "type",
                                         "data",
@@ -6763,6 +6962,11 @@
                                                 "type": "string"
                                               },
                                               "cutoff": {
+                                                "type": "number"
+                                              },
+                                              "ppcr": {
+                                                "minimum": 0,
+                                                "maximum": 1,
                                                 "type": "number"
                                               },
                                               "sensitivity": {
@@ -7285,6 +7489,31 @@
                                                 ]
                                               }
                                             ]
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "probability_threshold",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            }
                                           }
                                         }
                                       }
@@ -7845,6 +8074,31 @@
                                     },
                                     {
                                       "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "probability_threshold",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
                                       "required": [
                                         "type",
                                         "data",
@@ -8391,6 +8645,23 @@
                                                 ]
                                               }
                                             ]
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "const": "probability_threshold",
+                                              "type": "string"
+                                            }
                                           }
                                         }
                                       }
@@ -9211,6 +9482,23 @@
                                                 ]
                                               }
                                             ]
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "operatingPoint": {
+                                          "type": "object",
+                                          "required": [
+                                            "dimension"
+                                          ],
+                                          "properties": {
+                                            "dimension": {
+                                              "const": "probability_threshold",
+                                              "type": "string"
+                                            }
                                           }
                                         }
                                       }
@@ -10536,6 +10824,31 @@
                                           },
                                           {
                                             "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "probability_threshold",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppcr",
+                                                        "type": "string"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
                                             "required": [
                                               "type",
                                               "data",
@@ -10562,6 +10875,11 @@
                                                       "type": "string"
                                                     },
                                                     "cutoff": {
+                                                      "type": "number"
+                                                    },
+                                                    "ppcr": {
+                                                      "minimum": 0,
+                                                      "maximum": 1,
                                                       "type": "number"
                                                     },
                                                     "sensitivity": {
@@ -11722,6 +12040,31 @@
                                           },
                                           {
                                             "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "probability_threshold",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppcr",
+                                                        "type": "string"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
                                             "required": [
                                               "type",
                                               "data",
@@ -11748,6 +12091,11 @@
                                                       "type": "string"
                                                     },
                                                     "cutoff": {
+                                                      "type": "number"
+                                                    },
+                                                    "ppcr": {
+                                                      "minimum": 0,
+                                                      "maximum": 1,
                                                       "type": "number"
                                                     },
                                                     "sensitivity": {
@@ -12270,6 +12618,31 @@
                                                       ]
                                                     }
                                                   ]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "probability_threshold",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppcr",
+                                                        "type": "string"
+                                                      }
+                                                    ]
+                                                  }
                                                 }
                                               }
                                             }
@@ -12830,6 +13203,31 @@
                                           },
                                           {
                                             "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "probability_threshold",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppcr",
+                                                        "type": "string"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
                                             "required": [
                                               "type",
                                               "data",
@@ -13376,6 +13774,23 @@
                                                       ]
                                                     }
                                                   ]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "const": "probability_threshold",
+                                                    "type": "string"
+                                                  }
                                                 }
                                               }
                                             }
@@ -14196,6 +14611,23 @@
                                                       ]
                                                     }
                                                   ]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "operatingPoint": {
+                                                "type": "object",
+                                                "required": [
+                                                  "dimension"
+                                                ],
+                                                "properties": {
+                                                  "dimension": {
+                                                    "const": "probability_threshold",
+                                                    "type": "string"
+                                                  }
                                                 }
                                               }
                                             }

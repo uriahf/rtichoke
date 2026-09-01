@@ -2915,6 +2915,24 @@ var BaseChartV2SpecSchema = Type.Object({
   yAxis: AxisSpecSchema,
   references: Type.Optional(Type.Array(ReferenceLineV2SpecSchema))
 });
+var OperatingPointDimensionSchema = Type.Union([
+  Type.Literal("probability_threshold"),
+  Type.Literal("ppcr")
+]);
+var OperatingPointSpecSchema = Type.Object({
+  operatingPoint: Type.Optional(
+    Type.Object({
+      dimension: OperatingPointDimensionSchema
+    })
+  )
+});
+var ThresholdOperatingPointSpecSchema = Type.Object({
+  operatingPoint: Type.Optional(
+    Type.Object({
+      dimension: Type.Literal("probability_threshold")
+    })
+  )
+});
 
 // src/spec/v2/calibration.ts
 var DiscreteCalibrationV2DatumSchema = Type.Object({
@@ -3006,6 +3024,7 @@ var DecisionCurveV2ReferenceSchema = Type.Union([
 ]);
 var DecisionCurveV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  ThresholdOperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("decision_curve"),
     evaluations: Type.Array(DecisionCurveV2EvaluationSchema, { minItems: 1 }),
@@ -3026,6 +3045,7 @@ var GainsV2DatumSchema = Type.Object({
 });
 var GainsV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  OperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("gains"),
     data: Type.Array(GainsV2DatumSchema),
@@ -3086,6 +3106,7 @@ var InterventionsAvoidedV2ReferenceSchema = Type.Union([
 ]);
 var InterventionsAvoidedV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  ThresholdOperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("interventions_avoided"),
     evaluations: Type.Array(InterventionsAvoidedV2EvaluationSchema, { minItems: 1 }),
@@ -3106,6 +3127,7 @@ var LiftV2DatumSchema = Type.Object({
 });
 var LiftV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  OperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("lift"),
     data: Type.Array(LiftV2DatumSchema),
@@ -3118,11 +3140,13 @@ var LiftV2SpecSchema = Type.Intersect([
 var PrecisionRecallV2DatumSchema = Type.Object({
   seriesId: Type.String(),
   cutoff: Type.Number(),
+  ppcr: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
   sensitivity: Type.Number({ minimum: 0, maximum: 1 }),
   ppv: Type.Number({ minimum: 0, maximum: 1 })
 });
 var PrecisionRecallV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  OperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("precision_recall"),
     data: Type.Array(PrecisionRecallV2DatumSchema),
@@ -3135,11 +3159,13 @@ var PrecisionRecallV2SpecSchema = Type.Intersect([
 var RocV2DatumSchema = Type.Object({
   seriesId: Type.String(),
   cutoff: Type.Number(),
+  ppcr: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
   sensitivity: Type.Number({ minimum: 0, maximum: 1 }),
   specificity: Type.Number({ minimum: 0, maximum: 1 })
 });
 var RocV2SpecSchema = Type.Intersect([
   BaseChartV2SpecSchema,
+  OperatingPointSpecSchema,
   Type.Object({
     type: Type.Literal("roc"),
     data: Type.Array(RocV2DatumSchema),
@@ -19253,7 +19279,7 @@ var RTICHOKE_COLORS2 = [
 ];
 var RTICHOKE_BROWSER_THEME = {
   width: 600,
-  height: 600,
+  height: 500,
   margins: { top: 28, right: 28, bottom: 58, left: 66 },
   background: "#ffffff",
   frame: { color: "#444444", width: 1 },
@@ -19273,9 +19299,9 @@ var RTICHOKE_BROWSER_THEME = {
   },
   colors: RTICHOKE_COLORS2,
   line: { width: 2, dash: null },
-  marker: { radius: 5, fill: null, stroke: "#ffffff", strokeWidth: 1.5 },
-  reference: { color: "#BEBEBE", width: 2, dash: "4,4" },
-  legend: { position: "top", swatchWidth: 15, columns: null },
+  marker: { radius: 2.5, fill: null, stroke: "#ffffff", strokeWidth: 0.5 },
+  reference: { color: "#BEBEBE", width: 1.5, dash: "2,3" },
+  legend: { position: "top", swatchWidth: 12, columns: null },
   tip: { digits: 3 }
 };
 function mergeTheme(options) {
@@ -19298,10 +19324,10 @@ function mergeTheme(options) {
   };
 }
 function resolveV2RenderOptions(groupsOrCount, options = {}) {
-  const groups2 = typeof groupsOrCount === "number" ? Array.from(
+  const allGroups = options.allGroups ?? (typeof groupsOrCount === "number" ? Array.from(
     { length: groupsOrCount },
     (_, index2) => `group-${index2 + 1}`
-  ) : [...groupsOrCount];
+  ) : [...groupsOrCount]);
   const theme = mergeTheme(options);
   if (!Number.isFinite(theme.width) || theme.width <= 0 || !Number.isFinite(theme.height) || theme.height <= 0)
     throw new Error(
@@ -19309,21 +19335,205 @@ function resolveV2RenderOptions(groupsOrCount, options = {}) {
     );
   if (!Number.isInteger(theme.tip.digits) || theme.tip.digits < 0 || theme.tip.digits > 20)
     throw new Error("Renderer tip digits must be an integer between 0 and 20");
-  const colors = groups2.length <= 1 ? ["#000000"] : [...theme.colors];
-  if (colors.length < groups2.length)
+  const colors = allGroups.length <= 1 ? ["#000000"] : [...theme.colors];
+  if (colors.length < allGroups.length)
     throw new Error(
       "Renderer colors must contain at least one color per display group"
     );
-  const assigned = colors.slice(0, Math.max(groups2.length, 1));
+  const assigned = colors.slice(0, Math.max(allGroups.length, 1));
+  const showLegend = options.showLegend ?? allGroups.length > 1;
   return {
     theme: { ...theme, colors: assigned },
-    groups: groups2,
+    groups: allGroups,
     colors: assigned,
     colorByGroup: new Map(
-      groups2.map((group2, index2) => [group2, assigned[index2]])
+      allGroups.map((group2, index2) => [group2, assigned[index2]])
     ),
-    showLegend: groups2.length > 1
+    showLegend
   };
+}
+function extractOperatingPointValues(spec) {
+  if (!spec.operatingPoint) return [];
+  const dim = spec.operatingPoint.dimension;
+  const key = dim === "probability_threshold" ? spec.type === "decision_curve" || spec.type === "interventions_avoided" ? "threshold" : "cutoff" : "ppcr";
+  if (dim === "probability_threshold") {
+    const seriesIds = spec.series.map((s2) => s2.id);
+    if (seriesIds.length === 0) return [];
+    let intersectionSet = null;
+    for (const id2 of seriesIds) {
+      const sData = spec.data.filter((datum2) => datum2.seriesId === id2);
+      const sValues = sData.map((datum2) => datum2[key]).filter(
+        (val) => typeof val === "number" && Number.isFinite(val)
+      );
+      const sSet = new Set(sValues);
+      if (intersectionSet === null) {
+        intersectionSet = sSet;
+      } else {
+        const currentIntersection = intersectionSet;
+        intersectionSet = new Set(
+          Array.from(currentIntersection).filter((val) => sSet.has(val))
+        );
+      }
+    }
+    return Array.from(intersectionSet ?? []).sort((a2, b) => a2 - b);
+  } else {
+    const rawValues = spec.data.map((datum2) => datum2[key]).filter(
+      (val) => typeof val === "number" && Number.isFinite(val)
+    );
+    const uniqueSorted = [...new Set(rawValues)].sort((a2, b) => a2 - b);
+    return uniqueSorted;
+  }
+}
+function filterSpecByGroups(spec, activeGroups) {
+  const visibleSeries = spec.series.filter((s2) => activeGroups.has(s2.display.group));
+  const visibleSeriesIds = new Set(visibleSeries.map((s2) => s2.id));
+  return {
+    ...spec,
+    series: visibleSeries,
+    data: spec.data.filter((d) => visibleSeriesIds.has(d.seriesId))
+  };
+}
+function renderWithLegendFiltering(spec, options, render, preferredValue, onValueChange) {
+  const allGroups = displayGroups(spec);
+  let currentOpVal = preferredValue;
+  if (allGroups.length <= 1) {
+    return render(spec, options, currentOpVal, (val) => {
+      currentOpVal = val;
+      if (onValueChange) onValueChange(val);
+    });
+  }
+  const childOptions = {
+    ...options,
+    allGroups,
+    showLegend: false
+  };
+  const resolved = resolveV2RenderOptions(allGroups, childOptions);
+  const { theme, colorByGroup } = resolved;
+  const labelByGroup = new Map(spec.series.map((s2) => [s2.display.group, s2.display.label]));
+  const activeGroups = new Set(allGroups);
+  const container = document.createElement("div");
+  container.className = "rtichoke-legend-chart";
+  container.style.maxWidth = `${theme.width}px`;
+  const legendNav = document.createElement("div");
+  legendNav.className = "rtichoke-legend";
+  legendNav.style.paddingLeft = `${theme.margins.left}px`;
+  legendNav.setAttribute("aria-label", "Chart legend");
+  const buttonsByGroup = /* @__PURE__ */ new Map();
+  allGroups.forEach((group2) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "rtichoke-legend-item";
+    btn.setAttribute("aria-pressed", "true");
+    const groupLabel = labelByGroup.get(group2) ?? group2;
+    btn.setAttribute("aria-label", `Toggle series ${groupLabel}`);
+    const swatch = document.createElement("span");
+    swatch.className = "rtichoke-legend-swatch";
+    const lineSpan = document.createElement("span");
+    lineSpan.className = "rtichoke-legend-line";
+    lineSpan.style.backgroundColor = colorByGroup.get(group2) ?? "#000000";
+    swatch.append(lineSpan);
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "rtichoke-legend-label";
+    labelSpan.textContent = groupLabel;
+    btn.append(swatch, labelSpan);
+    legendNav.append(btn);
+    buttonsByGroup.set(group2, btn);
+  });
+  const contentArea = document.createElement("div");
+  contentArea.className = "rtichoke-legend-content";
+  const updateChart = () => {
+    const filteredSpec = filterSpecByGroups(spec, activeGroups);
+    const chartContent = render(filteredSpec, childOptions, currentOpVal, (val) => {
+      currentOpVal = val;
+      if (onValueChange) onValueChange(val);
+    });
+    contentArea.replaceChildren(chartContent);
+  };
+  allGroups.forEach((group2) => {
+    const btn = buttonsByGroup.get(group2);
+    btn.addEventListener("click", () => {
+      const isCurrentlyActive = activeGroups.has(group2);
+      if (isCurrentlyActive) {
+        if (activeGroups.size <= 1) {
+          return;
+        }
+        activeGroups.delete(group2);
+        btn.setAttribute("aria-pressed", "false");
+      } else {
+        activeGroups.add(group2);
+        btn.setAttribute("aria-pressed", "true");
+      }
+      updateChart();
+    });
+  });
+  container.append(legendNav, contentArea);
+  updateChart();
+  return container;
+}
+function renderWithOperatingPointSelection(spec, options, render, preferredValue, onValueChange) {
+  if (!spec.operatingPoint) return render(spec, void 0);
+  const values2 = extractOperatingPointValues(spec);
+  if (values2.length === 0) return render(spec, void 0);
+  const resolved = resolveV2RenderOptions(displayGroups(spec), options);
+  const { theme } = resolved;
+  const container = document.createElement("div");
+  container.className = "rtichoke-operating-point-chart";
+  container.style.maxWidth = `${theme.width}px`;
+  const control = document.createElement("div");
+  control.className = "rtichoke-operating-point-control";
+  control.style.marginLeft = `${theme.margins.left}px`;
+  control.style.marginRight = `${theme.margins.right}px`;
+  const ariaLabelText = spec.operatingPoint.dimension === "probability_threshold" ? "Probability threshold" : "Predicted positives condition rate (PPCR)";
+  const visibleLabelText = spec.operatingPoint.dimension === "probability_threshold" ? "Probability threshold" : "PPCR";
+  const label = document.createElement("label");
+  label.className = "rtichoke-operating-point-label";
+  const labelSpan = document.createElement("span");
+  labelSpan.textContent = `${visibleLabelText}: `;
+  const valueSpan = document.createElement("span");
+  valueSpan.className = "rtichoke-operating-point-value";
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.className = "rtichoke-operating-point-slider";
+  slider.min = "0";
+  slider.max = String(values2.length - 1);
+  slider.step = "1";
+  slider.setAttribute("aria-label", ariaLabelText);
+  let selectedIndex = 0;
+  if (preferredValue !== void 0) {
+    const matchIdx = values2.indexOf(preferredValue);
+    if (matchIdx !== -1) {
+      selectedIndex = matchIdx;
+    }
+  }
+  const selectedValue = values2[selectedIndex];
+  slider.value = String(selectedIndex);
+  const formattedVal = selectedValue.toFixed(theme.tip.digits);
+  valueSpan.textContent = formattedVal;
+  slider.setAttribute("aria-valuetext", formattedVal);
+  if (onValueChange) {
+    onValueChange(selectedValue);
+  }
+  label.append(labelSpan, valueSpan);
+  control.append(label, slider);
+  const chart = document.createElement("div");
+  chart.className = "rtichoke-operating-point-content";
+  const draw = (val) => {
+    chart.replaceChildren(render(spec, val));
+  };
+  slider.addEventListener("input", () => {
+    const idx = Number(slider.value);
+    const val = values2[idx];
+    const valFormatted = val.toFixed(theme.tip.digits);
+    valueSpan.textContent = valFormatted;
+    slider.setAttribute("aria-valuetext", valFormatted);
+    if (onValueChange) {
+      onValueChange(val);
+    }
+    draw(val);
+  });
+  container.append(chart, control);
+  draw(selectedValue);
+  return container;
 }
 function displayBySeries(spec) {
   return new Map(spec.series.map((series) => [series.id, series.display]));
@@ -19382,12 +19592,6 @@ function axisOptions2(theme, label, domain) {
     tickFormat: theme.axis.numberFormat
   };
 }
-function frameMark(theme) {
-  return frame2({
-    stroke: theme.frame.color,
-    strokeWidth: theme.frame.width
-  });
-}
 function referenceMarks(spec, theme) {
   const style = {
     stroke: theme.reference.color,
@@ -19423,8 +19627,72 @@ function referenceMarks(spec, theme) {
   return marks2;
 }
 function finishMarks(marks2, theme) {
-  marks2.push(frameMark(theme));
   return marks2;
+}
+function thinOrdinaryPoints(data, getSeriesId, targetMax = 40) {
+  const bySeries = /* @__PURE__ */ new Map();
+  for (const item of data) {
+    const id2 = getSeriesId(item);
+    let list = bySeries.get(id2);
+    if (!list) {
+      list = [];
+      bySeries.set(id2, list);
+    }
+    list.push(item);
+  }
+  const result = [];
+  for (const list of bySeries.values()) {
+    const n = list.length;
+    if (n <= targetMax) {
+      result.push(...list);
+    } else {
+      const selectedIndices = /* @__PURE__ */ new Set();
+      for (let k2 = 0; k2 < targetMax; k2++) {
+        const idx = Math.round(k2 * (n - 1) / (targetMax - 1));
+        selectedIndices.add(idx);
+      }
+      for (const idx of selectedIndices) {
+        result.push(list[idx]);
+      }
+    }
+  }
+  return result;
+}
+function ordinaryPointDotMark(data, x2, y2, resolved, customTheme) {
+  const thinned = thinOrdinaryPoints(data, (d) => d.seriesId, 40);
+  const theme = resolved.theme;
+  const r = customTheme?.marker?.radius ?? theme.marker.radius;
+  const stroke = customTheme?.marker?.stroke ?? theme.marker.stroke;
+  const strokeWidth = customTheme?.marker?.strokeWidth ?? theme.marker.strokeWidth;
+  return dot(thinned, {
+    ariaLabel: "ordinary-point",
+    x: x2,
+    y: y2,
+    fill: "group",
+    stroke,
+    strokeWidth,
+    r,
+    title: (d) => d.title,
+    tip: true
+  });
+}
+function operatingPointDotMark(data, x2, y2, resolved, customTheme) {
+  const isMultiSeries = resolved.groups.length > 1;
+  const fill = customTheme?.marker?.fill ?? (isMultiSeries ? "group" : "#f6e3be");
+  const stroke = customTheme?.marker?.stroke ?? "#1a1a1a";
+  const strokeWidth = customTheme?.marker?.strokeWidth ?? 2.5;
+  const r = customTheme?.marker?.radius ?? 7.5;
+  return dot(data, {
+    className: "rtichoke-selected-operating-point",
+    x: x2,
+    y: y2,
+    fill,
+    stroke,
+    strokeWidth,
+    r,
+    title: (d) => d.title,
+    tip: true
+  });
 }
 function themedPlot(options, theme) {
   const plot2 = plot(options);
@@ -19442,27 +19710,40 @@ function themedPlot(options, theme) {
   if (plot2 instanceof HTMLElement) {
     plot2.style.fontSize = `${theme.typography.legendSize}px`;
     for (const swatch of plot2.querySelectorAll(
-      'svg[width="15"]'
+      'svg[width="15"], div[class*="-swatches"] svg'
     )) {
       swatch.setAttribute("width", String(theme.legend.swatchWidth));
+      swatch.setAttribute("height", "10");
     }
   }
   return plot2;
 }
-function renderRocV2(spec, options = {}) {
+function renderRocChart(spec, options = {}, selectedOperatingPointValue) {
   assertV2ReferentialIntegrity(spec);
   const resolved = resolveV2RenderOptions(displayGroups(spec), options);
   const { theme } = resolved;
-  const data = seriesRenderData(spec, spec.data).map((datum2) => ({
-    ...datum2,
-    false_positive_rate: 1 - datum2.specificity,
-    title: tooltip(theme.tip.digits, [
-      ["Series", datum2.label],
-      ["Cutoff", datum2.cutoff],
+  const opDim = spec.operatingPoint?.dimension;
+  const data = seriesRenderData(spec, spec.data).map((datum2) => {
+    const fpr = 1 - datum2.specificity;
+    const fields = [["Series", datum2.label]];
+    if (opDim === "ppcr") {
+      if (datum2.ppcr !== void 0) fields.push(["PPCR", datum2.ppcr]);
+      fields.push(["Cutoff", datum2.cutoff]);
+    } else {
+      fields.push(["Cutoff", datum2.cutoff]);
+      if (datum2.ppcr !== void 0) fields.push(["PPCR", datum2.ppcr]);
+    }
+    fields.push(
       ["Sensitivity", datum2.sensitivity],
-      ["Specificity", datum2.specificity]
-    ])
-  }));
+      ["Specificity", datum2.specificity],
+      ["False Positive Rate", fpr]
+    );
+    return {
+      ...datum2,
+      false_positive_rate: fpr,
+      title: tooltip(theme.tip.digits, fields)
+    };
+  });
   const marks2 = referenceMarks(spec, theme);
   marks2.push(
     line(data, {
@@ -19472,10 +19753,26 @@ function renderRocV2(spec, options = {}) {
       stroke: "group",
       strokeWidth: theme.line.width,
       strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
+      title: (d) => d.title,
       tip: true
-    })
+    }),
+    ordinaryPointDotMark(
+      data,
+      "false_positive_rate",
+      "sensitivity",
+      resolved,
+      options.theme
+    )
   );
+  if (selectedOperatingPointValue !== void 0 && spec.operatingPoint) {
+    const dimField = spec.operatingPoint.dimension === "probability_threshold" ? "cutoff" : "ppcr";
+    const selectedPoints = data.filter((datum2) => datum2[dimField] === selectedOperatingPointValue);
+    if (selectedPoints.length > 0) {
+      marks2.push(
+        operatingPointDotMark(selectedPoints, "false_positive_rate", "sensitivity", resolved, options.theme)
+      );
+    }
+  }
   return themedPlot(
     {
       ...basePlotOptions(resolved, spec),
@@ -19484,6 +19781,24 @@ function renderRocV2(spec, options = {}) {
       marks: finishMarks(marks2, theme)
     },
     theme
+  );
+}
+function renderRocV2(spec, options = {}) {
+  return renderWithLegendFiltering(
+    spec,
+    options,
+    (filteredSpec, opts, preferredOpVal, onOpValChange) => renderWithHorizonSelection(
+      filteredSpec,
+      (selected, pOpVal, onOpChange) => renderWithOperatingPointSelection(
+        selected,
+        opts,
+        (specWithOp, activeOpVal) => renderRocChart(specWithOp, opts, activeOpVal),
+        pOpVal,
+        onOpChange
+      ),
+      preferredOpVal,
+      onOpValChange
+    )
   );
 }
 function renderCalibrationV2(spec, options = {}) {
@@ -19509,7 +19824,7 @@ function renderCalibrationV2(spec, options = {}) {
       stroke: "group",
       strokeWidth: theme.line.width,
       strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
+      title: (d) => d.title,
       tip: true
     })
   );
@@ -19523,7 +19838,7 @@ function renderCalibrationV2(spec, options = {}) {
         stroke: theme.marker.stroke,
         strokeWidth: theme.marker.strokeWidth,
         r: theme.marker.radius,
-        title: "title",
+        title: (d) => d.title,
         tip: true
       })
     );
@@ -19583,7 +19898,7 @@ function renderCalibrationV2(spec, options = {}) {
             y: "count",
             fill: "group",
             fillOpacity: 1 / Math.max(resolved.groups.length, 1),
-            title: "title",
+            title: (d) => d.title,
             tip: true
           })
         ],
@@ -19599,24 +19914,48 @@ function renderCalibrationV2(spec, options = {}) {
   container.append(calibration, histogram);
   return container;
 }
-function renderLineChart(spec, options, x2, y2) {
+function renderLineChart(spec, options, x2, y2, selectedOperatingPointValue) {
   assertV2ReferentialIntegrity(spec);
   const resolved = resolveV2RenderOptions(displayGroups(spec), options);
   const { theme } = resolved;
+  const opDim = spec.operatingPoint?.dimension;
   const data = seriesRenderData(
     spec,
     spec.data
   ).map((datum2) => {
     const values2 = datum2;
-    const yLabel = y2 === "ppv" ? "PPV" : y2 === "sensitivity" ? "Sensitivity" : "Lift";
+    const fields = [["Series", datum2.label]];
+    if (spec.type === "precision_recall") {
+      if (opDim === "ppcr") {
+        if (values2.ppcr !== void 0) fields.push(["PPCR", values2.ppcr]);
+        fields.push(["Cutoff", values2.cutoff]);
+      } else {
+        fields.push(["Cutoff", values2.cutoff]);
+        if (values2.ppcr !== void 0) fields.push(["PPCR", values2.ppcr]);
+      }
+      fields.push(["Sensitivity", values2.sensitivity], ["PPV", values2.ppv]);
+    } else if (spec.type === "gains") {
+      if (opDim === "probability_threshold") {
+        fields.push(["Cutoff", values2.cutoff]);
+        fields.push(["PPCR", values2.ppcr]);
+      } else {
+        fields.push(["PPCR", values2.ppcr]);
+        fields.push(["Cutoff", values2.cutoff]);
+      }
+      fields.push(["Sensitivity", values2.sensitivity]);
+    } else if (spec.type === "lift") {
+      if (opDim === "probability_threshold") {
+        fields.push(["Cutoff", values2.cutoff]);
+        fields.push(["PPCR", values2.ppcr]);
+      } else {
+        fields.push(["PPCR", values2.ppcr]);
+        fields.push(["Cutoff", values2.cutoff]);
+      }
+      fields.push(["Lift", values2.lift]);
+    }
     return {
       ...datum2,
-      title: tooltip(theme.tip.digits, [
-        ["Series", datum2.label],
-        ["Cutoff", values2.cutoff],
-        [x2 === "ppcr" ? "PPCR" : "Sensitivity", values2[x2]],
-        [yLabel, values2[y2]]
-      ])
+      title: tooltip(theme.tip.digits, fields)
     };
   });
   const marks2 = referenceMarks(spec, theme);
@@ -19628,10 +19967,27 @@ function renderLineChart(spec, options, x2, y2) {
       stroke: "group",
       strokeWidth: theme.line.width,
       strokeDasharray: theme.line.dash ?? void 0,
-      title: "title",
+      title: (d) => d.title,
       tip: true
-    })
+    }),
+    ordinaryPointDotMark(
+      data,
+      x2,
+      y2,
+      resolved,
+      options.theme
+    )
   );
+  if (selectedOperatingPointValue !== void 0 && spec.operatingPoint) {
+    const dim = spec.operatingPoint.dimension;
+    const dimField = dim === "probability_threshold" ? "cutoff" : "ppcr";
+    const selectedPoints = data.filter((datum2) => datum2[dimField] === selectedOperatingPointValue);
+    if (selectedPoints.length > 0) {
+      marks2.push(
+        operatingPointDotMark(selectedPoints, x2, y2, resolved, options.theme)
+      );
+    }
+  }
   return themedPlot(
     {
       ...basePlotOptions(resolved, spec),
@@ -19663,14 +20019,17 @@ function selectHorizonSpec(spec, horizon) {
     )
   };
 }
-function renderWithHorizonSelection(spec, render) {
+function renderWithHorizonSelection(spec, render, preferredValue, onValueChange) {
   const availableHorizons = horizons(spec);
-  if (availableHorizons.length <= 1) return render(spec);
+  if (availableHorizons.length <= 1) return render(spec, preferredValue, onValueChange);
+  let currentOpValue = preferredValue;
   const container = document.createElement("div");
   container.className = "rtichoke-horizon-chart";
   const control = document.createElement("label");
+  control.className = "rtichoke-horizon-control";
   control.textContent = "Fixed Time Horizon: ";
   const select = document.createElement("select");
+  select.className = "rtichoke-horizon-select";
   select.setAttribute("aria-label", "Fixed Time Horizon");
   for (const horizon of availableHorizons) {
     const option = document.createElement("option");
@@ -19681,7 +20040,16 @@ function renderWithHorizonSelection(spec, render) {
   control.append(select);
   const chart = document.createElement("div");
   const draw = (horizon) => {
-    chart.replaceChildren(render(selectHorizonSpec(spec, horizon)));
+    chart.replaceChildren(
+      render(
+        selectHorizonSpec(spec, horizon),
+        currentOpValue,
+        (val) => {
+          currentOpValue = val;
+          if (onValueChange) onValueChange(val);
+        }
+      )
+    );
   };
   select.addEventListener("change", () => draw(Number(select.value)));
   container.append(control, chart);
@@ -19689,9 +20057,21 @@ function renderWithHorizonSelection(spec, render) {
   return container;
 }
 function renderHorizonLineChart(spec, options, x2, y2) {
-  return renderWithHorizonSelection(
+  return renderWithLegendFiltering(
     spec,
-    (selected) => renderLineChart(selected, options, x2, y2)
+    options,
+    (filteredSpec, opts, preferredOpVal, onOpValChange) => renderWithHorizonSelection(
+      filteredSpec,
+      (selected, pOpVal, onOpChange) => renderWithOperatingPointSelection(
+        selected,
+        opts,
+        (specWithOp, activeOpVal) => renderLineChart(specWithOp, opts, x2, y2, activeOpVal),
+        pOpVal,
+        onOpChange
+      ),
+      preferredOpVal,
+      onOpValChange
+    )
   );
 }
 function renderPrecisionRecallV2(spec, options = {}) {
@@ -19707,11 +20087,26 @@ function renderLiftV2(spec, options = {}) {
 // src/render/decision-curve.ts
 function renderDecisionCurveV2(spec, options = {}) {
   assertV2ReferentialIntegrity(spec);
-  return renderWithHorizonSelection(spec, (selected) => renderDecisionCurveChart(selected, options));
+  return renderWithLegendFiltering(
+    spec,
+    options,
+    (filteredSpec, opts, preferredOpVal, onOpValChange) => renderWithHorizonSelection(
+      filteredSpec,
+      (selected, pOpVal, onOpChange) => renderWithOperatingPointSelection(
+        selected,
+        opts,
+        (specWithOp, activeOpVal) => renderDecisionCurveChart(specWithOp, opts, activeOpVal),
+        pOpVal,
+        onOpChange
+      ),
+      preferredOpVal,
+      onOpValChange
+    )
+  );
 }
-function renderDecisionCurveChart(spec, options) {
+function renderDecisionCurveChart(spec, options, selectedOperatingPointValue) {
   const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const resolved = resolveV2RenderOptions(groups2, options);
+  const resolved = resolveV2RenderOptions(groups2, { ...options, showLegend: false });
   const { theme } = resolved;
   const displayBySeries2 = new Map(spec.series.map((series) => [series.id, series.display]));
   const labelByGroup = new Map(spec.series.map((series) => [series.display.group, series.display.label]));
@@ -19719,25 +20114,36 @@ function renderDecisionCurveChart(spec, options) {
     ...datum2,
     group: displayBySeries2.get(datum2.seriesId).group,
     label: displayBySeries2.get(datum2.seriesId).label,
-    title: `Series: ${displayBySeries2.get(datum2.seriesId).label}
-Threshold: ${datum2.threshold.toFixed(theme.tip.digits)}
-Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
+    title: tooltip(theme.tip.digits, [
+      ["Series", displayBySeries2.get(datum2.seriesId).label],
+      ["Threshold", datum2.threshold],
+      ["Net Benefit", datum2.netBenefit]
+    ])
   }));
-  const referenceStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const defaultZeroStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const defaultPathStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: "4,3" };
   const marks2 = [];
   for (const reference of spec.references) {
     if (reference.benchmark === "treat_none") {
-      marks2.push(ruleY([0], { ...referenceStyle, title: () => reference.label ?? "Treat None" }));
+      marks2.push(ruleY([0], { ...defaultZeroStyle, title: () => reference.label ?? "Treat None" }));
     } else {
-      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: () => reference.label ?? `Treat All \u2014 ${reference.population}` }));
+      marks2.push(line(reference.points, { x: "x", y: "y", ...defaultPathStyle, title: () => reference.label ?? `Treat All \u2014 ${reference.population}` }));
     }
   }
   marks2.push(
-    line(data, { x: "threshold", y: "netBenefit", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0, title: "title", tip: true }),
-    frame2({ stroke: theme.frame.color, strokeWidth: theme.frame.width })
+    line(data, { x: "threshold", y: "netBenefit", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0 }),
+    ordinaryPointDotMark(data, "threshold", "netBenefit", resolved, options.theme)
   );
+  if (selectedOperatingPointValue !== void 0 && spec.operatingPoint) {
+    const selectedPoints = data.filter((datum2) => datum2.threshold === selectedOperatingPointValue);
+    if (selectedPoints.length > 0) {
+      marks2.push(
+        operatingPointDotMark(selectedPoints, "threshold", "netBenefit", resolved, options.theme)
+      );
+    }
+  }
   const axis2 = (label, domain) => ({ label, domain, grid: false, line: true, ticks: theme.axis.ticks, tickSize: theme.axis.tickSize, tickPadding: theme.axis.tickPadding, tickFormat: theme.axis.numberFormat });
-  const plot2 = plot({
+  return themedPlot({
     width: theme.width,
     height: theme.height,
     marginTop: theme.margins.top,
@@ -19749,22 +20155,32 @@ Net Benefit: ${datum2.netBenefit.toFixed(theme.tip.digits)}`
     x: axis2(spec.xAxis.label, spec.xAxis.domain),
     y: axis2(spec.yAxis.label, spec.yAxis.domain),
     marks: marks2
-  });
-  for (const label of plot2.querySelectorAll('[aria-label$="axis label"] text')) {
-    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
-    label.style.fontWeight = String(theme.typography.axisTitleWeight);
-  }
-  return plot2;
+  }, theme);
 }
 
 // src/render/interventions-avoided.ts
 function renderInterventionsAvoidedV2(spec, options = {}) {
   assertV2ReferentialIntegrity(spec);
-  return renderWithHorizonSelection(spec, (selected) => renderInterventionsAvoidedChart(selected, options));
+  return renderWithLegendFiltering(
+    spec,
+    options,
+    (filteredSpec, opts, preferredOpVal, onOpValChange) => renderWithHorizonSelection(
+      filteredSpec,
+      (selected, pOpVal, onOpChange) => renderWithOperatingPointSelection(
+        selected,
+        opts,
+        (specWithOp, activeOpVal) => renderInterventionsAvoidedChart(specWithOp, opts, activeOpVal),
+        pOpVal,
+        onOpChange
+      ),
+      preferredOpVal,
+      onOpValChange
+    )
+  );
 }
-function renderInterventionsAvoidedChart(spec, options) {
+function renderInterventionsAvoidedChart(spec, options, selectedOperatingPointValue) {
   const groups2 = [...new Set(spec.series.map((series) => series.display.group))];
-  const resolved = resolveV2RenderOptions(groups2, options);
+  const resolved = resolveV2RenderOptions(groups2, { ...options, showLegend: false });
   const { theme } = resolved;
   const displayBySeries2 = new Map(spec.series.map((series) => [series.id, series.display]));
   const labelByGroup = new Map(spec.series.map((series) => [series.display.group, series.display.label]));
@@ -19772,25 +20188,36 @@ function renderInterventionsAvoidedChart(spec, options) {
     ...datum2,
     group: displayBySeries2.get(datum2.seriesId).group,
     label: displayBySeries2.get(datum2.seriesId).label,
-    title: `Series: ${displayBySeries2.get(datum2.seriesId).label}
-Threshold: ${datum2.threshold.toFixed(theme.tip.digits)}
-Interventions Avoided: ${datum2.interventionsAvoided.toFixed(theme.tip.digits)}`
+    title: tooltip(theme.tip.digits, [
+      ["Series", displayBySeries2.get(datum2.seriesId).label],
+      ["Threshold", datum2.threshold],
+      ["Interventions Avoided", datum2.interventionsAvoided]
+    ])
   }));
-  const referenceStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const defaultZeroStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: theme.reference.dash };
+  const defaultPathStyle = { stroke: theme.reference.color, strokeWidth: theme.reference.width, strokeDasharray: "4,3" };
   const marks2 = [];
   for (const reference of spec.references) {
     if (reference.benchmark === "treat_all") {
-      marks2.push(ruleY([0], { ...referenceStyle, title: () => reference.label ?? "Treat All" }));
+      marks2.push(ruleY([0], { ...defaultZeroStyle, title: () => reference.label ?? "Treat All" }));
     } else {
-      marks2.push(line(reference.points, { x: "x", y: "y", ...referenceStyle, title: () => reference.label ?? `Treat None \u2014 ${reference.population}` }));
+      marks2.push(line(reference.points, { x: "x", y: "y", ...defaultPathStyle, title: () => reference.label ?? `Treat None \u2014 ${reference.population}` }));
     }
   }
   marks2.push(
-    line(data, { x: "threshold", y: "interventionsAvoided", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0, title: "title", tip: true }),
-    frame2({ stroke: theme.frame.color, strokeWidth: theme.frame.width })
+    line(data, { x: "threshold", y: "interventionsAvoided", z: "seriesId", stroke: "group", strokeWidth: theme.line.width, strokeDasharray: theme.line.dash ?? void 0 }),
+    ordinaryPointDotMark(data, "threshold", "interventionsAvoided", resolved, options.theme)
   );
+  if (selectedOperatingPointValue !== void 0 && spec.operatingPoint) {
+    const selectedPoints = data.filter((datum2) => datum2.threshold === selectedOperatingPointValue);
+    if (selectedPoints.length > 0) {
+      marks2.push(
+        operatingPointDotMark(selectedPoints, "threshold", "interventionsAvoided", resolved, options.theme)
+      );
+    }
+  }
   const axis2 = (label, domain) => ({ label, domain, grid: false, line: true, ticks: theme.axis.ticks, tickSize: theme.axis.tickSize, tickPadding: theme.axis.tickPadding, tickFormat: theme.axis.numberFormat });
-  const plot2 = plot({
+  return themedPlot({
     width: theme.width,
     height: theme.height,
     marginTop: theme.margins.top,
@@ -19802,12 +20229,7 @@ Interventions Avoided: ${datum2.interventionsAvoided.toFixed(theme.tip.digits)}`
     x: axis2(spec.xAxis.label, spec.xAxis.domain),
     y: axis2(spec.yAxis.label, spec.yAxis.domain),
     marks: marks2
-  });
-  for (const label of plot2.querySelectorAll('[aria-label$="axis label"] text')) {
-    label.style.fontSize = `${theme.typography.axisTitleSize}px`;
-    label.style.fontWeight = String(theme.typography.axisTitleWeight);
-  }
-  return plot2;
+  }, theme);
 }
 
 // src/render/performance-table.ts
@@ -23837,7 +24259,9 @@ export {
   InterventionsAvoidedV2SeriesSchema,
   InterventionsAvoidedV2SpecSchema,
   LiftV2SpecSchema,
+  OperatingPointDimensionSchema,
   OperatingPointSchema,
+  OperatingPointSpecSchema,
   PerformanceEvaluationContextSchema,
   PerformanceMetricDefinitionSchema,
   PerformanceMetricIdSchema,
@@ -23874,6 +24298,7 @@ export {
   assertV2ReferentialIntegrity,
   calibrationSpecFromRtichokeRows,
   calibrationV2SpecFromRtichokeRows,
+  extractOperatingPointValues,
   renderCalibration,
   renderCalibrationV2,
   renderDecisionCurveV2,
@@ -23886,6 +24311,7 @@ export {
   renderRoc,
   renderRocV2,
   renderSummaryMetrics,
+  renderWithOperatingPointSelection,
   resolveV2RenderOptions,
   rocSpecFromRtichokePython,
   rocSpecFromRtichokeR,
