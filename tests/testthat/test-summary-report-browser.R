@@ -606,6 +606,7 @@ test_that("public browser report renders populated components from a local file"
       "--allow-file-access-from-files",
       "--disable-gpu",
       "--disable-dev-shm-usage",
+      "--virtual-time-budget=5000",
       "--run-all-tasks",
       "--dump-dom",
       shQuote(url)
@@ -865,6 +866,7 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
         "--allow-file-access-from-files",
         "--disable-gpu",
         "--disable-dev-shm-usage",
+        "--virtual-time-budget=5000",
         "--run-all-tasks",
         "--dump-dom",
         shQuote(url)
