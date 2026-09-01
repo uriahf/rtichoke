@@ -447,18 +447,25 @@ test_that("structured summary embeds the authoritative standalone specs", {
       performance_data,
       metadata
     ),
-    "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(performance_data, metadata),
+    "roc" = rtichoke:::rtichoke_viz_roc_v2_spec(
+      performance_data,
+      metadata,
+      operating_point = "probability_threshold"
+    ),
     "precision-recall" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "gains" = rtichoke:::rtichoke_viz_gains_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "lift" = rtichoke:::rtichoke_viz_lift_v2_spec(
       performance_data,
-      metadata
+      metadata,
+      operating_point = "probability_threshold"
     ),
     "decision-curve" = rtichoke:::rtichoke_viz_decision_curve_v2_spec(
       performance_data,
@@ -473,13 +480,26 @@ test_that("structured summary embeds the authoritative standalone specs", {
       metadata,
       stratified_by = "ppcr"
     ),
-    "roc-2" = rtichoke:::rtichoke_viz_roc_v2_spec(ppcr_data, metadata),
+    "roc-2" = rtichoke:::rtichoke_viz_roc_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    ),
     "precision-recall-2" = rtichoke:::rtichoke_viz_precision_recall_v2_spec(
       ppcr_data,
-      metadata
+      metadata,
+      operating_point = "ppcr"
     ),
-    "gains-2" = rtichoke:::rtichoke_viz_gains_v2_spec(ppcr_data, metadata),
-    "lift-2" = rtichoke:::rtichoke_viz_lift_v2_spec(ppcr_data, metadata)
+    "gains-2" = rtichoke:::rtichoke_viz_gains_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    ),
+    "lift-2" = rtichoke:::rtichoke_viz_lift_v2_spec(
+      ppcr_data,
+      metadata,
+      operating_point = "ppcr"
+    )
   )
 
   for (id in names(expected)) {

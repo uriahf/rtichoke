@@ -122,7 +122,8 @@ create_precision_recall_curve <- function(
     color_values = color_values,
     size = size,
     renderer = renderer,
-    evaluation_metadata = evaluation_metadata
+    evaluation_metadata = evaluation_metadata,
+    stratified_by = stratified_by
   )
 }
 
@@ -185,7 +186,8 @@ plot_precision_recall_curve <- function(
   ),
   size = NULL,
   renderer = "default",
-  evaluation_metadata = NULL
+  evaluation_metadata = NULL,
+  stratified_by = "probability_threshold"
 ) {
   renderer <- rtichoke_viz_renderer(renderer, interactive)
   if (renderer == "browser") {
@@ -195,10 +197,12 @@ plot_precision_recall_curve <- function(
         call. = FALSE
       )
     }
+    op_dim <- if (identical(stratified_by, "ppcr")) "ppcr" else "probability_threshold"
     return(render_rtichoke_viz_browser(
       rtichoke_viz_precision_recall_v2_spec(
         performance_data,
-        evaluation_metadata
+        evaluation_metadata,
+        operating_point = op_dim
       )
     ))
   }
