@@ -32,9 +32,9 @@ test_that("outcome weights change observed calibration but not bins or predicted
 
   expect_equal(weighted$quintile, unweighted_two_bins$quintile)
   expect_equal(weighted$x, unweighted_two_bins$x)
-  expect_equal(weighted$y, c(3 / 6, 6 / 8))
+  expect_equal(weighted$y, c(4 / 6, 6 / 8))
   expect_equal(weighted$outcome_weight_sum, c(6, 8))
-  expect_equal(weighted$weighted_sum_reals, c(3, 6))
+  expect_equal(weighted$weighted_sum_reals, c(4, 6))
 })
 
 
