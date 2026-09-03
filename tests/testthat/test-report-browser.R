@@ -66,7 +66,7 @@ test_that("browser ReportSpec path delegates complete report to renderReport", {
 
   expect_s3_class(browser, "shiny.tag.list")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_equal(htmltools::htmlDependencies(browser)[[1]]$version, "0.20.1")
+  expect_null(htmltools::htmlDependencies(browser))
   expect_match(html, expected_json, fixed = TRUE)
   expect_match(html, "max-width: 1040px;", fixed = TRUE)
   expect_match(html, "min-height: 500px;", fixed = TRUE)

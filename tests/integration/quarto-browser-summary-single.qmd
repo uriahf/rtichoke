@@ -24,9 +24,14 @@ format:
       const decisionCurve = component("decision-curve")?.querySelector("svg");
       const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
       const report = doc.querySelector(".rtichoke-report");
-      const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
-        (sheet.href || "").includes("rtichoke-viz-0.20.1/rtichoke-viz.css")
-      );
+      const cssLoaded = Array.from(doc.styleSheets).some(sheet => {
+        if ((sheet.href || "").includes("rtichoke-viz")) return true;
+        try {
+          return Array.from(sheet.cssRules || []).some(rule => (rule.cssText || "").includes("rtichoke"));
+        } catch (e) {
+          return false;
+        }
+      });
       const styled = report && getComputedStyle(report).display !== "none";
       function testTableDisclosure(tableNode, expectedOpType) {
         if (!tableNode) return false;
