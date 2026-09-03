@@ -3269,19 +3269,43 @@ var PrevalenceSummaryMetricSchema = Type.Object({
   }),
   estimate: Type.Union([Type.Number(), Type.Null()])
 });
-var SummaryMetricSchema = Type.Union([
+var EventRiskSummaryMetricSchema = Type.Object({
+  metric: Type.Literal("event_risk"),
+  owner: Type.Object({
+    type: Type.Literal("population"),
+    populationId: Type.String()
+  }),
+  horizon: Type.Number({ minimum: 0 }),
+  estimate: Type.Union([Type.Number(), Type.Null()])
+});
+var SummaryMetricV1_0Schema = Type.Union([
   AUROCSummaryMetricSchema,
   PrevalenceSummaryMetricSchema
 ]);
-var SummaryMetricsSpecSchema = Type.Object(
-  {
-    schemaVersion: Type.Literal("1.0"),
-    type: Type.Literal("summary_metrics"),
-    title: Type.Optional(Type.String()),
-    evaluations: Type.Array(EvaluationSpecSchema),
-    populations: Type.Array(PopulationSummaryOwnerSpecSchema),
-    metrics: Type.Array(SummaryMetricSchema)
-  },
+var SummaryMetricV1_1Schema = Type.Union([
+  AUROCSummaryMetricSchema,
+  PrevalenceSummaryMetricSchema,
+  EventRiskSummaryMetricSchema
+]);
+var SummaryMetricSchema = SummaryMetricV1_1Schema;
+var SummaryMetricsSpecV1_0Schema = Type.Object({
+  schemaVersion: Type.Literal("1.0"),
+  type: Type.Literal("summary_metrics"),
+  title: Type.Optional(Type.String()),
+  evaluations: Type.Array(EvaluationSpecSchema),
+  populations: Type.Array(PopulationSummaryOwnerSpecSchema),
+  metrics: Type.Array(SummaryMetricV1_0Schema)
+});
+var SummaryMetricsSpecV1_1Schema = Type.Object({
+  schemaVersion: Type.Literal("1.1"),
+  type: Type.Literal("summary_metrics"),
+  title: Type.Optional(Type.String()),
+  evaluations: Type.Array(EvaluationSpecSchema),
+  populations: Type.Array(PopulationSummaryOwnerSpecSchema),
+  metrics: Type.Array(SummaryMetricV1_1Schema)
+});
+var SummaryMetricsSpecSchema = Type.Union(
+  [SummaryMetricsSpecV1_0Schema, SummaryMetricsSpecV1_1Schema],
   {
     $id: "https://rtichoke.dev/schema/viz/summary-metrics.json",
     title: "rtichoke summary metrics specification"
@@ -3424,7 +3448,15 @@ function assertSummaryMetricsReferentialIntegrity(spec) {
     if (item.estimate !== null && !Number.isFinite(item.estimate)) {
       throw new Error(`non-finite metric estimate: ${item.estimate}`);
     }
+    if ("horizon" in item && item.horizon !== void 0) {
+      if (!Number.isFinite(item.horizon) || item.horizon < 0) {
+        throw new Error(`invalid horizon: ${item.horizon}`);
+      }
+    }
     if (item.metric === "auroc") {
+      if ("horizon" in item && item.horizon !== void 0) {
+        throw new Error("auroc metric cannot specify horizon");
+      }
       if (!evaluationIds.has(item.owner.evaluationId)) {
         throw new Error(`unknown evaluation id: ${item.owner.evaluationId}`);
       }
@@ -3436,6 +3468,9 @@ function assertSummaryMetricsReferentialIntegrity(spec) {
       }
       seenMetrics.add(key);
     } else if (item.metric === "prevalence") {
+      if ("horizon" in item && item.horizon !== void 0) {
+        throw new Error("prevalence metric cannot specify horizon");
+      }
       if (!populationIds.has(item.owner.populationId)) {
         throw new Error(`unknown population id: ${item.owner.populationId}`);
       }
@@ -3443,6 +3478,25 @@ function assertSummaryMetricsReferentialIntegrity(spec) {
       if (seenMetrics.has(key)) {
         throw new Error(
           `duplicate metric ownership: prevalence for population ${item.owner.populationId}`
+        );
+      }
+      seenMetrics.add(key);
+    } else if (item.metric === "event_risk") {
+      if (spec.schemaVersion !== "1.1") {
+        throw new Error(
+          `event_risk metric requires schemaVersion 1.1, got ${spec.schemaVersion}`
+        );
+      }
+      if (!("horizon" in item) || item.horizon === void 0) {
+        throw new Error("event_risk metric requires horizon");
+      }
+      if (!populationIds.has(item.owner.populationId)) {
+        throw new Error(`unknown population id: ${item.owner.populationId}`);
+      }
+      const key = `event_risk:${item.owner.populationId}:${item.horizon}`;
+      if (seenMetrics.has(key)) {
+        throw new Error(
+          `duplicate metric ownership: event_risk for population ${item.owner.populationId} at horizon ${item.horizon}`
         );
       }
       seenMetrics.add(key);
@@ -20234,38 +20288,119 @@ function renderInterventionsAvoidedChart(spec, options, selectedOperatingPointVa
 
 // src/render/performance-table.ts
 var MISSING = "\u2014";
+var PRIMARY_METRIC_ORDER = [
+  { id: "sensitivity", defaultLabel: "Sensitivity" },
+  { id: "specificity", defaultLabel: "Specificity" },
+  { id: "ppv", defaultLabel: "PPV" },
+  { id: "npv", defaultLabel: "NPV" },
+  { id: "lift", defaultLabel: "Lift" },
+  { id: "net_benefit", defaultLabel: "Net Benefit" }
+];
 function cell(document2, text2, className) {
   const element = document2.createElement("td");
   element.textContent = text2;
   if (className) element.className = className;
   return element;
 }
-function header(document2, text2) {
+function header(document2, text2, options) {
   const element = document2.createElement("th");
-  element.scope = "col";
+  element.scope = options?.scope ?? "col";
+  if (options?.colSpan) element.colSpan = options.colSpan;
+  if (options?.rowSpan) element.rowSpan = options.rowSpan;
   element.textContent = text2;
+  if (options?.className) element.className = options.className;
+  if (options?.ariaLabel) element.setAttribute("aria-label", options.ariaLabel);
   return element;
 }
-function formatNumber2(value) {
-  return new Intl.NumberFormat("en-US", { maximumSignificantDigits: 6 }).format(value);
+function extractConfusionCounts(rowValues) {
+  const map5 = new Map(rowValues.map((v) => [v.metricId, v.estimate]));
+  const tp = map5.get("true_positives");
+  const tn = map5.get("true_negatives");
+  const fp = map5.get("false_positives");
+  const fn = map5.get("false_negatives");
+  if (tp === void 0 || tp === null || isNaN(tp) || tn === void 0 || tn === null || isNaN(tn) || fp === void 0 || fp === null || isNaN(fp) || fn === void 0 || fn === null || isNaN(fn)) {
+    return null;
+  }
+  return { tp, tn, fp, fn };
 }
-function formatMetric(value) {
-  if (!value || value.estimate === null) return MISSING;
-  const estimate = formatNumber2(value.estimate);
-  if (value.lower === void 0 && value.upper === void 0) return estimate;
-  const lower2 = value.lower === void 0 || value.lower === null ? MISSING : formatNumber2(value.lower);
-  const upper = value.upper === void 0 || value.upper === null ? MISSING : formatNumber2(value.upper);
-  return `${estimate} [${lower2}, ${upper}]`;
+function renderConfusionCell(document2, val, n, className) {
+  const td = document2.createElement("td");
+  td.className = className;
+  const valSpan = document2.createElement("span");
+  valSpan.className = "rtichoke-performance-table__confusion-val";
+  valSpan.textContent = formatCount(val);
+  const pctSpan = document2.createElement("span");
+  pctSpan.className = "rtichoke-performance-table__confusion-pct";
+  if (n > 0 && !isNaN(val) && !isNaN(n)) {
+    const pct = val / n * 100;
+    pctSpan.textContent = `${pct.toFixed(2)}%`;
+  } else {
+    pctSpan.textContent = MISSING;
+  }
+  td.append(valSpan, pctSpan);
+  return td;
 }
-function formatOperatingPoint(type2, value) {
-  return type2 === "ppcr" ? `PPCR ${formatNumber2(value)}` : `Threshold ${formatNumber2(value)}`;
+var tableInstanceCounter = 0;
+function humanizeContextValue(val) {
+  return val.split("_").map((w, i) => i === 0 ? w.charAt(0).toUpperCase() + w.slice(1) : w).join(" ");
 }
-function formatContext(context) {
-  if (!context) return MISSING;
-  const parts = [];
-  if (context.censoringHeuristic) parts.push(`censoring: ${context.censoringHeuristic}`);
-  if (context.competingEventHeuristic) parts.push(`competing event: ${context.competingEventHeuristic}`);
-  return parts.length ? parts.join("; ") : MISSING;
+function formatCount(val) {
+  if (Number.isInteger(val)) return val.toString();
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(val);
+}
+function format2Decimals(val) {
+  return val.toFixed(2);
+}
+function determineThresholdPrecision(values2) {
+  if (values2.length <= 1) return 2;
+  let decimals = 2;
+  while (decimals <= 6) {
+    const formatted = values2.map((v) => v.toFixed(decimals));
+    const uniqueFormatted = new Set(formatted);
+    if (uniqueFormatted.size === new Set(values2).size) {
+      return decimals;
+    }
+    decimals++;
+  }
+  return decimals;
+}
+function formatMetricValue(value, formatter) {
+  if (!value || value.estimate === null || value.estimate === void 0 || isNaN(value.estimate)) return MISSING;
+  const est = formatter(value.estimate);
+  if (value.lower === void 0 && value.upper === void 0) return est;
+  const lower2 = value.lower === void 0 || value.lower === null || isNaN(value.lower) ? MISSING : formatter(value.lower);
+  const upper = value.upper === void 0 || value.upper === null || isNaN(value.upper) ? MISSING : formatter(value.upper);
+  return `${est} [${lower2}, ${upper}]`;
+}
+function appendInCellBar(td, document2, percent, isDiverging = false, isNegative = false, barStyle = "positive") {
+  if (isNaN(percent) || !isFinite(percent)) return;
+  const bar = document2.createElement("div");
+  bar.className = "rtichoke-performance-table__bar";
+  const fill = document2.createElement("div");
+  fill.className = "rtichoke-performance-table__bar-fill";
+  if (isDiverging) {
+    const width = Math.min(Math.max(percent, 0), 50);
+    fill.style.width = `${width}%`;
+    if (isNegative) {
+      fill.classList.add("rtichoke-performance-table__bar-fill--negative");
+      fill.style.right = "50%";
+      fill.style.left = "auto";
+    } else {
+      fill.classList.add("rtichoke-performance-table__bar-fill--positive");
+      fill.style.left = "50%";
+      fill.style.right = "auto";
+    }
+  } else {
+    const width = Math.min(Math.max(percent, 0), 100);
+    fill.style.width = `${width}%`;
+    if (barStyle === "neutral") {
+      fill.classList.add("rtichoke-performance-table__bar-fill--neutral");
+    } else {
+      fill.classList.add("rtichoke-performance-table__bar-fill--positive");
+    }
+  }
+  bar.append(fill);
+  td.append(bar);
 }
 function renderPerformanceTable(spec, document2 = globalThis.document) {
   assertPerformanceTableReferentialIntegrity(spec);
@@ -20277,38 +20412,327 @@ function renderPerformanceTable(spec, document2 = globalThis.document) {
     title.textContent = spec.title;
     root2.append(title);
   }
+  const scrollWrapper = document2.createElement("div");
+  scrollWrapper.className = "rtichoke-performance-table__scroll";
   const table = document2.createElement("table");
   table.className = "rtichoke-performance-table__table";
-  const head = document2.createElement("thead");
-  const headRow = document2.createElement("tr");
-  for (const label of ["Model", "Population", "Evaluation", "Operating point", "Horizon", "Context"]) {
-    headRow.append(header(document2, label));
-  }
-  for (const metric of spec.metrics) headRow.append(header(document2, metric.label));
-  head.append(headRow);
-  table.append(head);
-  const evaluations = new Map(spec.evaluations.map((evaluation) => [evaluation.id, evaluation]));
-  const body = document2.createElement("tbody");
+  const evaluationsMap = new Map(spec.evaluations.map((ev) => [ev.id, ev]));
+  const distinctModels = new Set(spec.evaluations.map((e) => e.model).filter(Boolean));
+  const distinctPopulations = new Set(spec.evaluations.map((e) => e.population).filter(Boolean));
+  const showModel = distinctModels.size > 1;
+  const showPopulation = distinctPopulations.size > 1;
+  const renderModelCol = showModel;
+  const renderPopulationCol = showPopulation || !showModel && distinctModels.size === 0 && distinctPopulations.size > 1;
+  const showEvaluationLabel = spec.evaluations.some((e) => {
+    if (!e.label) return false;
+    if (showModel && e.label !== e.model) return true;
+    if (showPopulation && e.label !== e.population) return true;
+    if (!showModel && !showPopulation && e.label !== e.model && e.label !== e.population) return true;
+    return false;
+  });
+  const hasHorizon = spec.rows.some((r) => r.horizon !== void 0);
+  const hasCensoring = spec.rows.some((r) => r.context?.censoringHeuristic !== void 0);
+  const hasCompetingEvent = spec.rows.some((r) => r.context?.competingEventHeuristic !== void 0);
+  const operatingTypes = new Set(spec.rows.map((r) => r.operatingPoint.type));
+  const isPureThreshold = operatingTypes.size === 1 && operatingTypes.has("probability_threshold");
+  const isPurePpcr = operatingTypes.size === 1 && operatingTypes.has("ppcr");
+  const specMetricIds = new Set(spec.metrics.map((m) => m.id));
+  const hasPredictedPositivesMetric = specMetricIds.has("predicted_positives");
+  const hasPpcrMetric = specMetricIds.has("ppcr");
+  const canConstructComposite = hasPredictedPositivesMetric && (hasPpcrMetric || isPurePpcr);
+  const renderThresholdCol = isPureThreshold || !isPurePpcr && operatingTypes.has("probability_threshold");
+  const renderCompositePredPosCol = canConstructComposite;
+  const renderPpcrFallbackCol = isPurePpcr && !canConstructComposite;
+  const renderGenericOpCol = !isPureThreshold && !isPurePpcr && !canConstructComposite;
+  const thresholdValues = spec.rows.filter((r) => r.operatingPoint.type === "probability_threshold").map((r) => r.operatingPoint.value);
+  const thresholdPrecision = determineThresholdPrecision(thresholdValues);
+  const primaryMetricSpecs = PRIMARY_METRIC_ORDER.map((p) => {
+    const match = spec.metrics.find((m) => m.id === p.id);
+    return match ? { id: match.id, label: match.label || p.defaultLabel } : null;
+  }).filter((m) => m !== null);
+  const seenLabels = /* @__PURE__ */ new Set();
+  const activePrimaryMetrics = primaryMetricSpecs.filter((m) => {
+    if (seenLabels.has(m.label)) return false;
+    seenLabels.add(m.label);
+    return true;
+  });
+  let maxLift = 0;
+  let maxAbsNB = 0;
   for (const row of spec.rows) {
-    const evaluation = evaluations.get(row.evaluationId);
+    for (const val of row.values) {
+      if (val.metricId === "lift" && val.estimate !== null && val.estimate !== void 0 && isFinite(val.estimate)) {
+        if (val.estimate > maxLift) maxLift = val.estimate;
+      }
+      if (val.metricId === "net_benefit" && val.estimate !== null && val.estimate !== void 0 && isFinite(val.estimate)) {
+        const absVal = Math.abs(val.estimate);
+        if (absVal > maxAbsNB) maxAbsNB = absVal;
+      }
+    }
+  }
+  const currentTableInstance = ++tableInstanceCounter;
+  const head = document2.createElement("thead");
+  head.className = "rtichoke-performance-table__header";
+  const topRow = document2.createElement("tr");
+  const bottomRow = document2.createElement("tr");
+  let nonMetricColCount = 1;
+  bottomRow.append(header(document2, "", { ariaLabel: "Row details", className: "rtichoke-performance-table__toggle-header" }));
+  if (renderModelCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Model"));
+  }
+  if (renderPopulationCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Population"));
+  }
+  if (showEvaluationLabel) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Evaluation"));
+  }
+  if (renderThresholdCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Probability Threshold"));
+  }
+  if (renderCompositePredPosCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Predicted Positives"));
+  }
+  if (renderPpcrFallbackCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "PPCR"));
+  }
+  if (renderGenericOpCol) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Operating Point"));
+  }
+  if (hasHorizon) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Time Horizon"));
+  }
+  if (hasCensoring) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Censoring"));
+  }
+  if (hasCompetingEvent) {
+    nonMetricColCount++;
+    bottomRow.append(header(document2, "Competing Event"));
+  }
+  if (activePrimaryMetrics.length > 0) {
+    const emptySpanner = header(document2, "", { colSpan: nonMetricColCount, className: "rtichoke-performance-table__spanner--empty" });
+    topRow.append(emptySpanner);
+  }
+  if (activePrimaryMetrics.length > 0) {
+    const metricsSpanner = header(document2, "Performance Metrics", {
+      colSpan: activePrimaryMetrics.length,
+      className: "rtichoke-performance-table__spanner"
+    });
+    topRow.append(metricsSpanner);
+    for (const metric of activePrimaryMetrics) {
+      bottomRow.append(header(document2, metric.label, { className: "rtichoke-performance-table__metric-header" }));
+    }
+  }
+  head.append(topRow);
+  head.append(bottomRow);
+  table.append(head);
+  const totalColumns = nonMetricColCount + activePrimaryMetrics.length;
+  const body = document2.createElement("tbody");
+  for (let rowIndex = 0; rowIndex < spec.rows.length; rowIndex++) {
+    const row = spec.rows[rowIndex];
+    const evaluation = evaluationsMap.get(row.evaluationId);
     const tr = document2.createElement("tr");
     tr.dataset.evaluationId = row.evaluationId;
-    tr.append(cell(document2, evaluation.model ?? MISSING, "rtichoke-performance-table__model"));
-    tr.append(cell(document2, evaluation.population, "rtichoke-performance-table__population"));
-    tr.append(cell(document2, evaluation.label ?? evaluation.id, "rtichoke-performance-table__evaluation"));
-    tr.append(cell(document2, formatOperatingPoint(row.operatingPoint.type, row.operatingPoint.value)));
-    tr.append(cell(document2, row.horizon === void 0 ? MISSING : formatNumber2(row.horizon)));
-    tr.append(cell(document2, formatContext(row.context)));
-    const values2 = new Map(row.values.map((value) => [value.metricId, value]));
-    for (const metric of spec.metrics) {
-      const td = cell(document2, formatMetric(values2.get(metric.id)), "rtichoke-performance-table__metric");
+    const confusion = extractConfusionCounts(row.values);
+    const detailId = `rtichoke-confusion-detail-${currentTableInstance}-${rowIndex}`;
+    const toggleTd = document2.createElement("td");
+    toggleTd.className = "rtichoke-performance-table__toggle-cell";
+    let detailTr = null;
+    if (confusion) {
+      const toggleBtn = document2.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.className = "rtichoke-performance-table__toggle-btn";
+      toggleBtn.setAttribute("aria-expanded", "false");
+      toggleBtn.setAttribute("aria-controls", detailId);
+      toggleBtn.setAttribute("aria-label", "Show confusion matrix detail");
+      toggleBtn.textContent = "\u25B8";
+      toggleTd.append(toggleBtn);
+      detailTr = document2.createElement("tr");
+      detailTr.className = "rtichoke-performance-table__detail-row";
+      detailTr.hidden = true;
+      const detailTd = document2.createElement("td");
+      detailTd.colSpan = totalColumns;
+      detailTd.className = "rtichoke-performance-table__detail-cell";
+      const detailContainer = document2.createElement("div");
+      detailContainer.id = detailId;
+      detailContainer.className = "rtichoke-performance-table__confusion-container";
+      if (row.evaluationId) {
+        detailContainer.setAttribute("data-evaluation-id", row.evaluationId);
+      }
+      detailContainer.setAttribute("data-operating-point-type", row.operatingPoint.type);
+      detailContainer.setAttribute("data-operating-point-value", row.operatingPoint.value.toString());
+      const isHorizon = row.horizon !== void 0;
+      const titleDiv = document2.createElement("div");
+      titleDiv.className = "rtichoke-performance-table__confusion-title";
+      titleDiv.textContent = isHorizon ? "Estimated Confusion Matrix" : "Confusion Matrix";
+      detailContainer.append(titleDiv);
+      if (isHorizon) {
+        const captionDiv = document2.createElement("div");
+        captionDiv.className = "rtichoke-performance-table__confusion-caption";
+        captionDiv.textContent = "Estimated classification quantities at the displayed time horizon.";
+        detailContainer.append(captionDiv);
+      }
+      const matrixTable = document2.createElement("table");
+      matrixTable.className = "rtichoke-performance-table__confusion-table";
+      const mHead = document2.createElement("thead");
+      const mTopRow = document2.createElement("tr");
+      mTopRow.append(
+        header(document2, "", { className: "rtichoke-performance-table__confusion-header-empty" }),
+        header(document2, "Predicted", { colSpan: 3, className: "rtichoke-performance-table__confusion-spanner" })
+      );
+      const mSubRow = document2.createElement("tr");
+      mSubRow.append(
+        header(document2, "", { className: "rtichoke-performance-table__confusion-header-empty" }),
+        header(document2, "Positive"),
+        header(document2, "Negative"),
+        header(document2, "Total")
+      );
+      mHead.append(mTopRow, mSubRow);
+      matrixTable.append(mHead);
+      const mBody = document2.createElement("tbody");
+      const n = confusion.tp + confusion.tn + confusion.fp + confusion.fn;
+      const actualPosTotal = confusion.tp + confusion.fn;
+      const actualNegTotal = confusion.fp + confusion.tn;
+      const predPosTotal = confusion.tp + confusion.fp;
+      const predNegTotal = confusion.tn + confusion.fn;
+      const rPos = document2.createElement("tr");
+      rPos.append(header(document2, "Actual Positive", { scope: "row" }));
+      rPos.append(renderConfusionCell(document2, confusion.tp, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--favorable"));
+      rPos.append(renderConfusionCell(document2, confusion.fn, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--unfavorable"));
+      rPos.append(renderConfusionCell(document2, actualPosTotal, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--total"));
+      mBody.append(rPos);
+      const rNeg = document2.createElement("tr");
+      rNeg.append(header(document2, "Actual Negative", { scope: "row" }));
+      rNeg.append(renderConfusionCell(document2, confusion.fp, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--unfavorable"));
+      rNeg.append(renderConfusionCell(document2, confusion.tn, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--favorable"));
+      rNeg.append(renderConfusionCell(document2, actualNegTotal, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--total"));
+      mBody.append(rNeg);
+      const rTot = document2.createElement("tr");
+      rTot.append(header(document2, "Total", { scope: "row" }));
+      rTot.append(renderConfusionCell(document2, predPosTotal, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--total"));
+      rTot.append(renderConfusionCell(document2, predNegTotal, n, "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--total"));
+      const grandTotalTd = document2.createElement("td");
+      grandTotalTd.className = "rtichoke-performance-table__confusion-cell rtichoke-performance-table__confusion-cell--total";
+      const grandValSpan = document2.createElement("span");
+      grandValSpan.className = "rtichoke-performance-table__confusion-val";
+      grandValSpan.textContent = formatCount(n);
+      const grandPctSpan = document2.createElement("span");
+      grandPctSpan.className = "rtichoke-performance-table__confusion-pct";
+      grandPctSpan.textContent = n > 0 ? "100.00%" : MISSING;
+      grandTotalTd.append(grandValSpan, grandPctSpan);
+      rTot.append(grandTotalTd);
+      mBody.append(rTot);
+      matrixTable.append(mBody);
+      detailContainer.append(matrixTable);
+      detailTd.append(detailContainer);
+      detailTr.append(detailTd);
+      toggleBtn.addEventListener("click", () => {
+        if (!detailTr) return;
+        const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
+        toggleBtn.setAttribute("aria-expanded", isExpanded ? "false" : "true");
+        toggleBtn.setAttribute("aria-label", isExpanded ? "Show confusion matrix detail" : "Hide confusion matrix detail");
+        toggleBtn.textContent = isExpanded ? "\u25B8" : "\u25BE";
+        detailTr.hidden = isExpanded;
+      });
+    }
+    tr.append(toggleTd);
+    if (renderModelCol) {
+      tr.append(cell(document2, evaluation?.model ?? MISSING, "rtichoke-performance-table__model"));
+    }
+    if (renderPopulationCol) {
+      tr.append(cell(document2, evaluation?.population ?? MISSING, "rtichoke-performance-table__population"));
+    }
+    if (showEvaluationLabel) {
+      tr.append(cell(document2, evaluation?.label ?? evaluation?.id ?? MISSING, "rtichoke-performance-table__evaluation"));
+    }
+    const valueMap = new Map(row.values.map((v) => [v.metricId, v]));
+    if (renderThresholdCol) {
+      const thVal = row.operatingPoint.type === "probability_threshold" ? row.operatingPoint.value : void 0;
+      const formattedTh = thVal !== void 0 ? thVal.toFixed(thresholdPrecision) : MISSING;
+      tr.append(cell(document2, formattedTh, "rtichoke-performance-table__op"));
+    }
+    if (renderCompositePredPosCol) {
+      const predPosVal = valueMap.get("predicted_positives")?.estimate;
+      const ppcrVal = valueMap.get("ppcr")?.estimate ?? (row.operatingPoint.type === "ppcr" ? row.operatingPoint.value : void 0);
+      let text2 = MISSING;
+      let ppcrPercent = NaN;
+      if (predPosVal !== void 0 && predPosVal !== null && ppcrVal !== void 0 && ppcrVal !== null) {
+        const formattedCount = formatCount(predPosVal);
+        const formattedPct = (ppcrVal * 100).toFixed(2);
+        text2 = `${formattedCount} (${formattedPct}%)`;
+        ppcrPercent = ppcrVal * 100;
+      } else if (ppcrVal !== void 0 && ppcrVal !== null) {
+        const formattedPct = (ppcrVal * 100).toFixed(2);
+        text2 = `${formattedPct}%`;
+        ppcrPercent = ppcrVal * 100;
+      }
+      const td = cell(document2, text2, "rtichoke-performance-table__op");
+      if (!isNaN(ppcrPercent)) {
+        appendInCellBar(td, document2, ppcrPercent, false, false, "neutral");
+      }
+      tr.append(td);
+    }
+    if (renderPpcrFallbackCol) {
+      const ppcrVal = row.operatingPoint.type === "ppcr" ? row.operatingPoint.value : valueMap.get("ppcr")?.estimate;
+      const text2 = ppcrVal !== void 0 && ppcrVal !== null ? `PPCR ${ppcrVal.toFixed(2)}` : MISSING;
+      const td = cell(document2, text2, "rtichoke-performance-table__op");
+      if (ppcrVal !== void 0 && ppcrVal !== null) {
+        appendInCellBar(td, document2, ppcrVal * 100, false, false, "neutral");
+      }
+      tr.append(td);
+    }
+    if (renderGenericOpCol) {
+      const opText = row.operatingPoint.type === "ppcr" ? `PPCR ${row.operatingPoint.value.toFixed(2)}` : `Threshold ${row.operatingPoint.value.toFixed(thresholdPrecision)}`;
+      tr.append(cell(document2, opText, "rtichoke-performance-table__op"));
+    }
+    if (hasHorizon) {
+      tr.append(cell(document2, row.horizon !== void 0 ? formatCount(row.horizon) : MISSING, "rtichoke-performance-table__horizon"));
+    }
+    if (hasCensoring) {
+      const c4 = row.context?.censoringHeuristic;
+      tr.append(cell(document2, c4 ? humanizeContextValue(c4) : MISSING, "rtichoke-performance-table__context"));
+    }
+    if (hasCompetingEvent) {
+      const ce = row.context?.competingEventHeuristic;
+      tr.append(cell(document2, ce ? humanizeContextValue(ce) : MISSING, "rtichoke-performance-table__context"));
+    }
+    for (const metric of activePrimaryMetrics) {
+      const val = valueMap.get(metric.id);
+      const formattedText = formatMetricValue(val, format2Decimals);
+      const td = cell(document2, formattedText, "rtichoke-performance-table__metric");
       td.dataset.metricId = metric.id;
+      if (val && val.estimate !== null && val.estimate !== void 0 && isFinite(val.estimate)) {
+        const est = val.estimate;
+        if (["sensitivity", "specificity", "ppv", "npv"].includes(metric.id)) {
+          appendInCellBar(td, document2, est * 100);
+        } else if (metric.id === "lift") {
+          const pct = maxLift > 0 ? est / maxLift * 100 : 0;
+          appendInCellBar(td, document2, pct);
+        } else if (metric.id === "net_benefit") {
+          if (maxAbsNB > 0) {
+            const isNeg = est < 0;
+            const barWidth = Math.abs(est) / maxAbsNB * 50;
+            appendInCellBar(td, document2, barWidth, true, isNeg);
+          }
+        }
+      }
       tr.append(td);
     }
     body.append(tr);
+    if (detailTr) {
+      body.append(detailTr);
+    }
   }
   table.append(body);
-  root2.append(table);
+  scrollWrapper.append(table);
+  root2.append(scrollWrapper);
   return root2;
 }
 
@@ -20340,6 +20764,37 @@ function renderSummaryMetrics(spec, document2 = globalThis.document) {
     title.textContent = spec.title;
     root2.append(title);
   }
+  const distinctHorizons = [];
+  for (const item of spec.metrics) {
+    if ("horizon" in item && item.horizon !== void 0) {
+      if (!distinctHorizons.includes(item.horizon)) {
+        distinctHorizons.push(item.horizon);
+      }
+    }
+  }
+  let selectedHorizon = distinctHorizons.length > 0 ? distinctHorizons[0] : void 0;
+  const rowsWithHorizon = [];
+  if (distinctHorizons.length > 1) {
+    const control = document2.createElement("label");
+    control.className = "rtichoke-horizon-control";
+    control.textContent = "Fixed Time Horizon: ";
+    const select = document2.createElement("select");
+    select.className = "rtichoke-horizon-select";
+    select.setAttribute("aria-label", "Fixed Time Horizon");
+    for (const horizon of distinctHorizons) {
+      const option = document2.createElement("option");
+      option.value = String(horizon);
+      option.textContent = String(horizon);
+      select.append(option);
+    }
+    select.value = String(selectedHorizon);
+    select.addEventListener("change", () => {
+      selectedHorizon = Number(select.value);
+      updateRowVisibility();
+    });
+    control.append(select);
+    root2.append(control);
+  }
   const table = document2.createElement("table");
   table.className = "rtichoke-summary-metrics__table";
   const head = document2.createElement("thead");
@@ -20360,6 +20815,7 @@ function renderSummaryMetrics(spec, document2 = globalThis.document) {
     const tr = document2.createElement("tr");
     let ownerLabel = "";
     let metricLabel = "";
+    let horizon = void 0;
     if (item.metric === "auroc") {
       const evaluation = evaluations.get(item.owner.evaluationId);
       ownerLabel = evaluation.label ?? evaluation.model ?? evaluation.population ?? evaluation.id;
@@ -20372,6 +20828,14 @@ function renderSummaryMetrics(spec, document2 = globalThis.document) {
       metricLabel = "Prevalence";
       tr.dataset.metric = "prevalence";
       tr.dataset.populationId = item.owner.populationId;
+    } else if (item.metric === "event_risk") {
+      const population = populations.get(item.owner.populationId);
+      ownerLabel = population.label;
+      metricLabel = "Event Risk";
+      horizon = item.horizon;
+      tr.dataset.metric = "event_risk";
+      tr.dataset.populationId = item.owner.populationId;
+      tr.dataset.horizon = String(item.horizon);
     }
     tr.append(
       cell2(document2, ownerLabel, "rtichoke-summary-metrics__owner"),
@@ -20388,10 +20852,21 @@ function renderSummaryMetrics(spec, document2 = globalThis.document) {
       estimateCell.dataset.estimate = String(item.estimate);
     }
     tr.append(estimateCell);
+    rowsWithHorizon.push({ element: tr, horizon });
     body.append(tr);
   }
   table.append(body);
   root2.append(table);
+  function updateRowVisibility() {
+    for (const { element, horizon } of rowsWithHorizon) {
+      if (horizon === void 0 || horizon === selectedHorizon) {
+        element.style.display = "";
+      } else {
+        element.style.display = "none";
+      }
+    }
+  }
+  updateRowVisibility();
   return root2;
 }
 
