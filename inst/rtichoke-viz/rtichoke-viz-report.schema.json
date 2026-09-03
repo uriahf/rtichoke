@@ -4971,156 +4971,357 @@
                   {
                     "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
                     "title": "rtichoke summary metrics specification",
-                    "type": "object",
-                    "required": [
-                      "schemaVersion",
-                      "type",
-                      "evaluations",
-                      "populations",
-                      "metrics"
-                    ],
-                    "properties": {
-                      "schemaVersion": {
-                        "const": "1.0",
-                        "type": "string"
-                      },
-                      "type": {
-                        "const": "summary_metrics",
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "evaluations": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "required": [
-                            "id",
-                            "population"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string"
-                            },
-                            "model": {
-                              "type": "string"
-                            },
-                            "population": {
-                              "type": "string"
-                            },
-                            "label": {
-                              "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "schemaVersion",
+                          "type",
+                          "evaluations",
+                          "populations",
+                          "metrics"
+                        ],
+                        "properties": {
+                          "schemaVersion": {
+                            "const": "1.0",
+                            "type": "string"
+                          },
+                          "type": {
+                            "const": "summary_metrics",
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "evaluations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "population"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "model": {
+                                  "type": "string"
+                                },
+                                "population": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "populations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "label"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "metrics": {
+                            "type": "array",
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "metric",
+                                    "owner",
+                                    "estimate"
+                                  ],
+                                  "properties": {
+                                    "metric": {
+                                      "const": "auroc",
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "object",
+                                      "required": [
+                                        "type",
+                                        "evaluationId"
+                                      ],
+                                      "properties": {
+                                        "type": {
+                                          "const": "evaluation",
+                                          "type": "string"
+                                        },
+                                        "evaluationId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "estimate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "metric",
+                                    "owner",
+                                    "estimate"
+                                  ],
+                                  "properties": {
+                                    "metric": {
+                                      "const": "prevalence",
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "object",
+                                      "required": [
+                                        "type",
+                                        "populationId"
+                                      ],
+                                      "properties": {
+                                        "type": {
+                                          "const": "population",
+                                          "type": "string"
+                                        },
+                                        "populationId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "estimate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
                       },
-                      "populations": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "required": [
-                            "id",
-                            "label"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string"
-                            },
-                            "label": {
-                              "type": "string"
+                      {
+                        "type": "object",
+                        "required": [
+                          "schemaVersion",
+                          "type",
+                          "evaluations",
+                          "populations",
+                          "metrics"
+                        ],
+                        "properties": {
+                          "schemaVersion": {
+                            "const": "1.1",
+                            "type": "string"
+                          },
+                          "type": {
+                            "const": "summary_metrics",
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "evaluations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "population"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "model": {
+                                  "type": "string"
+                                },
+                                "population": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "populations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "label"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "metrics": {
+                            "type": "array",
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "metric",
+                                    "owner",
+                                    "estimate"
+                                  ],
+                                  "properties": {
+                                    "metric": {
+                                      "const": "auroc",
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "object",
+                                      "required": [
+                                        "type",
+                                        "evaluationId"
+                                      ],
+                                      "properties": {
+                                        "type": {
+                                          "const": "evaluation",
+                                          "type": "string"
+                                        },
+                                        "evaluationId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "estimate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "metric",
+                                    "owner",
+                                    "estimate"
+                                  ],
+                                  "properties": {
+                                    "metric": {
+                                      "const": "prevalence",
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "object",
+                                      "required": [
+                                        "type",
+                                        "populationId"
+                                      ],
+                                      "properties": {
+                                        "type": {
+                                          "const": "population",
+                                          "type": "string"
+                                        },
+                                        "populationId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "estimate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "metric",
+                                    "owner",
+                                    "horizon",
+                                    "estimate"
+                                  ],
+                                  "properties": {
+                                    "metric": {
+                                      "const": "event_risk",
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "object",
+                                      "required": [
+                                        "type",
+                                        "populationId"
+                                      ],
+                                      "properties": {
+                                        "type": {
+                                          "const": "population",
+                                          "type": "string"
+                                        },
+                                        "populationId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "horizon": {
+                                      "minimum": 0,
+                                      "type": "number"
+                                    },
+                                    "estimate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
-                        }
-                      },
-                      "metrics": {
-                        "type": "array",
-                        "items": {
-                          "anyOf": [
-                            {
-                              "type": "object",
-                              "required": [
-                                "metric",
-                                "owner",
-                                "estimate"
-                              ],
-                              "properties": {
-                                "metric": {
-                                  "const": "auroc",
-                                  "type": "string"
-                                },
-                                "owner": {
-                                  "type": "object",
-                                  "required": [
-                                    "type",
-                                    "evaluationId"
-                                  ],
-                                  "properties": {
-                                    "type": {
-                                      "const": "evaluation",
-                                      "type": "string"
-                                    },
-                                    "evaluationId": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "estimate": {
-                                  "anyOf": [
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "required": [
-                                "metric",
-                                "owner",
-                                "estimate"
-                              ],
-                              "properties": {
-                                "metric": {
-                                  "const": "prevalence",
-                                  "type": "string"
-                                },
-                                "owner": {
-                                  "type": "object",
-                                  "required": [
-                                    "type",
-                                    "populationId"
-                                  ],
-                                  "properties": {
-                                    "type": {
-                                      "const": "population",
-                                      "type": "string"
-                                    },
-                                    "populationId": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "estimate": {
-                                  "anyOf": [
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          ]
                         }
                       }
-                    }
+                    ]
                   }
                 ]
               }
@@ -10122,156 +10323,357 @@
                             {
                               "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
                               "title": "rtichoke summary metrics specification",
-                              "type": "object",
-                              "required": [
-                                "schemaVersion",
-                                "type",
-                                "evaluations",
-                                "populations",
-                                "metrics"
-                              ],
-                              "properties": {
-                                "schemaVersion": {
-                                  "const": "1.0",
-                                  "type": "string"
-                                },
-                                "type": {
-                                  "const": "summary_metrics",
-                                  "type": "string"
-                                },
-                                "title": {
-                                  "type": "string"
-                                },
-                                "evaluations": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "required": [
-                                      "id",
-                                      "population"
-                                    ],
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "model": {
-                                        "type": "string"
-                                      },
-                                      "population": {
-                                        "type": "string"
-                                      },
-                                      "label": {
-                                        "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "schemaVersion",
+                                    "type",
+                                    "evaluations",
+                                    "populations",
+                                    "metrics"
+                                  ],
+                                  "properties": {
+                                    "schemaVersion": {
+                                      "const": "1.0",
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "const": "summary_metrics",
+                                      "type": "string"
+                                    },
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "evaluations": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "id",
+                                          "population"
+                                        ],
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "model": {
+                                            "type": "string"
+                                          },
+                                          "population": {
+                                            "type": "string"
+                                          },
+                                          "label": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "populations": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "id",
+                                          "label"
+                                        ],
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "label": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "metrics": {
+                                      "type": "array",
+                                      "items": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "required": [
+                                              "metric",
+                                              "owner",
+                                              "estimate"
+                                            ],
+                                            "properties": {
+                                              "metric": {
+                                                "const": "auroc",
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "object",
+                                                "required": [
+                                                  "type",
+                                                  "evaluationId"
+                                                ],
+                                                "properties": {
+                                                  "type": {
+                                                    "const": "evaluation",
+                                                    "type": "string"
+                                                  },
+                                                  "evaluationId": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "estimate": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "required": [
+                                              "metric",
+                                              "owner",
+                                              "estimate"
+                                            ],
+                                            "properties": {
+                                              "metric": {
+                                                "const": "prevalence",
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "object",
+                                                "required": [
+                                                  "type",
+                                                  "populationId"
+                                                ],
+                                                "properties": {
+                                                  "type": {
+                                                    "const": "population",
+                                                    "type": "string"
+                                                  },
+                                                  "populationId": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "estimate": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   }
                                 },
-                                "populations": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "required": [
-                                      "id",
-                                      "label"
-                                    ],
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "label": {
-                                        "type": "string"
+                                {
+                                  "type": "object",
+                                  "required": [
+                                    "schemaVersion",
+                                    "type",
+                                    "evaluations",
+                                    "populations",
+                                    "metrics"
+                                  ],
+                                  "properties": {
+                                    "schemaVersion": {
+                                      "const": "1.1",
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "const": "summary_metrics",
+                                      "type": "string"
+                                    },
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "evaluations": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "id",
+                                          "population"
+                                        ],
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "model": {
+                                            "type": "string"
+                                          },
+                                          "population": {
+                                            "type": "string"
+                                          },
+                                          "label": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "populations": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "id",
+                                          "label"
+                                        ],
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "label": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "metrics": {
+                                      "type": "array",
+                                      "items": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "required": [
+                                              "metric",
+                                              "owner",
+                                              "estimate"
+                                            ],
+                                            "properties": {
+                                              "metric": {
+                                                "const": "auroc",
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "object",
+                                                "required": [
+                                                  "type",
+                                                  "evaluationId"
+                                                ],
+                                                "properties": {
+                                                  "type": {
+                                                    "const": "evaluation",
+                                                    "type": "string"
+                                                  },
+                                                  "evaluationId": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "estimate": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "required": [
+                                              "metric",
+                                              "owner",
+                                              "estimate"
+                                            ],
+                                            "properties": {
+                                              "metric": {
+                                                "const": "prevalence",
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "object",
+                                                "required": [
+                                                  "type",
+                                                  "populationId"
+                                                ],
+                                                "properties": {
+                                                  "type": {
+                                                    "const": "population",
+                                                    "type": "string"
+                                                  },
+                                                  "populationId": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "estimate": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "required": [
+                                              "metric",
+                                              "owner",
+                                              "horizon",
+                                              "estimate"
+                                            ],
+                                            "properties": {
+                                              "metric": {
+                                                "const": "event_risk",
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "object",
+                                                "required": [
+                                                  "type",
+                                                  "populationId"
+                                                ],
+                                                "properties": {
+                                                  "type": {
+                                                    "const": "population",
+                                                    "type": "string"
+                                                  },
+                                                  "populationId": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "horizon": {
+                                                "minimum": 0,
+                                                "type": "number"
+                                              },
+                                              "estimate": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
-                                  }
-                                },
-                                "metrics": {
-                                  "type": "array",
-                                  "items": {
-                                    "anyOf": [
-                                      {
-                                        "type": "object",
-                                        "required": [
-                                          "metric",
-                                          "owner",
-                                          "estimate"
-                                        ],
-                                        "properties": {
-                                          "metric": {
-                                            "const": "auroc",
-                                            "type": "string"
-                                          },
-                                          "owner": {
-                                            "type": "object",
-                                            "required": [
-                                              "type",
-                                              "evaluationId"
-                                            ],
-                                            "properties": {
-                                              "type": {
-                                                "const": "evaluation",
-                                                "type": "string"
-                                              },
-                                              "evaluationId": {
-                                                "type": "string"
-                                              }
-                                            }
-                                          },
-                                          "estimate": {
-                                            "anyOf": [
-                                              {
-                                                "type": "number"
-                                              },
-                                              {
-                                                "type": "null"
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "type": "object",
-                                        "required": [
-                                          "metric",
-                                          "owner",
-                                          "estimate"
-                                        ],
-                                        "properties": {
-                                          "metric": {
-                                            "const": "prevalence",
-                                            "type": "string"
-                                          },
-                                          "owner": {
-                                            "type": "object",
-                                            "required": [
-                                              "type",
-                                              "populationId"
-                                            ],
-                                            "properties": {
-                                              "type": {
-                                                "const": "population",
-                                                "type": "string"
-                                              },
-                                              "populationId": {
-                                                "type": "string"
-                                              }
-                                            }
-                                          },
-                                          "estimate": {
-                                            "anyOf": [
-                                              {
-                                                "type": "number"
-                                              },
-                                              {
-                                                "type": "null"
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      }
-                                    ]
                                   }
                                 }
-                              }
+                              ]
                             }
                           ]
                         }
@@ -15251,156 +15653,357 @@
                                   {
                                     "$id": "https://rtichoke.dev/schema/viz/summary-metrics.json",
                                     "title": "rtichoke summary metrics specification",
-                                    "type": "object",
-                                    "required": [
-                                      "schemaVersion",
-                                      "type",
-                                      "evaluations",
-                                      "populations",
-                                      "metrics"
-                                    ],
-                                    "properties": {
-                                      "schemaVersion": {
-                                        "const": "1.0",
-                                        "type": "string"
-                                      },
-                                      "type": {
-                                        "const": "summary_metrics",
-                                        "type": "string"
-                                      },
-                                      "title": {
-                                        "type": "string"
-                                      },
-                                      "evaluations": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "required": [
-                                            "id",
-                                            "population"
-                                          ],
-                                          "properties": {
-                                            "id": {
-                                              "type": "string"
-                                            },
-                                            "model": {
-                                              "type": "string"
-                                            },
-                                            "population": {
-                                              "type": "string"
-                                            },
-                                            "label": {
-                                              "type": "string"
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "required": [
+                                          "schemaVersion",
+                                          "type",
+                                          "evaluations",
+                                          "populations",
+                                          "metrics"
+                                        ],
+                                        "properties": {
+                                          "schemaVersion": {
+                                            "const": "1.0",
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "const": "summary_metrics",
+                                            "type": "string"
+                                          },
+                                          "title": {
+                                            "type": "string"
+                                          },
+                                          "evaluations": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "id",
+                                                "population"
+                                              ],
+                                              "properties": {
+                                                "id": {
+                                                  "type": "string"
+                                                },
+                                                "model": {
+                                                  "type": "string"
+                                                },
+                                                "population": {
+                                                  "type": "string"
+                                                },
+                                                "label": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "populations": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "id",
+                                                "label"
+                                              ],
+                                              "properties": {
+                                                "id": {
+                                                  "type": "string"
+                                                },
+                                                "label": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "metrics": {
+                                            "type": "array",
+                                            "items": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "metric",
+                                                    "owner",
+                                                    "estimate"
+                                                  ],
+                                                  "properties": {
+                                                    "metric": {
+                                                      "const": "auroc",
+                                                      "type": "string"
+                                                    },
+                                                    "owner": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "type",
+                                                        "evaluationId"
+                                                      ],
+                                                      "properties": {
+                                                        "type": {
+                                                          "const": "evaluation",
+                                                          "type": "string"
+                                                        },
+                                                        "evaluationId": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "estimate": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "metric",
+                                                    "owner",
+                                                    "estimate"
+                                                  ],
+                                                  "properties": {
+                                                    "metric": {
+                                                      "const": "prevalence",
+                                                      "type": "string"
+                                                    },
+                                                    "owner": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "type",
+                                                        "populationId"
+                                                      ],
+                                                      "properties": {
+                                                        "type": {
+                                                          "const": "population",
+                                                          "type": "string"
+                                                        },
+                                                        "populationId": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "estimate": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                }
+                                              ]
                                             }
                                           }
                                         }
                                       },
-                                      "populations": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "required": [
-                                            "id",
-                                            "label"
-                                          ],
-                                          "properties": {
-                                            "id": {
-                                              "type": "string"
-                                            },
-                                            "label": {
-                                              "type": "string"
+                                      {
+                                        "type": "object",
+                                        "required": [
+                                          "schemaVersion",
+                                          "type",
+                                          "evaluations",
+                                          "populations",
+                                          "metrics"
+                                        ],
+                                        "properties": {
+                                          "schemaVersion": {
+                                            "const": "1.1",
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "const": "summary_metrics",
+                                            "type": "string"
+                                          },
+                                          "title": {
+                                            "type": "string"
+                                          },
+                                          "evaluations": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "id",
+                                                "population"
+                                              ],
+                                              "properties": {
+                                                "id": {
+                                                  "type": "string"
+                                                },
+                                                "model": {
+                                                  "type": "string"
+                                                },
+                                                "population": {
+                                                  "type": "string"
+                                                },
+                                                "label": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "populations": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "id",
+                                                "label"
+                                              ],
+                                              "properties": {
+                                                "id": {
+                                                  "type": "string"
+                                                },
+                                                "label": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "metrics": {
+                                            "type": "array",
+                                            "items": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "metric",
+                                                    "owner",
+                                                    "estimate"
+                                                  ],
+                                                  "properties": {
+                                                    "metric": {
+                                                      "const": "auroc",
+                                                      "type": "string"
+                                                    },
+                                                    "owner": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "type",
+                                                        "evaluationId"
+                                                      ],
+                                                      "properties": {
+                                                        "type": {
+                                                          "const": "evaluation",
+                                                          "type": "string"
+                                                        },
+                                                        "evaluationId": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "estimate": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "metric",
+                                                    "owner",
+                                                    "estimate"
+                                                  ],
+                                                  "properties": {
+                                                    "metric": {
+                                                      "const": "prevalence",
+                                                      "type": "string"
+                                                    },
+                                                    "owner": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "type",
+                                                        "populationId"
+                                                      ],
+                                                      "properties": {
+                                                        "type": {
+                                                          "const": "population",
+                                                          "type": "string"
+                                                        },
+                                                        "populationId": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "estimate": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "metric",
+                                                    "owner",
+                                                    "horizon",
+                                                    "estimate"
+                                                  ],
+                                                  "properties": {
+                                                    "metric": {
+                                                      "const": "event_risk",
+                                                      "type": "string"
+                                                    },
+                                                    "owner": {
+                                                      "type": "object",
+                                                      "required": [
+                                                        "type",
+                                                        "populationId"
+                                                      ],
+                                                      "properties": {
+                                                        "type": {
+                                                          "const": "population",
+                                                          "type": "string"
+                                                        },
+                                                        "populationId": {
+                                                          "type": "string"
+                                                        }
+                                                      }
+                                                    },
+                                                    "horizon": {
+                                                      "minimum": 0,
+                                                      "type": "number"
+                                                    },
+                                                    "estimate": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                }
+                                              ]
                                             }
                                           }
-                                        }
-                                      },
-                                      "metrics": {
-                                        "type": "array",
-                                        "items": {
-                                          "anyOf": [
-                                            {
-                                              "type": "object",
-                                              "required": [
-                                                "metric",
-                                                "owner",
-                                                "estimate"
-                                              ],
-                                              "properties": {
-                                                "metric": {
-                                                  "const": "auroc",
-                                                  "type": "string"
-                                                },
-                                                "owner": {
-                                                  "type": "object",
-                                                  "required": [
-                                                    "type",
-                                                    "evaluationId"
-                                                  ],
-                                                  "properties": {
-                                                    "type": {
-                                                      "const": "evaluation",
-                                                      "type": "string"
-                                                    },
-                                                    "evaluationId": {
-                                                      "type": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "estimate": {
-                                                  "anyOf": [
-                                                    {
-                                                      "type": "number"
-                                                    },
-                                                    {
-                                                      "type": "null"
-                                                    }
-                                                  ]
-                                                }
-                                              }
-                                            },
-                                            {
-                                              "type": "object",
-                                              "required": [
-                                                "metric",
-                                                "owner",
-                                                "estimate"
-                                              ],
-                                              "properties": {
-                                                "metric": {
-                                                  "const": "prevalence",
-                                                  "type": "string"
-                                                },
-                                                "owner": {
-                                                  "type": "object",
-                                                  "required": [
-                                                    "type",
-                                                    "populationId"
-                                                  ],
-                                                  "properties": {
-                                                    "type": {
-                                                      "const": "population",
-                                                      "type": "string"
-                                                    },
-                                                    "populationId": {
-                                                      "type": "string"
-                                                    }
-                                                  }
-                                                },
-                                                "estimate": {
-                                                  "anyOf": [
-                                                    {
-                                                      "type": "number"
-                                                    },
-                                                    {
-                                                      "type": "null"
-                                                    }
-                                                  ]
-                                                }
-                                              }
-                                            }
-                                          ]
                                         }
                                       }
-                                    }
+                                    ]
                                   }
                                 ]
                               }

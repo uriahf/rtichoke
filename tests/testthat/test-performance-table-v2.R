@@ -171,6 +171,39 @@ test_that("performance table v2 copies existing statistics without recomputation
   expect_identical(unname(estimates[["net_benefit"]]), -0.321)
 })
 
+test_that("threshold and PPCR canonical performance table rows include all four confusion metrics", {
+  probs <- list("Model A" = c(0.1, 0.2, 0.8, 0.9))
+  reals <- list("Population A" = c(0, 0, 1, 1))
+
+  thresh_spec <- performance_table_spec(
+    probs,
+    reals,
+    stratified_by = "probability_threshold"
+  )
+  ppcr_spec <- performance_table_spec(probs, reals, stratified_by = "ppcr")
+
+  confusion_metric_ids <- c(
+    "true_positives",
+    "true_negatives",
+    "false_positives",
+    "false_negatives"
+  )
+
+  for (spec in list(thresh_spec, ppcr_spec)) {
+    spec_metric_ids <- vapply(spec$metrics, `[[`, character(1), "id")
+    expect_true(all(confusion_metric_ids %in% spec_metric_ids))
+
+    for (row in spec$rows) {
+      row_metric_ids <- vapply(row$values, `[[`, character(1), "metricId")
+      expect_true(all(confusion_metric_ids %in% row_metric_ids))
+      for (cm_id in confusion_metric_ids) {
+        val <- row$values[[match(cm_id, row_metric_ids)]]$estimate
+        expect_true(is.numeric(val) && is.finite(val))
+      }
+    }
+  }
+})
+
 test_that("existing performance table defaults are unchanged", {
   expect_identical(formals(create_performance_table)$output_type, "reactable")
   expect_identical(formals(render_performance_table)$output_type, "reactable")

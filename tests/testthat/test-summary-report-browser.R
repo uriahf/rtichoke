@@ -6,6 +6,9 @@ summary_report_test_data <- function() {
 }
 
 find_headless_browser <- function() {
+  if (isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))) {
+    return("")
+  }
   candidates <- Sys.which(c(
     "chromium",
     "chromium-browser",
@@ -556,7 +559,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.18.0", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.20.1", fixed = TRUE)
   expect_match(html, '"id":"prevalence-summary"', fixed = TRUE)
   expect_match(html, '"id":"calibration-smooth"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -569,7 +572,7 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.18.0/rtichoke-viz.js"',
+    'src="lib/rtichoke-viz-0.20.1/rtichoke-viz.js"',
     html,
     fixed = TRUE
   ))
@@ -627,7 +630,6 @@ test_that("public browser report renders populated components from a local file"
       "--disable-gpu",
       "--disable-dev-shm-usage",
       "--virtual-time-budget=5000",
-      "--run-all-tasks",
       "--dump-dom",
       shQuote(url)
     ),
@@ -772,6 +774,196 @@ test_that("public browser report renders populated components from a local file"
 })
 
 
+test_that("browser summary report exposes expandable Confusion Matrix detail for threshold and PPCR tables", {
+  skip_on_os("windows")
+  browser <- find_headless_browser()
+  skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
+
+  output_dir <- tempfile("rtichoke-summary-confusion-")
+  create_summary_report(
+    probs = list("Model A" = c(0.1, 0.2, 0.8, 0.9)),
+    reals = list("Population A" = c(0, 0, 1, 1)),
+    renderer = "browser",
+    output_file = "browser_report.html",
+    output_dir = output_dir
+  )
+
+  rendered_file <- normalizePath(
+    file.path(output_dir, "browser_report.html"),
+    winslash = "/",
+    mustWork = TRUE
+  )
+  url <- paste0("file://", rendered_file)
+  stderr_file <- tempfile("rtichoke-browser-stderr-")
+
+  js_script <- '
+    (() => {
+      const component = id => document.querySelector(`[data-component-id="${id}"]`);
+      const threshTable = component("performance-table");
+      const ppcrTable = component("performance-table-2");
+
+      if (!threshTable || !ppcrTable) return "TABLES_NOT_FOUND";
+
+      const testTable = (tableNode, expectedOpType) => {
+        const toggleBtn = tableNode.querySelector(".rtichoke-performance-table__toggle-btn");
+        if (!toggleBtn) return "TOGGLE_BTN_NOT_FOUND";
+
+        const detailContainer = tableNode.querySelector(".rtichoke-performance-table__confusion-container");
+        if (!detailContainer) return "DETAIL_CONTAINER_NOT_FOUND";
+
+        const titleNode = detailContainer.querySelector(".rtichoke-performance-table__confusion-title");
+        const titleText = titleNode ? titleNode.textContent : "";
+
+        const opType = detailContainer.getAttribute("data-operating-point-type");
+
+        const detailRow = tableNode.querySelector(".rtichoke-performance-table__detail-row");
+        const initialHidden = detailRow ? detailRow.hidden : null;
+
+        toggleBtn.click();
+        const expandedHidden = detailRow ? detailRow.hidden : null;
+
+        return {
+          hasToggleBtn: true,
+          opType: opType,
+          titleText: titleText,
+          initialHidden: initialHidden,
+          expandedHidden: expandedHidden
+        };
+      };
+
+      return JSON.stringify({
+        threshold: testTable(threshTable, "probability_threshold"),
+        ppcr: testTable(ppcrTable, "ppcr")
+      });
+    })()
+  '
+
+  node_script <- sprintf(
+    '
+    const puppeteer = require("puppeteer");
+    (async () => {
+      const browser = await puppeteer.launch({ headless: "new", args: ["--no-sandbox", "--disable-gpu", "--allow-file-access-from-files"] });
+      const page = await browser.newPage();
+      await page.goto("%s");
+      await page.waitForSelector("[data-component-id=\'performance-table\']");
+      const result = await page.evaluate(() => {
+        const component = id => document.querySelector(`[data-component-id="${id}"]`);
+        const threshTable = component("performance-table");
+        const ppcrTable = component("performance-table-2");
+        if (!threshTable || !ppcrTable) return "TABLES_NOT_FOUND";
+
+        const testTable = (tableNode) => {
+          const toggleBtn = tableNode.querySelector(".rtichoke-performance-table__toggle-btn");
+          if (!toggleBtn) return { hasToggleBtn: false };
+
+          const detailContainer = tableNode.querySelector(".rtichoke-performance-table__confusion-container");
+          if (!detailContainer) return { hasToggleBtn: true, hasDetail: false };
+
+          const titleNode = detailContainer.querySelector(".rtichoke-performance-table__confusion-title");
+          const titleText = titleNode ? titleNode.textContent : "";
+          const opType = detailContainer.getAttribute("data-operating-point-type");
+          const detailRow = tableNode.querySelector(".rtichoke-performance-table__detail-row");
+          const initialHidden = detailRow ? detailRow.hidden : null;
+
+          toggleBtn.click();
+          const expandedHidden = detailRow ? detailRow.hidden : null;
+
+          return {
+            hasToggleBtn: true,
+            hasDetail: true,
+            opType: opType,
+            titleText: titleText,
+            initialHidden: initialHidden,
+            expandedHidden: expandedHidden
+          };
+        };
+
+        return {
+          threshold: testTable(threshTable),
+          ppcr: testTable(ppcrTable)
+        };
+      });
+      console.log(JSON.stringify(result));
+      await browser.close();
+    })();
+  ',
+    url
+  )
+
+  dom_lines <- system2(
+    browser,
+    args = c(
+      "--headless=new",
+      "--no-sandbox",
+      "--allow-file-access-from-files",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--virtual-time-budget=5000",
+      "--dump-dom",
+      shQuote(url)
+    ),
+    stdout = TRUE,
+    stderr = stderr_file,
+    timeout = 20
+  )
+  dom <- paste(dom_lines, collapse = "\n")
+
+  expect_match(dom, "rtichoke-performance-table__toggle-btn", fixed = TRUE)
+  expect_match(
+    dom,
+    "rtichoke-performance-table__confusion-container",
+    fixed = TRUE
+  )
+  expect_match(dom, "rtichoke-performance-table__confusion-title", fixed = TRUE)
+  expect_match(
+    dom,
+    '<div class="rtichoke-performance-table__confusion-title">Confusion Matrix</div>',
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    '<div class="rtichoke-performance-table__confusion-title">Estimated Confusion Matrix</div>',
+    dom,
+    fixed = TRUE
+  ))
+  expect_match(
+    dom,
+    'data-operating-point-type="probability_threshold"',
+    fixed = TRUE
+  )
+  expect_match(dom, 'data-operating-point-type="ppcr"', fixed = TRUE)
+})
+
+
+test_that("browser summary report omits confusion detail when confusion metrics are incomplete", {
+  incomplete_spec <- list(
+    schemaVersion = "2.0",
+    type = "performance_table",
+    evaluations = list(list(
+      id = "evaluation-1",
+      population = "Pop A",
+      model = "Model A"
+    )),
+    metrics = list(
+      list(id = "sensitivity", label = "Sensitivity", format = "decimal")
+    ),
+    rows = list(
+      list(
+        evaluationId = "evaluation-1",
+        operatingPoint = list(type = "probability_threshold", value = 0.5),
+        values = list(
+          list(metricId = "sensitivity", estimate = 0.8)
+        )
+      )
+    )
+  )
+
+  report <- rtichoke:::rtichoke_viz_report_spec(incomplete_spec)
+  report_widget <- rtichoke:::render_rtichoke_viz_report_browser(report)
+  report_html <- as.character(report_widget)
+  expect_match(report_html, '"type":"performance_table"', fixed = TRUE)
+})
+
+
 test_that("browser summary report includes the Performance Metrics Cheat Sheet", {
   dat <- summary_report_test_data()
   output_dir <- tempfile("rtichoke-summary-cheatsheet-")
@@ -887,7 +1079,6 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
         "--disable-gpu",
         "--disable-dev-shm-usage",
         "--virtual-time-budget=5000",
-        "--run-all-tasks",
         "--dump-dom",
         shQuote(url)
       ),

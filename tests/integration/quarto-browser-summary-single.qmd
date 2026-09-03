@@ -25,10 +25,36 @@ format:
       const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
       const report = doc.querySelector(".rtichoke-report");
       const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
-        (sheet.href || "").includes("rtichoke-viz-0.18.0/rtichoke-viz.css")
+        (sheet.href || "").includes("rtichoke-viz-0.20.1/rtichoke-viz.css")
       );
       const styled = report && getComputedStyle(report).display !== "none";
-      if (table && ppcrTable && discreteCalibration && precisionRecall && decisionCurve && interventionsAvoided && cssLoaded && styled) {
+      function testTableDisclosure(tableNode, expectedOpType) {
+        if (!tableNode) return false;
+        const toggleBtn = tableNode.querySelector(".rtichoke-performance-table__toggle-btn");
+        const detailRow = tableNode.querySelector(".rtichoke-performance-table__detail-row");
+        const detailContainer = tableNode.querySelector(".rtichoke-performance-table__confusion-container");
+        const titleNode = detailContainer?.querySelector(".rtichoke-performance-table__confusion-title");
+
+        if (!toggleBtn || !detailRow || !detailContainer || !titleNode) return false;
+
+        const initialCollapsed = detailRow.hidden === true && toggleBtn.getAttribute("aria-expanded") === "false";
+        const titleCorrect = titleNode.textContent.trim() === "Confusion Matrix";
+        const opTypeCorrect = detailContainer.getAttribute("data-operating-point-type") === expectedOpType;
+        const opValCorrect = !!detailContainer.getAttribute("data-operating-point-value");
+
+        if (!initialCollapsed || !titleCorrect || !opTypeCorrect || !opValCorrect) return false;
+
+        toggleBtn.click();
+
+        const expandedVisible = detailRow.hidden === false && toggleBtn.getAttribute("aria-expanded") === "true";
+
+        return expandedVisible;
+      }
+
+      const threshDisclosureOk = testTableDisclosure(component("performance-table"), "probability_threshold");
+      const ppcrDisclosureOk = testTableDisclosure(component("performance-table-2"), "ppcr");
+
+      if (table && ppcrTable && discreteCalibration && precisionRecall && decisionCurve && interventionsAvoided && cssLoaded && styled && threshDisclosureOk && ppcrDisclosureOk) {
         status.dataset.ready = "true";
         status.dataset.table = "true";
         status.dataset.ppcrTable = "true";
@@ -37,6 +63,8 @@ format:
         status.dataset.decisionCurve = "true";
         status.dataset.interventionsAvoided = "true";
         status.dataset.css = "true";
+        status.dataset.threshDisclosure = "true";
+        status.dataset.ppcrDisclosure = "true";
         return;
       }
     }
