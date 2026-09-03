@@ -20298,7 +20298,10 @@ var PRIMARY_METRIC_ORDER = [
 ];
 function cell(document2, text2, className) {
   const element = document2.createElement("td");
-  element.textContent = text2;
+  const contentSpan = document2.createElement("span");
+  contentSpan.className = "rtichoke-performance-table__cell-text";
+  contentSpan.textContent = text2;
+  element.append(contentSpan);
   if (className) element.className = className;
   return element;
 }

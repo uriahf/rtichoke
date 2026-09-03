@@ -191,6 +191,7 @@
   border-bottom: 1px solid #f3f4f6;
   white-space: nowrap;
   position: relative;
+  z-index: 0;
 }
 
 .rtichoke-performance-table__table tbody tr:hover {
@@ -218,6 +219,11 @@
   min-width: 70px;
 }
 
+.rtichoke-performance-table__cell-text {
+  position: relative;
+  z-index: 1;
+}
+
 .rtichoke-performance-table__bar {
   position: absolute;
   top: 4px;
@@ -227,6 +233,7 @@
   pointer-events: none;
   overflow: hidden;
   border-radius: 2px;
+  z-index: -1;
 }
 
 .rtichoke-performance-table__bar-fill {
@@ -234,20 +241,19 @@
   top: 0;
   bottom: 0;
   border-radius: 2px;
-  opacity: 0.25;
   transition: width 0.2s ease;
 }
 
 .rtichoke-performance-table__bar-fill--positive {
-  background-color: #2e7559;
+  background-color: lightgreen;
 }
 
 .rtichoke-performance-table__bar-fill--negative {
-  background-color: #dc2626;
+  background-color: pink;
 }
 
 .rtichoke-performance-table__bar-fill--neutral {
-  background-color: #6b7280;
+  background-color: lightgrey;
 }
 
 /* Disclosure column & toggle button */
