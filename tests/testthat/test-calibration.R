@@ -51,8 +51,16 @@ test_that("calibration validates n_bins input", {
   }
 
   # Valid integer / numeric
-  expect_no_error(rtichoke:::make_calibration_bins_dat(probs, reals, n_bins = 5L))
-  expect_no_error(rtichoke:::make_calibration_bins_dat(probs, reals, n_bins = 5))
+  expect_no_error(rtichoke:::make_calibration_bins_dat(
+    probs,
+    reals,
+    n_bins = 5L
+  ))
+  expect_no_error(rtichoke:::make_calibration_bins_dat(
+    probs,
+    reals,
+    n_bins = 5
+  ))
 })
 
 test_that("n_bins validation occurs before all-identical shortcut", {
@@ -71,12 +79,20 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
   reals_100 <- rep(c(0, 1), 50)
 
   # n_bins = 8
-  dat_8 <- rtichoke:::make_calibration_bins_dat(probs_100, reals_100, n_bins = 8)
+  dat_8 <- rtichoke:::make_calibration_bins_dat(
+    probs_100,
+    reals_100,
+    n_bins = 8
+  )
   expect_equal(nrow(dat_8), 8)
   expect_identical(dat_8$bin, 1:8)
 
   # n_bins = 1
-  dat_1 <- rtichoke:::make_calibration_bins_dat(probs_100, reals_100, n_bins = 1)
+  dat_1 <- rtichoke:::make_calibration_bins_dat(
+    probs_100,
+    reals_100,
+    n_bins = 1
+  )
   expect_equal(nrow(dat_1), 1)
   expect_identical(dat_1$bin, 1L)
   expect_equal(dat_1$x, mean(probs_100))
@@ -85,14 +101,22 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
   # n = 11, n_bins = 10
   probs_11 <- seq(0.1, 0.9, length.out = 11)
   reals_11 <- c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1)
-  dat_11 <- rtichoke:::make_calibration_bins_dat(probs_11, reals_11, n_bins = 10)
+  dat_11 <- rtichoke:::make_calibration_bins_dat(
+    probs_11,
+    reals_11,
+    n_bins = 10
+  )
   expect_equal(nrow(dat_11), 10)
   expect_equal(sum(dat_11$total_obs), 11)
 
   # n = 12, n_bins = 10
   probs_12 <- seq(0.1, 0.9, length.out = 12)
   reals_12 <- c(0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1)
-  dat_12 <- rtichoke:::make_calibration_bins_dat(probs_12, reals_12, n_bins = 10)
+  dat_12 <- rtichoke:::make_calibration_bins_dat(
+    probs_12,
+    reals_12,
+    n_bins = 10
+  )
   expect_equal(nrow(dat_12), 10)
   expect_equal(sum(dat_12$total_obs), 12)
 
@@ -105,7 +129,11 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
   expect_false(any(dat_5$total_obs == 0)) # No empty bins materialized
 
   # n_bins > n (n = 5, n_bins = 20)
-  dat_gt_n <- rtichoke:::make_calibration_bins_dat(probs_5, reals_5, n_bins = 20)
+  dat_gt_n <- rtichoke:::make_calibration_bins_dat(
+    probs_5,
+    reals_5,
+    n_bins = 20
+  )
   expect_equal(nrow(dat_gt_n), 5)
   expect_equal(sum(dat_gt_n$total_obs), 5)
   expect_false(any(dat_gt_n$total_obs == 0))
@@ -126,7 +154,7 @@ test_that("all probabilities identical produces one aggregate bin", {
 
 test_that("partial ties crossing a bin boundary are handled correctly", {
   probs <- c(0.1, 0.2, 0.2, 0.2, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95)
-  reals <- c(0,   0,   1,   0,   1,   1,   0,   1,   1,   1)
+  reals <- c(0, 0, 1, 0, 1, 1, 0, 1, 1, 1)
 
   dat <- rtichoke:::make_calibration_bins_dat(probs, reals, n_bins = 5)
   expect_equal(sum(dat$total_obs), 10)
@@ -155,12 +183,20 @@ test_that("create_calibration_curve and list with multiple models and population
 
   # Multiple populations
   probs_pops <- list(
-    "train" = example_dat |> dplyr::filter(type_of_set == "train") |> dplyr::pull(estimated_probabilities),
-    "test" = example_dat |> dplyr::filter(type_of_set == "test") |> dplyr::pull(estimated_probabilities)
+    "train" = example_dat |>
+      dplyr::filter(type_of_set == "train") |>
+      dplyr::pull(estimated_probabilities),
+    "test" = example_dat |>
+      dplyr::filter(type_of_set == "test") |>
+      dplyr::pull(estimated_probabilities)
   )
   reals_pops <- list(
-    "train" = example_dat |> dplyr::filter(type_of_set == "train") |> dplyr::pull(outcome),
-    "test" = example_dat |> dplyr::filter(type_of_set == "test") |> dplyr::pull(outcome)
+    "train" = example_dat |>
+      dplyr::filter(type_of_set == "train") |>
+      dplyr::pull(outcome),
+    "test" = example_dat |>
+      dplyr::filter(type_of_set == "test") |>
+      dplyr::pull(outcome)
   )
 
   curve_list_p <- create_calibration_curve_list(
