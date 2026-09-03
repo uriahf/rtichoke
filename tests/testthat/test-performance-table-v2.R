@@ -175,10 +175,19 @@ test_that("threshold and PPCR canonical performance table rows include all four 
   probs <- list("Model A" = c(0.1, 0.2, 0.8, 0.9))
   reals <- list("Population A" = c(0, 0, 1, 1))
 
-  thresh_spec <- performance_table_spec(probs, reals, stratified_by = "probability_threshold")
+  thresh_spec <- performance_table_spec(
+    probs,
+    reals,
+    stratified_by = "probability_threshold"
+  )
   ppcr_spec <- performance_table_spec(probs, reals, stratified_by = "ppcr")
 
-  confusion_metric_ids <- c("true_positives", "true_negatives", "false_positives", "false_negatives")
+  confusion_metric_ids <- c(
+    "true_positives",
+    "true_negatives",
+    "false_positives",
+    "false_negatives"
+  )
 
   for (spec in list(thresh_spec, ppcr_spec)) {
     spec_metric_ids <- vapply(spec$metrics, `[[`, character(1), "id")

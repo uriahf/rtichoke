@@ -627,7 +627,6 @@ test_that("public browser report renders populated components from a local file"
       "--disable-gpu",
       "--disable-dev-shm-usage",
       "--virtual-time-budget=5000",
-      "--run-all-tasks",
       "--dump-dom",
       shQuote(url)
     ),
@@ -836,7 +835,8 @@ test_that("browser summary report exposes expandable Confusion Matrix detail for
     })()
   '
 
-  node_script <- sprintf('
+  node_script <- sprintf(
+    '
     const puppeteer = require("puppeteer");
     (async () => {
       const browser = await puppeteer.launch({ headless: "new", args: ["--no-sandbox", "--disable-gpu", "--allow-file-access-from-files"] });
@@ -883,7 +883,9 @@ test_that("browser summary report exposes expandable Confusion Matrix detail for
       console.log(JSON.stringify(result));
       await browser.close();
     })();
-  ', url)
+  ',
+    url
+  )
 
   dom_lines <- system2(
     browser,
@@ -894,7 +896,6 @@ test_that("browser summary report exposes expandable Confusion Matrix detail for
       "--disable-gpu",
       "--disable-dev-shm-usage",
       "--virtual-time-budget=5000",
-      "--run-all-tasks",
       "--dump-dom",
       shQuote(url)
     ),
@@ -905,11 +906,27 @@ test_that("browser summary report exposes expandable Confusion Matrix detail for
   dom <- paste(dom_lines, collapse = "\n")
 
   expect_match(dom, "rtichoke-performance-table__toggle-btn", fixed = TRUE)
-  expect_match(dom, "rtichoke-performance-table__confusion-container", fixed = TRUE)
+  expect_match(
+    dom,
+    "rtichoke-performance-table__confusion-container",
+    fixed = TRUE
+  )
   expect_match(dom, "rtichoke-performance-table__confusion-title", fixed = TRUE)
-  expect_match(dom, '<div class="rtichoke-performance-table__confusion-title">Confusion Matrix</div>', fixed = TRUE)
-  expect_false(grepl('<div class="rtichoke-performance-table__confusion-title">Estimated Confusion Matrix</div>', dom, fixed = TRUE))
-  expect_match(dom, 'data-operating-point-type="probability_threshold"', fixed = TRUE)
+  expect_match(
+    dom,
+    '<div class="rtichoke-performance-table__confusion-title">Confusion Matrix</div>',
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    '<div class="rtichoke-performance-table__confusion-title">Estimated Confusion Matrix</div>',
+    dom,
+    fixed = TRUE
+  ))
+  expect_match(
+    dom,
+    'data-operating-point-type="probability_threshold"',
+    fixed = TRUE
+  )
   expect_match(dom, 'data-operating-point-type="ppcr"', fixed = TRUE)
 })
 
@@ -918,7 +935,11 @@ test_that("browser summary report omits confusion detail when confusion metrics 
   incomplete_spec <- list(
     schemaVersion = "2.0",
     type = "performance_table",
-    evaluations = list(list(id = "evaluation-1", population = "Pop A", model = "Model A")),
+    evaluations = list(list(
+      id = "evaluation-1",
+      population = "Pop A",
+      model = "Model A"
+    )),
     metrics = list(
       list(id = "sensitivity", label = "Sensitivity", format = "decimal")
     ),
@@ -1055,7 +1076,6 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
         "--disable-gpu",
         "--disable-dev-shm-usage",
         "--virtual-time-budget=5000",
-        "--run-all-tasks",
         "--dump-dom",
         shQuote(url)
       ),
