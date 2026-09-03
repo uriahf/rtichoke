@@ -29,7 +29,7 @@ format:
     const interventionsAvoided = component("interventions-avoided")?.querySelector("svg");
     const report = doc.querySelector(".rtichoke-report");
     const cssLoaded = Array.from(doc.styleSheets).some(sheet =>
-      (sheet.href || "").includes("rtichoke-viz-0.20.0/rtichoke-viz.css")
+      (sheet.href || "").includes("rtichoke-viz-0.20.1/rtichoke-viz.css")
     );
     const styled = report && getComputedStyle(report).display !== "none";
     return {

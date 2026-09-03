@@ -158,7 +158,7 @@ test_that("Treat None and Treat All geometry matches canonical semantics", {
   expect_equal(point$y, 0.5 - 0.5 * 0.25 / 0.75)
 })
 
-test_that("Decision Curve browser dispatch uses shared v0.20.0 renderer", {
+test_that("Decision Curve browser dispatch uses shared v0.20.1 renderer", {
   dat <- decision_v2_fixture()
   widget <- plot_decision_curve(
     dat$performance_data,
@@ -167,7 +167,7 @@ test_that("Decision Curve browser dispatch uses shared v0.20.0 renderer", {
   )
   html <- paste(as.character(widget), collapse = "\n")
   expect_match(html, "renderDecisionCurveV2", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.20.0/rtichoke-viz.js", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.20.1/rtichoke-viz.js", fixed = TRUE)
   expect_match(html, '"type":"decision_curve"', fixed = TRUE)
 })
 
