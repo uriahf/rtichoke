@@ -31,12 +31,15 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
   )
   bundle <- gsub("</", "<\\/", bundle, fixed = TRUE)
 
-  dependency <- htmltools::htmlDependency(
-    name = "rtichoke-viz",
-    version = "0.20.1",
-    src = c(file = vendor_dir),
-    stylesheet = "rtichoke-viz.css"
+  viz_css <- paste(
+    readLines(
+      file.path(vendor_dir, "rtichoke-viz.css"),
+      warn = FALSE,
+      encoding = "UTF-8"
+    ),
+    collapse = "\n"
   )
+
   cheat_sheet <- performance_metrics_cheat_sheet_html()
   cheat_sheet_json <- jsonlite::toJSON(
     cheat_sheet,
@@ -67,8 +70,9 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
   )
   script <- paste(bundle, initializer, sep = "\n")
 
-  htmltools::browsable(htmltools::attachDependencies(
+  htmltools::browsable(
     htmltools::tagList(
+      htmltools::tags$style(htmltools::HTML(viz_css)),
       htmltools::tags$style(htmltools::HTML(summary_report_density_css())),
       htmltools::tags$div(id = id, class = "rtichoke-viz-report"),
       htmltools::tags$script(
@@ -77,9 +81,8 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
         htmltools::HTML(json)
       ),
       htmltools::tags$script(type = "module", htmltools::HTML(script))
-    ),
-    dependency
-  ))
+    )
+  )
 }
 
 #' Generate layout density CSS for browser summary reports

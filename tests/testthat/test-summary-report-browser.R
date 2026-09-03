@@ -559,7 +559,8 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
 
   html <- paste(readLines(rendered_file, warn = FALSE), collapse = "\n")
   expect_match(html, "renderReport", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.20.1", fixed = TRUE)
+  expect_match(html, ".rtichoke-report", fixed = TRUE)
+  expect_match(html, ".rtichoke-viz-chart", fixed = TRUE)
   expect_match(html, '"id":"prevalence-summary"', fixed = TRUE)
   expect_match(html, '"id":"calibration-smooth"', fixed = TRUE)
   expect_match(html, '"id":"calibration"', fixed = TRUE)
@@ -572,10 +573,19 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    'src="lib/rtichoke-viz-0.20.1/rtichoke-viz.js"',
+    'rtichoke-viz.js',
     html,
     fixed = TRUE
   ))
+  expect_false(grepl(
+    'rtichoke-viz.css',
+    html,
+    fixed = TRUE
+  ))
+
+  # Verify no dependency directory was created
+  output_files <- list.files(output_dir, recursive = TRUE)
+  expect_identical(output_files, "browser_report.html")
 })
 
 
