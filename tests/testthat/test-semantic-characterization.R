@@ -229,7 +229,7 @@ test_that("calibration keeps grouping and one global identity line", {
 
   expect_identical(multi_model$performance_type, "several models")
   expect_setequal(
-    unique(multi_model$deciles_dat$reference_group),
+    unique(multi_model$calibration_bins_dat$reference_group),
     c("Model A", "Model B")
   )
   expect_identical(
@@ -250,7 +250,7 @@ test_that("calibration keeps grouping and one global identity line", {
 
   expect_identical(multi_population$performance_type, "several populations")
   expect_setequal(
-    unique(multi_population$deciles_dat$reference_group),
+    unique(multi_population$calibration_bins_dat$reference_group),
     c("Population low", "Population high")
   )
   expect_identical(

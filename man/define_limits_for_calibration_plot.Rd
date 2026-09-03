@@ -4,19 +4,19 @@
 \alias{define_limits_for_calibration_plot}
 \title{Define limits for Calibration Curve}
 \usage{
-define_limits_for_calibration_plot(deciles_dat)
+define_limits_for_calibration_plot(calibration_bins_dat)
 }
 \arguments{
-\item{deciles_dat}{A data frame containing decile-level calibration data.}
+\item{calibration_bins_dat}{A data frame containing bin-level calibration data.}
 }
 \description{
 Define limits for Calibration Curve
 }
 \examples{
 \dontrun{
-make_deciles_dat(
+make_calibration_bins_dat(
   probs = example_dat$estimated_probabilities,
-  real = example_dat$outcome
+  reals = example_dat$outcome
 ) |>
   define_limits_for_calibration_plot()
 }

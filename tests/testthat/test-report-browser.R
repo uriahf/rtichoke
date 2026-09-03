@@ -5,7 +5,7 @@ report_browser_specs <- function() {
   metadata <- rtichoke:::build_evaluation_metadata(probs, reals)
 
   calibration_curve_list <- list(
-    deciles_dat = data.frame(
+    calibration_bins_dat = data.frame(
       reference_group = "Model A",
       x = c(0.2, 0.8),
       y = c(0.25, 0.75),

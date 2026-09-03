@@ -473,7 +473,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["quintile", "y", "x", "sum_reals", "total_obs"]
+          "value": ["bin", "y", "x", "sum_reals", "total_obs"]
         }
       },
       "value": [

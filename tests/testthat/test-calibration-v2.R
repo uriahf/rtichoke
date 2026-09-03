@@ -34,7 +34,7 @@ calibration_v2_fixture <- function(groups = "Model A") {
     })
   )
   list(
-    deciles_dat = deciles,
+    calibration_bins_dat = deciles,
     smooth_dat = smooth,
     histogram_for_calibration = histogram
   )
@@ -173,10 +173,10 @@ test_that("distribution rows retain series ownership", {
 
 test_that("calibration statistics are passed through without recomputation", {
   calibration <- calibration_v2_fixture()
-  calibration$deciles_dat$x <- c(0.123456, 0.876543)
-  calibration$deciles_dat$y <- c(0.234567, 0.765432)
-  calibration$deciles_dat$sum_reals <- c(3, 17)
-  calibration$deciles_dat$total_obs <- c(19, 23)
+  calibration$calibration_bins_dat$x <- c(0.123456, 0.876543)
+  calibration$calibration_bins_dat$y <- c(0.234567, 0.765432)
+  calibration$calibration_bins_dat$sum_reals <- c(3, 17)
+  calibration$calibration_bins_dat$total_obs <- c(19, 23)
 
   spec <- rtichoke:::rtichoke_viz_calibration_v2_spec(
     calibration,
@@ -185,19 +185,19 @@ test_that("calibration statistics are passed through without recomputation", {
 
   expect_identical(
     vapply(spec$data, `[[`, 0, "predicted"),
-    calibration$deciles_dat$x
+    calibration$calibration_bins_dat$x
   )
   expect_identical(
     vapply(spec$data, `[[`, 0, "observed"),
-    calibration$deciles_dat$y
+    calibration$calibration_bins_dat$y
   )
   expect_identical(
     vapply(spec$data, `[[`, 0, "events"),
-    as.numeric(calibration$deciles_dat$sum_reals)
+    as.numeric(calibration$calibration_bins_dat$sum_reals)
   )
   expect_identical(
     vapply(spec$data, `[[`, 0, "total"),
-    as.numeric(calibration$deciles_dat$total_obs)
+    as.numeric(calibration$calibration_bins_dat$total_obs)
   )
 })
 

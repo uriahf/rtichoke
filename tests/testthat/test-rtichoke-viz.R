@@ -57,7 +57,7 @@ test_that("real calibration output maps to the canonical viz spec", {
   expect_identical(spec$y, "observed")
   expect_length(
     spec$data,
-    nrow(calibration_curve_list$deciles_dat)
+    nrow(calibration_curve_list$calibration_bins_dat)
   )
   expect_length(
     spec$distribution,
@@ -68,9 +68,9 @@ test_that("real calibration output maps to the canonical viz spec", {
     c("Estimated model", "Random guess")
   )
 
-  first_decile <- calibration_curve_list$deciles_dat[1, ]
-  expect_identical(spec$data[[1]]$predicted, first_decile$x[[1]])
-  expect_identical(spec$data[[1]]$observed, first_decile$y[[1]])
-  expect_identical(spec$data[[1]]$events, first_decile$sum_reals[[1]])
-  expect_identical(spec$data[[1]]$total, first_decile$total_obs[[1]])
+  first_bin <- calibration_curve_list$calibration_bins_dat[1, ]
+  expect_identical(spec$data[[1]]$predicted, first_bin$x[[1]])
+  expect_identical(spec$data[[1]]$observed, first_bin$y[[1]])
+  expect_identical(spec$data[[1]]$events, first_bin$sum_reals[[1]])
+  expect_identical(spec$data[[1]]$total, first_bin$total_obs[[1]])
 })
