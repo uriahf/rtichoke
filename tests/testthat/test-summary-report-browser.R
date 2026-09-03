@@ -6,6 +6,9 @@ summary_report_test_data <- function() {
 }
 
 find_headless_browser <- function() {
+  if (isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))) {
+    return("")
+  }
   candidates <- Sys.which(c(
     "chromium",
     "chromium-browser",
