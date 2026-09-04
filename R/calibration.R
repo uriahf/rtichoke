@@ -2,6 +2,7 @@
 #'
 #' @inheritParams create_roc_curve
 #' @param type discrete or smooth
+#' @param n_bins Number of calibration bins for binned calibration (default 10).
 #'
 #' @export
 #'
@@ -106,16 +107,32 @@ create_calibration_curve <- function(
     "#585123"
   ),
   type = "discrete",
-  size = NULL
+  size = NULL,
+  n_bins = 10
 ) {
   check_probs_input(probs)
   check_real_input(reals)
+
+  # Validate n_bins even for smooth calls
+  if (
+    !is.numeric(n_bins) ||
+      length(n_bins) != 1L ||
+      is.na(n_bins) ||
+      !is.finite(n_bins) ||
+      n_bins <= 0 ||
+      (n_bins %% 1 != 0)
+  ) {
+    stop("`n_bins` must be a single positive whole number.", call. = FALSE)
+  }
+
+  effective_n_bins <- if (type == "discrete") n_bins else 10
 
   calibration_curve_list <- create_calibration_curve_list(
     probs = probs,
     reals = reals,
     color_values = color_values,
-    size = size
+    size = size,
+    n_bins = effective_n_bins
   )
 
   if (interactive == TRUE) {
@@ -132,24 +149,24 @@ create_calibration_curve <- function(
 
 #' Define limits for Calibration Curve
 #'
-#' @param deciles_dat A data frame containing decile-level calibration data.
+#' @param calibration_bins_dat A data frame containing bin-level calibration data.
 #'
 #' @keywords internal
 #' @examples
 #' \dontrun{
-#' make_deciles_dat(
+#' make_calibration_bins_dat(
 #'   probs = example_dat$estimated_probabilities,
-#'   real = example_dat$outcome
+#'   reals = example_dat$outcome
 #' ) |>
 #'   define_limits_for_calibration_plot()
 #' }
-define_limits_for_calibration_plot <- function(deciles_dat) {
-  if (nrow(deciles_dat) == 1) {
+define_limits_for_calibration_plot <- function(calibration_bins_dat) {
+  if (nrow(calibration_bins_dat) == 1) {
     l <- 0
     u <- 1
   } else {
-    l <- max(0, min(deciles_dat$x, deciles_dat$y))
-    u <- max(deciles_dat$x, deciles_dat$y)
+    l <- max(0, min(calibration_bins_dat$x, calibration_bins_dat$y))
+    u <- max(calibration_bins_dat$x, calibration_bins_dat$y)
   }
 
   limits <- c(
@@ -164,6 +181,7 @@ define_limits_for_calibration_plot <- function(deciles_dat) {
 #' Create a Calibration Curve List
 #'
 #' @inheritParams create_roc_curve
+#' @param n_bins Number of calibration bins for binned calibration (default 10).
 #'
 #' @export
 #'
@@ -231,7 +249,8 @@ create_calibration_curve_list <- function(
     "#D1603D",
     "#585123"
   ),
-  size = NULL
+  size = NULL,
+  n_bins = 10
 ) {
   check_probs_input(probs)
   check_real_input(reals)
@@ -258,13 +277,13 @@ create_calibration_curve_list <- function(
   ) |>
     as.list()
 
-  # Create Deciles Dat
+  # Create Calibration Bins Dat
 
   if (calibration_curve_list$performance_type == "several populations") {
-    calibration_curve_list$deciles_dat <- purrr::map2_dfr(
+    calibration_curve_list$calibration_bins_dat <- purrr::map2_dfr(
       probs,
       reals,
-      ~ make_deciles_dat(.x, .y),
+      ~ make_calibration_bins_dat(.x, .y, n_bins = n_bins),
       .id = "reference_group"
     )
 
@@ -286,9 +305,9 @@ create_calibration_curve_list <- function(
     ) |>
       stats::na.omit()
   } else {
-    calibration_curve_list$deciles_dat <- purrr::map_df(
+    calibration_curve_list$calibration_bins_dat <- purrr::map_df(
       probs,
-      ~ make_deciles_dat(.x, reals[[1]]),
+      ~ make_calibration_bins_dat(.x, reals[[1]], n_bins = n_bins),
       .id = "reference_group"
     )
 
@@ -319,7 +338,7 @@ create_calibration_curve_list <- function(
     )
   }
 
-  calibration_curve_list$deciles_dat <- calibration_curve_list$deciles_dat |>
+  calibration_curve_list$calibration_bins_dat <- calibration_curve_list$calibration_bins_dat |>
     dplyr::mutate(
       text = glue::glue(paste0(
         hover_text_for_discrete_calibration,
@@ -335,7 +354,7 @@ create_calibration_curve_list <- function(
   calibration_curve_list$group_colors_vec <- group_colors_vec
 
   limits <- define_limits_for_calibration_plot(
-    calibration_curve_list$deciles_dat
+    calibration_curve_list$calibration_bins_dat
   )
 
   calibration_curve_list$axes_ranges <- list(xaxis = limits, yaxis = limits)
@@ -403,7 +422,7 @@ create_plotly_curve_from_calibration_curve_list <- function(
   if (type == "discrete") {
     calibration_curve <- calibration_curve |>
       plotly::add_trace(
-        data = calibration_curve_list$deciles_dat,
+        data = calibration_curve_list$calibration_bins_dat,
         type = "scatter",
         mode = "markers+lines",
         marker = list(
@@ -482,7 +501,7 @@ create_ggplot_curve_from_calibration_curve_list <- function(
 ) {
   if (type == "discrete") {
     calibration_curve <- ggplot2::ggplot(
-      calibration_curve_list$deciles_dat,
+      calibration_curve_list$calibration_bins_dat,
       ggplot2::aes(
         x = x,
         y = y,
@@ -582,10 +601,25 @@ create_ggplot_curve_from_calibration_curve_list <- function(
 }
 
 
-make_deciles_dat <- function(probs, reals) {
+make_calibration_bins_dat <- function(
+  probs,
+  reals,
+  n_bins = 10
+) {
+  if (
+    !is.numeric(n_bins) ||
+      length(n_bins) != 1L ||
+      is.na(n_bins) ||
+      !is.finite(n_bins) ||
+      n_bins <= 0 ||
+      (n_bins %% 1 != 0)
+  ) {
+    stop("`n_bins` must be a single positive whole number.", call. = FALSE)
+  }
+
   if (length(unique(probs)) == 1) {
     tibble::tibble(
-      quintile = 1,
+      bin = 1L,
       x = unique(probs),
       y = mean(reals),
       sum_reals = sum(reals),
@@ -593,8 +627,8 @@ make_deciles_dat <- function(probs, reals) {
     )
   } else {
     data.frame(probs, reals) |>
-      dplyr::mutate(quintile = dplyr::ntile(probs, 10)) |>
-      dplyr::group_by(quintile) |>
+      dplyr::mutate(bin = dplyr::ntile(probs, n_bins)) |>
+      dplyr::group_by(bin) |>
       dplyr::summarise(
         y = sum(reals) / n(),
         x = mean(probs),

@@ -44,24 +44,24 @@ rtichoke_viz_roc_spec <- function(performance_data) {
 }
 
 rtichoke_viz_calibration_spec <- function(calibration_curve_list) {
-  deciles_dat <- calibration_curve_list$deciles_dat
+  calibration_bins_dat <- calibration_curve_list$calibration_bins_dat
   histogram <- calibration_curve_list$histogram_for_calibration
 
-  required_decile_columns <- c(
+  required_calibration_bin_columns <- c(
     "reference_group",
     "x",
     "y",
     "sum_reals",
     "total_obs"
   )
-  missing_decile_columns <- setdiff(
-    required_decile_columns,
-    names(deciles_dat)
+  missing_calibration_bin_columns <- setdiff(
+    required_calibration_bin_columns,
+    names(calibration_bins_dat)
   )
-  if (length(missing_decile_columns) > 0) {
+  if (length(missing_calibration_bin_columns) > 0) {
     stop(
       "Calibration data is missing columns: ",
-      paste(missing_decile_columns, collapse = ", "),
+      paste(missing_calibration_bin_columns, collapse = ", "),
       call. = FALSE
     )
   }
@@ -83,14 +83,14 @@ rtichoke_viz_calibration_spec <- function(calibration_curve_list) {
     )
   }
 
-  data <- lapply(seq_len(nrow(deciles_dat)), function(i) {
+  data <- lapply(seq_len(nrow(calibration_bins_dat)), function(i) {
     list(
-      model = as.character(deciles_dat$reference_group[[i]]),
-      predicted = deciles_dat$x[[i]],
-      observed = deciles_dat$y[[i]],
+      model = as.character(calibration_bins_dat$reference_group[[i]]),
+      predicted = calibration_bins_dat$x[[i]],
+      observed = calibration_bins_dat$y[[i]],
       method = "discrete",
-      events = deciles_dat$sum_reals[[i]],
-      total = deciles_dat$total_obs[[i]]
+      events = calibration_bins_dat$sum_reals[[i]],
+      total = calibration_bins_dat$total_obs[[i]]
     )
   })
 

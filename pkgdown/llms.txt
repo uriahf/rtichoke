@@ -38,9 +38,9 @@ Pipeline:
 ### 3. Calibration
 - `create_calibration_curve(probs, reals, type = "discrete", ...)`
   - Compares predicted risk vs observed outcome frequency ($y = x$ diagonal is perfect calibration).
-  - `type`: `"discrete"` (binned deciles) or `"smooth"` (lowess curve).
+  - `type`: `"discrete"` (binned calibration) or `"smooth"` (lowess curve).
 - `create_calibration_curve_list(probs, reals, ...)`
-  - Returns raw calibration list components (deciles, smooth data, histogram).
+  - Returns raw calibration list components (binned calibration data, smooth data, histogram).
 
 ### 4. Clinical Utility
 - `create_decision_curve(probs, reals, ...)` / `plot_decision_curve(performance_data, ...)`

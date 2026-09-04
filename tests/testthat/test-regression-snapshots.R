@@ -86,10 +86,11 @@ test_that("ppcr stratification stays stable", {
 
 
 test_that("calibration deciles stay stable", {
-  deciles_dat <- rtichoke:::make_deciles_dat(
+  calibration_bins_dat <- rtichoke:::make_calibration_bins_dat(
     probs = example_dat$estimated_probabilities,
-    real = example_dat$outcome
+    reals = example_dat$outcome,
+    n_bins = 10
   )
 
-  expect_snapshot_value(deciles_dat, style = "json2")
+  expect_snapshot_value(calibration_bins_dat, style = "json2")
 })

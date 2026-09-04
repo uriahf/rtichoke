@@ -2,8 +2,7 @@
 #'
 #' Adapt already-computed calibration curve data plus explicit semantic
 #' evaluation metadata into the canonical rtichoke_viz v2 contract. This
-#' helper does not calculate calibration statistics and is not wired into
-#' production rendering.
+#' helper does not calculate calibration statistics.
 #'
 #' @param calibration_curve_list Output from [create_calibration_curve_list()].
 #' @param evaluation_metadata Output from [build_evaluation_metadata()].
@@ -35,7 +34,7 @@ rtichoke_viz_calibration_v2_spec <- function(
   }
 
   calibration_data <- if (method == "discrete") {
-    calibration_curve_list$deciles_dat
+    calibration_curve_list$calibration_bins_dat
   } else {
     calibration_curve_list$smooth_dat
   }

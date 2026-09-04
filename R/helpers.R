@@ -855,19 +855,6 @@ extract_reference_groups_from_performance_data <- function(
 }
 
 
-make_deciles_dat_new <- function(probs, reals) {
-  data.frame(probs, reals) |>
-    dplyr::mutate(quintile = dplyr::ntile(probs, 10)) |>
-    dplyr::group_by(quintile) |>
-    dplyr::summarise(
-      y = sum(reals) / n(),
-      x = mean(probs),
-      sum_reals = sum(reals),
-      total_obs = n()
-    ) |>
-    dplyr::ungroup()
-}
-
 create_reference_group_color_vector <- function(
   reference_groups,
   perf_dat_type,
