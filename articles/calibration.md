@@ -39,11 +39,13 @@ indicate overestimation.
 
 ## Calibration Curve Options
 
-`rtichoke` supports both binned (deciles) and smooth non-parametric
+`rtichoke` supports both binned calibration (10
+rank-based/equal-frequency bins by default) and smooth non-parametric
 (lowess) representations for calibration analysis:
 
-- **Deciles (Binned):** Divides predictions into equal-sized subgroups
-  and plots observed proportion vs. mean prediction in each bin.
+- **Binned Calibration:** Divides predictions into rank-based
+  equal-frequency bins and plots observed proportion vs. mean prediction
+  in each bin.
 - **Smooth (Lowess):** Fits a non-parametric smoother across the full
   range of predicted probabilities.
 

@@ -7,7 +7,8 @@ including:
 
 - **Discrimination:** Receiver Operating Characteristic (ROC),
   Precision-Recall (PR), Gains, and Lift curves.
-- **Calibration:** Calibration curves with decile and smooth (lowess)
+- **Calibration:** Calibration curves with binned calibration (10
+  rank-based/equal-frequency bins by default) and smooth (lowess)
   representations.
 - **Clinical Utility:** Decision Curves and Interventions Avoided.
 - **Performance Tables & Reports:** Interactive metric summaries and

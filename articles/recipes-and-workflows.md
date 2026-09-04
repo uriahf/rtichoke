@@ -139,7 +139,7 @@ create_summary_report(
 | **Lift Curve** | Yes | `probs = list(...)`, `reals = list(...)` |
 | **Decision Curve (Net Benefit)** | Yes | `probs = list(...)`, `reals = list(...)` |
 | **Interventions Avoided** | Yes | Integrated in Decision Curve outputs |
-| **Calibration Curve** | Yes | Deciles / Smooth options available |
+| **Calibration Curve** | Yes | Binned calibration (10 rank-based bins by default) / Smooth options available |
 | **Performance Tables** | Yes | Threshold-specific metrics summary |
 | **HTML Summary Report** | Yes | [`create_summary_report()`](https://uriahf.github.io/rtichoke/reference/create_summary_report.md) |
 | **Time-Dependent Horizons (`_times`)** | No | Not implemented in R package |
