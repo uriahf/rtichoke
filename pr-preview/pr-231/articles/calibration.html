@@ -117,13 +117,14 @@ underestimation of risk; points below indicate overestimation.</p>
 <div class="section level2">
 <h2 id="calibration-curve-options">Calibration Curve Options<a class="anchor" aria-label="anchor" href="#calibration-curve-options"></a>
 </h2>
-<p><code>rtichoke</code> supports both binned (deciles) and smooth
-non-parametric (lowess) representations for calibration analysis:</p>
+<p><code>rtichoke</code> supports both binned calibration (10
+rank-based/equal-frequency bins by default) and smooth non-parametric
+(lowess) representations for calibration analysis:</p>
 <ul>
 <li>
-<strong>Deciles (Binned):</strong> Divides predictions into
-equal-sized subgroups and plots observed proportion vs. mean prediction
-in each bin.</li>
+<strong>Binned Calibration:</strong> Divides predictions into
+rank-based equal-frequency bins and plots observed proportion vs. mean
+prediction in each bin.</li>
 <li>
 <strong>Smooth (Lowess):</strong> Fits a non-parametric smoother
 across the full range of predicted probabilities.</li>

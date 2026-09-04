@@ -5,8 +5,8 @@ binary prediction models. It allows analysts and clinical researchers to
 inspect model performance across multiple complementary dimensions:
 
 - **Discrimination:** ROC, Precision-Recall, Gains, and Lift curves.
-- **Calibration:** Binned (decile) and smooth (lowess) calibration
-  curves.
+- **Calibration:** Binned calibration (10 rank-based/equal-frequency
+  bins by default) and smooth (lowess) calibration curves.
 - **Clinical Utility:** Decision Curves and Interventions Avoided.
 - **Performance Tables & Reports:** Interactive tables and automated
   HTML reports.

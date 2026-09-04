@@ -13,8 +13,8 @@ create_calibration_curve(
     "#FE5F55", "#54494B", "#006E90", "#BC96E6", "#52050A", "#1F271B", "#BE7C4D",
     "#63768D", "#08A045", "#320A28", "#82FF9E", "#2176FF", "#D1603D", "#585123"),
   type = "discrete",
-  n_bins = 10,
-  size = NULL
+  size = NULL,
+  n_bins = 10
 )
 ```
 
@@ -41,13 +41,13 @@ create_calibration_curve(
 
   discrete or smooth
 
-- n_bins:
-
-  Number of calibration bins for binned calibration (default 10).
-
 - size:
 
   the size of the curve
+
+- n_bins:
+
+  Number of calibration bins for binned calibration (default 10).
 
 ## Examples
 
