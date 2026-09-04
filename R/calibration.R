@@ -107,11 +107,23 @@ create_calibration_curve <- function(
     "#585123"
   ),
   type = "discrete",
-  n_bins = 10,
-  size = NULL
+  size = NULL,
+  n_bins = 10
 ) {
   check_probs_input(probs)
   check_real_input(reals)
+
+  # Validate n_bins even for smooth calls
+  if (
+    !is.numeric(n_bins) ||
+      length(n_bins) != 1L ||
+      is.na(n_bins) ||
+      !is.finite(n_bins) ||
+      n_bins <= 0 ||
+      (n_bins %% 1 != 0)
+  ) {
+    stop("`n_bins` must be a single positive whole number.", call. = FALSE)
+  }
 
   effective_n_bins <- if (type == "discrete") n_bins else 10
 
@@ -119,8 +131,8 @@ create_calibration_curve <- function(
     probs = probs,
     reals = reals,
     color_values = color_values,
-    n_bins = effective_n_bins,
-    size = size
+    size = size,
+    n_bins = effective_n_bins
   )
 
   if (interactive == TRUE) {
@@ -237,8 +249,8 @@ create_calibration_curve_list <- function(
     "#D1603D",
     "#585123"
   ),
-  n_bins = 10,
-  size = NULL
+  size = NULL,
+  n_bins = 10
 ) {
   check_probs_input(probs)
   check_real_input(reals)
@@ -607,7 +619,7 @@ make_calibration_bins_dat <- function(
 
   if (length(unique(probs)) == 1) {
     tibble::tibble(
-      bin = 1,
+      bin = 1L,
       x = unique(probs),
       y = mean(reals),
       sum_reals = sum(reals),

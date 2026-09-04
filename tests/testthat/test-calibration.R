@@ -5,6 +5,7 @@ test_that("make_calibration_bins_dat default n_bins = 10 numerical behavior unch
     n_bins = 10
   )
 
+  expect_type(calibration_bins_dat$bin, "integer")
   expect_identical(calibration_bins_dat$bin, 1:10)
   expect_identical(
     names(calibration_bins_dat),
@@ -48,6 +49,26 @@ test_that("calibration validates n_bins input", {
       "`n_bins` must be a single positive whole number.",
       fixed = TRUE
     )
+    expect_error(
+      create_calibration_curve(
+        probs = list(probs),
+        reals = list(reals),
+        type = "discrete",
+        n_bins = val
+      ),
+      "`n_bins` must be a single positive whole number.",
+      fixed = TRUE
+    )
+    expect_error(
+      create_calibration_curve(
+        probs = list(probs),
+        reals = list(reals),
+        type = "smooth",
+        n_bins = val
+      ),
+      "`n_bins` must be a single positive whole number.",
+      fixed = TRUE
+    )
   }
 
   # Valid integer / numeric
@@ -74,7 +95,7 @@ test_that("n_bins validation occurs before all-identical shortcut", {
   )
 })
 
-test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
+test_that("n_bins parity assertions: N=12 B=10 and N=5 B=10", {
   probs_100 <- seq(0.01, 1, length.out = 100)
   reals_100 <- rep(c(0, 1), 50)
 
@@ -109,7 +130,7 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
   expect_equal(nrow(dat_11), 10)
   expect_equal(sum(dat_11$total_obs), 11)
 
-  # n = 12, n_bins = 10
+  # n = 12, n_bins = 10 strengthened parity assertion
   probs_12 <- seq(0.1, 0.9, length.out = 12)
   reals_12 <- c(0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1)
   dat_12 <- rtichoke:::make_calibration_bins_dat(
@@ -118,13 +139,14 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
     n_bins = 10
   )
   expect_equal(nrow(dat_12), 10)
-  expect_equal(sum(dat_12$total_obs), 12)
+  expect_equal(dat_12$total_obs, c(2, 2, 1, 1, 1, 1, 1, 1, 1, 1))
 
-  # n = 5, n_bins = 10
+  # n = 5, n_bins = 10 strengthened parity assertion
   probs_5 <- c(0.1, 0.3, 0.5, 0.7, 0.9)
   reals_5 <- c(0, 0, 1, 1, 1)
   dat_5 <- rtichoke:::make_calibration_bins_dat(probs_5, reals_5, n_bins = 10)
   expect_equal(nrow(dat_5), 5)
+  expect_identical(dat_5$bin, 1:5) # occupied bin labels equal 1:5
   expect_equal(sum(dat_5$total_obs), 5)
   expect_false(any(dat_5$total_obs == 0)) # No empty bins materialized
 
@@ -135,17 +157,19 @@ test_that("n_bins = 8, n_bins = 1, n_bins > n, n = 5/11/12 with n_bins = 10", {
     n_bins = 20
   )
   expect_equal(nrow(dat_gt_n), 5)
+  expect_identical(dat_gt_n$bin, 1:5)
   expect_equal(sum(dat_gt_n$total_obs), 5)
   expect_false(any(dat_gt_n$total_obs == 0))
 })
 
-test_that("all probabilities identical produces one aggregate bin", {
+test_that("all probabilities identical produces one aggregate bin with integer bin column", {
   probs <- rep(0.42, 20)
   reals <- c(rep(0, 15), rep(1, 5))
 
   dat <- rtichoke:::make_calibration_bins_dat(probs, reals, n_bins = 10)
   expect_equal(nrow(dat), 1)
-  expect_identical(dat$bin, 1)
+  expect_type(dat$bin, "integer")
+  expect_identical(dat$bin, 1L)
   expect_equal(dat$x, 0.42)
   expect_equal(dat$y, 0.25)
   expect_equal(dat$sum_reals, 5)
@@ -162,8 +186,51 @@ test_that("partial ties crossing a bin boundary are handled correctly", {
   expect_identical(dat$bin, 1:5)
 })
 
+test_that("positional argument order preserves size compatibility", {
+  colors <- c(
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#07004D",
+    "#E6AB02",
+    "#FE5F55",
+    "#54494B",
+    "#006E90",
+    "#BC96E6",
+    "#52050A",
+    "#1F271B",
+    "#BE7C4D",
+    "#63768D",
+    "#08A045",
+    "#320A28",
+    "#82FF9E",
+    "#2176FF",
+    "#D1603D",
+    "#585123"
+  )
+
+  # Positional 6th argument 'size = 300'
+  curve_list_pos <- create_calibration_curve_list(
+    list(example_dat$estimated_probabilities),
+    list(example_dat$outcome),
+    colors,
+    300
+  )
+  expect_equal(curve_list_pos$size[[1]], 300)
+
+  curve_pos <- create_calibration_curve(
+    list(example_dat$estimated_probabilities),
+    list(example_dat$outcome),
+    TRUE,
+    colors,
+    "discrete",
+    300
+  )
+  expect_s3_class(curve_pos, "plotly")
+})
+
 test_that("create_calibration_curve and list with multiple models and populations", {
-  # Multiple models
   probs_models <- list(
     "Model 1" = example_dat$estimated_probabilities,
     "Model 2" = example_dat$random_guess
@@ -181,7 +248,6 @@ test_that("create_calibration_curve and list with multiple models and population
     c("Model 1", "Model 2")
   )
 
-  # Multiple populations
   probs_pops <- list(
     "train" = example_dat |>
       dplyr::filter(type_of_set == "train") |>
@@ -247,7 +313,6 @@ test_that("smooth output unaffected by non-default n_bins in create_calibration_
     interactive = FALSE
   )
 
-  # Compare ggplot output / axes limits / structure
   expect_equal(
     curve_smooth_def$patches$plots[[1]]$coordinates$limits,
     curve_smooth_custom$patches$plots[[1]]$coordinates$limits
@@ -299,7 +364,6 @@ test_that("canonical v1 and v2 adapters consume calibration_bins_dat", {
   )
   expect_equal(v2_spec$schemaVersion, "2.0")
   expect_equal(length(v2_spec$data), 8)
-  # Ensure CalibrationSpec does not contain n_bins or bin
   expect_false("n_bins" %in% names(v2_spec$data[[1]]))
   expect_false("bin" %in% names(v2_spec$data[[1]]))
 })
@@ -335,6 +399,29 @@ test_that("calibration validates probability and outcome inputs", {
     create_calibration_curve(
       probs = list(example_dat$estimated_probabilities),
       reals = list(replace(example_dat$outcome, 1, 2))
+    ),
+    "Outcomes are out of the range"
+  )
+
+  expect_error(
+    create_calibration_curve_list(
+      probs = list(
+        train = example_dat |>
+          dplyr::filter(type_of_set == "train") |>
+          dplyr::pull(estimated_probabilities),
+        test = example_dat |>
+          dplyr::filter(type_of_set == "test") |>
+          dplyr::pull(estimated_probabilities)
+      ),
+      reals = list(
+        train = example_dat |>
+          dplyr::filter(type_of_set == "train") |>
+          dplyr::pull(outcome),
+        test = example_dat |>
+          dplyr::filter(type_of_set == "test") |>
+          dplyr::pull(outcome) |>
+          replace(1, 2)
+      )
     ),
     "Outcomes are out of the range"
   )
