@@ -176,7 +176,7 @@ test_that("static cutoff equality remains predicted negative", {
   expect_equal(row$FN, 1)
 })
 
-test_that("Interventions Avoided browser dispatch uses shared v0.20.1 renderer", {
+test_that("Interventions Avoided browser dispatch uses shared v0.20.2 renderer", {
   dat <- ia_v2_fixture()
   widget <- plot_decision_curve(
     dat$performance_data,
@@ -186,7 +186,7 @@ test_that("Interventions Avoided browser dispatch uses shared v0.20.1 renderer",
   )
   html <- paste(as.character(widget), collapse = "\n")
   expect_match(html, "renderInterventionsAvoidedV2", fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.20.1/rtichoke-viz.js", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.20.2/rtichoke-viz.js", fixed = TRUE)
   expect_match(html, '"type":"interventions_avoided"', fixed = TRUE)
 })
 
