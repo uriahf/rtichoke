@@ -1,16 +1,16 @@
-test_that("vendored rtichoke_viz v0.20.1 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.20.2 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version=0.20.1" %in% provenance)
-  expect_true("archive=rtichoke-viz-0.20.1.tar.gz" %in% provenance)
+  expect_true("version=0.20.2" %in% provenance)
+  expect_true("archive=rtichoke-viz-0.20.2.tar.gz" %in% provenance)
   expect_true(
-    "commit=56e097ab394f3499ef5cfe791e686248df8b39f2" %in% provenance
+    "commit=40748bdeff7d535f516744886b64056f3aaa518d" %in% provenance
   )
   expect_true(
     paste0(
       "sha256=",
-      "17aebfb05a479c3ea28855f6ca3f43cadde7b8b134a2080e309c630c63617629"
+      "2e4851159ceea0e3b2420c7e0aa22a566b94ec7057c27b13b7db7da88de34d11"
     ) %in%
       provenance
   )
