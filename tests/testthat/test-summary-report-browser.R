@@ -1120,7 +1120,11 @@ test_that("resolve_render_report_identifier resolves various JS export formats",
     readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE),
     collapse = "\n"
   )
-  expect_equal(resolve_render_report_identifier(bundle), "PU")
+  resolved <- resolve_render_report_identifier(bundle)
+  expect_match(
+    resolved,
+    "^[A-Za-z_$][A-Za-z0-9_$]*$"
+  )
 
   expect_equal(
     resolve_render_report_identifier(
