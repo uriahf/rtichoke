@@ -1113,3 +1113,52 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
     expect_true(cs_pos < nav_pos, info = "Cheat sheet is placed BEFORE nav")
   }
 })
+
+test_that("resolve_render_report_identifier resolves various JS export formats", {
+  vendor <- system.file("rtichoke-viz", package = "rtichoke")
+  bundle <- paste(
+    readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE),
+    collapse = "\n"
+  )
+  expect_equal(resolve_render_report_identifier(bundle), "PU")
+
+  expect_equal(
+    resolve_render_report_identifier("var customFn = function(){}; export { customFn as renderReport };"),
+    "customFn"
+  )
+
+  expect_equal(
+    resolve_render_report_identifier("export{a1 as renderReport,b2 as foo}"),
+    "a1"
+  )
+
+  expect_equal(
+    resolve_render_report_identifier("function renderReport(){}; export { renderReport };"),
+    "renderReport"
+  )
+
+  expect_equal(
+    resolve_render_report_identifier("export function renderReport(){};"),
+    "renderReport"
+  )
+
+  expect_equal(
+    resolve_render_report_identifier("function renderReport(){};"),
+    "renderReport"
+  )
+
+  expect_error(
+    resolve_render_report_identifier("function foo(){}; export { foo };"),
+    "Could not resolve renderReport export from rtichoke-viz bundle"
+  )
+
+  expect_error(
+    resolve_render_report_identifier(NULL),
+    "Could not resolve renderReport export from rtichoke-viz bundle"
+  )
+
+  expect_error(
+    resolve_render_report_identifier(NA_character_),
+    "Could not resolve renderReport export from rtichoke-viz bundle"
+  )
+})
