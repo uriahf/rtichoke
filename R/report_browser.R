@@ -100,19 +100,28 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
 #' @noRd
 resolve_render_report_identifier <- function(bundle) {
   if (!is.character(bundle) || length(bundle) != 1L || is.na(bundle)) {
-    stop("Could not resolve renderReport export from rtichoke-viz bundle", call. = FALSE)
+    stop(
+      "Could not resolve renderReport export from rtichoke-viz bundle",
+      call. = FALSE
+    )
   }
 
   alias_match <- regmatches(
     bundle,
-    regexec("export\\s*\\{[^}]*?\\b([a-zA-Z0-9_$]+)\\s+as\\s+renderReport\\b[^}]*?\\}", bundle)
+    regexec(
+      "export\\s*\\{[^}]*?\\b([a-zA-Z0-9_$]+)\\s+as\\s+renderReport\\b[^}]*?\\}",
+      bundle
+    )
   )[[1]]
 
   if (length(alias_match) >= 2L && nzchar(alias_match[2])) {
     return(alias_match[2])
   }
 
-  shorthand_match <- grepl("export\\s*\\{[^}]*?\\brenderReport\\b[^}]*?\\}", bundle) ||
+  shorthand_match <- grepl(
+    "export\\s*\\{[^}]*?\\brenderReport\\b[^}]*?\\}",
+    bundle
+  ) ||
     grepl("export\\s+(function|const|let|var)\\s+renderReport\\b", bundle) ||
     grepl("(function|const|let|var)\\s+renderReport\\b", bundle)
 
@@ -120,7 +129,10 @@ resolve_render_report_identifier <- function(bundle) {
     return("renderReport")
   }
 
-  stop("Could not resolve renderReport export from rtichoke-viz bundle", call. = FALSE)
+  stop(
+    "Could not resolve renderReport export from rtichoke-viz bundle",
+    call. = FALSE
+  )
 }
 
 #' Generate layout density CSS for browser summary reports

@@ -1123,7 +1123,9 @@ test_that("resolve_render_report_identifier resolves various JS export formats",
   expect_equal(resolve_render_report_identifier(bundle), "PU")
 
   expect_equal(
-    resolve_render_report_identifier("var customFn = function(){}; export { customFn as renderReport };"),
+    resolve_render_report_identifier(
+      "var customFn = function(){}; export { customFn as renderReport };"
+    ),
     "customFn"
   )
 
@@ -1133,7 +1135,9 @@ test_that("resolve_render_report_identifier resolves various JS export formats",
   )
 
   expect_equal(
-    resolve_render_report_identifier("function renderReport(){}; export { renderReport };"),
+    resolve_render_report_identifier(
+      "function renderReport(){}; export { renderReport };"
+    ),
     "renderReport"
   )
 
