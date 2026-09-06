@@ -48,7 +48,15 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
   )
   cheat_sheet_json <- gsub("</", "<\\/", cheat_sheet_json, fixed = TRUE)
 
+  fn_binding <- resolve_render_report_identifier(bundle)
+  binding_line <- if (fn_binding != "renderReport") {
+    paste0("const renderReport = ", fn_binding, ";\n")
+  } else {
+    ""
+  }
+
   initializer <- paste0(
+    binding_line,
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
@@ -82,6 +90,48 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
       ),
       htmltools::tags$script(type = "module", htmltools::HTML(script))
     )
+  )
+}
+
+#' Resolve the local identifier exported as renderReport in a JS bundle
+#'
+#' @param bundle Character string containing JS bundle text.
+#' @return Character string of the local identifier bound to renderReport.
+#' @noRd
+resolve_render_report_identifier <- function(bundle) {
+  if (!is.character(bundle) || length(bundle) != 1L || is.na(bundle)) {
+    stop(
+      "Could not resolve renderReport export from rtichoke-viz bundle",
+      call. = FALSE
+    )
+  }
+
+  alias_match <- regmatches(
+    bundle,
+    regexec(
+      "export\\s*\\{[^}]*?\\b([a-zA-Z0-9_$]+)\\s+as\\s+renderReport\\b[^}]*?\\}",
+      bundle
+    )
+  )[[1]]
+
+  if (length(alias_match) >= 2L && nzchar(alias_match[2])) {
+    return(alias_match[2])
+  }
+
+  shorthand_match <- grepl(
+    "export\\s*\\{[^}]*?\\brenderReport\\b[^}]*?\\}",
+    bundle
+  ) ||
+    grepl("export\\s+(function|const|let|var)\\s+renderReport\\b", bundle) ||
+    grepl("(function|const|let|var)\\s+renderReport\\b", bundle)
+
+  if (shorthand_match) {
+    return("renderReport")
+  }
+
+  stop(
+    "Could not resolve renderReport export from rtichoke-viz bundle",
+    call. = FALSE
   )
 }
 
