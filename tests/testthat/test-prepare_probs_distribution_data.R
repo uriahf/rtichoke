@@ -23,14 +23,18 @@ test_that("golden threshold fixture matches expected static classification count
   sub_ops <- dplyr::filter(ops, cutoff %in% target_cutoffs)
 
   expect_equal(sub_ops$cutoff, target_cutoffs)
-  expect_equal(sub_ops$realized_ppcr, c(1.0, 2 / 3, 1 / 3, 0.0), tolerance = 1e-5)
+  expect_equal(
+    sub_ops$realized_ppcr,
+    c(1.0, 2 / 3, 1 / 3, 0.0),
+    tolerance = 1e-5
+  )
 
   # Reconstruct TP, FP, TN, FN from bins for each target cutoff
   expected_counts <- list(
-    "0"   = c(TP = 3, FP = 3, TN = 0, FN = 0),
+    "0" = c(TP = 3, FP = 3, TN = 0, FN = 0),
     "0.2" = c(TP = 2, FP = 2, TN = 1, FN = 1),
     "0.5" = c(TP = 1, FP = 1, TN = 2, FN = 2),
-    "1"   = c(TP = 0, FP = 0, TN = 3, FN = 3)
+    "1" = c(TP = 0, FP = 0, TN = 3, FN = 3)
   )
 
   for (c_val in target_cutoffs) {
@@ -77,7 +81,12 @@ test_that("important PPCR tie fixture preserves requested value and calculates r
 
 # Helper to verify exact equivalence between reconstructed counts from bins and
 # prepare_performance_data() rows for all operating points in an evaluation result
-expect_bins_reconstruction_equals_perf_data <- function(probs, reals, by = 0.01, stratified_by = "probability_threshold") {
+expect_bins_reconstruction_equals_perf_data <- function(
+  probs,
+  reals,
+  by = 0.01,
+  stratified_by = "probability_threshold"
+) {
   res <- prepare_probs_distribution_data(
     probs = probs,
     reals = reals,
@@ -146,10 +155,26 @@ expect_bins_reconstruction_equals_perf_data <- function(probs, reals, by = 0.01,
         }
       }
 
-      expect_equal(tp, unname(perf_row$TP), label = sprintf("TP for eval %s at cutoff %g", e, c_val))
-      expect_equal(fp, unname(perf_row$FP), label = sprintf("FP for eval %s at cutoff %g", e, c_val))
-      expect_equal(tn, unname(perf_row$TN), label = sprintf("TN for eval %s at cutoff %g", e, c_val))
-      expect_equal(fn, unname(perf_row$FN), label = sprintf("FN for eval %s at cutoff %g", e, c_val))
+      expect_equal(
+        tp,
+        unname(perf_row$TP),
+        label = sprintf("TP for eval %s at cutoff %g", e, c_val)
+      )
+      expect_equal(
+        fp,
+        unname(perf_row$FP),
+        label = sprintf("FP for eval %s at cutoff %g", e, c_val)
+      )
+      expect_equal(
+        tn,
+        unname(perf_row$TN),
+        label = sprintf("TN for eval %s at cutoff %g", e, c_val)
+      )
+      expect_equal(
+        fn,
+        unname(perf_row$FN),
+        label = sprintf("FN for eval %s at cutoff %g", e, c_val)
+      )
     }
   }
 }
@@ -177,7 +202,12 @@ test_that("statistical scenario 3: partially tied scores containing both outcome
   p <- list(c(0.1, 0.4, 0.4, 0.4, 0.9))
   r <- list(c(0, 1, 0, 1, 1))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.2, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.2,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -185,7 +215,12 @@ test_that("statistical scenario 4: all scores tied", {
   p <- list(c(0.5, 0.5, 0.5, 0.5))
   r <- list(c(0, 1, 0, 1))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.25, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.25,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -243,7 +278,12 @@ test_that("statistical scenario 9: all-positive outcomes", {
   p <- list(c(0.1, 0.4, 0.7))
   r <- list(c(1, 1, 1))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.25, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.25,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -251,7 +291,12 @@ test_that("statistical scenario 10: all-negative outcomes", {
   p <- list(c(0.2, 0.5, 0.8))
   r <- list(c(0, 0, 0))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.25, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.25,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -270,7 +315,7 @@ test_that("statistical scenario 11: one unnamed model/population", {
 test_that("statistical scenario 12: several named models sharing one outcome vector", {
   p <- list(
     "Model Alpha" = c(0.1, 0.4, 0.8),
-    "Model Beta"  = c(0.2, 0.3, 0.9)
+    "Model Beta" = c(0.2, 0.3, 0.9)
   )
   r <- list(c(0, 1, 1))
   res <- prepare_probs_distribution_data(p, r)
@@ -285,11 +330,11 @@ test_that("statistical scenario 12: several named models sharing one outcome vec
 test_that("statistical scenario 13: several named populations with matched outcome vectors", {
   p <- list(
     "Train" = c(0.1, 0.4, 0.8),
-    "Test"  = c(0.2, 0.3, 0.9)
+    "Test" = c(0.2, 0.3, 0.9)
   )
   r <- list(
     "Train" = c(0, 1, 1),
-    "Test"  = c(1, 0, 1)
+    "Test" = c(1, 0, 1)
   )
   res <- prepare_probs_distribution_data(p, r)
 
@@ -303,7 +348,12 @@ test_that("statistical scenario 14: by = 0.5", {
   p <- list(c(0.1, 0.3, 0.7, 0.9))
   r <- list(c(0, 1, 0, 1))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.5)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.5, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.5,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -311,7 +361,12 @@ test_that("statistical scenario 15: default by = 0.01", {
   p <- list(example_dat$estimated_probabilities)
   r <- list(example_dat$outcome)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.01)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.01, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.01,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -319,7 +374,12 @@ test_that("statistical scenario 16: by that does not divide 1.0 exactly", {
   p <- list(c(0.1, 0.4, 0.7, 0.9))
   r <- list(c(0, 1, 0, 1))
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.3)
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.3, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.3,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -333,16 +393,31 @@ test_that("statistical scenario 17: requested versus realized PPCR under ties", 
   row_04 <- dplyr::filter(op, value == 0.4)
   expect_equal(row_04$cutoff, 0.5)
   expect_equal(row_04$realized_ppcr, 1 / 5) # only score 0.8 > 0.5
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.2, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.2,
+    stratified_by = "ppcr"
+  )
 })
 
 
 test_that("statistical scenario 18: repeated quantile cutoffs in PPCR stratification", {
   p <- list(c(0.1, 0.1, 0.1, 0.9))
   r <- list(c(0, 0, 1, 1))
-  res <- prepare_probs_distribution_data(p, r, by = 0.25, stratified_by = "ppcr")
+  res <- prepare_probs_distribution_data(
+    p,
+    r,
+    by = 0.25,
+    stratified_by = "ppcr"
+  )
 
-  expect_bins_reconstruction_equals_perf_data(p, r, by = 0.25, stratified_by = "ppcr")
+  expect_bins_reconstruction_equals_perf_data(
+    p,
+    r,
+    by = 0.25,
+    stratified_by = "ppcr"
+  )
 })
 
 
@@ -381,7 +456,11 @@ test_that("input validation stops on invalid probabilities or arguments", {
   )
 
   expect_error(
-    prepare_probs_distribution_data(list(c(0.1, 0.5)), list(c(0, 1)), stratified_by = "invalid"),
+    prepare_probs_distribution_data(
+      list(c(0.1, 0.5)),
+      list(c(0, 1)),
+      stratified_by = "invalid"
+    ),
     "'arg' should be one of"
   )
 })
