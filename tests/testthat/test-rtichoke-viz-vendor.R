@@ -56,7 +56,13 @@ test_that("vendored rtichoke_viz schemas preserve canonical ids", {
   expect_true(grepl(
     "https://rtichoke.dev/schema/viz/report.json",
     report,
-    fixed = TRUE
+    fixed = TRUE,
+    useBytes = TRUE
   ))
-  expect_true(grepl('"const": "1.1"', report, fixed = TRUE))
+  expect_true(grepl(
+    '"const": "1.1"',
+    report,
+    fixed = TRUE,
+    useBytes = TRUE
+  ))
 })
