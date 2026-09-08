@@ -7,7 +7,7 @@
 #' @inheritParams prepare_performance_data
 #'
 #' @return A named list with two tidy tibbles:
-#'   \item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-mass
+#'   \item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-score
 #'     interval `[0, 0]` and right-closed intervals `(lower, upper]` aligned to effective
 #'     cutoffs. Columns: `evaluation`, `model`, `population`, `lower`, `upper`,
 #'     `include_lower`, `include_upper`, `n_positive`, `n_negative`.}
@@ -73,15 +73,15 @@ prepare_probs_distribution_data <- function(
 
   n_evaluations <- nrow(evaluation_metadata)
 
-  eval_results <- purrr::map(
+  evaluation_results <- purrr::map(
     seq_len(n_evaluations),
-    function(i) {
-      probabilities <- probs[[i]]
-      outcomes <- if (length(reals) == 1L) reals[[1L]] else reals[[i]]
+    function(evaluation_index) {
+      probabilities <- probs[[evaluation_index]]
+      outcomes <- if (length(reals) == 1L) reals[[1L]] else reals[[evaluation_index]]
       n_observations <- length(probabilities)
-      current_eval_metadata <- evaluation_metadata[i, , drop = FALSE]
+      current_evaluation_metadata <- evaluation_metadata[evaluation_index, , drop = FALSE]
 
-      perf_eval <- prepare_performance_data(
+      evaluation_performance_data <- prepare_performance_data(
         probs = list(probabilities),
         reals = list(outcomes),
         by = by,
@@ -90,19 +90,19 @@ prepare_probs_distribution_data <- function(
 
       # 1. Operating Points table
       if (stratified_by == "probability_threshold") {
-        operating_point_values <- unname(perf_eval$probability_threshold)
-        effective_cutoffs <- unname(perf_eval$probability_threshold)
+        operating_point_values <- unname(evaluation_performance_data$probability_threshold)
+        effective_cutoffs <- unname(evaluation_performance_data$probability_threshold)
       } else {
-        operating_point_values <- unname(perf_eval$ppcr)
-        effective_cutoffs <- unname(perf_eval$probability_threshold)
+        operating_point_values <- unname(evaluation_performance_data$ppcr)
+        effective_cutoffs <- unname(evaluation_performance_data$probability_threshold)
       }
 
-      realized_ppcr <- unname(perf_eval$predicted_positives / n_observations)
+      realized_ppcr <- unname(evaluation_performance_data$predicted_positives / n_observations)
 
       operating_points <- tibble::tibble(
-        evaluation = current_eval_metadata$evaluation,
-        model = current_eval_metadata$model,
-        population = current_eval_metadata$population,
+        evaluation = current_evaluation_metadata$evaluation,
+        model = current_evaluation_metadata$model,
+        population = current_evaluation_metadata$population,
         type = stratified_by,
         value = operating_point_values,
         cutoff = effective_cutoffs,
@@ -110,7 +110,7 @@ prepare_probs_distribution_data <- function(
       )
 
       # 2. Bins table
-      cutoffs <- unname(perf_eval$probability_threshold)
+      cutoffs <- unname(evaluation_performance_data$probability_threshold)
       boundaries <- sort(unique(c(0, cutoffs, 1)))
       n_boundaries <- length(boundaries)
 
@@ -123,11 +123,11 @@ prepare_probs_distribution_data <- function(
       )
 
       zero_mask <- probabilities == 0
-      obs_interval_id <- integer(n_observations)
-      obs_interval_id[zero_mask] <- 0L
+      observation_interval_id <- integer(n_observations)
+      observation_interval_id[zero_mask] <- 0L
 
       if (any(!zero_mask)) {
-        obs_interval_id[!zero_mask] <- as.integer(
+        observation_interval_id[!zero_mask] <- as.integer(
           cut(
             probabilities[!zero_mask],
             breaks = boundaries,
@@ -138,12 +138,12 @@ prepare_probs_distribution_data <- function(
         )
       }
 
-      obs_df <- tibble::tibble(
-        interval_id = obs_interval_id,
+      observation_intervals <- tibble::tibble(
+        interval_id = observation_interval_id,
         outcome = outcomes
       )
 
-      counts_df <- obs_df |>
+      interval_counts <- observation_intervals |>
         dplyr::group_by(.data$interval_id) |>
         dplyr::summarise(
           n_positive = as.integer(sum(.data$outcome == 1)),
@@ -152,13 +152,13 @@ prepare_probs_distribution_data <- function(
         )
 
       bins <- interval_grid |>
-        dplyr::left_join(counts_df, by = "interval_id") |>
+        dplyr::left_join(interval_counts, by = "interval_id") |>
         dplyr::mutate(
           n_positive = dplyr::coalesce(.data$n_positive, 0L),
           n_negative = dplyr::coalesce(.data$n_negative, 0L),
-          evaluation = current_eval_metadata$evaluation,
-          model = current_eval_metadata$model,
-          population = current_eval_metadata$population
+          evaluation = current_evaluation_metadata$evaluation,
+          model = current_evaluation_metadata$model,
+          population = current_evaluation_metadata$population
         ) |>
         dplyr::select(
           "evaluation",
@@ -177,9 +177,9 @@ prepare_probs_distribution_data <- function(
   )
 
   list(
-    bins = dplyr::bind_rows(purrr::map(eval_results, "bins")),
+    bins = dplyr::bind_rows(purrr::map(evaluation_results, "bins")),
     operating_points = dplyr::bind_rows(purrr::map(
-      eval_results,
+      evaluation_results,
       "operating_points"
     ))
   )

@@ -24,7 +24,7 @@ Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \value{
 A named list with two tidy tibbles:
-\item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-mass
+\item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-score
 interval \verb{[0, 0]} and right-closed intervals \verb{(lower, upper]} aligned to effective
 cutoffs. Columns: \code{evaluation}, \code{model}, \code{population}, \code{lower}, \code{upper},
 \code{include_lower}, \code{include_upper}, \code{n_positive}, \code{n_negative}.}
