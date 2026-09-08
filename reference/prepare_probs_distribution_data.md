@@ -43,7 +43,7 @@ A named list with two tidy tibbles:
 
 - bins:
 
-  Exact score intervals covering score space 0 to 1. Includes zero-mass
+  Exact score intervals covering score space 0 to 1. Includes zero-score
   interval `[0, 0]` and right-closed intervals `(lower, upper]` aligned
   to effective cutoffs. Columns: `evaluation`, `model`, `population`,
   `lower`, `upper`, `include_lower`, `include_upper`, `n_positive`,
