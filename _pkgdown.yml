@@ -62,6 +62,7 @@ reference:
     desc: "Prepare probability predictions and binary outcomes into performance data objects."
     contents:
       - prepare_performance_data
+      - create_probs_histogram
 
   - title: "Discrimination"
     desc: "Evaluate model discrimination using ROC, Precision-Recall, Gains, and Lift curves."
