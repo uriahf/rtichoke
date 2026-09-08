@@ -77,9 +77,17 @@ prepare_probs_distribution_data <- function(
     seq_len(n_evaluations),
     function(evaluation_index) {
       probabilities <- probs[[evaluation_index]]
-      outcomes <- if (length(reals) == 1L) reals[[1L]] else reals[[evaluation_index]]
+      outcomes <- if (length(reals) == 1L) {
+        reals[[1L]]
+      } else {
+        reals[[evaluation_index]]
+      }
       n_observations <- length(probabilities)
-      current_evaluation_metadata <- evaluation_metadata[evaluation_index, , drop = FALSE]
+      current_evaluation_metadata <- evaluation_metadata[
+        evaluation_index,
+        ,
+        drop = FALSE
+      ]
 
       evaluation_performance_data <- prepare_performance_data(
         probs = list(probabilities),
@@ -90,14 +98,22 @@ prepare_probs_distribution_data <- function(
 
       # 1. Operating Points table
       if (stratified_by == "probability_threshold") {
-        operating_point_values <- unname(evaluation_performance_data$probability_threshold)
-        effective_cutoffs <- unname(evaluation_performance_data$probability_threshold)
+        operating_point_values <- unname(
+          evaluation_performance_data$probability_threshold
+        )
+        effective_cutoffs <- unname(
+          evaluation_performance_data$probability_threshold
+        )
       } else {
         operating_point_values <- unname(evaluation_performance_data$ppcr)
-        effective_cutoffs <- unname(evaluation_performance_data$probability_threshold)
+        effective_cutoffs <- unname(
+          evaluation_performance_data$probability_threshold
+        )
       }
 
-      realized_ppcr <- unname(evaluation_performance_data$predicted_positives / n_observations)
+      realized_ppcr <- unname(
+        evaluation_performance_data$predicted_positives / n_observations
+      )
 
       operating_points <- tibble::tibble(
         evaluation = current_evaluation_metadata$evaluation,
