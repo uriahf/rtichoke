@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_probs_distribution_data.R
 \name{prepare_probs_distribution_data}
 \alias{prepare_probs_distribution_data}
-\title{Internal Static Prediction Distribution Preparation}
+\title{Prepare Prediction Distribution Data}
 \usage{
 prepare_probs_distribution_data(
   probs,
@@ -12,25 +12,63 @@ prepare_probs_distribution_data(
 )
 }
 \arguments{
-\item{probs}{A list of numeric vectors of estimated probabilities (one vector per
-model or population).}
+\item{probs}{a list of vectors of estimated probabilities
+(one for each model or one for each population)}
 
-\item{reals}{A list of numeric vectors of binary outcome indicators (0 or 1).}
+\item{reals}{a list of vectors of binary outcomes (one for each population)}
 
-\item{by}{Increment of the threshold or PPCR evaluation sequence (default 0.01).}
+\item{by}{number: increment of the sequence.}
 
-\item{stratified_by}{Operating point stratification metric: \code{"probability_threshold"}
-or \code{"ppcr"}.}
+\item{stratified_by}{Performance Metrics can be stratified by Probability
+Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \value{
 A named list with two tidy tibbles:
-\item{bins}{Exact aggregate score interval counts for each evaluation.}
-\item{operating_points}{Selectable operating points with effective cutoffs and
-realized PPCR.}
+\item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-mass
+interval \verb{[0, 0]} and right-closed intervals \verb{(lower, upper]} aligned to effective
+cutoffs. Columns: \code{evaluation}, \code{model}, \code{population}, \code{lower}, \code{upper},
+\code{include_lower}, \code{include_upper}, \code{n_positive}, \code{n_negative}.}
+\item{operating_points}{Selectable operating points. Columns: \code{evaluation},
+\code{model}, \code{population}, \code{type}, \code{value} (requested metric value), \code{cutoff}
+(effective score cutoff), \code{realized_ppcr} (actual predicted positives fraction).}
 }
 \description{
-Prepares exact prediction score distribution data (bins and operating points)
-for static binary outcome models and populations. Reuses production
-\code{prepare_performance_data()} to ensure exact cutoff and PPCR alignment.
+Internal helper to prepare exact prediction distribution score intervals (\code{bins})
+and operating points (\code{operating_points}) for static binary outcomes. Reuses production
+\code{prepare_performance_data()} as the authoritative source for cutoff grids and metrics.
+}
+\details{
+This internal function is used to prepare static prediction distribution data
+before rendering or contract serialization.
+}
+\examples{
+# Single model with probability threshold stratification
+res_single <- rtichoke:::prepare_probs_distribution_data(
+  probs = list(example_dat$estimated_probabilities),
+  reals = list(example_dat$outcome),
+  by = 0.1
+)
+res_single$operating_points
+res_single$bins
+
+# Multiple models sharing one outcome vector
+res_multi <- rtichoke:::prepare_probs_distribution_data(
+  probs = list(
+    "Model A" = example_dat$estimated_probabilities,
+    "Model B" = example_dat$random_guess
+  ),
+  reals = list(example_dat$outcome),
+  by = 0.2
+)
+res_multi$operating_points
+
+# PPCR stratification with tied scores showing requested vs realized PPCR
+res_ppcr <- rtichoke:::prepare_probs_distribution_data(
+  probs = list(c(0.1, 0.2, 0.5, 0.5, 0.8, 0.9)),
+  reals = list(c(0, 0, 1, 0, 1, 1)),
+  by = 0.5,
+  stratified_by = "ppcr"
+)
+res_ppcr$operating_points
 }
 \keyword{internal}

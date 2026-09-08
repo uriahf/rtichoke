@@ -4,23 +4,28 @@
 # Python implementations must reproduce these exact boundaries, counts, and
 # realized PPCR calculations.
 
+# Reusable Golden Fixture Objects
+GOLDEN_THRESHOLD_SCORES <- c(0.0, 0.2, 0.5, 0.5, 0.8, 1.0)
+GOLDEN_THRESHOLD_OUTCOMES <- c(0, 1, 1, 0, 1, 0)
+
+GOLDEN_PPCR_SCORES <- c(0.1, 0.2, 0.5, 0.5, 0.8, 0.9)
+GOLDEN_PPCR_OUTCOMES <- c(0, 0, 1, 0, 1, 1)
+
+
 test_that("golden threshold fixture matches expected static classification counts", {
   # CROSS-LANGUAGE STATISTICAL CONTRACT FIXTURE
-  scores <- c(0.0, 0.2, 0.5, 0.5, 0.8, 1.0)
-  outcomes <- c(0, 1, 1, 0, 1, 0)
-
   res <- prepare_probs_distribution_data(
-    probs = list(scores),
-    reals = list(outcomes),
+    probs = list(GOLDEN_THRESHOLD_SCORES),
+    reals = list(GOLDEN_THRESHOLD_OUTCOMES),
     by = 0.1,
     stratified_by = "probability_threshold"
   )
 
-  ops <- res$operating_points
+  operating_points <- res$operating_points
   bins <- res$bins
 
   target_cutoffs <- c(0.0, 0.2, 0.5, 1.0)
-  sub_ops <- dplyr::filter(ops, cutoff %in% target_cutoffs)
+  sub_ops <- dplyr::filter(operating_points, .data$cutoff %in% target_cutoffs)
 
   expect_equal(sub_ops$cutoff, target_cutoffs)
   expect_equal(
@@ -59,18 +64,15 @@ test_that("golden threshold fixture matches expected static classification count
 
 test_that("important PPCR tie fixture preserves requested value and calculates realized PPCR", {
   # CROSS-LANGUAGE STATISTICAL CONTRACT PPCR FIXTURE
-  scores <- c(0.1, 0.2, 0.5, 0.5, 0.8, 0.9)
-  outcomes <- c(0, 0, 1, 0, 1, 1)
-
   res <- prepare_probs_distribution_data(
-    probs = list(scores),
-    reals = list(outcomes),
+    probs = list(GOLDEN_PPCR_SCORES),
+    reals = list(GOLDEN_PPCR_OUTCOMES),
     by = 0.5,
     stratified_by = "ppcr"
   )
 
-  ops <- res$operating_points
-  ppcr_05_row <- dplyr::filter(ops, value == 0.5)
+  operating_points <- res$operating_points
+  ppcr_05_row <- dplyr::filter(operating_points, .data$value == 0.5)
 
   expect_equal(nrow(ppcr_05_row), 1)
   expect_equal(ppcr_05_row$value, 0.5)
@@ -80,100 +82,137 @@ test_that("important PPCR tie fixture preserves requested value and calculates r
 
 
 # Helper to verify exact equivalence between reconstructed counts from bins and
-# prepare_performance_data() rows for all operating points in an evaluation result
+# prepare_performance_data() rows for all operating points matching by explicit identity
 expect_bins_reconstruction_equals_perf_data <- function(
   probs,
   reals,
   by = 0.01,
   stratified_by = "probability_threshold"
 ) {
-  res <- prepare_probs_distribution_data(
+  distribution_data <- prepare_probs_distribution_data(
     probs = probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
   )
 
-  perf <- prepare_performance_data(
+  performance_data <- prepare_performance_data(
     probs = probs,
     reals = reals,
     by = by,
     stratified_by = stratified_by
   )
 
-  bins <- res$bins
-  ops <- res$operating_points
+  bins <- distribution_data$bins
+  operating_points <- distribution_data$operating_points
 
-  # Process per evaluation
-  evals <- unique(ops$evaluation)
+  unique_evaluations <- unique(operating_points$evaluation)
 
-  for (e in evals) {
-    ops_e <- dplyr::filter(ops, evaluation == e)
-    bins_e <- dplyr::filter(bins, evaluation == e)
-    perf_e <- if ("model" %in% names(perf) && e %in% perf$model) {
-      dplyr::filter(perf, model == e)
-    } else if ("population" %in% names(perf) && e %in% perf$population) {
-      dplyr::filter(perf, population == e)
+  for (eval_id in unique_evaluations) {
+    eval_ops <- dplyr::filter(operating_points, .data$evaluation == eval_id)
+    eval_bins <- dplyr::filter(bins, .data$evaluation == eval_id)
+
+    eval_perf <- if (
+      "model" %in%
+        names(performance_data) &&
+        eval_id %in% performance_data$model
+    ) {
+      dplyr::filter(performance_data, .data$model == eval_id)
+    } else if (
+      "population" %in%
+        names(performance_data) &&
+        eval_id %in% performance_data$population
+    ) {
+      dplyr::filter(performance_data, .data$population == eval_id)
     } else {
-      perf
+      performance_data
     }
 
-    # Verify length of ops_e matches perf_e
-    expect_equal(nrow(ops_e), nrow(perf_e))
+    expect_equal(nrow(eval_ops), nrow(eval_perf))
 
-    for (k in seq_len(nrow(ops_e))) {
-      op_row <- ops_e[k, ]
-      perf_row <- perf_e[k, ]
+    for (k in seq_len(nrow(eval_ops))) {
+      op_row <- eval_ops[k, ]
+      effective_cutoff <- op_row$cutoff
+      requested_value <- op_row$value
 
-      c_val <- op_row$cutoff
-      req_val <- op_row$value
+      # Explicit identity join with production performance row
+      perf_row <- if (stratified_by == "probability_threshold") {
+        dplyr::filter(
+          eval_perf,
+          .data$probability_threshold == effective_cutoff
+        )
+      } else {
+        dplyr::filter(eval_perf, .data$ppcr == requested_value)
+      }
+
+      expect_equal(nrow(perf_row), 1L)
 
       if (stratified_by == "probability_threshold") {
-        if (c_val == 0) {
-          tp <- sum(bins_e$n_positive)
-          fp <- sum(bins_e$n_negative)
+        if (effective_cutoff == 0) {
+          tp <- sum(eval_bins$n_positive)
+          fp <- sum(eval_bins$n_negative)
           tn <- 0
           fn <- 0
         } else {
-          tn <- sum(bins_e$n_negative[bins_e$upper <= c_val])
-          fn <- sum(bins_e$n_positive[bins_e$upper <= c_val])
-          tp <- sum(bins_e$n_positive[bins_e$upper > c_val])
-          fp <- sum(bins_e$n_negative[bins_e$upper > c_val])
+          tn <- sum(eval_bins$n_negative[eval_bins$upper <= effective_cutoff])
+          fn <- sum(eval_bins$n_positive[eval_bins$upper <= effective_cutoff])
+          tp <- sum(eval_bins$n_positive[eval_bins$upper > effective_cutoff])
+          fp <- sum(eval_bins$n_negative[eval_bins$upper > effective_cutoff])
         }
       } else {
         # PPCR stratification
-        if (req_val == 1 || c_val == 0) {
-          tp <- sum(bins_e$n_positive)
-          fp <- sum(bins_e$n_negative)
+        if (requested_value == 1 || effective_cutoff == 0) {
+          tp <- sum(eval_bins$n_positive)
+          fp <- sum(eval_bins$n_negative)
           tn <- 0
           fn <- 0
         } else {
-          tn <- sum(bins_e$n_negative[bins_e$upper <= c_val])
-          fn <- sum(bins_e$n_positive[bins_e$upper <= c_val])
-          tp <- sum(bins_e$n_positive[bins_e$upper > c_val])
-          fp <- sum(bins_e$n_negative[bins_e$upper > c_val])
+          tn <- sum(eval_bins$n_negative[eval_bins$upper <= effective_cutoff])
+          fn <- sum(eval_bins$n_positive[eval_bins$upper <= effective_cutoff])
+          tp <- sum(eval_bins$n_positive[eval_bins$upper > effective_cutoff])
+          fp <- sum(eval_bins$n_negative[eval_bins$upper > effective_cutoff])
         }
       }
 
       expect_equal(
         tp,
         unname(perf_row$TP),
-        label = sprintf("TP for eval %s at cutoff %g", e, c_val)
+        label = sprintf(
+          "TP for eval %s at cutoff %g (value %g)",
+          eval_id,
+          effective_cutoff,
+          requested_value
+        )
       )
       expect_equal(
         fp,
         unname(perf_row$FP),
-        label = sprintf("FP for eval %s at cutoff %g", e, c_val)
+        label = sprintf(
+          "FP for eval %s at cutoff %g (value %g)",
+          eval_id,
+          effective_cutoff,
+          requested_value
+        )
       )
       expect_equal(
         tn,
         unname(perf_row$TN),
-        label = sprintf("TN for eval %s at cutoff %g", e, c_val)
+        label = sprintf(
+          "TN for eval %s at cutoff %g (value %g)",
+          eval_id,
+          effective_cutoff,
+          requested_value
+        )
       )
       expect_equal(
         fn,
         unname(perf_row$FN),
-        label = sprintf("FN for eval %s at cutoff %g", e, c_val)
+        label = sprintf(
+          "FN for eval %s at cutoff %g (value %g)",
+          eval_id,
+          effective_cutoff,
+          requested_value
+        )
       )
     }
   }
@@ -192,8 +231,7 @@ test_that("statistical scenario 2: threshold exactly equal to an observed score"
   r <- list(c(0, 1, 1))
   res <- prepare_probs_distribution_data(p, r, by = 0.1)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
-  # At threshold 0.5, score 0.5 is predicted negative
-  op_05 <- dplyr::filter(res$operating_points, cutoff == 0.5)
+  op_05 <- dplyr::filter(res$operating_points, .data$cutoff == 0.5)
   expect_equal(op_05$realized_ppcr, 1 / 3)
 })
 
@@ -230,7 +268,6 @@ test_that("statistical scenario 5: scores equal to zero", {
   res <- prepare_probs_distribution_data(p, r, by = 0.1)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
 
-  # Check zero-mass interval [0, 0]
   b0 <- res$bins[1, ]
   expect_equal(b0$lower, 0)
   expect_equal(b0$upper, 0)
@@ -247,7 +284,6 @@ test_that("statistical scenario 6: scores equal to one", {
   res <- prepare_probs_distribution_data(p, r, by = 0.1)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
 
-  # Check interval ending at 1.0 contains the score=1 observations
   last_bin <- res$bins[nrow(res$bins), ]
   expect_equal(last_bin$upper, 1.0)
 })
@@ -257,7 +293,7 @@ test_that("statistical scenario 7: cutoff zero handling", {
   p <- list(c(0.0, 0.3, 0.8))
   r <- list(c(1, 0, 1))
   res <- prepare_probs_distribution_data(p, r, by = 0.1)
-  op_0 <- dplyr::filter(res$operating_points, cutoff == 0)
+  op_0 <- dplyr::filter(res$operating_points, .data$cutoff == 0)
   expect_equal(op_0$realized_ppcr, 1.0)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
 })
@@ -267,7 +303,7 @@ test_that("statistical scenario 8: cutoff one when it exists in current grid", {
   p <- list(c(0.2, 0.6, 0.9))
   r <- list(c(0, 1, 1))
   res <- prepare_probs_distribution_data(p, r, by = 0.1)
-  op_1 <- dplyr::filter(res$operating_points, cutoff == 1.0)
+  op_1 <- dplyr::filter(res$operating_points, .data$cutoff == 1.0)
   expect_equal(nrow(op_1), 1)
   expect_equal(op_1$realized_ppcr, 0.0)
   expect_bins_reconstruction_equals_perf_data(p, r, by = 0.1)
@@ -389,10 +425,9 @@ test_that("statistical scenario 17: requested versus realized PPCR under ties", 
   res <- prepare_probs_distribution_data(p, r, by = 0.2, stratified_by = "ppcr")
 
   op <- res$operating_points
-  # Find row where value requested is 0.4
-  row_04 <- dplyr::filter(op, value == 0.4)
+  row_04 <- dplyr::filter(op, .data$value == 0.4)
   expect_equal(row_04$cutoff, 0.5)
-  expect_equal(row_04$realized_ppcr, 1 / 5) # only score 0.8 > 0.5
+  expect_equal(row_04$realized_ppcr, 1 / 5)
   expect_bins_reconstruction_equals_perf_data(
     p,
     r,
@@ -405,13 +440,6 @@ test_that("statistical scenario 17: requested versus realized PPCR under ties", 
 test_that("statistical scenario 18: repeated quantile cutoffs in PPCR stratification", {
   p <- list(c(0.1, 0.1, 0.1, 0.9))
   r <- list(c(0, 0, 1, 1))
-  res <- prepare_probs_distribution_data(
-    p,
-    r,
-    by = 0.25,
-    stratified_by = "ppcr"
-  )
-
   expect_bins_reconstruction_equals_perf_data(
     p,
     r,
@@ -446,6 +474,21 @@ test_that("statistical scenario 20: deterministic row ordering in returned list"
   expect_identical(res1, res2)
   expect_equal(res1$bins$evaluation[1], "M1")
   expect_equal(res1$operating_points$evaluation[1], "M1")
+})
+
+
+test_that("duplicated evaluation names throw clear error", {
+  # Duplicated model names produce duplicate evaluation identities
+  probs_dup <- list(
+    "Model_1" = c(0.1, 0.4),
+    "Model_1" = c(0.2, 0.5)
+  )
+  reals_dup <- list(c(0, 1))
+
+  expect_error(
+    prepare_probs_distribution_data(probs_dup, reals_dup),
+    "Evaluation names must be unique across models/populations."
+  )
 })
 
 

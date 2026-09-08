@@ -1,21 +1,55 @@
-#' Internal Static Prediction Distribution Preparation
+#' Prepare Prediction Distribution Data
 #'
-#' Prepares exact prediction score distribution data (bins and operating points)
-#' for static binary outcome models and populations. Reuses production
-#' `prepare_performance_data()` to ensure exact cutoff and PPCR alignment.
+#' Internal helper to prepare exact prediction distribution score intervals (`bins`)
+#' and operating points (`operating_points`) for static binary outcomes. Reuses production
+#' `prepare_performance_data()` as the authoritative source for cutoff grids and metrics.
 #'
-#' @param probs A list of numeric vectors of estimated probabilities (one vector per
-#'   model or population).
-#' @param reals A list of numeric vectors of binary outcome indicators (0 or 1).
-#' @param by Increment of the threshold or PPCR evaluation sequence (default 0.01).
-#' @param stratified_by Operating point stratification metric: `"probability_threshold"`
-#'   or `"ppcr"`.
+#' @inheritParams prepare_performance_data
 #'
 #' @return A named list with two tidy tibbles:
-#'   \item{bins}{Exact aggregate score interval counts for each evaluation.}
-#'   \item{operating_points}{Selectable operating points with effective cutoffs and
-#'     realized PPCR.}
+#'   \item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-mass
+#'     interval `[0, 0]` and right-closed intervals `(lower, upper]` aligned to effective
+#'     cutoffs. Columns: `evaluation`, `model`, `population`, `lower`, `upper`,
+#'     `include_lower`, `include_upper`, `n_positive`, `n_negative`.}
+#'   \item{operating_points}{Selectable operating points. Columns: `evaluation`,
+#'     `model`, `population`, `type`, `value` (requested metric value), `cutoff`
+#'     (effective score cutoff), `realized_ppcr` (actual predicted positives fraction).}
+#'
+#' @details
+#' This internal function is used to prepare static prediction distribution data
+#' before rendering or contract serialization.
+#'
 #' @keywords internal
+#'
+#' @examples
+#' # Single model with probability threshold stratification
+#' res_single <- rtichoke:::prepare_probs_distribution_data(
+#'   probs = list(example_dat$estimated_probabilities),
+#'   reals = list(example_dat$outcome),
+#'   by = 0.1
+#' )
+#' res_single$operating_points
+#' res_single$bins
+#'
+#' # Multiple models sharing one outcome vector
+#' res_multi <- rtichoke:::prepare_probs_distribution_data(
+#'   probs = list(
+#'     "Model A" = example_dat$estimated_probabilities,
+#'     "Model B" = example_dat$random_guess
+#'   ),
+#'   reals = list(example_dat$outcome),
+#'   by = 0.2
+#' )
+#' res_multi$operating_points
+#'
+#' # PPCR stratification with tied scores showing requested vs realized PPCR
+#' res_ppcr <- rtichoke:::prepare_probs_distribution_data(
+#'   probs = list(c(0.1, 0.2, 0.5, 0.5, 0.8, 0.9)),
+#'   reals = list(c(0, 0, 1, 0, 1, 1)),
+#'   by = 0.5,
+#'   stratified_by = "ppcr"
+#' )
+#' res_ppcr$operating_points
 prepare_probs_distribution_data <- function(
   probs,
   reals,
@@ -31,113 +65,122 @@ prepare_probs_distribution_data <- function(
     stop("Probabilities mustn't be greater than one ")
   }
 
-  eval_meta <- build_evaluation_metadata(probs, reals)
-  n_evals <- nrow(eval_meta)
+  evaluation_metadata <- build_evaluation_metadata(probs, reals)
 
-  bins_list <- vector("list", n_evals)
-  op_list <- vector("list", n_evals)
-
-  for (i in seq_len(n_evals)) {
-    p <- probs[[i]]
-    r <- if (length(reals) == 1L) reals[[1L]] else reals[[i]]
-    m_info <- eval_meta[i, , drop = FALSE]
-
-    perf_eval <- prepare_performance_data(
-      probs = list(p),
-      reals = list(r),
-      by = by,
-      stratified_by = stratified_by
-    )
-
-    N <- length(p)
-
-    # 1. Operating Points table construction
-    if (stratified_by == "probability_threshold") {
-      val <- unname(perf_eval$probability_threshold)
-      cut <- unname(perf_eval$probability_threshold)
-      # Realized PPCR using current static rule:
-      # cutoff == 0 -> everyone positive (realized_ppcr = 1)
-      # cutoff > 0 -> score > cutoff
-      realized_ppcr <- unname(perf_eval$ppcr)
-    } else {
-      val <- unname(perf_eval$ppcr)
-      cut <- unname(perf_eval$probability_threshold)
-      realized_ppcr <- purrr::map2_dbl(
-        val,
-        cut,
-        function(v, c) {
-          if (v == 1 || c == 0) {
-            1.0
-          } else {
-            sum(p > c) / N
-          }
-        }
-      )
-    }
-
-    op_df <- tibble::tibble(
-      evaluation = m_info$evaluation,
-      model = m_info$model,
-      population = m_info$population,
-      type = stratified_by,
-      value = val,
-      cutoff = cut,
-      realized_ppcr = realized_ppcr
-    )
-
-    # 2. Bins table construction
-    cutoffs <- unname(perf_eval$probability_threshold)
-    boundaries <- sort(unique(c(0, cutoffs, 1)))
-    m_bounds <- length(boundaries)
-
-    # Zero-mass interval [0, 0]
-    b0_pos <- as.integer(sum(p == 0 & r == 1))
-    b0_neg <- as.integer(sum(p == 0 & r == 0))
-
-    lower_vec <- c(0)
-    upper_vec <- c(0)
-    inc_lower_vec <- c(TRUE)
-    inc_upper_vec <- c(TRUE)
-    n_pos_vec <- c(b0_pos)
-    n_neg_vec <- c(b0_neg)
-
-    # Subsequent right-closed intervals (boundaries[j], boundaries[j + 1]]
-    if (m_bounds > 1L) {
-      for (j in seq_len(m_bounds - 1L)) {
-        l_val <- boundaries[j]
-        u_val <- boundaries[j + 1L]
-
-        in_bin <- p > l_val & p <= u_val
-        pos_cnt <- as.integer(sum(in_bin & r == 1))
-        neg_cnt <- as.integer(sum(in_bin & r == 0))
-
-        lower_vec <- c(lower_vec, l_val)
-        upper_vec <- c(upper_vec, u_val)
-        inc_lower_vec <- c(inc_lower_vec, FALSE)
-        inc_upper_vec <- c(inc_upper_vec, TRUE)
-        n_pos_vec <- c(n_pos_vec, pos_cnt)
-        n_neg_vec <- c(n_neg_vec, neg_cnt)
-      }
-    }
-
-    bins_df <- tibble::tibble(
-      evaluation = m_info$evaluation,
-      model = m_info$model,
-      population = m_info$population,
-      lower = lower_vec,
-      upper = upper_vec,
-      include_lower = inc_lower_vec,
-      include_upper = inc_upper_vec,
-      n_positive = n_pos_vec,
-      n_negative = n_neg_vec
-    )
-
-    op_list[[i]] <- op_df
-    bins_list[[i]] <- bins_df
+  if (any(duplicated(evaluation_metadata$evaluation))) {
+    stop("Evaluation names must be unique across models/populations.")
   }
 
+  n_evaluations <- nrow(evaluation_metadata)
+
+  eval_results <- purrr::map(
+    seq_len(n_evaluations),
+    function(i) {
+      probabilities <- probs[[i]]
+      outcomes <- if (length(reals) == 1L) reals[[1L]] else reals[[i]]
+      n_observations <- length(probabilities)
+      current_eval_metadata <- evaluation_metadata[i, , drop = FALSE]
+
+      perf_eval <- prepare_performance_data(
+        probs = list(probabilities),
+        reals = list(outcomes),
+        by = by,
+        stratified_by = stratified_by
+      )
+
+      # 1. Operating Points table
+      if (stratified_by == "probability_threshold") {
+        operating_point_values <- unname(perf_eval$probability_threshold)
+        effective_cutoffs <- unname(perf_eval$probability_threshold)
+      } else {
+        operating_point_values <- unname(perf_eval$ppcr)
+        effective_cutoffs <- unname(perf_eval$probability_threshold)
+      }
+
+      realized_ppcr <- unname(perf_eval$predicted_positives / n_observations)
+
+      operating_points <- tibble::tibble(
+        evaluation = current_eval_metadata$evaluation,
+        model = current_eval_metadata$model,
+        population = current_eval_metadata$population,
+        type = stratified_by,
+        value = operating_point_values,
+        cutoff = effective_cutoffs,
+        realized_ppcr = realized_ppcr
+      )
+
+      # 2. Bins table
+      cutoffs <- unname(perf_eval$probability_threshold)
+      boundaries <- sort(unique(c(0, cutoffs, 1)))
+      n_boundaries <- length(boundaries)
+
+      interval_grid <- tibble::tibble(
+        interval_id = 0L:(n_boundaries - 1L),
+        lower = c(0, boundaries[-n_boundaries]),
+        upper = c(0, boundaries[-1L]),
+        include_lower = c(TRUE, rep(FALSE, n_boundaries - 1L)),
+        include_upper = rep(TRUE, n_boundaries)
+      )
+
+      zero_mask <- probabilities == 0
+      obs_interval_id <- integer(n_observations)
+      obs_interval_id[zero_mask] <- 0L
+
+      if (any(!zero_mask)) {
+        obs_interval_id[!zero_mask] <- as.integer(
+          cut(
+            probabilities[!zero_mask],
+            breaks = boundaries,
+            include.lowest = FALSE,
+            right = TRUE,
+            labels = FALSE
+          )
+        )
+      }
+
+      obs_df <- tibble::tibble(
+        interval_id = obs_interval_id,
+        outcome = outcomes
+      )
+
+      counts_df <- obs_df |>
+        dplyr::group_by(.data$interval_id) |>
+        dplyr::summarise(
+          n_positive = as.integer(sum(.data$outcome == 1)),
+          n_negative = as.integer(sum(.data$outcome == 0)),
+          .groups = "drop"
+        )
+
+      bins <- interval_grid |>
+        dplyr::left_join(counts_df, by = "interval_id") |>
+        dplyr::mutate(
+          n_positive = dplyr::coalesce(.data$n_positive, 0L),
+          n_negative = dplyr::coalesce(.data$n_negative, 0L),
+          evaluation = current_eval_metadata$evaluation,
+          model = current_eval_metadata$model,
+          population = current_eval_metadata$population
+        ) |>
+        dplyr::select(
+          "evaluation",
+          "model",
+          "population",
+          "lower",
+          "upper",
+          "include_lower",
+          "include_upper",
+          "n_positive",
+          "n_negative"
+        )
+
+      list(bins = bins, operating_points = operating_points)
+    }
+  )
+
   list(
-    bins = dplyr::bind_rows(bins_list),
-    operating_points = dplyr::bind_rows(op_list)
+    bins = dplyr::bind_rows(purrr::map(eval_results, "bins")),
+    operating_points = dplyr::bind_rows(purrr::map(
+      eval_results,
+      "operating_points"
+    ))
   )
 }
