@@ -91,3 +91,38 @@ jobs:
           grep -q 'Observed Positive' "$dom"
           grep -q 'Observed Negative' "$dom"
           grep -q '<svg' "$dom"
+
+      - name: Open saved artifact directly from the filesystem
+        run: |
+          stderr="/tmp/probs-histogram-file-chrome-stderr.log"
+          dom="/tmp/probs-histogram-file-dom.html"
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --screenshot="browser-acceptance/probs-histogram.png" \
+            --window-size=1400,1000 \
+            --dump-dom \
+            "file://${GITHUB_WORKSPACE}/browser-acceptance/probs-histogram.html" \
+            > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          cp "$dom" browser-acceptance/probs-histogram-file-dom.html
+          cp "$stderr" browser-acceptance/probs-histogram-file-stderr.log
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError|CORS' "$stderr"
+          grep -q 'Observed Positive' "$dom"
+          grep -q 'Observed Negative' "$dom"
+          grep -q '<svg' "$dom"
+
+      - name: Upload browser artifact and screenshot
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: prediction-histogram-browser-proof
+          path: browser-acceptance
