@@ -31,7 +31,7 @@ predicted-positive classification rates.}
 \value{
 A browsable HTML object rendered by the vendored \code{rtichoke_viz}
 browser bundle. It can be displayed in the RStudio Viewer, embedded in
-R Markdown or Quarto, or saved as standalone HTML with
+R Markdown or Quarto, or saved as a single self-contained HTML file with
 \code{\link[htmltools:save_html]{htmltools::save_html()}}.
 }
 \description{

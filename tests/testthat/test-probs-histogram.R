@@ -130,13 +130,12 @@ test_that("create_probs_histogram returns a standalone browser component", {
     by = 0.1
   )
   html <- as.character(histogram)
-  dependency <- htmltools::htmlDependencies(histogram)[[1]]
 
   expect_s3_class(histogram, "shiny.tag.list")
   expect_match(html, "renderPredictionDistribution", fixed = TRUE)
   expect_match(html, '"type":"prediction_distribution"', fixed = TRUE)
-  expect_identical(dependency$name, "rtichoke-viz")
-  expect_identical(dependency$version, "0.21.0")
+  expect_match(html, "URL.createObjectURL", fixed = TRUE)
+  expect_length(htmltools::htmlDependencies(histogram), 0L)
 })
 
 test_that("prediction histogram browser dependencies save with standalone HTML", {
@@ -154,16 +153,7 @@ test_that("prediction histogram browser dependencies save with standalone HTML",
   saved_html <- paste(readLines(output_file, warn = FALSE), collapse = "\n")
   expect_true(file.exists(output_file))
   expect_match(saved_html, "renderPredictionDistribution", fixed = TRUE)
-  expect_true(file.exists(file.path(
-    output_dir,
-    "lib",
-    "rtichoke-viz-0.21.0",
-    "rtichoke-viz.js"
-  )))
-  expect_true(file.exists(file.path(
-    output_dir,
-    "lib",
-    "rtichoke-viz-0.21.0",
-    "rtichoke-viz.css"
-  )))
+  expect_match(saved_html, "URL.createObjectURL", fixed = TRUE)
+  expect_match(saved_html, "rtichoke-prediction-distribution", fixed = TRUE)
+  expect_false(dir.exists(file.path(output_dir, "lib")))
 })

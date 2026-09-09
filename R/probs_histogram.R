@@ -20,7 +20,7 @@
 #'
 #' @return A browsable HTML object rendered by the vendored `rtichoke_viz`
 #'   browser bundle. It can be displayed in the RStudio Viewer, embedded in
-#'   R Markdown or Quarto, or saved as standalone HTML with
+#'   R Markdown or Quarto, or saved as a single self-contained HTML file with
 #'   [htmltools::save_html()].
 #'
 #' @export
@@ -54,9 +54,95 @@ create_probs_histogram <- function(
     stratified_by = stratified_by
   )
 
-  render_rtichoke_viz_browser(
+  render_rtichoke_viz_self_contained_browser(
     rtichoke_viz_prediction_distribution_spec(distribution_data)
   )
+}
+
+#' Render a self-contained canonical browser component
+#'
+#' Embed the vendored browser bundle and stylesheet directly so the saved HTML
+#' can be opened from a local filesystem without a web server.
+#'
+#' @param spec A standalone canonical rtichoke_viz specification.
+#'
+#' @return A browsable self-contained HTML object.
+#' @noRd
+render_rtichoke_viz_self_contained_browser <- function(spec) {
+  if (!identical(spec$type, "prediction_distribution")) {
+    stop(
+      "Self-contained browser rendering is not available for chart type: ",
+      spec$type,
+      call. = FALSE
+    )
+  }
+
+  vendor_directory <- system.file("rtichoke-viz", package = "rtichoke")
+  javascript_path <- file.path(vendor_directory, "rtichoke-viz.js")
+  stylesheet_path <- file.path(vendor_directory, "rtichoke-viz.css")
+  if (!file.exists(javascript_path) || !file.exists(stylesheet_path)) {
+    stop("Vendored rtichoke_viz browser assets are unavailable", call. = FALSE)
+  }
+
+  component_id <- rtichoke_viz_browser_id()
+  spec_json <- jsonlite::toJSON(spec, auto_unbox = TRUE, digits = NA)
+  javascript <- readChar(
+    javascript_path,
+    nchars = file.info(javascript_path)$size,
+    useBytes = TRUE
+  )
+  Encoding(javascript) <- "UTF-8"
+  javascript_json <- jsonlite::toJSON(
+    javascript,
+    auto_unbox = TRUE,
+    pretty = FALSE
+  )
+  stylesheet <- readChar(
+    stylesheet_path,
+    nchars = file.info(stylesheet_path)$size,
+    useBytes = TRUE
+  )
+  Encoding(stylesheet) <- "UTF-8"
+
+  spec_json <- gsub("</", "<\\/", spec_json, fixed = TRUE)
+  javascript_json <- gsub("</", "<\\/", javascript_json, fixed = TRUE)
+  module_script <- paste0(
+    "const source = JSON.parse(document.querySelector('#",
+    component_id,
+    "-bundle').textContent);\n",
+    "const moduleUrl = URL.createObjectURL(new Blob([source], ",
+    "{ type: 'text/javascript' }));\n",
+    "const { renderPredictionDistribution } = await import(moduleUrl);\n",
+    "const spec = JSON.parse(document.querySelector('#",
+    component_id,
+    "-spec').textContent);\n",
+    "document.querySelector('#",
+    component_id,
+    "').append(renderPredictionDistribution(spec));\n",
+    "URL.revokeObjectURL(moduleUrl);"
+  )
+
+  htmltools::browsable(htmltools::tagList(
+    htmltools::tags$style(htmltools::HTML(stylesheet)),
+    htmltools::tags$div(
+      id = component_id,
+      class = "rtichoke-viz-chart"
+    ),
+    htmltools::tags$script(
+      id = paste0(component_id, "-spec"),
+      type = "application/json",
+      htmltools::HTML(spec_json)
+    ),
+    htmltools::tags$script(
+      id = paste0(component_id, "-bundle"),
+      type = "application/json",
+      htmltools::HTML(javascript_json)
+    ),
+    htmltools::tags$script(
+      type = "module",
+      htmltools::HTML(module_script)
+    )
+  ))
 }
 
 #' Build a canonical PredictionDistributionSpec
