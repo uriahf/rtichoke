@@ -16,7 +16,19 @@ test_that("assign_probability_quantile_strata handles deterministic Example A pa
   expect_equal(levels(strata), c("0.2", "0.4", "0.6", "0.8", "1.0"))
 
   expected_assignments <- factor(
-    c("0.2", "0.2", "0.2", "0.2", "0.4", "0.6", "0.6", "0.8", "0.8", "1.0", "1.0"),
+    c(
+      "0.2",
+      "0.2",
+      "0.2",
+      "0.2",
+      "0.4",
+      "0.6",
+      "0.6",
+      "0.8",
+      "0.8",
+      "1.0",
+      "1.0"
+    ),
     levels = c("0.2", "0.4", "0.6", "0.8", "1.0"),
     ordered = TRUE
   )
@@ -107,7 +119,10 @@ test_that("prepare_performance_data PPCR operating point behavior remains comple
 
   # Verify existing R prepare_performance_data(..., stratified_by = "ppcr") behavior
   expect_equal(perf_data_ppcr$ppcr, c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0))
-  expect_equal(as.numeric(perf_data_ppcr$probability_threshold), c(0.50, 0.42, 0.34, 0.26, 0.18, 0.10))
+  expect_equal(
+    as.numeric(perf_data_ppcr$probability_threshold),
+    c(0.50, 0.42, 0.34, 0.26, 0.18, 0.10)
+  )
   expect_equal(as.numeric(perf_data_ppcr$TP), c(0, 1, 1, 2, 2, 2))
   expect_equal(as.numeric(perf_data_ppcr$TN), c(3, 3, 2, 2, 1, 0))
 })

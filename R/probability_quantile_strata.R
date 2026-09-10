@@ -21,7 +21,12 @@ assign_probability_quantile_strata <- function(probs, by) {
 
   probs_vec <- as.numeric(probs)
   probs_seq <- seq(0, 1, length.out = q + 1)
-  edges <- as.numeric(stats::quantile(probs_vec, probs = probs_seq, type = 7, names = FALSE))
+  edges <- as.numeric(stats::quantile(
+    probs_vec,
+    probs = probs_seq,
+    type = 7,
+    names = FALSE
+  ))
 
   edges <- cummax(edges)
   edges[1] <- 0.0
