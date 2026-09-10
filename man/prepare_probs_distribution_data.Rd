@@ -23,17 +23,22 @@ prepare_probs_distribution_data(
 Threshold or alternatively by Predicted Positives Condition Rate}
 }
 \value{
-A named list with two tidy tibbles:
+A named list with three tidy tibbles:
 \item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-score
 interval \verb{[0, 0]} and right-closed intervals \verb{(lower, upper]} aligned to effective
 cutoffs. Columns: \code{evaluation}, \code{model}, \code{population}, \code{lower}, \code{upper},
 \code{include_lower}, \code{include_upper}, \code{n_positive}, \code{n_negative}.}
+\item{rank_bins}{Producer-owned probability-quantile rank bins derived directly from
+individual probabilities and outcomes using \code{assign_probability_quantile_strata()}.
+Columns: \code{evaluation}, \code{model}, \code{population}, \code{rank_lower}, \code{rank_upper},
+\code{n_positive}, \code{n_negative}.}
 \item{operating_points}{Selectable operating points. Columns: \code{evaluation},
 \code{model}, \code{population}, \code{type}, \code{value} (requested metric value), \code{cutoff}
 (effective score cutoff), \code{realized_ppcr} (actual predicted positives fraction).}
 }
 \description{
-Internal helper to prepare exact prediction distribution score intervals (\code{bins})
+Internal helper to prepare exact prediction distribution score intervals (\code{bins}),
+producer-owned probability-quantile rank bins (\code{rank_bins}),
 and operating points (\code{operating_points}) for static binary outcomes. Reuses production
 \code{prepare_performance_data()} as the authoritative source for cutoff grids and metrics.
 }

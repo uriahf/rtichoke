@@ -525,7 +525,15 @@ test_that("rank_bins output schema and mass conservation for continuous predicti
 
   expect_equal(
     names(rb),
-    c("evaluation", "model", "population", "rank_lower", "rank_upper", "n_positive", "n_negative")
+    c(
+      "evaluation",
+      "model",
+      "population",
+      "rank_lower",
+      "rank_upper",
+      "n_positive",
+      "n_negative"
+    )
   )
   expect_equal(nrow(rb), 5L)
   expect_equal(rb$rank_lower, c(0.0, 0.2, 0.4, 0.6, 0.8))
@@ -542,8 +550,18 @@ test_that("rank_bins stratification-invariance across probability_threshold and 
   r <- list(c(0, 0, 1, 0, 1, 1))
   by <- 0.2
 
-  res_thresh <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "probability_threshold")
-  res_ppcr <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "ppcr")
+  res_thresh <- prepare_probs_distribution_data(
+    p,
+    r,
+    by = by,
+    stratified_by = "probability_threshold"
+  )
+  res_ppcr <- prepare_probs_distribution_data(
+    p,
+    r,
+    by = by,
+    stratified_by = "ppcr"
+  )
 
   expect_identical(res_thresh$rank_bins, res_ppcr$rank_bins)
 })
@@ -602,15 +620,56 @@ test_that("backward-compatibility: existing bins and operating_points outputs re
   r <- list(GOLDEN_THRESHOLD_OUTCOMES)
   by <- 0.1
 
-  res_thresh <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "probability_threshold")
-  res_ppcr <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "ppcr")
+  res_thresh <- prepare_probs_distribution_data(
+    p,
+    r,
+    by = by,
+    stratified_by = "probability_threshold"
+  )
+  res_ppcr <- prepare_probs_distribution_data(
+    p,
+    r,
+    by = by,
+    stratified_by = "ppcr"
+  )
 
   # Existing outputs must be identical to pre-rankBins assertions
-  expect_equal(names(res_thresh$bins), c("evaluation", "model", "population", "lower", "upper", "include_lower", "include_upper", "n_positive", "n_negative"))
-  expect_equal(names(res_thresh$operating_points), c("evaluation", "model", "population", "type", "value", "cutoff", "realized_ppcr"))
+  expect_equal(
+    names(res_thresh$bins),
+    c(
+      "evaluation",
+      "model",
+      "population",
+      "lower",
+      "upper",
+      "include_lower",
+      "include_upper",
+      "n_positive",
+      "n_negative"
+    )
+  )
+  expect_equal(
+    names(res_thresh$operating_points),
+    c(
+      "evaluation",
+      "model",
+      "population",
+      "type",
+      "value",
+      "cutoff",
+      "realized_ppcr"
+    )
+  )
 
   target_cutoffs <- c(0.0, 0.2, 0.5, 1.0)
-  sub_ops <- dplyr::filter(res_thresh$operating_points, .data$cutoff %in% target_cutoffs)
+  sub_ops <- dplyr::filter(
+    res_thresh$operating_points,
+    .data$cutoff %in% target_cutoffs
+  )
   expect_equal(sub_ops$cutoff, target_cutoffs)
-  expect_equal(sub_ops$realized_ppcr, c(1.0, 2 / 3, 1 / 3, 0.0), tolerance = 1e-5)
+  expect_equal(
+    sub_ops$realized_ppcr,
+    c(1.0, 2 / 3, 1 / 3, 0.0),
+    tolerance = 1e-5
+  )
 })
