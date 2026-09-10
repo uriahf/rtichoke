@@ -1,16 +1,21 @@
 #' Prepare Prediction Distribution Data
 #'
-#' Internal helper to prepare exact prediction distribution score intervals (`bins`)
+#' Internal helper to prepare exact prediction distribution score intervals (`bins`),
+#' producer-owned probability-quantile rank bins (`rank_bins`),
 #' and operating points (`operating_points`) for static binary outcomes. Reuses production
 #' `prepare_performance_data()` as the authoritative source for cutoff grids and metrics.
 #'
 #' @inheritParams prepare_performance_data
 #'
-#' @return A named list with two tidy tibbles:
+#' @return A named list with three tidy tibbles:
 #'   \item{bins}{Exact score intervals covering score space 0 to 1. Includes zero-score
 #'     interval `[0, 0]` and right-closed intervals `(lower, upper]` aligned to effective
 #'     cutoffs. Columns: `evaluation`, `model`, `population`, `lower`, `upper`,
 #'     `include_lower`, `include_upper`, `n_positive`, `n_negative`.}
+#'   \item{rank_bins}{Producer-owned probability-quantile rank bins derived directly from
+#'     individual probabilities and outcomes using `assign_probability_quantile_strata()`.
+#'     Columns: `evaluation`, `model`, `population`, `rank_lower`, `rank_upper`,
+#'     `n_positive`, `n_negative`.}
 #'   \item{operating_points}{Selectable operating points. Columns: `evaluation`,
 #'     `model`, `population`, `type`, `value` (requested metric value), `cutoff`
 #'     (effective score cutoff), `realized_ppcr` (actual predicted positives fraction).}
@@ -188,12 +193,46 @@ prepare_probs_distribution_data <- function(
           "n_negative"
         )
 
-      list(bins = bins, operating_points = operating_points)
+      # 3. Rank Bins table
+      strata <- assign_probability_quantile_strata(probabilities, by)
+      q <- as.integer(round(1 / by))
+      rank_upper <- round(seq(by, 1.0, length.out = q), 10)
+      rank_lower <- c(0.0, rank_upper[-q])
+
+      obs_strata_df <- tibble::tibble(
+        stratum = strata,
+        outcome = outcomes
+      )
+
+      stratum_counts <- obs_strata_df |>
+        dplyr::group_by(stratum = .data$stratum, .drop = FALSE) |>
+        dplyr::summarise(
+          n_positive = as.integer(sum(.data$outcome == 1)),
+          n_negative = as.integer(sum(.data$outcome == 0)),
+          .groups = "drop"
+        )
+
+      rank_bins <- tibble::tibble(
+        evaluation = current_evaluation_metadata$evaluation,
+        model = current_evaluation_metadata$model,
+        population = current_evaluation_metadata$population,
+        rank_lower = rank_lower,
+        rank_upper = rank_upper,
+        n_positive = stratum_counts$n_positive,
+        n_negative = stratum_counts$n_negative
+      )
+
+      list(
+        bins = bins,
+        rank_bins = rank_bins,
+        operating_points = operating_points
+      )
     }
   )
 
   list(
     bins = dplyr::bind_rows(purrr::map(evaluation_results, "bins")),
+    rank_bins = dplyr::bind_rows(purrr::map(evaluation_results, "rank_bins")),
     operating_points = dplyr::bind_rows(purrr::map(
       evaluation_results,
       "operating_points"

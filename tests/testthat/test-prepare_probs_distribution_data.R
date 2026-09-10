@@ -507,3 +507,110 @@ test_that("input validation stops on invalid probabilities or arguments", {
     "'arg' should be one of"
   )
 })
+
+
+# -----------------------------------------------------------------------------
+# PRODUCER-OWNED rank_bins STATISTICAL CONTRACT & INVARIANCE TESTS
+# -----------------------------------------------------------------------------
+
+test_that("rank_bins output schema and mass conservation for continuous predictions", {
+  p <- list(c(0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95))
+  r <- list(c(0, 1, 0, 1, 0, 1, 0, 1, 0, 1))
+  by <- 0.2
+
+  res <- prepare_probs_distribution_data(p, r, by = by)
+
+  expect_true("rank_bins" %in% names(res))
+  rb <- res$rank_bins
+
+  expect_equal(
+    names(rb),
+    c("evaluation", "model", "population", "rank_lower", "rank_upper", "n_positive", "n_negative")
+  )
+  expect_equal(nrow(rb), 5L)
+  expect_equal(rb$rank_lower, c(0.0, 0.2, 0.4, 0.6, 0.8))
+  expect_equal(rb$rank_upper, c(0.2, 0.4, 0.6, 0.8, 1.0))
+
+  # Mass conservation
+  expect_equal(sum(rb$n_positive), sum(r[[1]] == 1))
+  expect_equal(sum(rb$n_negative), sum(r[[1]] == 0))
+  expect_equal(sum(rb$n_positive + rb$n_negative), length(p[[1]]))
+})
+
+test_that("rank_bins stratification-invariance across probability_threshold and ppcr modes", {
+  p <- list(c(0.1, 0.2, 0.5, 0.5, 0.8, 0.9))
+  r <- list(c(0, 0, 1, 0, 1, 1))
+  by <- 0.2
+
+  res_thresh <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "probability_threshold")
+  res_ppcr <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "ppcr")
+
+  expect_identical(res_thresh$rank_bins, res_ppcr$rank_bins)
+})
+
+test_that("rank_bins handles ties, repeated boundaries, empty strata, and zero/one scores", {
+  # Deterministic fixture exercising ties, 0, 1, repeated cutoffs, empty strata, and N < num_strata
+  p <- list(c(0.0, 0.1, 0.1, 0.1, 0.5, 0.9, 1.0))
+  r <- list(c(0, 1, 0, 1, 1, 0, 1))
+  by <- 0.2
+
+  res <- prepare_probs_distribution_data(p, r, by = by)
+  rb <- res$rank_bins
+
+  # Complete requested grid retained (5 strata for by = 0.2)
+  expect_equal(nrow(rb), 5L)
+  expect_equal(rb$rank_lower, c(0.0, 0.2, 0.4, 0.6, 0.8))
+  expect_equal(rb$rank_upper, c(0.2, 0.4, 0.6, 0.8, 1.0))
+
+  # Strata 2 (0.2-0.4) and 3 (0.4-0.6) receive 0 observations due to repeated quantile boundary
+  expect_equal(rb$n_positive[2], 0L)
+  expect_equal(rb$n_negative[2], 0L)
+  expect_equal(rb$n_positive[3], 0L)
+  expect_equal(rb$n_negative[3], 0L)
+
+  # Identical scores 0.1 are all assigned to stratum 1 (0.0-0.2) and never split
+  expect_equal(rb$n_positive[1], 2L)
+  expect_equal(rb$n_negative[1], 2L)
+
+  # Exact score 0.0 is assigned to stratum 1
+  # Exact score 1.0 is assigned to stratum 5 (0.8-1.0)
+  expect_equal(rb$n_positive[5], 1L)
+  expect_equal(rb$n_negative[5], 1L)
+
+  # Mass conservation
+  expect_equal(sum(rb$n_positive), 4L)
+  expect_equal(sum(rb$n_negative), 3L)
+  expect_equal(sum(rb$n_positive + rb$n_negative), 7L)
+})
+
+test_that("rank_bins preserves grid when N < number of strata", {
+  p <- list(c(0.2, 0.8))
+  r <- list(c(0, 1))
+  by <- 0.2 # 5 strata requested for 2 observations
+
+  res <- prepare_probs_distribution_data(p, r, by = by)
+  rb <- res$rank_bins
+
+  expect_equal(nrow(rb), 5L)
+  expect_equal(sum(rb$n_positive), 1L)
+  expect_equal(sum(rb$n_negative), 1L)
+  expect_equal(sum(rb$n_positive + rb$n_negative), 2L)
+})
+
+test_that("backward-compatibility: existing bins and operating_points outputs remain unchanged", {
+  p <- list(GOLDEN_THRESHOLD_SCORES)
+  r <- list(GOLDEN_THRESHOLD_OUTCOMES)
+  by <- 0.1
+
+  res_thresh <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "probability_threshold")
+  res_ppcr <- prepare_probs_distribution_data(p, r, by = by, stratified_by = "ppcr")
+
+  # Existing outputs must be identical to pre-rankBins assertions
+  expect_equal(names(res_thresh$bins), c("evaluation", "model", "population", "lower", "upper", "include_lower", "include_upper", "n_positive", "n_negative"))
+  expect_equal(names(res_thresh$operating_points), c("evaluation", "model", "population", "type", "value", "cutoff", "realized_ppcr"))
+
+  target_cutoffs <- c(0.0, 0.2, 0.5, 1.0)
+  sub_ops <- dplyr::filter(res_thresh$operating_points, .data$cutoff %in% target_cutoffs)
+  expect_equal(sub_ops$cutoff, target_cutoffs)
+  expect_equal(sub_ops$realized_ppcr, c(1.0, 2 / 3, 1 / 3, 0.0), tolerance = 1e-5)
+})
