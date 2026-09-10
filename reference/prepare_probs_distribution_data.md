@@ -1,8 +1,9 @@
 # Prepare Prediction Distribution Data
 
 Internal helper to prepare exact prediction distribution score intervals
-(`bins`) and operating points (`operating_points`) for static binary
-outcomes. Reuses production
+(`bins`), producer-owned probability-quantile rank bins (`rank_bins`),
+and operating points (`operating_points`) for static binary outcomes.
+Reuses production
 [`prepare_performance_data()`](https://uriahf.github.io/rtichoke/reference/prepare_performance_data.md)
 as the authoritative source for cutoff grids and metrics.
 
@@ -39,7 +40,7 @@ prepare_probs_distribution_data(
 
 ## Value
 
-A named list with two tidy tibbles:
+A named list with three tidy tibbles:
 
 - bins:
 
@@ -47,6 +48,14 @@ A named list with two tidy tibbles:
   interval `[0, 0]` and right-closed intervals `(lower, upper]` aligned
   to effective cutoffs. Columns: `evaluation`, `model`, `population`,
   `lower`, `upper`, `include_lower`, `include_upper`, `n_positive`,
+  `n_negative`.
+
+- rank_bins:
+
+  Producer-owned probability-quantile rank bins derived directly from
+  individual probabilities and outcomes using
+  `assign_probability_quantile_strata()`. Columns: `evaluation`,
+  `model`, `population`, `rank_lower`, `rank_upper`, `n_positive`,
   `n_negative`.
 
 - operating_points:
