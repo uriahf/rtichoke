@@ -1,5 +1,7 @@
 # rtichoke 0.0.7
 
+-   Add standalone browser `create_probs_histogram()` output for inspecting prediction distributions by observed outcome at probability-threshold or PPCR operating points.
+
 -   Fix Lift Curve ranges [#110](https://github.com/uriahf/rtichoke/issues/110)
 
 # rtichoke 0.0.6

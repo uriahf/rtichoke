@@ -1,0 +1,128 @@
+name: Prediction Histogram browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/probs_histogram.R'
+      - 'R/prepare_probs_distribution_data.R'
+      - 'R/rtichoke_viz_v2.R'
+      - 'inst/**'
+      - 'tests/testthat/test-probs-histogram.R'
+      - '.github/workflows/probs-histogram-browser-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  prediction-histogram-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Generate real public prediction histogram browser artifact
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+          widget <- create_probs_histogram(
+            probs = list(
+              "Model A" = c(0, 0.2, 0.5, 0.5, 0.8, 1),
+              "Model B" = c(0.1, 0.3, 0.4, 0.6, 0.9, 1)
+            ),
+            reals = list("Population A" = c(0, 1, 1, 0, 1, 0)),
+            by = 0.25
+          )
+          dir.create("browser-acceptance", showWarnings = FALSE)
+          htmltools::save_html(
+            widget,
+            file = "browser-acceptance/probs-histogram.html",
+            libdir = "lib"
+          )
+
+      - name: Execute browser artifact in real Chrome
+        run: |
+          python3 -m http.server 8769 --directory browser-acceptance > /tmp/rtichoke-probs-histogram-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
+          stderr="/tmp/probs-histogram-chrome-stderr.log"
+          dom="/tmp/probs-histogram-dom.html"
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --dump-dom \
+            "http://127.0.0.1:8769/probs-histogram.html" > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError' "$stderr"
+          grep -q '"type":"prediction_distribution"' "$dom"
+          grep -q '"cutoff":0' "$dom"
+          grep -q '"realizedPpcr":1' "$dom"
+          grep -q 'Observed Positive' "$dom"
+          grep -q 'Observed Negative' "$dom"
+          grep -q '<svg' "$dom"
+
+      - name: Open saved artifact directly from the filesystem
+        run: |
+          stderr="/tmp/probs-histogram-file-chrome-stderr.log"
+          dom="/tmp/probs-histogram-file-dom.html"
+          set +e
+          google-chrome \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --virtual-time-budget=5000 \
+            --screenshot="browser-acceptance/probs-histogram.png" \
+            --window-size=1400,1000 \
+            --dump-dom \
+            "file://${GITHUB_WORKSPACE}/browser-acceptance/probs-histogram.html" \
+            > "$dom" 2> "$stderr"
+          status=$?
+          set -e
+
+          cat "$stderr"
+          cp "$dom" browser-acceptance/probs-histogram-file-dom.html
+          cp "$stderr" browser-acceptance/probs-histogram-file-stderr.log
+          test "$status" -eq 0
+          ! grep -E 'ERROR:CONSOLE|Uncaught|ReferenceError|TypeError|SyntaxError|CORS' "$stderr"
+          grep -q 'Observed Positive' "$dom"
+          grep -q 'Observed Negative' "$dom"
+          grep -q '<svg' "$dom"
+
+      - name: Upload browser artifact and screenshot
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: prediction-histogram-browser-proof
+          path: browser-acceptance
