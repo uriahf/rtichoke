@@ -8,7 +8,12 @@ validate_prediction_distribution_spec <- function(spec) {
     stop("rtichoke-viz-report.schema.json not found", call. = FALSE)
   }
 
-  json_str <- jsonlite::toJSON(spec, auto_unbox = TRUE, null = "null", digits = NA)
+  json_str <- jsonlite::toJSON(
+    spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
 
   ctx <- V8::v8()
   ctx$assign("schemaJson", readChar(schema_path, file.info(schema_path)$size))
@@ -81,7 +86,11 @@ test_that("prediction distribution adapter builds exact canonical spec and valid
   reals <- list(c(0, 1, 0, 1))
   by <- 0.5
 
-  p_dist <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
   p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
@@ -150,7 +159,11 @@ test_that("frozen tied rank-bin golden fixture matches expected rankBins", {
   reals <- list(c(0, 1, 0, 1, 0, 1, 1, 0, 1))
   by <- 0.20
 
-  p_dist <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
   p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
@@ -173,7 +186,11 @@ test_that("N < q fixture retains all empty labelled strata in rankBins", {
   reals <- list(c(0, 1))
   by <- 0.1 # q = 10, N = 2
 
-  p_dist <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
   p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
@@ -190,12 +207,32 @@ test_that("rankBins invariants hold: mass conservation and order invariance", {
   r_vec <- rbinom(50, 1, 0.5)
 
   by <- 0.05
-  p_dist1 <- prepare_probs_distribution_data(probs = list(p_vec), reals = list(r_vec), by = by, stratified_by = "probability_threshold")
-  p_perf1 <- prepare_performance_data(probs = list(p_vec), reals = list(r_vec), by = by, stratified_by = "probability_threshold")
+  p_dist1 <- prepare_probs_distribution_data(
+    probs = list(p_vec),
+    reals = list(r_vec),
+    by = by,
+    stratified_by = "probability_threshold"
+  )
+  p_perf1 <- prepare_performance_data(
+    probs = list(p_vec),
+    reals = list(r_vec),
+    by = by,
+    stratified_by = "probability_threshold"
+  )
   spec1 <- rtichoke_viz_prediction_distribution_spec(p_dist1, p_perf1)
 
-  p_dist2 <- prepare_probs_distribution_data(probs = list(p_vec), reals = list(r_vec), by = by, stratified_by = "ppcr")
-  p_perf2 <- prepare_performance_data(probs = list(p_vec), reals = list(r_vec), by = by, stratified_by = "ppcr")
+  p_dist2 <- prepare_probs_distribution_data(
+    probs = list(p_vec),
+    reals = list(r_vec),
+    by = by,
+    stratified_by = "ppcr"
+  )
+  p_perf2 <- prepare_performance_data(
+    probs = list(p_vec),
+    reals = list(r_vec),
+    by = by,
+    stratified_by = "ppcr"
+  )
   spec2 <- rtichoke_viz_prediction_distribution_spec(p_dist2, p_perf2)
 
   # rankBins identical across threshold and PPCR modes
@@ -209,9 +246,20 @@ test_that("rankBins invariants hold: mass conservation and order invariance", {
 
   # Order invariance
   perm <- sample(length(p_vec))
-  p_dist_perm <- prepare_probs_distribution_data(probs = list(p_vec[perm]), reals = list(r_vec[perm]), by = by)
-  p_perf_perm <- prepare_performance_data(probs = list(p_vec[perm]), reals = list(r_vec[perm]), by = by)
-  spec_perm <- rtichoke_viz_prediction_distribution_spec(p_dist_perm, p_perf_perm)
+  p_dist_perm <- prepare_probs_distribution_data(
+    probs = list(p_vec[perm]),
+    reals = list(r_vec[perm]),
+    by = by
+  )
+  p_perf_perm <- prepare_performance_data(
+    probs = list(p_vec[perm]),
+    reals = list(r_vec[perm]),
+    by = by
+  )
+  spec_perm <- rtichoke_viz_prediction_distribution_spec(
+    p_dist_perm,
+    p_perf_perm
+  )
   expect_identical(spec1$rankBins, spec_perm$rankBins)
 })
 
@@ -220,8 +268,16 @@ test_that("producer-owned performance values override naive bin reconstruction",
   reals <- list(c(0, 1, 1))
   by <- 0.5
 
-  p_dist <- prepare_probs_distribution_data(probs = list(probs[[1]]), reals = list(reals[[1]]), by = by)
-  p_perf <- prepare_performance_data(probs = list(probs[[1]]), reals = list(reals[[1]]), by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = list(probs[[1]]),
+    reals = list(reals[[1]]),
+    by = by
+  )
+  p_perf <- prepare_performance_data(
+    probs = list(probs[[1]]),
+    reals = list(reals[[1]]),
+    by = by
+  )
 
   # Deliberately modify p_perf TP value to 999 to test producer win
   p_perf$TP[p_perf$probability_threshold == 0.5] <- 999L
@@ -229,7 +285,10 @@ test_that("producer-owned performance values override naive bin reconstruction",
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
   op_50 <- Filter(function(op) op$value == 0.5, spec$operatingPoints)[[1]]
-  tp_entry <- Filter(function(m) m$metricId == "true_positives", op_50$performance)[[1]]
+  tp_entry <- Filter(
+    function(m) m$metricId == "true_positives",
+    op_50$performance
+  )[[1]]
 
   expect_equal(tp_entry$estimate, 999L)
 })
@@ -240,15 +299,41 @@ test_that("operating-point performance alignment is 1-to-1 for threshold and PPC
   by <- 0.20
 
   # Probability Threshold mode
-  p_dist_thresh <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by, stratified_by = "probability_threshold")
-  p_perf_thresh <- prepare_performance_data(probs = probs, reals = reals, by = by, stratified_by = "probability_threshold")
-  spec_thresh <- rtichoke_viz_prediction_distribution_spec(p_dist_thresh, p_perf_thresh)
+  p_dist_thresh <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = "probability_threshold"
+  )
+  p_perf_thresh <- prepare_performance_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = "probability_threshold"
+  )
+  spec_thresh <- rtichoke_viz_prediction_distribution_spec(
+    p_dist_thresh,
+    p_perf_thresh
+  )
   expect_length(spec_thresh$operatingPoints, 6L)
 
   # PPCR mode
-  p_dist_ppcr <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by, stratified_by = "ppcr")
-  p_perf_ppcr <- prepare_performance_data(probs = probs, reals = reals, by = by, stratified_by = "ppcr")
-  spec_ppcr <- rtichoke_viz_prediction_distribution_spec(p_dist_ppcr, p_perf_ppcr)
+  p_dist_ppcr <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = "ppcr"
+  )
+  p_perf_ppcr <- prepare_performance_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = "ppcr"
+  )
+  spec_ppcr <- rtichoke_viz_prediction_distribution_spec(
+    p_dist_ppcr,
+    p_perf_ppcr
+  )
   expect_length(spec_ppcr$operatingPoints, 6L)
 })
 
@@ -257,7 +342,11 @@ test_that("operating-point join error is raised if unmatched or duplicate perfor
   reals <- list(c(0, 1))
   by <- 0.5
 
-  p_dist <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
   p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
 
   # Duplicate a row to force duplicate match error
@@ -274,7 +363,11 @@ test_that("non-finite performance metric estimates serialize to NULL", {
   reals <- list(c(0, 0)) # No positives
   by <- 0.5
 
-  p_dist <- prepare_probs_distribution_data(probs = probs, reals = reals, by = by)
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
   p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
@@ -283,23 +376,47 @@ test_that("non-finite performance metric estimates serialize to NULL", {
 
   expect_null(ppv_entry$estimate)
 
-  json_str <- jsonlite::toJSON(spec, auto_unbox = TRUE, null = "null", digits = NA)
+  json_str <- jsonlite::toJSON(
+    spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
   expect_match(json_str, '"metricId":"ppv","estimate":null', fixed = TRUE)
 })
 
 test_that("threshold regressions: cutoff zero, positive cutoff, ties, score one, multiple evaluations", {
   # Cutoff zero classifying exact-zero probability as positive
-  p_dist0 <- prepare_probs_distribution_data(probs = list(c(0, 0.5)), reals = list(c(1, 1)), by = 0.5)
-  p_perf0 <- prepare_performance_data(probs = list(c(0, 0.5)), reals = list(c(1, 1)), by = 0.5)
+  p_dist0 <- prepare_probs_distribution_data(
+    probs = list(c(0, 0.5)),
+    reals = list(c(1, 1)),
+    by = 0.5
+  )
+  p_perf0 <- prepare_performance_data(
+    probs = list(c(0, 0.5)),
+    reals = list(c(1, 1)),
+    by = 0.5
+  )
   spec0 <- rtichoke_viz_prediction_distribution_spec(p_dist0, p_perf0)
 
   op0 <- Filter(function(op) op$cutoff == 0, spec0$operatingPoints)[[1]]
   expect_equal(op0$realizedPpcr, 1)
 
   # Score 1 and ties
-  p_dist_ties <- prepare_probs_distribution_data(probs = list(c(0.5, 0.5, 1.0)), reals = list(c(0, 1, 1)), by = 0.5)
-  p_perf_ties <- prepare_performance_data(probs = list(c(0.5, 0.5, 1.0)), reals = list(c(0, 1, 1)), by = 0.5)
-  spec_ties <- rtichoke_viz_prediction_distribution_spec(p_dist_ties, p_perf_ties)
+  p_dist_ties <- prepare_probs_distribution_data(
+    probs = list(c(0.5, 0.5, 1.0)),
+    reals = list(c(0, 1, 1)),
+    by = 0.5
+  )
+  p_perf_ties <- prepare_performance_data(
+    probs = list(c(0.5, 0.5, 1.0)),
+    reals = list(c(0, 1, 1)),
+    by = 0.5
+  )
+  spec_ties <- rtichoke_viz_prediction_distribution_spec(
+    p_dist_ties,
+    p_perf_ties
+  )
   expect_true(validate_prediction_distribution_spec(spec_ties))
 })
 
