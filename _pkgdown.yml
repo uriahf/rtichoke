@@ -90,6 +90,7 @@ reference:
   - title: "Performance Tables & Reports"
     desc: "Summarize model metrics into interactive or static tables and reports."
     contents:
+      - create_probs_histogram
       - create_performance_table
       - render_performance_table
       - create_summary_report

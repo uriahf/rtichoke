@@ -84,7 +84,12 @@ render_rtichoke_viz_self_contained_browser <- function(spec) {
   }
 
   component_id <- rtichoke_viz_browser_id()
-  spec_json <- jsonlite::toJSON(spec, auto_unbox = TRUE, null = "null", digits = NA)
+  spec_json <- jsonlite::toJSON(
+    spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
   javascript <- readChar(
     javascript_path,
     nchars = file.info(javascript_path)$size,
@@ -163,7 +168,10 @@ rtichoke_viz_prediction_distribution_spec <- function(
   rank_bins <- distribution_data$rank_bins
   operating_points <- distribution_data$operating_points
 
-  evaluation_metadata <- unique(distribution_data$operating_points[, c("evaluation", "model", "population"), drop = FALSE])
+  evaluation_metadata <- unique(distribution_data$operating_points[,
+    c("evaluation", "model", "population"),
+    drop = FALSE
+  ])
   evaluation_names <- as.character(evaluation_metadata$evaluation)
   evaluation_ids <- stats::setNames(
     paste0("evaluation-", seq_along(evaluation_names)),
@@ -211,7 +219,11 @@ rtichoke_viz_prediction_distribution_spec <- function(
   })
 
   # Normalize performance_data evaluation matching
-  perf_eval_group <- if ("model" %in% names(performance_data) && "population" %in% names(performance_data)) {
+  perf_eval_group <- if (
+    "model" %in%
+      names(performance_data) &&
+      "population" %in% names(performance_data)
+  ) {
     # Could be multiple models or populations
     if (length(unique(performance_data$model)) > 1) {
       as.character(performance_data$model)
@@ -251,9 +263,11 @@ rtichoke_viz_prediction_distribution_spec <- function(
       # Match performance_data exactly 1-to-1
       perf_match_mask <- (perf_eval_group == eval_name)
       if (op_type == "probability_threshold") {
-        perf_match_mask <- perf_match_mask & (as.numeric(performance_data$probability_threshold) == op_value)
+        perf_match_mask <- perf_match_mask &
+          (as.numeric(performance_data$probability_threshold) == op_value)
       } else if (op_type == "ppcr") {
-        perf_match_mask <- perf_match_mask & (as.numeric(performance_data$ppcr) == op_value)
+        perf_match_mask <- perf_match_mask &
+          (as.numeric(performance_data$ppcr) == op_value)
       } else {
         stop("Unsupported operating point type: ", op_type, call. = FALSE)
       }
@@ -279,7 +293,15 @@ rtichoke_viz_prediction_distribution_spec <- function(
         val <- perf_row[[col_name]][[1]]
         estimate <- if (is.null(val) || is.na(val) || !is.finite(val)) {
           NULL
-        } else if (canonical_metric_id %in% c("true_positives", "true_negatives", "false_positives", "false_negatives")) {
+        } else if (
+          canonical_metric_id %in%
+            c(
+              "true_positives",
+              "true_negatives",
+              "false_positives",
+              "false_negatives"
+            )
+        ) {
           as.integer(val)
         } else {
           as.numeric(val)
