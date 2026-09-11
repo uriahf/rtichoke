@@ -1,16 +1,16 @@
-test_that("vendored rtichoke_viz v0.20.2 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.22.0 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version=0.20.2" %in% provenance)
-  expect_true("archive=rtichoke-viz-0.20.2.tar.gz" %in% provenance)
+  expect_true("version: 0.22.0" %in% provenance)
+  expect_true("archive: rtichoke-viz-0.22.0.tar.gz" %in% provenance)
   expect_true(
-    "commit=40748bdeff7d535f516744886b64056f3aaa518d" %in% provenance
+    "source_sha: e862776e2714dd20a7284bdb9c64c4bbe86962b3" %in% provenance
   )
   expect_true(
     paste0(
-      "sha256=",
-      "2e4851159ceea0e3b2420c7e0aa22a566b94ec7057c27b13b7db7da88de34d11"
+      "archive_sha256: ",
+      "64087fe0284ab2beb6e664dd419504a56000e217eaf403f33559896b67fff94d"
     ) %in%
       provenance
   )
@@ -25,6 +25,7 @@ test_that("vendored rtichoke_viz v0.20.2 provenance and exports are intact", {
   expect_match(js, "renderDecisionCurveV2", fixed = TRUE)
   expect_match(js, "renderInterventionsAvoidedV2", fixed = TRUE)
   expect_match(js, "renderPerformanceTable", fixed = TRUE)
+  expect_match(js, "renderPredictionDistribution", fixed = TRUE)
   expect_match(js, "renderReport", fixed = TRUE)
   expect_match(js, "ReportSpecV1_1Schema", fixed = TRUE)
   expect_match(js, "SummaryMetricsSpecSchema", fixed = TRUE)
