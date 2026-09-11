@@ -70,7 +70,7 @@ jobs:
           echo "rtichoke_viz archive: ${RTICHOKE_VIZ_ARCHIVE}"
           echo "rtichoke_viz archive SHA-256: ${ACTUAL}"
           test "${ACTUAL}" = "${EXPECTED}"
-          test "${ACTUAL}" = "${RTICHOKE_VIZ_SHA256}"
+          test "${ACTUAL}" = "${RTICHOKE_VIZ_ARCHIVE_SHA256}"
           cmp "${RTICHOKE_VIZ_ARCHIVE}" \
             "${GITHUB_WORKSPACE}/inst/rtichoke-viz/${RTICHOKE_VIZ_ARCHIVE}"
           cd "${GITHUB_WORKSPACE}"
