@@ -54,9 +54,9 @@ A named list with three tidy tibbles:
 
   Producer-owned probability-quantile rank bins derived directly from
   individual probabilities and outcomes using
-  `assign_probability_quantile_strata()`. Columns: `evaluation`,
-  `model`, `population`, `rank_lower`, `rank_upper`, `n_positive`,
-  `n_negative`.
+  [`assign_probability_quantile_strata()`](https://uriahf.github.io/rtichoke/reference/assign_probability_quantile_strata.md).
+  Columns: `evaluation`, `model`, `population`, `rank_lower`,
+  `rank_upper`, `n_positive`, `n_negative`.
 
 - operating_points:
 

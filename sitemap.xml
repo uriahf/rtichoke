@@ -34,6 +34,7 @@
 <url><loc>https://uriahf.github.io/rtichoke/reference/add_reference_lines_to_ggplot.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/add_reference_lines_to_plotly.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/add_zebra_colors_to_gt_table.html</loc></url>
+<url><loc>https://uriahf.github.io/rtichoke/reference/assign_probability_quantile_strata.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/bar_chart.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/bar_style_nb_reactable.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/bar_style_perf.html</loc></url>
@@ -57,6 +58,7 @@
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_performance_table.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_plotly_curve.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_precision_recall_curve.html</loc></url>
+<url><loc>https://uriahf.github.io/rtichoke/reference/create_probs_histogram.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_reference_lines_data_frame.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_reference_lines_for_plotly.html</loc></url>
 <url><loc>https://uriahf.github.io/rtichoke/reference/create_roc_curve.html</loc></url>
