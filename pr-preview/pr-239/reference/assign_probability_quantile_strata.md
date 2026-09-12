@@ -13,12 +13,12 @@ assign_probability_quantile_strata(probs, by)
 
 - probs:
 
-  Numeric vector of predicted probabilities.
+  a list of vectors of estimated probabilities (one for each model or
+  one for each population)
 
 - by:
 
-  Numeric scalar representing the step size for quantile binning (e.g.
-  0.01 or 0.20).
+  number: increment of the sequence.
 
 ## Value
 
