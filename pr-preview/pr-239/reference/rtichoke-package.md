@@ -19,3 +19,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Uriah Finkel <ufinkel@gmail.com>
+
+Authors:
+
+- Uriah Finkel <ufinkel@gmail.com>
