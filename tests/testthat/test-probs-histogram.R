@@ -154,7 +154,7 @@ test_that("prediction distribution adapter builds exact canonical spec and valid
   expect_true(validate_prediction_distribution_spec(spec))
 })
 
-test_that("frozen tied rank-bin golden fixture matches expected rankBins", {
+test_that("frozen tied rank-bin golden fixture matches expected rankBins and literal PPCR operating points", {
   probs <- list(c(0.00, 0.15, 0.30, 0.50, 0.50, 0.50, 0.65, 0.80, 1.00))
   reals <- list(c(0, 1, 0, 1, 0, 1, 1, 0, 1))
   by <- 0.20
@@ -162,9 +162,15 @@ test_that("frozen tied rank-bin golden fixture matches expected rankBins", {
   p_dist <- prepare_probs_distribution_data(
     probs = probs,
     reals = reals,
-    by = by
+    by = by,
+    stratified_by = "ppcr"
   )
-  p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
+  p_perf <- prepare_performance_data(
+    probs = probs,
+    reals = reals,
+    by = by,
+    stratified_by = "ppcr"
+  )
   spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
 
   rank_df <- do.call(rbind, lapply(spec$rankBins, as.data.frame))
@@ -179,6 +185,41 @@ test_that("frozen tied rank-bin golden fixture matches expected rankBins", {
   expect_equal(rank_df$positiveMass, expected_pos_mass)
   expect_equal(rank_df$negativeMass, expected_neg_mass)
   expect_equal(rank_df$positiveMass[3], 0) # empty stratum preserved
+
+  # Literal canonical operating points at PPCR 0.40, 0.60, and 0.80
+  get_op <- function(v) {
+    Filter(function(x) abs(x$value - v) < 1e-6, spec$operatingPoints)[[1]]
+  }
+  get_metric <- function(op, metric_id) {
+    Filter(function(m) m$metricId == metric_id, op$performance)[[1]]$estimate
+  }
+
+  op_40 <- get_op(0.40)
+  expect_equal(op_40$value, 0.40)
+  expect_equal(op_40$cutoff, 0.50)
+  expect_equal(op_40$realizedPpcr, 3 / 9, tolerance = 1e-4)
+  expect_equal(get_metric(op_40, "true_positives"), 2L)
+  expect_equal(get_metric(op_40, "false_positives"), 1L)
+  expect_equal(get_metric(op_40, "true_negatives"), 3L)
+  expect_equal(get_metric(op_40, "false_negatives"), 3L)
+
+  op_60 <- get_op(0.60)
+  expect_equal(op_60$value, 0.60)
+  expect_equal(op_60$cutoff, 0.50)
+  expect_equal(op_60$realizedPpcr, 3 / 9, tolerance = 1e-4)
+  expect_equal(get_metric(op_60, "true_positives"), 2L)
+  expect_equal(get_metric(op_60, "false_positives"), 1L)
+  expect_equal(get_metric(op_60, "true_negatives"), 3L)
+  expect_equal(get_metric(op_60, "false_negatives"), 3L)
+
+  op_80 <- get_op(0.80)
+  expect_equal(op_80$value, 0.80)
+  expect_equal(op_80$cutoff, 0.24)
+  expect_equal(op_80$realizedPpcr, 7 / 9, tolerance = 1e-4)
+  expect_equal(get_metric(op_80, "true_positives"), 4L)
+  expect_equal(get_metric(op_80, "false_positives"), 3L)
+  expect_equal(get_metric(op_80, "true_negatives"), 1L)
+  expect_equal(get_metric(op_80, "false_negatives"), 1L)
 })
 
 test_that("N < q fixture retains all empty labelled strata in rankBins", {
@@ -355,6 +396,73 @@ test_that("operating-point join error is raised if unmatched or duplicate perfor
     rtichoke_viz_prediction_distribution_spec(p_dist, p_perf_dup),
     "Operating point join failed"
   )
+
+  # Remove a row to force missing-row unmatched error
+  p_perf_missing <- p_perf[-1, , drop = FALSE]
+  expect_error(
+    rtichoke_viz_prediction_distribution_spec(p_dist, p_perf_missing),
+    "Operating point join failed"
+  )
+})
+
+test_that("canonical adapter handles multiple models sharing one population", {
+  probs <- list("Model 1" = c(0.1, 0.9), "Model 2" = c(0.2, 0.8))
+  reals <- list(c(0, 1))
+  by <- 0.5
+
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
+  p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
+  spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
+
+  expect_length(spec$evaluations, 2L)
+  expect_identical(
+    spec$evaluations[[1]],
+    list(id = "evaluation-1", population = "population", model = "Model 1")
+  )
+  expect_identical(
+    spec$evaluations[[2]],
+    list(id = "evaluation-2", population = "population", model = "Model 2")
+  )
+
+  # Verify 1-to-1 operating point alignment across multiple models
+  eval_ids <- vapply(spec$operatingPoints, `[[`, character(1), "evaluationId")
+  expect_equal(sum(eval_ids == "evaluation-1"), 3L)
+  expect_equal(sum(eval_ids == "evaluation-2"), 3L)
+  expect_true(validate_prediction_distribution_spec(spec))
+})
+
+test_that("canonical adapter handles multiple populations with unequal sample sizes", {
+  probs <- list("Population 1" = c(0.1, 0.2, 0.9), "Population 2" = c(0.3, 0.7))
+  reals <- list("Population 1" = c(0, 0, 1), "Population 2" = c(0, 1))
+  by <- 0.5
+
+  p_dist <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = by
+  )
+  p_perf <- prepare_performance_data(probs = probs, reals = reals, by = by)
+  spec <- rtichoke_viz_prediction_distribution_spec(p_dist, p_perf)
+
+  expect_length(spec$evaluations, 2L)
+  # Model field omitted when comparing populations without model names
+  expect_identical(
+    spec$evaluations[[1]],
+    list(id = "evaluation-1", population = "Population 1")
+  )
+  expect_identical(
+    spec$evaluations[[2]],
+    list(id = "evaluation-2", population = "Population 2")
+  )
+
+  eval_ids <- vapply(spec$operatingPoints, `[[`, character(1), "evaluationId")
+  expect_equal(sum(eval_ids == "evaluation-1"), 3L)
+  expect_equal(sum(eval_ids == "evaluation-2"), 3L)
+  expect_true(validate_prediction_distribution_spec(spec))
 })
 
 test_that("non-finite performance metric estimates serialize to NULL", {

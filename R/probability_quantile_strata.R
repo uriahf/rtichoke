@@ -3,7 +3,8 @@
 #' Assigns individual observations to empirical score-quantile strata
 #' ordered from low to high predicted probability.
 #'
-#' @inheritParams prepare_performance_data
+#' @param probs Numeric vector of predicted probabilities.
+#' @param by Numeric scalar representing the step size for quantile binning (e.g. 0.01 or 0.20).
 #'
 #' @details
 #' PROBABILITY-QUANTILE STRATUM vs PPCR OPERATING POINT:

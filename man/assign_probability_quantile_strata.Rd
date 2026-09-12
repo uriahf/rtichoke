@@ -7,10 +7,9 @@
 assign_probability_quantile_strata(probs, by)
 }
 \arguments{
-\item{probs}{a list of vectors of estimated probabilities
-(one for each model or one for each population)}
+\item{probs}{Numeric vector of predicted probabilities.}
 
-\item{by}{number: increment of the sequence.}
+\item{by}{Numeric scalar representing the step size for quantile binning (e.g. 0.01 or 0.20).}
 }
 \value{
 An ordered factor of stratum labels ordered low to high predicted probability.
