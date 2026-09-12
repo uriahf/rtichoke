@@ -5322,6 +5322,303 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "schemaVersion",
+                      "type",
+                      "evaluations",
+                      "bins",
+                      "operatingPoints"
+                    ],
+                    "properties": {
+                      "schemaVersion": {
+                        "const": "2.0",
+                        "type": "string"
+                      },
+                      "type": {
+                        "const": "prediction_distribution",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "evaluations": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "population"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "model": {
+                              "type": "string"
+                            },
+                            "population": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "operatingPoint": {
+                        "type": "object",
+                        "required": [
+                          "dimension"
+                        ],
+                        "properties": {
+                          "dimension": {
+                            "anyOf": [
+                              {
+                                "const": "probability_threshold",
+                                "type": "string"
+                              },
+                              {
+                                "const": "ppcr",
+                                "type": "string"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "bins": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "evaluationId",
+                            "lower",
+                            "upper",
+                            "includeLower",
+                            "includeUpper",
+                            "nPositive",
+                            "nNegative"
+                          ],
+                          "properties": {
+                            "evaluationId": {
+                              "type": "string"
+                            },
+                            "lower": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "upper": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "includeLower": {
+                              "type": "boolean"
+                            },
+                            "includeUpper": {
+                              "type": "boolean"
+                            },
+                            "nPositive": {
+                              "minimum": 0,
+                              "type": "integer"
+                            },
+                            "nNegative": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "rankBins": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "evaluationId",
+                            "rankLower",
+                            "rankUpper",
+                            "positiveMass",
+                            "negativeMass"
+                          ],
+                          "properties": {
+                            "evaluationId": {
+                              "type": "string"
+                            },
+                            "rankLower": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "rankUpper": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "positiveMass": {
+                              "minimum": 0,
+                              "type": "number"
+                            },
+                            "negativeMass": {
+                              "minimum": 0,
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "operatingPoints": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "evaluationId",
+                            "type",
+                            "value",
+                            "cutoff",
+                            "realizedPpcr"
+                          ],
+                          "properties": {
+                            "evaluationId": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "anyOf": [
+                                {
+                                  "const": "probability_threshold",
+                                  "type": "string"
+                                },
+                                {
+                                  "const": "ppcr",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "cutoff": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "realizedPpcr": {
+                              "minimum": 0,
+                              "maximum": 1,
+                              "type": "number"
+                            },
+                            "performance": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "metricId",
+                                  "estimate"
+                                ],
+                                "properties": {
+                                  "metricId": {
+                                    "anyOf": [
+                                      {
+                                        "const": "true_positives",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "true_negatives",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "false_positives",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "false_negatives",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "sensitivity",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "specificity",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "false_positive_rate",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppv",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "npv",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "lift",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "predicted_positives",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "ppcr",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "net_benefit",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "const": "net_benefit_interventions_avoided",
+                                        "type": "string"
+                                      }
+                                    ]
+                                  },
+                                  "estimate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "lower": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "upper": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 ]
               }
@@ -10674,6 +10971,303 @@
                                   }
                                 }
                               ]
+                            },
+                            {
+                              "type": "object",
+                              "required": [
+                                "schemaVersion",
+                                "type",
+                                "evaluations",
+                                "bins",
+                                "operatingPoints"
+                              ],
+                              "properties": {
+                                "schemaVersion": {
+                                  "const": "2.0",
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "const": "prediction_distribution",
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "evaluations": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "population"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "model": {
+                                        "type": "string"
+                                      },
+                                      "population": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "operatingPoint": {
+                                  "type": "object",
+                                  "required": [
+                                    "dimension"
+                                  ],
+                                  "properties": {
+                                    "dimension": {
+                                      "anyOf": [
+                                        {
+                                          "const": "probability_threshold",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "const": "ppcr",
+                                          "type": "string"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "bins": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "evaluationId",
+                                      "lower",
+                                      "upper",
+                                      "includeLower",
+                                      "includeUpper",
+                                      "nPositive",
+                                      "nNegative"
+                                    ],
+                                    "properties": {
+                                      "evaluationId": {
+                                        "type": "string"
+                                      },
+                                      "lower": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "upper": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "includeLower": {
+                                        "type": "boolean"
+                                      },
+                                      "includeUpper": {
+                                        "type": "boolean"
+                                      },
+                                      "nPositive": {
+                                        "minimum": 0,
+                                        "type": "integer"
+                                      },
+                                      "nNegative": {
+                                        "minimum": 0,
+                                        "type": "integer"
+                                      }
+                                    }
+                                  }
+                                },
+                                "rankBins": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "evaluationId",
+                                      "rankLower",
+                                      "rankUpper",
+                                      "positiveMass",
+                                      "negativeMass"
+                                    ],
+                                    "properties": {
+                                      "evaluationId": {
+                                        "type": "string"
+                                      },
+                                      "rankLower": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "rankUpper": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "positiveMass": {
+                                        "minimum": 0,
+                                        "type": "number"
+                                      },
+                                      "negativeMass": {
+                                        "minimum": 0,
+                                        "type": "number"
+                                      }
+                                    }
+                                  }
+                                },
+                                "operatingPoints": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "evaluationId",
+                                      "type",
+                                      "value",
+                                      "cutoff",
+                                      "realizedPpcr"
+                                    ],
+                                    "properties": {
+                                      "evaluationId": {
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "anyOf": [
+                                          {
+                                            "const": "probability_threshold",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "const": "ppcr",
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "value": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "cutoff": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "realizedPpcr": {
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                        "type": "number"
+                                      },
+                                      "performance": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "metricId",
+                                            "estimate"
+                                          ],
+                                          "properties": {
+                                            "metricId": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "true_positives",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "true_negatives",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "false_positives",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "false_negatives",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "sensitivity",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "specificity",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "false_positive_rate",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppv",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "npv",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "lift",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "predicted_positives",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "net_benefit",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "net_benefit_interventions_avoided",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            },
+                                            "estimate": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "lower": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "upper": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
                             }
                           ]
                         }
@@ -16004,6 +16598,303 @@
                                         }
                                       }
                                     ]
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "schemaVersion",
+                                      "type",
+                                      "evaluations",
+                                      "bins",
+                                      "operatingPoints"
+                                    ],
+                                    "properties": {
+                                      "schemaVersion": {
+                                        "const": "2.0",
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "const": "prediction_distribution",
+                                        "type": "string"
+                                      },
+                                      "title": {
+                                        "type": "string"
+                                      },
+                                      "evaluations": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "id",
+                                            "population"
+                                          ],
+                                          "properties": {
+                                            "id": {
+                                              "type": "string"
+                                            },
+                                            "model": {
+                                              "type": "string"
+                                            },
+                                            "population": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operatingPoint": {
+                                        "type": "object",
+                                        "required": [
+                                          "dimension"
+                                        ],
+                                        "properties": {
+                                          "dimension": {
+                                            "anyOf": [
+                                              {
+                                                "const": "probability_threshold",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "const": "ppcr",
+                                                "type": "string"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "bins": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "evaluationId",
+                                            "lower",
+                                            "upper",
+                                            "includeLower",
+                                            "includeUpper",
+                                            "nPositive",
+                                            "nNegative"
+                                          ],
+                                          "properties": {
+                                            "evaluationId": {
+                                              "type": "string"
+                                            },
+                                            "lower": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "upper": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "includeLower": {
+                                              "type": "boolean"
+                                            },
+                                            "includeUpper": {
+                                              "type": "boolean"
+                                            },
+                                            "nPositive": {
+                                              "minimum": 0,
+                                              "type": "integer"
+                                            },
+                                            "nNegative": {
+                                              "minimum": 0,
+                                              "type": "integer"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "rankBins": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "evaluationId",
+                                            "rankLower",
+                                            "rankUpper",
+                                            "positiveMass",
+                                            "negativeMass"
+                                          ],
+                                          "properties": {
+                                            "evaluationId": {
+                                              "type": "string"
+                                            },
+                                            "rankLower": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "rankUpper": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "positiveMass": {
+                                              "minimum": 0,
+                                              "type": "number"
+                                            },
+                                            "negativeMass": {
+                                              "minimum": 0,
+                                              "type": "number"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operatingPoints": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "evaluationId",
+                                            "type",
+                                            "value",
+                                            "cutoff",
+                                            "realizedPpcr"
+                                          ],
+                                          "properties": {
+                                            "evaluationId": {
+                                              "type": "string"
+                                            },
+                                            "type": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "probability_threshold",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "ppcr",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            },
+                                            "value": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "cutoff": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "realizedPpcr": {
+                                              "minimum": 0,
+                                              "maximum": 1,
+                                              "type": "number"
+                                            },
+                                            "performance": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "metricId",
+                                                  "estimate"
+                                                ],
+                                                "properties": {
+                                                  "metricId": {
+                                                    "anyOf": [
+                                                      {
+                                                        "const": "true_positives",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "true_negatives",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "false_positives",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "false_negatives",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "sensitivity",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "specificity",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "false_positive_rate",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppv",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "npv",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "lift",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "predicted_positives",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "ppcr",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "net_benefit",
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "const": "net_benefit_interventions_avoided",
+                                                        "type": "string"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "estimate": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "lower": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "upper": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
                                   }
                                 ]
                               }
