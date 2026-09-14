@@ -34,6 +34,7 @@ Imports:
     tibble
 Suggests: 
     V8,
+    jsonvalidate,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
