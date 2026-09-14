@@ -34,7 +34,6 @@ Imports:
     tibble
 Suggests: 
     V8,
-    jsonvalidate,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
@@ -45,4 +44,3 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
-RoxygenNote: 7.3.1
