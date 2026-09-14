@@ -105,14 +105,14 @@ test_that("standalone v2 schema validates create_probs_histogram specs via jsonv
   json_thresh <- as.character(spec_tag_thresh$children[[1]])
   expect_true(validator(json_thresh))
 
-  # 2. PPCR spec via public create_probs_histogram() using frozen tied fixture
-  probs_tied <- list(c(0.05, 0.2, 0.7, 0.95, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2))
-  reals_tied <- list(c(0, 0, 1, 1, 1, 1, 0, 0, 0, 1))
+  # 2. PPCR spec via public create_probs_histogram() using frozen tied N=9 fixture
+  probs_tied <- list(c(0.00, 0.15, 0.30, 0.50, 0.50, 0.50, 0.65, 0.80, 1.00))
+  reals_tied <- list(c(0, 1, 0, 1, 0, 1, 1, 0, 1))
 
   histogram_ppcr <- create_probs_histogram(
     probs = probs_tied,
     reals = reals_tied,
-    by = 0.2,
+    by = 0.20,
     stratified_by = "ppcr"
   )
   spec_tag_ppcr <- Filter(
@@ -123,6 +123,44 @@ test_that("standalone v2 schema validates create_probs_histogram specs via jsonv
   )[[1]]
   json_ppcr <- as.character(spec_tag_ppcr$children[[1]])
   expect_true(validator(json_ppcr))
+
+  # Assert emitted canonical spec retains the frozen rank-bin result and operating point identity
+  spec_ppcr_obj <- jsonlite::fromJSON(json_ppcr, simplifyVector = FALSE)
+  rank_df <- do.call(rbind, lapply(spec_ppcr_obj$rankBins, as.data.frame))
+  expect_equal(rank_df$rankLower, c(0.00, 0.20, 0.40, 0.60, 0.80))
+  expect_equal(rank_df$rankUpper, c(0.20, 0.40, 0.60, 0.80, 1.00))
+  expect_equal(rank_df$positiveMass, c(1, 2, 0, 1, 1))
+  expect_equal(rank_df$negativeMass, c(1, 2, 0, 0, 1))
+
+  op_values <- vapply(
+    spec_ppcr_obj$operatingPoints,
+    `[[`,
+    numeric(1),
+    "value"
+  )
+  op_cutoffs <- vapply(
+    spec_ppcr_obj$operatingPoints,
+    `[[`,
+    numeric(1),
+    "cutoff"
+  )
+  op_realized <- vapply(
+    spec_ppcr_obj$operatingPoints,
+    `[[`,
+    numeric(1),
+    "realizedPpcr"
+  )
+  expect_equal(op_values, c(0.00, 0.20, 0.40, 0.60, 0.80, 1.00))
+  expect_equal(
+    op_cutoffs,
+    c(1.00, 0.71, 0.50, 0.50, 0.24, 0.00),
+    tolerance = 1e-2
+  )
+  expect_equal(
+    op_realized,
+    c(0 / 9, 2 / 9, 3 / 9, 3 / 9, 7 / 9, 9 / 9),
+    tolerance = 1e-6
+  )
 
   # 3. Missing required bins fails
   invalid_bins <- spec_thresh
