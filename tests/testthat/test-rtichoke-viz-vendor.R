@@ -1,16 +1,16 @@
-test_that("vendored rtichoke_viz v0.22.0 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.22.1 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version: 0.22.0" %in% provenance)
-  expect_true("archive: rtichoke-viz-0.22.0.tar.gz" %in% provenance)
+  expect_true("version: 0.22.1" %in% provenance)
+  expect_true("archive: rtichoke-viz-0.22.1.tar.gz" %in% provenance)
   expect_true(
-    "source_sha: e862776e2714dd20a7284bdb9c64c4bbe86962b3" %in% provenance
+    "source_sha: 7cc8e8c23ee2f073ff3d8e4f32198eaac4785eb2" %in% provenance
   )
   expect_true(
     paste0(
       "archive_sha256: ",
-      "64087fe0284ab2beb6e664dd419504a56000e217eaf403f33559896b67fff94d"
+      "b812f3fc283d404d3d5982cd1a84157c3cce1f13afcdc87c392d7c9ddc029189"
     ) %in%
       provenance
   )
@@ -58,4 +58,81 @@ test_that("vendored rtichoke_viz schemas preserve canonical ids", {
     fixed = TRUE
   )
   expect_match(report, '"const": "1.1"', fixed = TRUE)
+})
+
+test_that("standalone v2 schema validates create_probs_histogram specs via jsonvalidate", {
+  skip_if_not_installed("jsonvalidate")
+
+  schema_path <- system.file("rtichoke-viz", "rtichoke-viz-v2.schema.json", package = "rtichoke")
+  expect_true(file.exists(schema_path))
+
+  validator <- jsonvalidate::json_validator(schema_path, engine = "ajv")
+
+  # 1. Probability threshold spec
+  p_dist_thresh <- prepare_probs_distribution_data(
+    probs = list(example_dat$estimated_probabilities),
+    reals = list(example_dat$outcome),
+    by = 0.1,
+    stratified_by = "probability_threshold"
+  )
+  p_perf_thresh <- prepare_performance_data(
+    probs = list(example_dat$estimated_probabilities),
+    reals = list(example_dat$outcome),
+    by = 0.1,
+    stratified_by = "probability_threshold"
+  )
+  spec_thresh <- rtichoke_viz_prediction_distribution_spec(p_dist_thresh, p_perf_thresh)
+  json_thresh <- jsonlite::toJSON(spec_thresh, auto_unbox = TRUE, null = "null", digits = NA)
+  expect_true(validator(json_thresh))
+
+  # 2. PPCR spec using frozen tied fixture
+  probs_tied <- list(c(0.05, 0.2, 0.7, 0.95, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2))
+  reals_tied <- list(c(0, 0, 1, 1, 1, 1, 0, 0, 0, 1))
+  p_dist_ppcr <- prepare_probs_distribution_data(
+    probs = probs_tied,
+    reals = reals_tied,
+    by = 0.2,
+    stratified_by = "ppcr"
+  )
+  p_perf_ppcr <- prepare_performance_data(
+    probs = probs_tied,
+    reals = reals_tied,
+    by = 0.2,
+    stratified_by = "ppcr"
+  )
+  spec_ppcr <- rtichoke_viz_prediction_distribution_spec(p_dist_ppcr, p_perf_ppcr)
+  json_ppcr <- jsonlite::toJSON(spec_ppcr, auto_unbox = TRUE, null = "null", digits = NA)
+  expect_true(validator(json_ppcr))
+
+  # 3. Missing required bins fails
+  invalid_bins <- spec_thresh
+  invalid_bins$bins <- NULL
+  json_invalid_bins <- jsonlite::toJSON(invalid_bins, auto_unbox = TRUE, null = "null", digits = NA)
+  expect_false(validator(json_invalid_bins))
+
+  # 4. Unsupported component type fails
+  invalid_type <- spec_thresh
+  invalid_type$type <- "unsupported_type"
+  json_invalid_type <- jsonlite::toJSON(invalid_type, auto_unbox = TRUE, null = "null", digits = NA)
+  expect_false(validator(json_invalid_type))
+
+  # 5. Schema contains all eight supported component branches
+  schema_obj <- jsonlite::fromJSON(schema_path, simplifyVector = FALSE)
+  expect_length(schema_obj$anyOf, 8L)
+  branch_types <- vapply(schema_obj$anyOf, function(b) {
+    if (!is.null(b$properties$type$const)) {
+      b$properties$type$const
+    } else if (!is.null(b$allOf)) {
+      for (sub in b$allOf) {
+        if (!is.null(sub$properties$type$const)) return(sub$properties$type$const)
+      }
+      NA_character_
+    } else {
+      NA_character_
+    }
+  }, character(1))
+  expect_setequal(
+    branch_types,
+    c("roc", "calibration", "precision_recall", "gains", "lift", "decision_curve", "interventions_avoided", "prediction_distribution")
+  )
 })
