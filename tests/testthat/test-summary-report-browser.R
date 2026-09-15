@@ -243,7 +243,13 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   )
   expect_identical(
     vapply(discrimination$items[[3]]$components, `[[`, "", "id"),
-    c("prediction-distribution-2", "roc-2", "lift-2", "precision-recall-2", "gains-2")
+    c(
+      "prediction-distribution-2",
+      "roc-2",
+      "lift-2",
+      "precision-recall-2",
+      "gains-2"
+    )
   )
 
   utility <- report$sections[[4]]
@@ -1160,15 +1166,33 @@ test_that("browser summary report prediction distribution components match stand
     distribution_data = thresh_dist_data,
     performance_data = thresh_perf_data
   )
-  embedded_thresh_spec <- summary_report_component(report, "prediction-distribution")$spec
+  embedded_thresh_spec <- summary_report_component(
+    report,
+    "prediction-distribution"
+  )$spec
 
-  expect_identical(embedded_thresh_spec$schemaVersion, standalone_thresh_spec$schemaVersion)
+  expect_identical(
+    embedded_thresh_spec$schemaVersion,
+    standalone_thresh_spec$schemaVersion
+  )
   expect_identical(embedded_thresh_spec$type, standalone_thresh_spec$type)
-  expect_identical(embedded_thresh_spec$evaluations, standalone_thresh_spec$evaluations)
-  expect_identical(embedded_thresh_spec$operatingPoint, standalone_thresh_spec$operatingPoint)
+  expect_identical(
+    embedded_thresh_spec$evaluations,
+    standalone_thresh_spec$evaluations
+  )
+  expect_identical(
+    embedded_thresh_spec$operatingPoint,
+    standalone_thresh_spec$operatingPoint
+  )
   expect_identical(embedded_thresh_spec$bins, standalone_thresh_spec$bins)
-  expect_identical(embedded_thresh_spec$rankBins, standalone_thresh_spec$rankBins)
-  expect_identical(embedded_thresh_spec$operatingPoints, standalone_thresh_spec$operatingPoints)
+  expect_identical(
+    embedded_thresh_spec$rankBins,
+    standalone_thresh_spec$rankBins
+  )
+  expect_identical(
+    embedded_thresh_spec$operatingPoints,
+    standalone_thresh_spec$operatingPoints
+  )
   expect_identical(embedded_thresh_spec, standalone_thresh_spec)
 
   # PPCR standalone vs embedded using report default grid by = 0.01
@@ -1188,21 +1212,38 @@ test_that("browser summary report prediction distribution components match stand
     distribution_data = ppcr_dist_data,
     performance_data = ppcr_perf_data
   )
-  embedded_ppcr_spec <- summary_report_component(report, "prediction-distribution-2")$spec
+  embedded_ppcr_spec <- summary_report_component(
+    report,
+    "prediction-distribution-2"
+  )$spec
 
-  expect_identical(embedded_ppcr_spec$schemaVersion, standalone_ppcr_spec$schemaVersion)
+  expect_identical(
+    embedded_ppcr_spec$schemaVersion,
+    standalone_ppcr_spec$schemaVersion
+  )
   expect_identical(embedded_ppcr_spec$type, standalone_ppcr_spec$type)
-  expect_identical(embedded_ppcr_spec$evaluations, standalone_ppcr_spec$evaluations)
-  expect_identical(embedded_ppcr_spec$operatingPoint, standalone_ppcr_spec$operatingPoint)
+  expect_identical(
+    embedded_ppcr_spec$evaluations,
+    standalone_ppcr_spec$evaluations
+  )
+  expect_identical(
+    embedded_ppcr_spec$operatingPoint,
+    standalone_ppcr_spec$operatingPoint
+  )
   expect_identical(embedded_ppcr_spec$bins, standalone_ppcr_spec$bins)
   expect_identical(embedded_ppcr_spec$rankBins, standalone_ppcr_spec$rankBins)
-  expect_identical(embedded_ppcr_spec$operatingPoints, standalone_ppcr_spec$operatingPoints)
+  expect_identical(
+    embedded_ppcr_spec$operatingPoints,
+    standalone_ppcr_spec$operatingPoints
+  )
   expect_identical(embedded_ppcr_spec, standalone_ppcr_spec)
 })
 
 
 test_that("browser summary report prediction distribution satisfies frozen tied fixture oracle", {
-  tied_probs <- list("Model Tied" = c(0.00, 0.15, 0.30, 0.50, 0.50, 0.50, 0.65, 0.80, 1.00))
+  tied_probs <- list(
+    "Model Tied" = c(0.00, 0.15, 0.30, 0.50, 0.50, 0.50, 0.65, 0.80, 1.00)
+  )
   tied_reals <- list("Pop Tied" = c(0, 1, 0, 1, 0, 1, 1, 0, 1))
 
   # Test internal producer/spec for PPCR with by = 0.20
@@ -1226,22 +1267,100 @@ test_that("browser summary report prediction distribution satisfies frozen tied 
 
   # Check rank bins against frozen literal expected values
   expected_rank_bins <- list(
-    list(evaluationId = "evaluation-1", rankLower = 0.00, rankUpper = 0.20, positiveMass = 1L, negativeMass = 1L),
-    list(evaluationId = "evaluation-1", rankLower = 0.20, rankUpper = 0.40, positiveMass = 2L, negativeMass = 2L),
-    list(evaluationId = "evaluation-1", rankLower = 0.40, rankUpper = 0.60, positiveMass = 0L, negativeMass = 0L),
-    list(evaluationId = "evaluation-1", rankLower = 0.60, rankUpper = 0.80, positiveMass = 1L, negativeMass = 0L),
-    list(evaluationId = "evaluation-1", rankLower = 0.80, rankUpper = 1.00, positiveMass = 1L, negativeMass = 1L)
+    list(
+      evaluationId = "evaluation-1",
+      rankLower = 0.00,
+      rankUpper = 0.20,
+      positiveMass = 1L,
+      negativeMass = 1L
+    ),
+    list(
+      evaluationId = "evaluation-1",
+      rankLower = 0.20,
+      rankUpper = 0.40,
+      positiveMass = 2L,
+      negativeMass = 2L
+    ),
+    list(
+      evaluationId = "evaluation-1",
+      rankLower = 0.40,
+      rankUpper = 0.60,
+      positiveMass = 0L,
+      negativeMass = 0L
+    ),
+    list(
+      evaluationId = "evaluation-1",
+      rankLower = 0.60,
+      rankUpper = 0.80,
+      positiveMass = 1L,
+      negativeMass = 0L
+    ),
+    list(
+      evaluationId = "evaluation-1",
+      rankLower = 0.80,
+      rankUpper = 1.00,
+      positiveMass = 1L,
+      negativeMass = 1L
+    )
   )
   expect_identical(ppcr_spec$rankBins, expected_rank_bins)
 
   # Check PPCR operating points against frozen literal expected values
   expected_ops <- list(
-    list(value = 0.00, cutoff = 1.00, realizedPpcr = 0 / 9, tp = 0L, fp = 0L, tn = 4L, fn = 5L),
-    list(value = 0.20, cutoff = 0.71, realizedPpcr = 2 / 9, tp = 1L, fp = 1L, tn = 3L, fn = 4L),
-    list(value = 0.40, cutoff = 0.50, realizedPpcr = 3 / 9, tp = 2L, fp = 1L, tn = 3L, fn = 3L),
-    list(value = 0.60, cutoff = 0.50, realizedPpcr = 3 / 9, tp = 2L, fp = 1L, tn = 3L, fn = 3L),
-    list(value = 0.80, cutoff = 0.24, realizedPpcr = 7 / 9, tp = 4L, fp = 3L, tn = 1L, fn = 1L),
-    list(value = 1.00, cutoff = 0.00, realizedPpcr = 9 / 9, tp = 5L, fp = 4L, tn = 0L, fn = 0L)
+    list(
+      value = 0.00,
+      cutoff = 1.00,
+      realizedPpcr = 0 / 9,
+      tp = 0L,
+      fp = 0L,
+      tn = 4L,
+      fn = 5L
+    ),
+    list(
+      value = 0.20,
+      cutoff = 0.71,
+      realizedPpcr = 2 / 9,
+      tp = 1L,
+      fp = 1L,
+      tn = 3L,
+      fn = 4L
+    ),
+    list(
+      value = 0.40,
+      cutoff = 0.50,
+      realizedPpcr = 3 / 9,
+      tp = 2L,
+      fp = 1L,
+      tn = 3L,
+      fn = 3L
+    ),
+    list(
+      value = 0.60,
+      cutoff = 0.50,
+      realizedPpcr = 3 / 9,
+      tp = 2L,
+      fp = 1L,
+      tn = 3L,
+      fn = 3L
+    ),
+    list(
+      value = 0.80,
+      cutoff = 0.24,
+      realizedPpcr = 7 / 9,
+      tp = 4L,
+      fp = 3L,
+      tn = 1L,
+      fn = 1L
+    ),
+    list(
+      value = 1.00,
+      cutoff = 0.00,
+      realizedPpcr = 9 / 9,
+      tp = 5L,
+      fp = 4L,
+      tn = 0L,
+      fn = 0L
+    )
   )
 
   expect_length(ppcr_spec$operatingPoints, length(expected_ops))
@@ -1270,7 +1389,10 @@ test_that("browser summary report prediction distribution preserves producer-own
   dat <- summary_report_test_data()
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
 
-  thresh_spec <- summary_report_component(report, "prediction-distribution")$spec
+  thresh_spec <- summary_report_component(
+    report,
+    "prediction-distribution"
+  )$spec
   perf_data <- prepare_performance_data(dat$probs, dat$reals)
 
   # Check first operating point metrics match producer performance data exactly
@@ -1299,7 +1421,15 @@ test_that("browser summary report prediction distribution preserves producer-own
     raw_val <- perf_row_1[[raw_col]][[1]]
     if (is.null(raw_val) || is.na(raw_val) || !is.finite(raw_val)) {
       expect_null(metrics_1[[metric_id]])
-    } else if (metric_id %in% c("true_positives", "true_negatives", "false_positives", "false_negatives")) {
+    } else if (
+      metric_id %in%
+        c(
+          "true_positives",
+          "true_negatives",
+          "false_positives",
+          "false_negatives"
+        )
+    ) {
       expect_identical(metrics_1[[metric_id]], as.integer(raw_val))
     } else {
       expect_equal(metrics_1[[metric_id]], as.numeric(raw_val))
@@ -1318,7 +1448,10 @@ test_that("browser summary report prediction distribution supports multiple eval
   )
 
   report <- rtichoke:::summary_report_browser_spec(probs, reals)
-  thresh_spec <- summary_report_component(report, "prediction-distribution")$spec
+  thresh_spec <- summary_report_component(
+    report,
+    "prediction-distribution"
+  )$spec
 
   expect_length(thresh_spec$evaluations, 2L)
   expect_identical(thresh_spec$evaluations[[1]]$id, "evaluation-1")
@@ -1331,10 +1464,20 @@ test_that("browser summary report prediction distribution supports multiple eval
   eval_ids_in_bins <- unique(vapply(thresh_spec$bins, `[[`, "", "evaluationId"))
   expect_setequal(eval_ids_in_bins, c("evaluation-1", "evaluation-2"))
 
-  eval_ids_in_rank_bins <- unique(vapply(thresh_spec$rankBins, `[[`, "", "evaluationId"))
+  eval_ids_in_rank_bins <- unique(vapply(
+    thresh_spec$rankBins,
+    `[[`,
+    "",
+    "evaluationId"
+  ))
   expect_setequal(eval_ids_in_rank_bins, c("evaluation-1", "evaluation-2"))
 
-  eval_ids_in_ops <- unique(vapply(thresh_spec$operatingPoints, `[[`, "", "evaluationId"))
+  eval_ids_in_ops <- unique(vapply(
+    thresh_spec$operatingPoints,
+    `[[`,
+    "",
+    "evaluationId"
+  ))
   expect_setequal(eval_ids_in_ops, c("evaluation-1", "evaluation-2"))
 })
 
@@ -1345,8 +1488,16 @@ test_that("browser summary report and prediction distribution component specs pa
   dat <- summary_report_test_data()
   report_spec <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
 
-  report_schema_path <- system.file("rtichoke-viz", "rtichoke-viz-report.schema.json", package = "rtichoke")
-  v2_schema_path <- system.file("rtichoke-viz", "rtichoke-viz-v2.schema.json", package = "rtichoke")
+  report_schema_path <- system.file(
+    "rtichoke-viz",
+    "rtichoke-viz-report.schema.json",
+    package = "rtichoke"
+  )
+  v2_schema_path <- system.file(
+    "rtichoke-viz",
+    "rtichoke-viz-v2.schema.json",
+    package = "rtichoke"
+  )
 
   expect_true(file.exists(report_schema_path))
   expect_true(file.exists(v2_schema_path))
@@ -1354,15 +1505,36 @@ test_that("browser summary report and prediction distribution component specs pa
   report_validator <- jsonvalidate::json_validator(report_schema_path)
   v2_validator <- jsonvalidate::json_validator(v2_schema_path, engine = "ajv")
 
-  report_json <- jsonlite::toJSON(report_spec, auto_unbox = TRUE, null = "null", digits = NA)
+  report_json <- jsonlite::toJSON(
+    report_spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
   expect_true(report_validator(report_json, verbose = TRUE))
 
-  thresh_component_spec <- summary_report_component(report_spec, "prediction-distribution")$spec
-  thresh_json <- jsonlite::toJSON(thresh_component_spec, auto_unbox = TRUE, null = "null", digits = NA)
+  thresh_component_spec <- summary_report_component(
+    report_spec,
+    "prediction-distribution"
+  )$spec
+  thresh_json <- jsonlite::toJSON(
+    thresh_component_spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
   expect_true(v2_validator(thresh_json, verbose = TRUE))
 
-  ppcr_component_spec <- summary_report_component(report_spec, "prediction-distribution-2")$spec
-  ppcr_json <- jsonlite::toJSON(ppcr_component_spec, auto_unbox = TRUE, null = "null", digits = NA)
+  ppcr_component_spec <- summary_report_component(
+    report_spec,
+    "prediction-distribution-2"
+  )$spec
+  ppcr_json <- jsonlite::toJSON(
+    ppcr_component_spec,
+    auto_unbox = TRUE,
+    null = "null",
+    digits = NA
+  )
   expect_true(v2_validator(ppcr_json, verbose = TRUE))
 })
 
