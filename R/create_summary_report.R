@@ -144,6 +144,18 @@ summary_report_browser_spec <- function(probs, reals) {
   interventions_avoided_data <- add_static_interventions_avoided_metric(
     threshold_performance_data
   )
+  threshold_distribution_data <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = 0.01,
+    stratified_by = "probability_threshold"
+  )
+  ppcr_distribution_data <- prepare_probs_distribution_data(
+    probs = probs,
+    reals = reals,
+    by = 0.01,
+    stratified_by = "ppcr"
+  )
 
   prevalence_summary <- rtichoke_viz_summary_metrics_prevalence_spec(
     threshold_performance_data,
@@ -164,6 +176,11 @@ summary_report_browser_spec <- function(probs, reals) {
     reals,
     evaluation_metadata
   )
+  threshold_prediction_distribution <-
+    rtichoke_viz_prediction_distribution_spec(
+      distribution_data = threshold_distribution_data,
+      performance_data = threshold_performance_data
+    )
   threshold_roc <- rtichoke_viz_roc_v2_spec(
     threshold_performance_data,
     evaluation_metadata,
@@ -201,6 +218,11 @@ summary_report_browser_spec <- function(probs, reals) {
     evaluation_metadata,
     stratified_by = "ppcr"
   )
+  ppcr_prediction_distribution <-
+    rtichoke_viz_prediction_distribution_spec(
+      distribution_data = ppcr_distribution_data,
+      performance_data = ppcr_performance_data
+    )
   ppcr_roc <- rtichoke_viz_roc_v2_spec(
     ppcr_performance_data,
     evaluation_metadata,
@@ -258,6 +280,11 @@ summary_report_browser_spec <- function(probs, reals) {
           "discrimination-probability-threshold",
           "By Probability Threshold",
           list(
+            component(
+              "prediction-distribution",
+              "Prediction Distribution",
+              threshold_prediction_distribution
+            ),
             component("roc", "ROC", threshold_roc),
             component("lift", "Lift", threshold_lift),
             component(
@@ -272,6 +299,11 @@ summary_report_browser_spec <- function(probs, reals) {
           "discrimination-ppcr",
           "By Predicted Positives Condition Rate (PPCR)",
           list(
+            component(
+              "prediction-distribution-2",
+              "Prediction Distribution",
+              ppcr_prediction_distribution
+            ),
             component("roc-2", "ROC", ppcr_roc),
             component("lift-2", "Lift", ppcr_lift),
             component(

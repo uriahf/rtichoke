@@ -27,7 +27,8 @@ expected_schema_version <- function(type) {
         "gains",
         "lift",
         "decision_curve",
-        "interventions_avoided"
+        "interventions_avoided",
+        "prediction_distribution"
       )
   ) {
     "2.0"
