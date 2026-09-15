@@ -1385,7 +1385,7 @@ test_that("browser summary report prediction distribution satisfies frozen tied 
 })
 
 
-test_that("browser summary report prediction distribution preserves producer-owned metrics", {
+test_that("browser summary report prediction distribution embedded metrics match producer performance output", {
   dat <- summary_report_test_data()
   report <- rtichoke:::summary_report_browser_spec(dat$probs, dat$reals)
 
@@ -1539,7 +1539,7 @@ test_that("browser summary report and prediction distribution component specs pa
 })
 
 
-test_that("browser acceptance verifies prediction distribution rendering and interactivity in report", {
+test_that("browser acceptance verifies prediction distribution rendering in report", {
   skip_on_os("windows")
   browser <- find_headless_browser()
   skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
