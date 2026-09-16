@@ -61,7 +61,10 @@ test_that("conventional summary report embeds two prediction distribution compon
   # Subsections relative ordering:
   # "By Probability Threshold" -> "Prediction Distribution" -> "Performance Metrics Curves"
   thresh_sec_pos <- regexpr('id="by-probability-threshold"', html_text)[[1]]
-  ppcr_sec_pos <- regexpr('id="by-predicted-positives-condition-rate-ppcr"', html_text)[[1]]
+  ppcr_sec_pos <- regexpr(
+    'id="by-predicted-positives-condition-rate-ppcr"',
+    html_text
+  )[[1]]
 
   expect_true(thresh_sec_pos > 0L)
   expect_true(ppcr_sec_pos > 0L)
@@ -83,7 +86,11 @@ test_that("conventional summary report embeds two prediction distribution compon
   expect_true(ppcr_pred_pos < ppcr_curves_pos)
 
   # Dimensions in spec JSON payloads
-  expect_match(thresh_chunk, '"dimension":"probability_threshold"', fixed = TRUE)
+  expect_match(
+    thresh_chunk,
+    '"dimension":"probability_threshold"',
+    fixed = TRUE
+  )
   expect_match(ppcr_chunk, '"dimension":"ppcr"', fixed = TRUE)
 
   # Both components use the by = 0.01 operating-point grid (101 points in operatingPoints array)
