@@ -64,7 +64,7 @@ makeGroupOptions_rtichoke <- function(
   )
 
   if (inherits(group, "formula")) {
-    group <- rlang::eval_tidy(group, df)
+    group <- rlang::eval_tidy(rlang::f_rhs(group), df)
   }
 
   if (length(group) < 1) {

@@ -5,7 +5,7 @@ summary_rmarkdown_test_data <- function() {
   )
 }
 
-test_that("conventional summary report embeds two prediction distribution components when interactive = TRUE", {
+test_that("conventional summary report places prediction distribution before calibration when interactive = TRUE", {
   dat <- summary_rmarkdown_test_data()
   output_dir <- tempfile("rtichoke-rmd-summary-")
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
@@ -26,13 +26,36 @@ test_that("conventional summary report embeds two prediction distribution compon
   html_lines <- readLines(out_path, warn = FALSE)
   html_text <- paste(html_lines, collapse = "\n")
 
-  # Exactly two Prediction Distribution <h3> heading blocks
-  heading_matches <- length(gregexpr(
-    "<h3>Prediction Distribution</h3>",
-    html_text,
-    fixed = TRUE
-  )[[1]])
-  expect_equal(heading_matches, 2L)
+  # Section order: Prediction Distribution -> Calibration -> Discrimination -> Utility -> Performance Table
+  pred_pos <- regexpr('id="prediction-distribution"', html_text)[[1]]
+  cal_pos <- regexpr('id="calibration"', html_text)[[1]]
+  disc_pos <- regexpr('id="discrimination"', html_text)[[1]]
+  util_pos <- regexpr('id="utility-decision-curve"', html_text)[[1]]
+  tbl_pos <- regexpr('id="performance-table"', html_text)[[1]]
+
+  expect_true(pred_pos > 0L)
+  expect_true(cal_pos > 0L)
+  expect_true(disc_pos > 0L)
+  expect_true(util_pos > 0L)
+  expect_true(tbl_pos > 0L)
+
+  expect_true(pred_pos < cal_pos)
+  expect_true(cal_pos < disc_pos)
+  expect_true(disc_pos < util_pos)
+  expect_true(util_pos < tbl_pos)
+
+  # Subsections under Prediction Distribution
+  pred_sec_chunk <- substr(html_text, pred_pos, cal_pos)
+
+  thresh_sub_pos <- regexpr("By Probability Threshold", pred_sec_chunk)[[1]]
+  ppcr_sub_pos <- regexpr(
+    "By Predicted Positives Condition Rate \\(PPCR\\)",
+    pred_sec_chunk
+  )[[1]]
+
+  expect_true(thresh_sub_pos > 0L)
+  expect_true(ppcr_sub_pos > 0L)
+  expect_true(thresh_sub_pos < ppcr_sub_pos)
 
   # Exactly two Prediction Distribution container roots
   root_matches <- length(gregexpr(
@@ -50,42 +73,10 @@ test_that("conventional summary report embeds two prediction distribution compon
   expect_equal(length(spec_script_ids), 2L)
   expect_equal(length(unique(spec_script_ids)), 2L)
 
-  # Distinct module initialization scripts exist
-  module_matches <- length(gregexpr(
-    '<script type="module">',
-    html_text,
-    fixed = TRUE
-  )[[1]])
-  expect_equal(module_matches, 2L)
-
-  # Subsections relative ordering:
-  # "By Probability Threshold" -> "Prediction Distribution" -> "Performance Metrics Curves"
-  thresh_sec_pos <- regexpr('id="by-probability-threshold"', html_text)[[1]]
-  ppcr_sec_pos <- regexpr(
-    'id="by-predicted-positives-condition-rate-ppcr"',
-    html_text
-  )[[1]]
-
-  expect_true(thresh_sec_pos > 0L)
-  expect_true(ppcr_sec_pos > 0L)
-  expect_true(thresh_sec_pos < ppcr_sec_pos)
-
-  thresh_chunk <- substr(html_text, thresh_sec_pos, ppcr_sec_pos)
-  ppcr_chunk <- substr(html_text, ppcr_sec_pos, nchar(html_text))
-
-  thresh_pred_pos <- regexpr("Prediction Distribution", thresh_chunk)[[1]]
-  thresh_curves_pos <- regexpr("Performance Metrics Curves", thresh_chunk)[[1]]
-  expect_true(thresh_pred_pos > 0L)
-  expect_true(thresh_curves_pos > 0L)
-  expect_true(thresh_pred_pos < thresh_curves_pos)
-
-  ppcr_pred_pos <- regexpr("Prediction Distribution", ppcr_chunk)[[1]]
-  ppcr_curves_pos <- regexpr("Performance Metrics Curves", ppcr_chunk)[[1]]
-  expect_true(ppcr_pred_pos > 0L)
-  expect_true(ppcr_curves_pos > 0L)
-  expect_true(ppcr_pred_pos < ppcr_curves_pos)
-
   # Dimensions in spec JSON payloads
+  thresh_chunk <- substr(pred_sec_chunk, thresh_sub_pos, ppcr_sub_pos)
+  ppcr_chunk <- substr(pred_sec_chunk, ppcr_sub_pos, nchar(pred_sec_chunk))
+
   expect_match(
     thresh_chunk,
     '"dimension":"probability_threshold"',
@@ -93,11 +84,11 @@ test_that("conventional summary report embeds two prediction distribution compon
   )
   expect_match(ppcr_chunk, '"dimension":"ppcr"', fixed = TRUE)
 
-  # Both components use the by = 0.01 operating-point grid (101 points in operatingPoints array)
+  # Both components use the by = 0.01 operating-point grid
   expect_match(thresh_chunk, '"value":0.01', fixed = TRUE)
   expect_match(ppcr_chunk, '"value":0.01', fixed = TRUE)
 
-  # HTML remains self-contained (no external network or asset dependencies required)
+  # HTML remains self-contained
   expect_match(html_text, "<style", fixed = TRUE)
   expect_match(html_text, "<script", fixed = TRUE)
 
@@ -108,7 +99,7 @@ test_that("conventional summary report embeds two prediction distribution compon
 })
 
 
-test_that("conventional summary report omits prediction distribution components when interactive = FALSE", {
+test_that("conventional summary report omits prediction distribution section when interactive = FALSE", {
   dat <- summary_rmarkdown_test_data()
 
   # Note: The complete non-interactive report render is currently blocked by a pre-existing
@@ -152,14 +143,41 @@ test_that("conventional summary report omits prediction distribution components 
     0L
   )
 
-  # Existing static threshold and PPCR discrimination content remain present
-  expect_match(html_text, "By Probability Threshold", fixed = TRUE)
-  expect_match(
-    html_text,
-    "By Predicted Positives Condition Rate (PPCR)",
-    fixed = TRUE
+  # Existing Calibration and Discrimination content remain present
+  expect_match(html_text, "Calibration", fixed = TRUE)
+  expect_match(html_text, "Discrimination", fixed = TRUE)
+})
+
+
+test_that("conventional summary report renders 100% complete for supported two-model input", {
+  out_dir <- tempfile("rtichoke-two-model-")
+  dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  out_file <- file.path(out_dir, "two_model_summary.html")
+
+  create_summary_report(
+    probs = list(
+      "First Model" = example_dat$estimated_probabilities,
+      "Second Model" = example_dat$random_guess
+    ),
+    reals = list(example_dat$outcome),
+    interactive = TRUE,
+    output_file = "two_model_summary.html",
+    output_dir = out_dir,
+    renderer = "rmarkdown"
   )
-  expect_match(html_text, "Performance Metrics Curves", fixed = TRUE)
+
+  expect_true(file.exists(out_file))
+
+  html_lines <- readLines(out_file, warn = FALSE)
+  html_text <- paste(html_lines, collapse = "\n")
+
+  expect_match(html_text, "First Model", fixed = TRUE)
+  expect_match(html_text, "Second Model", fixed = TRUE)
+  expect_match(html_text, "Prediction Distribution", fixed = TRUE)
+  expect_match(html_text, "Calibration", fixed = TRUE)
+  expect_match(html_text, "Discrimination", fixed = TRUE)
+  expect_match(html_text, "Utility", fixed = TRUE)
+  expect_match(html_text, "Performance Table", fixed = TRUE)
 })
 
 
