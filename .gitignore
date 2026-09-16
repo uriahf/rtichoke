@@ -12,4 +12,6 @@ cache/
 /*.tar.gz
 *.Rcheck/
 node_modules/
-browser-acceptance/
+browser-acceptance/*.html
+browser-acceptance/*.png
+browser-acceptance/*.log
