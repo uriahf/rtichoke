@@ -158,6 +158,23 @@ create_table_for_auc(probs = params$probs,
 
 ## By Probability Threshold
 
+```{r results='asis'}
+if (isTRUE(params$interactive)) {
+  cat("### Prediction Distribution\n\n")
+}
+```
+
+```{r}
+if (isTRUE(params$interactive)) {
+  create_probs_histogram(
+    probs = params$probs,
+    reals = params$reals,
+    by = 0.01,
+    stratified_by = "probability_threshold"
+  )
+}
+```
+
 ### Performance Metrics Curves {.tabset}
 
 #### ROC
@@ -190,6 +207,23 @@ plot_gains_curve(performance_dat, interactive = params$interactive,
 ```
 
 ## By Predicted Positives Condition Rate (PPCR)
+
+```{r results='asis'}
+if (isTRUE(params$interactive)) {
+  cat("### Prediction Distribution\n\n")
+}
+```
+
+```{r}
+if (isTRUE(params$interactive)) {
+  create_probs_histogram(
+    probs = params$probs,
+    reals = params$reals,
+    by = 0.01,
+    stratified_by = "ppcr"
+  )
+}
+```
 
 ### Performance Metrics Curves {.tabset}
 
