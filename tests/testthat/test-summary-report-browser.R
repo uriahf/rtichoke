@@ -183,6 +183,7 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     vapply(report$sections, `[[`, "", "id"),
     c(
       "prevalence",
+      "prediction-distribution",
       "calibration",
       "discrimination",
       "utility",
@@ -193,6 +194,7 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     vapply(report$sections, `[[`, "", "title"),
     c(
       "Prevalence",
+      "Prediction Distribution",
       "Calibration",
       "Discrimination",
       "Utility",
@@ -205,7 +207,24 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   expect_identical(prevalence$items[[1]]$id, "prevalence-summary")
   expect_identical(prevalence$items[[1]]$title, "Prevalence summary")
 
-  calibration <- report$sections[[2]]
+  pred_dist <- report$sections[[2]]
+  expect_identical(
+    vapply(pred_dist$items, `[[`, "", "id"),
+    c("prediction-distribution-probability-threshold", "prediction-distribution-ppcr")
+  )
+  expect_identical(
+    vapply(pred_dist$items, `[[`, "", "title"),
+    c(
+      "By Probability Threshold",
+      "By Predicted Positives Condition Rate (PPCR)"
+    )
+  )
+  expect_identical(pred_dist$items[[1]]$components[[1]]$id, "prediction-distribution")
+  expect_identical(pred_dist$items[[1]]$components[[1]]$title, "Prediction Distribution")
+  expect_identical(pred_dist$items[[2]]$components[[1]]$id, "prediction-distribution-2")
+  expect_identical(pred_dist$items[[2]]$components[[1]]$title, "Prediction Distribution")
+
+  calibration <- report$sections[[3]]
   expect_identical(
     vapply(calibration$items, `[[`, "", "type"),
     rep("component", 2)
@@ -215,7 +234,7 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   expect_identical(calibration$items[[2]]$id, "calibration")
   expect_identical(calibration$items[[2]]$title, "Discrete")
 
-  discrimination <- report$sections[[3]]
+  discrimination <- report$sections[[4]]
   expect_identical(discrimination$items[[1]]$type, "component")
   expect_identical(discrimination$items[[1]]$id, "auroc")
   expect_identical(discrimination$items[[1]]$title, "AUROC")
@@ -234,17 +253,16 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   for (group in discrimination$items[2:3]) {
     expect_identical(
       vapply(group$components, `[[`, "", "title"),
-      c("Prediction Distribution", "ROC", "Lift", "Precision-Recall", "Gains")
+      c("ROC", "Lift", "Precision-Recall", "Gains")
     )
   }
   expect_identical(
     vapply(discrimination$items[[2]]$components, `[[`, "", "id"),
-    c("prediction-distribution", "roc", "lift", "precision-recall", "gains")
+    c("roc", "lift", "precision-recall", "gains")
   )
   expect_identical(
     vapply(discrimination$items[[3]]$components, `[[`, "", "id"),
     c(
-      "prediction-distribution-2",
       "roc-2",
       "lift-2",
       "precision-recall-2",
@@ -252,13 +270,13 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     )
   )
 
-  utility <- report$sections[[4]]
+  utility <- report$sections[[5]]
   expect_identical(
     vapply(utility$items, `[[`, "", "title"),
     c("Decision Curve", "Interventions Avoided")
   )
 
-  tables <- report$sections[[5]]
+  tables <- report$sections[[6]]
   expect_identical(
     vapply(tables$items, `[[`, "", "id"),
     c(
@@ -297,11 +315,11 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
     "smooth"
   )
   expect_true(all(vapply(components, function(x) x$type == "component", TRUE)))
-  groups <- c(discrimination$items[2:3], tables$items)
+  groups <- c(pred_dist$items, discrimination$items[2:3], tables$items)
   expect_true(all(vapply(groups, function(x) x$type == "group", TRUE)))
   expect_length(unique(vapply(components, `[[`, "", "id")), 18L)
-  expect_length(unique(vapply(report$sections, `[[`, "", "id")), 5L)
-  expect_length(unique(vapply(groups, `[[`, "", "id")), 4L)
+  expect_length(unique(vapply(report$sections, `[[`, "", "id")), 6L)
+  expect_length(unique(vapply(groups, `[[`, "", "id")), 6L)
 })
 
 
