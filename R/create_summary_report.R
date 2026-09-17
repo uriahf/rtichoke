@@ -264,6 +264,34 @@ summary_report_browser_spec <- function(probs, reals) {
       )
     ),
     list(
+      id = "prediction-distribution",
+      title = "Prediction Distribution",
+      items = list(
+        group(
+          "prediction-distribution-probability-threshold",
+          "By Probability Threshold",
+          list(
+            component(
+              "prediction-distribution",
+              "Prediction Distribution",
+              threshold_prediction_distribution
+            )
+          )
+        ),
+        group(
+          "prediction-distribution-ppcr",
+          "By Predicted Positives Condition Rate (PPCR)",
+          list(
+            component(
+              "prediction-distribution-2",
+              "Prediction Distribution",
+              ppcr_prediction_distribution
+            )
+          )
+        )
+      )
+    ),
+    list(
       id = "calibration",
       title = "Calibration",
       items = list(
@@ -280,11 +308,6 @@ summary_report_browser_spec <- function(probs, reals) {
           "discrimination-probability-threshold",
           "By Probability Threshold",
           list(
-            component(
-              "prediction-distribution",
-              "Prediction Distribution",
-              threshold_prediction_distribution
-            ),
             component("roc", "ROC", threshold_roc),
             component("lift", "Lift", threshold_lift),
             component(
@@ -299,11 +322,6 @@ summary_report_browser_spec <- function(probs, reals) {
           "discrimination-ppcr",
           "By Predicted Positives Condition Rate (PPCR)",
           list(
-            component(
-              "prediction-distribution-2",
-              "Prediction Distribution",
-              ppcr_prediction_distribution
-            ),
             component("roc-2", "ROC", ppcr_roc),
             component("lift-2", "Lift", ppcr_lift),
             component(
