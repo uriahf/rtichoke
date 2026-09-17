@@ -210,7 +210,10 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
   pred_dist <- report$sections[[2]]
   expect_identical(
     vapply(pred_dist$items, `[[`, "", "id"),
-    c("prediction-distribution-probability-threshold", "prediction-distribution-ppcr")
+    c(
+      "prediction-distribution-probability-threshold",
+      "prediction-distribution-ppcr"
+    )
   )
   expect_identical(
     vapply(pred_dist$items, `[[`, "", "title"),
@@ -219,10 +222,22 @@ test_that("browser summary report composes the structured v1.1 hierarchy", {
       "By Predicted Positives Condition Rate (PPCR)"
     )
   )
-  expect_identical(pred_dist$items[[1]]$components[[1]]$id, "prediction-distribution")
-  expect_identical(pred_dist$items[[1]]$components[[1]]$title, "Prediction Distribution")
-  expect_identical(pred_dist$items[[2]]$components[[1]]$id, "prediction-distribution-2")
-  expect_identical(pred_dist$items[[2]]$components[[1]]$title, "Prediction Distribution")
+  expect_identical(
+    pred_dist$items[[1]]$components[[1]]$id,
+    "prediction-distribution"
+  )
+  expect_identical(
+    pred_dist$items[[1]]$components[[1]]$title,
+    "Prediction Distribution"
+  )
+  expect_identical(
+    pred_dist$items[[2]]$components[[1]]$id,
+    "prediction-distribution-2"
+  )
+  expect_identical(
+    pred_dist$items[[2]]$components[[1]]$title,
+    "Prediction Distribution"
+  )
 
   calibration <- report$sections[[3]]
   expect_identical(
