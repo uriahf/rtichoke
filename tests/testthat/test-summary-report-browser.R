@@ -1692,3 +1692,227 @@ test_that("resolve_render_report_identifier resolves various JS export formats",
     "Could not resolve renderReport export from rtichoke-viz bundle"
   )
 })
+
+test_that("browser acceptance exercises prediction distribution interactive navigation and controls", {
+  skip_on_os("windows")
+  browser <- find_headless_browser()
+  skip_if(!nzchar(browser), "No headless Chromium/Chrome available")
+
+  output_dir <- tempfile("rtichoke-summary-pred-dist-interact-")
+  create_summary_report(
+    probs = list("Model A" = seq(0.01, 0.99, length.out = 100)),
+    reals = list("Population A" = rep(c(0, 1), 50)),
+    renderer = "browser",
+    output_file = "browser_report.html",
+    output_dir = output_dir
+  )
+
+  rendered_file <- normalizePath(
+    file.path(output_dir, "browser_report.html"),
+    winslash = "/",
+    mustWork = TRUE
+  )
+  url <- paste0("file://", rendered_file)
+
+  node_path <- system(
+    "node -e \"console.log(require.resolve('playwright'))\"",
+    intern = TRUE,
+    ignore.stderr = TRUE
+  )
+  skip_if(
+    !length(node_path) || !nzchar(node_path),
+    "Playwright Node package not available"
+  )
+
+  # Node Playwright runner script for real browser interaction & assertions
+  node_code <- sprintf(
+    '
+    const { chromium } = require("playwright");
+    const http = require("http");
+    const fs = require("fs");
+    const path = require("path");
+
+    (async () => {
+      const browser = await chromium.launch({
+        executablePath: process.env.CHROME_BIN || undefined,
+        args: ["--no-sandbox", "--allow-file-access-from-files", "--disable-gpu"]
+      });
+
+      async function testUrl(url, label) {
+        const page = await browser.newPage();
+        const consoleErrors = [];
+        const pageErrors = [];
+
+        page.on("console", msg => { if (msg.type() === "error") consoleErrors.push(msg.text()); });
+        page.on("pageerror", err => pageErrors.push(err.message));
+
+        await page.goto(url, { waitUntil: "networkidle" });
+
+        // 1. Confirm top-level section order
+        const sectionNavText = await page.$$eval(".rtichoke-report__nav > .rtichoke-report__nav-list > .rtichoke-report__nav-item > a", links =>
+          links.map(l => l.textContent.trim())
+        );
+        const expectedSections = [
+          "Prevalence",
+          "Prediction Distribution",
+          "Calibration",
+          "Discrimination",
+          "Utility",
+          "Performance Table"
+        ];
+        if (JSON.stringify(sectionNavText) !== JSON.stringify(expectedSections)) {
+          throw new Error(`Section order mismatch! Expected ${JSON.stringify(expectedSections)}, got ${JSON.stringify(sectionNavText)}`);
+        }
+
+        // 2. Activate top-level Prediction Distribution section
+        const predDistNavLink = page.locator(\'.rtichoke-report__nav > .rtichoke-report__nav-list > .rtichoke-report__nav-item > a[href="#prediction-distribution"]\');
+        await predDistNavLink.click();
+        await page.waitForTimeout(300);
+
+        // 3. Confirm group order
+        const groupNavText = await page.$$eval(\'.rtichoke-report__nav a[href*="prediction-distribution-"]\', links =>
+          links.map(l => l.textContent.trim())
+        );
+        const expectedGroups = [
+          "By Probability Threshold",
+          "By Predicted Positives Condition Rate (PPCR)"
+        ];
+        if (JSON.stringify(groupNavText) !== JSON.stringify(expectedGroups)) {
+          throw new Error(`Group tabs mismatch! Expected ${JSON.stringify(expectedGroups)}, got ${JSON.stringify(groupNavText)}`);
+        }
+
+        // 4. Activate Probability Threshold group & verify
+        const threshGroupTab = page.locator("#section-group-tab-prediction-distribution-prediction-distribution-probability-threshold");
+        await threshGroupTab.click();
+        await page.waitForTimeout(300);
+
+        const threshComp = page.locator(\'[data-component-id="prediction-distribution"]\');
+        await threshComp.waitFor({ state: "visible" });
+
+        const threshSvg = threshComp.locator("svg").first();
+        const threshSvgVisible = await threshSvg.isVisible();
+        const threshBox = await threshSvg.boundingBox();
+
+        if (!threshSvgVisible || !threshBox || threshBox.width <= 0 || threshBox.height <= 0) {
+          throw new Error(`Threshold SVG invalid! Visible: ${threshSvgVisible}, Box: ${JSON.stringify(threshBox)}`);
+        }
+
+        // Operating-point control check
+        const threshControl = threshComp.locator("input[type=\'range\']").first();
+        if (await threshControl.count() > 0) {
+          const initialVal = await threshControl.inputValue();
+          await threshControl.fill("50");
+          await threshControl.dispatchEvent("input");
+          await threshControl.dispatchEvent("change");
+          await page.waitForTimeout(200);
+        }
+
+        // 5. Activate PPCR group & verify
+        const ppcrGroupTab = page.locator("#section-group-tab-prediction-distribution-prediction-distribution-ppcr");
+        await ppcrGroupTab.click();
+        await page.waitForTimeout(300);
+
+        const ppcrComp = page.locator(\'[data-component-id="prediction-distribution-2"]\');
+        await ppcrComp.waitFor({ state: "visible" });
+
+        const ppcrSvg = ppcrComp.locator("svg").first();
+        const ppcrSvgVisible = await ppcrSvg.isVisible();
+        const ppcrBox = await ppcrSvg.boundingBox();
+
+        if (!ppcrSvgVisible || !ppcrBox || ppcrBox.width <= 0 || ppcrBox.height <= 0) {
+          throw new Error(`PPCR SVG invalid! Visible: ${ppcrSvgVisible}, Box: ${JSON.stringify(ppcrBox)}`);
+        }
+
+        // Check rank-bin bar geometry before and after slider interaction
+        const getBarGeometries = async () => {
+          return await page.$$eval(\'[data-component-id="prediction-distribution-2"] rect\', rects =>
+            rects.map(r => ({
+              x: r.getAttribute("x"),
+              y: r.getAttribute("y"),
+              width: r.getAttribute("width"),
+              height: r.getAttribute("height")
+            }))
+          );
+        };
+
+        const initialBars = await getBarGeometries();
+        const ppcrControl = ppcrComp.locator("input[type=\'range\']").first();
+
+        if (await ppcrControl.count() > 0) {
+          await ppcrControl.fill("50");
+          await ppcrControl.dispatchEvent("input");
+          await ppcrControl.dispatchEvent("change");
+          await page.waitForTimeout(200);
+
+          const updatedBars = await getBarGeometries();
+          if (JSON.stringify(initialBars) !== JSON.stringify(updatedBars)) {
+            throw new Error("Rank-bin bar geometry changed when moving PPCR slider!");
+          }
+        }
+
+        // 6. Switch back to Probability Threshold and verify
+        await threshGroupTab.click();
+        await page.waitForTimeout(300);
+        const recheckThreshBox = await threshSvg.boundingBox();
+        if (!recheckThreshBox || recheckThreshBox.width <= 0 || recheckThreshBox.height <= 0) {
+          throw new Error("Threshold SVG lost dimensions after switching back!");
+        }
+
+        // 7. Verify no console or page errors
+        if (consoleErrors.length > 0 || pageErrors.length > 0) {
+          throw new Error(`Errors detected! Console: ${JSON.stringify(consoleErrors)}, Page: ${JSON.stringify(pageErrors)}`);
+        }
+
+        await page.close();
+      }
+
+      // Test file:// protocol
+      await testUrl("%s", "file://");
+
+      // Test http://127.0.0.1 protocol
+      const server = http.createServer((req, res) => {
+        fs.readFile("%s", (err, data) => {
+          if (err) { res.writeHead(500); res.end("Error"); }
+          else { res.writeHead(200, { "Content-Type": "text/html" }); res.end(data); }
+        });
+      });
+
+      await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
+      const port = server.address().port;
+      try {
+        await testUrl(`http://127.0.0.1:${port}/`, "http://127.0.0.1");
+      } finally {
+        server.close();
+      }
+
+      await browser.close();
+      console.log("PLAYWRIGHT_ACCEPTANCE_SUCCESS");
+    })();
+    ',
+    url,
+    rendered_file
+  )
+
+  node_script_file <- tempfile("rtichoke-playwright-", fileext = ".js")
+  writeLines(node_code, node_script_file)
+
+  res <- system2(
+    "node",
+    args = shQuote(node_script_file),
+    stdout = TRUE,
+    stderr = TRUE,
+    env = c(
+      paste0(
+        "NODE_PATH=",
+        dirname(dirname(normalizePath(node_path, winslash = "/")))
+      ),
+      paste0("CHROME_BIN=", browser),
+      Sys.getenv("PATH")
+    )
+  )
+
+  expect_true(
+    any(grepl("PLAYWRIGHT_ACCEPTANCE_SUCCESS", res, fixed = TRUE)),
+    info = paste(res, collapse = "\n")
+  )
+})
