@@ -8,7 +8,9 @@ on:
       - 'R/prepare_probs_distribution_data.R'
       - 'R/rtichoke_viz_v2.R'
       - 'inst/**'
+      - 'browser-acceptance/**'
       - 'tests/testthat/test-probs-histogram.R'
+      - 'tests/testthat/test-summary-report-rmarkdown-prediction-distribution.R'
       - '.github/workflows/probs-histogram-browser-acceptance.yaml'
       - 'DESCRIPTION'
 
@@ -59,6 +61,20 @@ jobs:
             widget,
             file = "browser-acceptance/probs-histogram.html",
             libdir = "lib"
+          )
+
+      - name: Generate conventional RMarkdown summary report browser artifact
+        shell: Rscript {0}
+        run: |
+          library(rtichoke)
+          dir.create("browser-acceptance", showWarnings = FALSE)
+          create_summary_report(
+            probs = list("Model A" = seq(0.01, 0.99, length.out = 100)),
+            reals = list("Population A" = rep(c(0, 1), 50)),
+            interactive = TRUE,
+            output_file = "rmarkdown-summary.html",
+            output_dir = "browser-acceptance",
+            renderer = "rmarkdown"
           )
 
       - name: Execute browser artifact in real Chrome
@@ -119,6 +135,20 @@ jobs:
           grep -q 'Observed Positive' "$dom"
           grep -q 'Observed Negative' "$dom"
           grep -q '<svg' "$dom"
+
+      - name: Install Playwright
+        run: |
+          npm install playwright
+          npx playwright install chromium
+
+      - name: Execute conventional summary report browser acceptance test
+        run: |
+          python3 -m http.server 8769 --directory browser-acceptance > /tmp/rtichoke-rmd-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid || true' EXIT
+          sleep 1
+
+          node browser-acceptance/test-rmarkdown-summary.js
 
       - name: Upload browser artifact and screenshot
         if: always()

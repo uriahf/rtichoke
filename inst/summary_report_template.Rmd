@@ -129,6 +129,41 @@ performance_dat <- prepare_performance_data(probs = params$probs,
 create_table_for_prevalence(performance_dat)
 ```
 
+```{r results='asis'}
+if (isTRUE(params$interactive)) {
+  cat("# Prediction Distribution {.tabset}\n\n")
+  cat("## By Probability Threshold\n\n")
+}
+```
+
+```{r}
+if (isTRUE(params$interactive)) {
+  create_probs_histogram(
+    probs = params$probs,
+    reals = params$reals,
+    by = 0.01,
+    stratified_by = "probability_threshold"
+  )
+}
+```
+
+```{r results='asis'}
+if (isTRUE(params$interactive)) {
+  cat("## By Predicted Positives Condition Rate (PPCR)\n\n")
+}
+```
+
+```{r}
+if (isTRUE(params$interactive)) {
+  create_probs_histogram(
+    probs = params$probs,
+    reals = params$reals,
+    by = 0.01,
+    stratified_by = "ppcr"
+  )
+}
+```
+
 # Calibration {.tabset}
 
 ## Smooth
