@@ -32,16 +32,14 @@ In this case the user should use a list that is made of vectors of estimated
 probabilities, one for each model.
 }
 \details{
-Sometime instead of using a cutoff for the estimated probability it
-is required to enforce a symmetry between the percentiles of the
-probabilities, in medicine it is referred as "Risk Percentile" when the
-outcome stands for something negative in essence such as a severe disease
-or death: Let's say that we want to see the model performance for the top 5\%
-patients at risk for some well defined population, in this case the user
-should change the parameter stratified_by from the default
-"probability_threshold" to "predicted_positives" and the results will be
-similar Performance Data,
-only this time each row will represent some rounded percentile.
+Sometimes, instead of evaluating performance at fixed probability thresholds,
+performance is evaluated across rank-based operating points in the population.
+In \code{rtichoke}, this is requested with \code{stratified_by = "ppcr"} (Predicted
+Positives Condition Rate, PPCR) and can be interpreted in terms of prediction
+percentiles. For example, to evaluate model performance when targeting
+approximately the highest-scoring 5\% of a population, use the PPCR
+stratification. The resulting performance data contain metrics evaluated
+across the corresponding PPCR operating points.
 }
 \examples{
 # You can prepare Performance Data for one model

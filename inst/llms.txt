@@ -23,7 +23,7 @@ Pipeline:
 ### 1. Performance Data Preparation
 - `prepare_performance_data(probs, reals, by = 0.01, stratified_by = "probability_threshold")`
   - Computes threshold-specific confusion matrices and performance metrics (Sensitivity, Specificity, PPV, NPV, Lift, Net Benefit).
-  - `stratified_by`: `"probability_threshold"` (default) or `"ppcr"` (Predicted Positives Condition Rate / risk percentiles).
+  - `stratified_by`: `"probability_threshold"` (default) or `"ppcr"` (Predicted Positives Condition Rate / prediction percentiles).
 
 ### 2. Discrimination
 - `create_roc_curve(probs, reals, ...)` / `plot_roc_curve(performance_data, ...)`
