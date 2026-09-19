@@ -140,6 +140,10 @@
   color: #1f2937;
   margin: 0;
   padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #ffffff;
+  overflow: hidden;
 }
 
 .rtichoke-performance-table__title {
@@ -222,6 +226,18 @@
 .rtichoke-performance-table__cell-text {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rtichoke-performance-table__badge {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .rtichoke-performance-table__bar {
