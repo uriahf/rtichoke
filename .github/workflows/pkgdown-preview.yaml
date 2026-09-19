@@ -32,7 +32,8 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RTICHOKE_VIZ_VERSION: "0.22.3"
       RTICHOKE_VIZ_RELEASE_TAG: "v0.22.3"
-      RTICHOKE_VIZ_TAG_SHA: "05a2d9d96a9a3fafcd484da8ecaa28b331906f90"
+      RTICHOKE_VIZ_SOURCE_COMMIT: "05a2d9d96a9a3fafcd484da8ecaa28b331906f90"
+      RTICHOKE_VIZ_TAG_SHA: "d34a53e33530cdb11a0f24a3e2d6e28dc5292787"
       RTICHOKE_VIZ_ARCHIVE: "rtichoke-viz-0.22.3.tar.gz"
       RTICHOKE_VIZ_ARCHIVE_SHA256: "9ad35b6acae507ff5017a936404066ef43a86282c374d88b9c32e9358f3bf572"
     steps:
@@ -66,6 +67,7 @@ jobs:
           EXPECTED="$(awk '{print $1}' "${RTICHOKE_VIZ_ARCHIVE}.sha256")"
           ACTUAL="$(sha256sum "${RTICHOKE_VIZ_ARCHIVE}" | awk '{print $1}')"
           echo "rtichoke_viz release tag: ${RTICHOKE_VIZ_RELEASE_TAG}"
+          echo "rtichoke_viz tag target: ${RTICHOKE_VIZ_TAG_SHA}"
           echo "rtichoke_viz source commit: ${RTICHOKE_VIZ_SOURCE_COMMIT}"
           echo "rtichoke_viz archive: ${RTICHOKE_VIZ_ARCHIVE}"
           echo "rtichoke_viz archive SHA-256: ${ACTUAL}"
