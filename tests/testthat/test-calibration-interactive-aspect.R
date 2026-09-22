@@ -12,6 +12,7 @@ test_that("interactive discrete calibration y-axis has equal unit scale constrai
 
   layout <- built$x$layout
 
+  expect_equal(layout$xaxis$constrain, "domain")
   expect_equal(layout$yaxis$scaleanchor, "x")
   expect_equal(layout$yaxis$scaleratio, 1)
   expect_equal(layout$yaxis$constrain, "domain")
@@ -39,6 +40,7 @@ test_that("interactive smooth calibration y-axis has equal unit scale constraint
 
   layout <- built$x$layout
 
+  expect_equal(layout$xaxis$constrain, "domain")
   expect_equal(layout$yaxis$scaleanchor, "x")
   expect_equal(layout$yaxis$scaleratio, 1)
   expect_equal(layout$yaxis$constrain, "domain")
