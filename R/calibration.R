@@ -477,12 +477,16 @@ create_plotly_curve_from_calibration_curve_list <- function(
       xaxis = list(
         title = "Predicted",
         range = calibration_curve_list$axes_ranges$xaxis,
-        showgrid = FALSE
+        showgrid = FALSE,
+        constrain = "domain"
       ),
       yaxis = list(
         title = "Observed",
         range = calibration_curve_list$axes_ranges$yaxis,
-        showgrid = FALSE
+        showgrid = FALSE,
+        scaleanchor = "x",
+        scaleratio = 1,
+        constrain = "domain"
       ),
       legend = list(
         orientation = "h",
