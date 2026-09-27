@@ -75,6 +75,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .rtichoke-operating-point-content {
@@ -90,27 +91,99 @@
 
 .rtichoke-operating-point-label {
   font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
 }
 
 .rtichoke-operating-point-value {
-  font-weight: 600;
-  color: #111827;
+  font-weight: 400;
+  color: #000000;
 }
 
 .rtichoke-operating-point-slider {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
+  height: 24px;
+  min-height: 24px;
   margin: 0;
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: ew-resize;
+  background: transparent;
+}
+
+.rtichoke-operating-point-slider:focus {
+  outline: none;
+}
+
+.rtichoke-operating-point-slider:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* WebKit Track & Thumb */
+.rtichoke-operating-point-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  background-color: #f8fafc;
+  border: 1px solid #bec8d9;
+  border-radius: 2px;
+  box-sizing: border-box;
+  cursor: ew-resize;
+}
+
+.rtichoke-operating-point-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #f6f8fa;
+  border: 1px solid #bec8d9;
+  box-shadow: none;
+  margin-top: -8.5px; /* center 20px thumb on 5px (3px inner) track */
+  cursor: ew-resize;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.rtichoke-operating-point-slider:active::-webkit-slider-thumb {
+  background-color: #dbdde0;
+}
+
+/* Firefox Track & Thumb */
+.rtichoke-operating-point-slider::-moz-range-track {
+  width: 100%;
+  height: 5px;
+  background-color: #f8fafc;
+  border: 1px solid #bec8d9;
+  border-radius: 2px;
+  box-sizing: border-box;
+  cursor: ew-resize;
+}
+
+.rtichoke-operating-point-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #f6f8fa;
+  border: 1px solid #bec8d9;
+  box-shadow: none;
+  box-sizing: border-box;
+  cursor: ew-resize;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.rtichoke-operating-point-slider:active::-moz-range-thumb {
+  background-color: #dbdde0;
 }
 
 .rtichoke-horizon-chart {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .rtichoke-horizon-control {
@@ -134,7 +207,7 @@
 
 /* Performance Table Scoped Styling */
 .rtichoke-performance-table {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.4;
   color: #1f2937;
@@ -426,7 +499,7 @@
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   color: #1a1a1a;
 }
 
@@ -638,6 +711,7 @@
   flex-direction: column;
   gap: 0.75rem;
   box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .rtichoke-prediction-distribution__controls {
@@ -965,4 +1039,77 @@
 .rtichoke-pd-metric--emphasized-cell {
   background-color: #f0fdf4 !important;
   font-weight: 700 !important;
+}
+
+/* Summary Metrics Scoped Styling */
+.rtichoke-summary-metrics {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+}
+
+.rtichoke-summary-metrics__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.rtichoke-summary-metrics__table {
+  width: 100%;
+  max-width: 520px;
+  border-collapse: collapse;
+  text-align: left;
+  border-spacing: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.rtichoke-summary-metrics__table th {
+  padding: 0.4rem 0.65rem;
+  font-weight: 600;
+  font-size: 12px;
+  color: #374151;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.rtichoke-summary-metrics__table th:last-child {
+  text-align: right;
+}
+
+.rtichoke-summary-metrics__table td {
+  padding: 0.4rem 0.65rem;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
+}
+
+.rtichoke-summary-metrics__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rtichoke-summary-metrics__table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.rtichoke-summary-metrics__owner {
+  font-weight: 500;
+  color: #111827;
+}
+
+.rtichoke-summary-metrics__metric {
+  color: #374151;
+}
+
+.rtichoke-summary-metrics__estimate {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+  color: #111827;
 }

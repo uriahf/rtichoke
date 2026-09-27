@@ -570,6 +570,108 @@
                     "minimum": 0,
                     "maximum": 1,
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -1786,6 +1888,108 @@
                     "minimum": 0,
                     "maximum": 1,
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -2365,6 +2569,108 @@
                     "minimum": 0,
                     "maximum": 1,
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -2942,6 +3248,108 @@
                   },
                   "lift": {
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -3634,6 +4042,108 @@
                   },
                   "netBenefit": {
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -4471,6 +4981,108 @@
                   },
                   "interventionsAvoided": {
                     "type": "number"
+                  },
+                  "performance": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "metricId",
+                        "estimate"
+                      ],
+                      "properties": {
+                        "metricId": {
+                          "anyOf": [
+                            {
+                              "const": "true_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "true_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_negatives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "sensitivity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "specificity",
+                              "type": "string"
+                            },
+                            {
+                              "const": "false_positive_rate",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "npv",
+                              "type": "string"
+                            },
+                            {
+                              "const": "lift",
+                              "type": "string"
+                            },
+                            {
+                              "const": "predicted_positives",
+                              "type": "string"
+                            },
+                            {
+                              "const": "ppcr",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit",
+                              "type": "string"
+                            },
+                            {
+                              "const": "net_benefit_interventions_avoided",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "estimate": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "lower": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "upper": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
