@@ -1,0 +1,80 @@
+# Calibration Analysis
+
+Calibration evaluates agreement between predicted probabilities and
+observed event frequencies. A well-calibrated model predicting a
+$`20\%`$ risk of an outcome should observe approximately $`20`$ events
+per $`100`$ individuals with that prediction.
+
+For detailed methodological background on calibration slope, intercept,
+and smooth recalibration, visit the [rtichoke
+blog](https://rtichoke-blog.netlify.app/).
+
+------------------------------------------------------------------------
+
+## Creating Calibration Curves
+
+In `rtichoke`, calibration curves display predicted probabilities on the
+x-axis against observed event proportions on the y-axis.
+
+``` r
+
+library(rtichoke)
+
+create_calibration_curve(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model"  = example_dat$bad_model
+  ),
+  reals = list(example_dat$outcome)
+)
+```
+
+### Reference Line
+
+The 45-degree diagonal line ($`y = x`$) represents perfect calibration.
+Points above the line indicate underestimation of risk; points below
+indicate overestimation.
+
+------------------------------------------------------------------------
+
+## Calibration Curve Options
+
+`rtichoke` supports both binned calibration (10
+rank-based/equal-frequency bins by default) and smooth non-parametric
+(lowess) representations for calibration analysis:
+
+- **Binned Calibration:** Divides predictions into rank-based
+  equal-frequency bins and plots observed proportion vs. mean prediction
+  in each bin.
+- **Smooth (Lowess):** Fits a non-parametric smoother across the full
+  range of predicted probabilities.
+
+------------------------------------------------------------------------
+
+## Multiple Calibration Curves List
+
+When analyzing multiple models or subgroups in list format:
+
+``` r
+
+create_calibration_curve_list(
+  probs = list(
+    "Good Model" = example_dat$estimated_probabilities,
+    "Bad Model"  = example_dat$bad_model
+  ),
+  reals = list(example_dat$outcome)
+)
+```
+
+------------------------------------------------------------------------
+
+## Capability Boundary & Scope Note
+
+`rtichoke` in R currently provides calibration curves for binary
+prediction models evaluated on static outcomes.
+
+*Note:* Time-dependent calibration across multiple follow-up time
+horizons is not implemented in `rtichoke` R. For binary classification
+outcomes,
+[`create_calibration_curve()`](https://uriahf.github.io/rtichoke/reference/create_calibration_curve.md)
+is the canonical, authoritative implementation.
