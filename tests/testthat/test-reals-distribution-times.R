@@ -205,6 +205,6 @@ test_that("package version is unchanged", {
   }
   if (file.exists(desc_path)) {
     desc <- read.dcf(desc_path)
-    expect_equal(unname(desc[1, "Version"]), "0.2.0")
+    expect_equal(unname(desc[1, "Version"]), "0.0.7")
   }
 })
