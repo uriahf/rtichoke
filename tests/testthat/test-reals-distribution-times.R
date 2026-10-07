@@ -8,7 +8,11 @@ test_that("emitted spec has correct type, schemaVersion, and structure", {
   reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
   fixed_time_horizons <- c(10, 20, 30, 40, 50)
 
-  spec <- rtichoke_viz_outcome_distribution_v2_spec(reals, times, fixed_time_horizons)
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals,
+    times,
+    fixed_time_horizons
+  )
 
   expect_equal(spec$schemaVersion, "2.0")
   expect_equal(spec$type, "outcome_distribution")
@@ -24,7 +28,10 @@ test_that("emitted spec has correct type, schemaVersion, and structure", {
     for (st in sd$states) {
       expect_null(st$estimate)
       expect_null(st$mass)
-      expect_true(st$stateId %in% c("real_positive", "real_competing", "real_negative", "real_censored"))
+      expect_true(
+        st$stateId %in%
+          c("real_positive", "real_competing", "real_negative", "real_censored")
+      )
       expect_type(st$label, "character")
       expect_type(st$count, "integer")
     }
@@ -36,17 +43,21 @@ test_that("canonical fixed-horizon counts match expected fixture values exactly"
   reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
   fixed_time_horizons <- c(10, 20, 30, 40, 50)
 
-  spec <- rtichoke_viz_outcome_distribution_v2_spec(reals, times, fixed_time_horizons)
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals,
+    times,
+    fixed_time_horizons
+  )
 
   expect_equal(length(spec$stateDistributions), 6) # horizons 0, 10, 20, 30, 40, 50
 
   expected_counts <- list(
-    `0`  = c(target = 0, competing = 0, no_target = 10, unknown_excluded = 0),
-    `10` = c(target = 2, competing = 0, no_target = 8,  unknown_excluded = 0),
-    `20` = c(target = 3, competing = 1, no_target = 6,  unknown_excluded = 0),
-    `30` = c(target = 4, competing = 1, no_target = 5,  unknown_excluded = 0),
-    `40` = c(target = 5, competing = 1, no_target = 2,  unknown_excluded = 2),
-    `50` = c(target = 6, competing = 2, no_target = 0,  unknown_excluded = 2)
+    `0` = c(target = 0, competing = 0, no_target = 10, unknown_excluded = 0),
+    `10` = c(target = 2, competing = 0, no_target = 8, unknown_excluded = 0),
+    `20` = c(target = 3, competing = 1, no_target = 6, unknown_excluded = 0),
+    `30` = c(target = 4, competing = 1, no_target = 5, unknown_excluded = 0),
+    `40` = c(target = 5, competing = 1, no_target = 2, unknown_excluded = 2),
+    `50` = c(target = 6, competing = 2, no_target = 0, unknown_excluded = 2)
   )
 
   for (sd in spec$stateDistributions) {
@@ -74,7 +85,11 @@ test_that("horizon 0 is automatically prepended, sorted, and deduplicated", {
   # Unsorted horizons with duplicate 0 and duplicates
   fixed_time_horizons <- c(30, 0, 10, 50, 20, 10, 40)
 
-  spec <- rtichoke_viz_outcome_distribution_v2_spec(reals, times, fixed_time_horizons)
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals,
+    times,
+    fixed_time_horizons
+  )
 
   horizons <- vapply(spec$stateDistributions, function(x) x$horizon, numeric(1))
   expect_equal(horizons, c(0, 10, 20, 30, 40, 50))
@@ -85,7 +100,11 @@ test_that("censored-before-horizon is counted as real_censored", {
   reals <- c(0, 1) # First subject censored at time 5 (reals=0)
   fixed_time_horizons <- c(10)
 
-  spec <- rtichoke_viz_outcome_distribution_v2_spec(reals, times, fixed_time_horizons)
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals,
+    times,
+    fixed_time_horizons
+  )
 
   # Horizon 10 state distribution
   sd_10 <- spec$stateDistributions[[2]] # index 1 is horizon 0
@@ -146,7 +165,11 @@ test_that("multi-evaluation named list inputs work correctly", {
     "Pop B" = c(2, 1)
   )
 
-  spec <- rtichoke_viz_outcome_distribution_v2_spec(reals_list, times_list, c(10, 30))
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals_list,
+    times_list,
+    c(10, 30)
+  )
 
   expect_equal(length(spec$evaluations), 2)
   expect_equal(spec$evaluations[[1]]$population, "Pop A")
@@ -161,7 +184,12 @@ test_that("create_reals_distribution_times returns browsable HTML tag object for
   reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
   fixed_time_horizons <- c(10, 20, 30, 40, 50)
 
-  res <- create_reals_distribution_times(reals, times, fixed_time_horizons, renderer = "browser")
+  res <- create_reals_distribution_times(
+    reals,
+    times,
+    fixed_time_horizons,
+    renderer = "browser"
+  )
 
   expect_s3_class(res, "shiny.tag.list")
 })

@@ -9,25 +9,46 @@
 #'
 #' @return A nested list representing a canonical OutcomeDistributionSpec v2.
 #' @noRd
-rtichoke_viz_outcome_distribution_v2_spec <- function(reals, times, fixed_time_horizons) {
+rtichoke_viz_outcome_distribution_v2_spec <- function(
+  reals,
+  times,
+  fixed_time_horizons
+) {
   # Normalize list inputs vs atomic vector inputs
   if (is.list(reals) || is.list(times)) {
     if (!is.list(reals) || !is.list(times)) {
-      stop("Both `reals` and `times` must be lists if one of them is a list.", call. = FALSE)
+      stop(
+        "Both `reals` and `times` must be lists if one of them is a list.",
+        call. = FALSE
+      )
     }
     if (length(reals) != length(times)) {
-      stop("`reals` and `times` lists must have the same length.", call. = FALSE)
+      stop(
+        "`reals` and `times` lists must have the same length.",
+        call. = FALSE
+      )
     }
     reals_names <- names(reals)
     times_names <- names(times)
     if (!is.null(reals_names) || !is.null(times_names)) {
-      if (is.null(reals_names) || is.null(times_names) || !identical(reals_names, times_names)) {
-        stop("`reals` and `times` list names must match exactly.", call. = FALSE)
+      if (
+        is.null(reals_names) ||
+          is.null(times_names) ||
+          !identical(reals_names, times_names)
+      ) {
+        stop(
+          "`reals` and `times` list names must match exactly.",
+          call. = FALSE
+        )
       }
     }
     reals_list <- reals
     times_list <- times
-    eval_labels <- if (!is.null(reals_names)) reals_names else paste0("evaluation-", seq_along(reals_list))
+    eval_labels <- if (!is.null(reals_names)) {
+      reals_names
+    } else {
+      paste0("evaluation-", seq_along(reals_list))
+    }
   } else {
     reals_list <- list(evaluation = reals)
     times_list <- list(evaluation = times)
@@ -45,7 +66,10 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(reals, times, fixed_time_h
       stop("`reals` and `times` must be numeric vectors.", call. = FALSE)
     }
     if (length(r_vec) != length(t_vec)) {
-      stop("`reals` and `times` vectors must have identical lengths.", call. = FALSE)
+      stop(
+        "`reals` and `times` vectors must have identical lengths.",
+        call. = FALSE
+      )
     }
     if (any(is.na(r_vec)) || !all(r_vec %in% c(0, 1, 2))) {
       stop("`reals` must contain only 0, 1, or 2.", call. = FALSE)
@@ -56,16 +80,26 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(reals, times, fixed_time_h
   }
 
   # Validate fixed_time_horizons
-  if (!is.numeric(fixed_time_horizons) || any(is.na(fixed_time_horizons)) ||
-      any(!is.finite(fixed_time_horizons)) || any(fixed_time_horizons < 0)) {
-    stop("`fixed_time_horizons` must contain finite non-negative numbers.", call. = FALSE)
+  if (
+    !is.numeric(fixed_time_horizons) ||
+      any(is.na(fixed_time_horizons)) ||
+      any(!is.finite(fixed_time_horizons)) ||
+      any(fixed_time_horizons < 0)
+  ) {
+    stop(
+      "`fixed_time_horizons` must contain finite non-negative numbers.",
+      call. = FALSE
+    )
   }
 
   # Normalize horizons: sort and deduplicate with 0 included
   horizons <- sort(unique(c(0, as.numeric(fixed_time_horizons))))
 
   # Build evaluations array
-  evaluation_ids <- stats::setNames(paste0("evaluation-", seq_len(n_evals)), eval_labels)
+  evaluation_ids <- stats::setNames(
+    paste0("evaluation-", seq_len(n_evals)),
+    eval_labels
+  )
 
   evaluations <- lapply(seq_len(n_evals), function(i) {
     label <- eval_labels[[i]]
@@ -166,7 +200,10 @@ create_reals_distribution_times <- function(
   renderer = "browser"
 ) {
   if (!identical(renderer, "browser")) {
-    stop("`renderer` must be 'browser' for time-dependent outcome distribution.", call. = FALSE)
+    stop(
+      "`renderer` must be 'browser' for time-dependent outcome distribution.",
+      call. = FALSE
+    )
   }
 
   spec <- rtichoke_viz_outcome_distribution_v2_spec(

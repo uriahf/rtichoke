@@ -122,13 +122,17 @@ render_rtichoke_viz_self_contained_browser <- function(spec) {
     "-bundle').textContent);\n",
     "const moduleUrl = URL.createObjectURL(new Blob([source], ",
     "{ type: 'text/javascript' }));\n",
-    "const { ", renderer_func, " } = await import(moduleUrl);\n",
+    "const { ",
+    renderer_func,
+    " } = await import(moduleUrl);\n",
     "const spec = JSON.parse(document.querySelector('#",
     component_id,
     "-spec').textContent);\n",
     "document.querySelector('#",
     component_id,
-    "').append(", renderer_func, "(spec));\n",
+    "').append(",
+    renderer_func,
+    "(spec));\n",
     "URL.revokeObjectURL(moduleUrl);"
   )
 
