@@ -32,11 +32,11 @@ create_reals_distribution_times(
 
 - renderer:
 
-  Rendering backend. Only \`"browser"\` is supported.
+  Rendering backend. Only `"browser"` is supported.
 
 ## Value
 
-A browsable HTML tag object when \`renderer = "browser"\`.
+A browsable HTML tag object when `renderer = "browser"`.
 
 ## Examples
 
