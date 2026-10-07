@@ -68,7 +68,7 @@ create_probs_histogram <- function(
 #' @return A browsable self-contained HTML object.
 #' @noRd
 render_rtichoke_viz_self_contained_browser <- function(spec) {
-  if (!identical(spec$type, "prediction_distribution")) {
+  if (!spec$type %in% c("prediction_distribution", "outcome_distribution")) {
     stop(
       "Self-contained browser rendering is not available for chart type: ",
       spec$type,
@@ -110,19 +110,25 @@ render_rtichoke_viz_self_contained_browser <- function(spec) {
 
   spec_json <- gsub("</", "<\\/", spec_json, fixed = TRUE)
   javascript_json <- gsub("</", "<\\/", javascript_json, fixed = TRUE)
+  renderer_func <- if (identical(spec$type, "outcome_distribution")) {
+    "renderOutcomeDistribution"
+  } else {
+    "renderPredictionDistribution"
+  }
+
   module_script <- paste0(
     "const source = JSON.parse(document.querySelector('#",
     component_id,
     "-bundle').textContent);\n",
     "const moduleUrl = URL.createObjectURL(new Blob([source], ",
     "{ type: 'text/javascript' }));\n",
-    "const { renderPredictionDistribution } = await import(moduleUrl);\n",
+    "const { ", renderer_func, " } = await import(moduleUrl);\n",
     "const spec = JSON.parse(document.querySelector('#",
     component_id,
     "-spec').textContent);\n",
     "document.querySelector('#",
     component_id,
-    "').append(renderPredictionDistribution(spec));\n",
+    "').append(", renderer_func, "(spec));\n",
     "URL.revokeObjectURL(moduleUrl);"
   )
 
