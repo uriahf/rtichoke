@@ -18,10 +18,10 @@ create_reals_distribution_times(
 
 \item{fixed_time_horizons}{A numeric vector of evaluation time horizons.}
 
-\item{renderer}{Rendering backend. Only `"browser"` is supported.}
+\item{renderer}{Rendering backend. Only \code{"browser"} is supported.}
 }
 \value{
-A browsable HTML tag object when `renderer = "browser"`.
+A browsable HTML tag object when \code{renderer = "browser"}.
 }
 \description{
 Summarize observed outcomes over fixed time horizons as an outcome distribution spec.

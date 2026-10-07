@@ -177,9 +177,9 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
 #' @param reals A numeric vector or list of numeric vectors containing outcome labels (0, 1, or 2).
 #' @param times A numeric vector or list of numeric vectors containing follow-up times.
 #' @param fixed_time_horizons A numeric vector of evaluation time horizons.
-#' @param renderer Rendering backend. Only `"browser"` is supported.
+#' @param renderer Rendering backend. Only \code{"browser"} is supported.
 #'
-#' @return A browsable HTML tag object when `renderer = "browser"`.
+#' @return A browsable HTML tag object when \code{renderer = "browser"}.
 #' @export
 #'
 #' @examples
