@@ -199,12 +199,6 @@ test_that("existing summary report functions remain unchanged", {
 })
 
 test_that("package version is unchanged", {
-  desc_path <- system.file("DESCRIPTION", package = "rtichoke")
-  if (!file.exists(desc_path)) {
-    desc_path <- "../../DESCRIPTION"
-  }
-  if (file.exists(desc_path)) {
-    desc <- read.dcf(desc_path)
-    expect_equal(unname(desc[1, "Version"]), "0.0.7")
-  }
+  pkg_ver <- as.character(utils::packageVersion("rtichoke"))
+  expect_equal(pkg_ver, "0.0.7")
 })
