@@ -92,8 +92,8 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     )
   }
 
-  # Normalize horizons: sort and deduplicate with 0 included
-  horizons <- sort(unique(c(0, as.numeric(fixed_time_horizons))))
+  # Normalize horizons
+  fixed_horizons <- sort(unique(c(0, as.numeric(fixed_time_horizons))))
 
   # Build evaluations array
   evaluation_ids <- stats::setNames(
@@ -116,6 +116,49 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     list(stateId = "real_censored", label = "Unknown / excluded")
   )
 
+  compute_state_distribution_row <- function(
+    r_vec,
+    t_vec,
+    eval_id,
+    h,
+    estimate_origin
+  ) {
+    if (h == 0) {
+      c_pos <- 0L
+      c_comp <- 0L
+      c_cens <- 0L
+      c_neg <- length(r_vec)
+    } else {
+      c_pos <- as.integer(sum(r_vec == 1 & t_vec <= h))
+      c_comp <- as.integer(sum(r_vec == 2 & t_vec <= h))
+      c_cens <- as.integer(sum(r_vec == 0 & t_vec < h))
+      c_neg <- as.integer(length(r_vec) - c_pos - c_comp - c_cens)
+    }
+
+    counts <- list(
+      real_positive = c_pos,
+      real_competing = c_comp,
+      real_negative = c_neg,
+      real_censored = c_cens
+    )
+
+    states <- lapply(fixed_state_definitions, function(st_def) {
+      list(
+        stateId = st_def$stateId,
+        label = st_def$label,
+        count = unname(counts[[st_def$stateId]])
+      )
+    })
+
+    list(
+      evaluationId = eval_id,
+      horizon = as.numeric(h),
+      estimator = "raw",
+      estimateOrigin = estimate_origin,
+      states = states
+    )
+  }
+
   state_distributions <- list()
 
   for (i in seq_len(n_evals)) {
@@ -123,41 +166,29 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     t_vec <- times_list[[i]]
     eval_id <- unname(evaluation_ids[[eval_labels[[i]]]])
 
-    for (h in horizons) {
-      if (h == 0) {
-        c_pos <- 0L
-        c_comp <- 0L
-        c_cens <- 0L
-        c_neg <- length(r_vec)
-      } else {
-        c_pos <- as.integer(sum(r_vec == 1 & t_vec <= h))
-        c_comp <- as.integer(sum(r_vec == 2 & t_vec <= h))
-        c_cens <- as.integer(sum(r_vec == 0 & t_vec < h))
-        c_neg <- as.integer(length(r_vec) - c_pos - c_comp - c_cens)
-      }
-
-      counts <- list(
-        real_positive = c_pos,
-        real_competing = c_comp,
-        real_negative = c_neg,
-        real_censored = c_cens
-      )
-
-      states <- lapply(fixed_state_definitions, function(st_def) {
-        list(
-          stateId = st_def$stateId,
-          label = st_def$label,
-          count = unname(counts[[st_def$stateId]])
+    # 1. Event table horizons: sort(unique(c(0, t_vec)))
+    event_table_horizons <- sort(unique(c(0, as.numeric(t_vec))))
+    for (h in event_table_horizons) {
+      state_distributions[[length(state_distributions) + 1L]] <-
+        compute_state_distribution_row(
+          r_vec,
+          t_vec,
+          eval_id,
+          h,
+          "event_table"
         )
-      })
+    }
 
-      state_distributions[[length(state_distributions) + 1L]] <- list(
-        evaluationId = eval_id,
-        horizon = as.numeric(h),
-        estimator = "raw",
-        estimateOrigin = "fixed_time_horizon",
-        states = states
-      )
+    # 2. Fixed time horizon rows: sort(unique(c(0, fixed_time_horizons)))
+    for (h in fixed_horizons) {
+      state_distributions[[length(state_distributions) + 1L]] <-
+        compute_state_distribution_row(
+          r_vec,
+          t_vec,
+          eval_id,
+          h,
+          "fixed_time_horizon"
+        )
     }
   }
 
@@ -204,6 +235,22 @@ create_reals_distribution_times <- function(
       "`renderer` must be 'browser' for time-dependent outcome distribution.",
       call. = FALSE
     )
+  }
+
+  vendor_directory <- system.file("rtichoke-viz", package = "rtichoke")
+  javascript_path <- file.path(vendor_directory, "rtichoke-viz.js")
+  if (file.exists(javascript_path)) {
+    bundle <- readChar(
+      javascript_path,
+      nchars = file.info(javascript_path)$size,
+      useBytes = TRUE
+    )
+    if (!grepl("renderOutcomeDistribution", bundle, fixed = TRUE)) {
+      stop(
+        "Browser rendering for 'outcome_distribution' is blocked on a vendored rtichoke_viz update exporting renderOutcomeDistribution.",
+        call. = FALSE
+      )
+    }
   }
 
   spec <- rtichoke_viz_outcome_distribution_v2_spec(
