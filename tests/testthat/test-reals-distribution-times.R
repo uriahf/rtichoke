@@ -1,6 +1,8 @@
-test_that("create_reals_distribution_times exists and is exported", {
-  expect_true(exists("create_reals_distribution_times"))
-  expect_true(is.function(create_reals_distribution_times))
+test_that("internal spec producer helper exists and is a function", {
+  expect_true(exists(
+    "rtichoke_viz_outcome_distribution_v2_spec",
+    mode = "function"
+  ))
 })
 
 test_that("emitted spec has correct type, schemaVersion, and structure", {
@@ -165,7 +167,7 @@ test_that("tiny deterministic example has correct event-table counts", {
   }
   expect_equal(c10[["real_positive"]], 1)
   expect_equal(c10[["real_competing"]], 0)
-  expect_equal(c10[["real_negative"]], 2) # censored at 10, so times < 10 is FALSE -> real_negative
+  expect_equal(c10[["real_negative"]], 2)
   expect_equal(c10[["real_censored"]], 0)
 
   # Horizon 15 (competing event at t=15, censored at t=10 now times < 15)
@@ -226,28 +228,6 @@ test_that("input validation catches errors clearly", {
   expect_error(
     rtichoke_viz_outcome_distribution_v2_spec(reals, times, c(-5, 10)),
     "must contain finite non-negative numbers"
-  )
-
-  # Unsupported renderer in public function
-  expect_error(
-    create_reals_distribution_times(reals, times, 10, renderer = "ggplot2"),
-    "must be 'browser'"
-  )
-})
-
-test_that("create_reals_distribution_times clearly errors when renderOutcomeDistribution is missing from vendored bundle", {
-  times <- c(24.1, 9.7)
-  reals <- c(1, 0)
-  fixed_time_horizons <- c(10)
-
-  expect_error(
-    create_reals_distribution_times(
-      reals,
-      times,
-      fixed_time_horizons,
-      renderer = "browser"
-    ),
-    "blocked on a vendored rtichoke_viz update exporting renderOutcomeDistribution"
   )
 })
 
