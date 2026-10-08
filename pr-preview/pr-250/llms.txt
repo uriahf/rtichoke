@@ -233,8 +233,6 @@ Summarize model metrics into interactive or static tables and reports.
 
 - [`create_probs_histogram()`](https://uriahf.github.io/rtichoke/reference/create_probs_histogram.md)
   : Prediction Probability Histogram
-- [`create_reals_distribution_times()`](https://uriahf.github.io/rtichoke/reference/create_reals_distribution_times.md)
-  : Reals Distribution Over Time
 - [`create_performance_table()`](https://uriahf.github.io/rtichoke/reference/create_performance_table.md)
   : Performance Table
 - [`render_performance_table()`](https://uriahf.github.io/rtichoke/reference/render_performance_table.md)
