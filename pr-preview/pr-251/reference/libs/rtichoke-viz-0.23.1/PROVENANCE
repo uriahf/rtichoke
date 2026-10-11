@@ -1,0 +1,5 @@
+version: 0.23.0
+release: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.23.0
+source_sha: 7cbdf940f5375b771e741191b875b07cd6935fe3
+archive: rtichoke-viz-0.23.0.tar.gz
+archive_sha256: 55bc510522f3efeb62faaec24fe6a6476169ee05002be8f24cb812c99031384a
