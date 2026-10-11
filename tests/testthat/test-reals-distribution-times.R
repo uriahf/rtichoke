@@ -1,3 +1,46 @@
+test_that("public create_reals_distribution_times function exists and is exported", {
+  expect_true(exists("create_reals_distribution_times", mode = "function"))
+  ns <- getNamespace("rtichoke")
+  expect_true("create_reals_distribution_times" %in% getNamespaceExports(ns))
+})
+
+test_that("create_reals_distribution_times fails clearly for unsupported renderer values", {
+  times <- c(24.1, 9.7, 49.9)
+  reals <- c(1, 1, 1)
+  fixed_time_horizons <- c(10, 20)
+
+  expect_error(
+    create_reals_distribution_times(reals, times, fixed_time_horizons, renderer = "ggplot2"),
+    "Only `renderer = \"browser\"` is supported"
+  )
+  expect_error(
+    create_reals_distribution_times(reals, times, fixed_time_horizons, renderer = "plotly"),
+    "Only `renderer = \"browser\"` is supported"
+  )
+  expect_error(
+    create_reals_distribution_times(reals, times, fixed_time_horizons, renderer = "default"),
+    "Only `renderer = \"browser\"` is supported"
+  )
+})
+
+test_that("create_reals_distribution_times returns browsable html tag list with renderOutcomeDistribution", {
+  times <- c(24.1, 9.7, 49.9, 18.6, 34.8, 14.2, 39.2, 46.0, 31.5, 4.3)
+  reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
+  fixed_time_horizons <- c(10, 20, 30, 40, 50)
+
+  res <- create_reals_distribution_times(
+    reals = reals,
+    times = times,
+    fixed_time_horizons = fixed_time_horizons,
+    renderer = "browser"
+  )
+
+  expect_s3_class(res, "shiny.tag.list")
+  html_str <- as.character(res)
+  expect_match(html_str, "renderOutcomeDistribution", fixed = TRUE)
+  expect_match(html_str, "outcome_distribution", fixed = TRUE)
+})
+
 test_that("internal spec producer helper exists and is a function", {
   expect_true(exists(
     "rtichoke_viz_outcome_distribution_v2_spec",

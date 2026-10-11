@@ -1,3 +1,55 @@
+#' Create an interactive outcome distribution visualization over time horizons
+#'
+#' Prepares observed outcome counts (target events, competing events, censored,
+#' and non-events) across time horizons and renders an interactive Outcome
+#' Distribution component in the browser using \code{rtichoke_viz}.
+#'
+#' @param reals A numeric vector (or list of numeric vectors) containing binary
+#'   or multi-state outcome labels (0 = censored/no event, 1 = target event,
+#'   2 = competing outcome).
+#' @param times A numeric vector (or list of numeric vectors) containing
+#'   follow-up times corresponding to \code{reals}.
+#' @param fixed_time_horizons A numeric vector of fixed evaluation time
+#'   horizons at which to display state distributions.
+#' @param renderer Character string specifying the rendering engine. Currently,
+#'   only \code{"browser"} is supported.
+#'
+#' @return A browsable htmltools tag list rendering the Outcome Distribution chart.
+#' @export
+#'
+#' @examples
+#' times <- c(24.1, 9.7, 49.9, 18.6, 34.8, 14.2, 39.2, 46.0, 31.5, 4.3)
+#' reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
+#' fixed_time_horizons <- c(10, 20, 30, 40, 50)
+#'
+#' create_reals_distribution_times(
+#'   reals = reals,
+#'   times = times,
+#'   fixed_time_horizons = fixed_time_horizons,
+#'   renderer = "browser"
+#' )
+create_reals_distribution_times <- function(
+  reals,
+  times,
+  fixed_time_horizons,
+  renderer = "browser"
+) {
+  if (!identical(renderer, "browser")) {
+    stop(
+      "Only `renderer = \"browser\"` is supported for `create_reals_distribution_times()`.",
+      call. = FALSE
+    )
+  }
+
+  spec <- rtichoke_viz_outcome_distribution_v2_spec(
+    reals = reals,
+    times = times,
+    fixed_time_horizons = fixed_time_horizons
+  )
+
+  render_rtichoke_viz_browser(spec)
+}
+
 #' Build a canonical OutcomeDistributionSpec v2
 #'
 #' Internal helper to prepare outcome distribution data and serialize it
