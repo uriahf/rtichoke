@@ -34,6 +34,7 @@ and non-events) across time horizons and renders an interactive Outcome
 Distribution component in the browser using \code{rtichoke_viz}.
 }
 \examples{
+\dontrun{
 times <- c(24.1, 9.7, 49.9, 18.6, 34.8, 14.2, 39.2, 46.0, 31.5, 4.3)
 reals <- c(1, 1, 1, 1, 0, 2, 1, 2, 0, 1)
 fixed_time_horizons <- c(10, 20, 30, 40, 50)
@@ -44,4 +45,5 @@ create_reals_distribution_times(
   fixed_time_horizons = fixed_time_horizons,
   renderer = "browser"
 )
+}
 }
