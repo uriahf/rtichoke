@@ -56,5 +56,5 @@ create_reals_distribution_times(
   fixed_time_horizons = fixed_time_horizons,
   renderer = "browser"
 )
-#> Error: Browser rendering is not available for chart type: outcome_distribution
+#> Error in create_reals_distribution_times(reals = reals, times = times,     fixed_time_horizons = fixed_time_horizons, renderer = "browser"): could not find function "create_reals_distribution_times"
 ```
