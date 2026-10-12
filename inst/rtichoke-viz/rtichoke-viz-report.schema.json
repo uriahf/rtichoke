@@ -5579,6 +5579,226 @@
                                 }
                               }
                             }
+                          },
+                          "stateDistributions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "evaluationId",
+                                "estimator",
+                                "states"
+                              ],
+                              "properties": {
+                                "evaluationId": {
+                                  "type": "string"
+                                },
+                                "horizon": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "estimator": {
+                                  "type": "string"
+                                },
+                                "estimateOrigin": {
+                                  "anyOf": [
+                                    {
+                                      "const": "event_table",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "const": "fixed_time_horizon",
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "stratum": {
+                                  "type": "object",
+                                  "required": [
+                                    "type"
+                                  ],
+                                  "properties": {
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "lower": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "upper": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "includeLower": {
+                                      "type": "boolean"
+                                    },
+                                    "includeUpper": {
+                                      "type": "boolean"
+                                    },
+                                    "rankLower": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "rankUpper": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "operatingPointType": {
+                                      "type": "string"
+                                    },
+                                    "cutoff": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "value": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "realizedPpcr": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "region": {
+                                  "type": "string"
+                                },
+                                "censoringHeuristic": {
+                                  "type": "string"
+                                },
+                                "competingHeuristic": {
+                                  "type": "string"
+                                },
+                                "states": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "stateId"
+                                    ],
+                                    "properties": {
+                                      "stateId": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      },
+                                      "estimate": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "mass": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "count": {
+                                        "anyOf": [
+                                          {
+                                            "type": "integer"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "lower": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "upper": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                "regimeId": {
+                                  "type": "string"
+                                },
+                                "interventionId": {
+                                  "type": "string"
+                                },
+                                "estimand": {
+                                  "type": "string"
+                                },
+                                "contrastId": {
+                                  "type": "string"
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -6523,6 +6743,494 @@
                                   }
                                 }
                               }
+                            }
+                          }
+                        }
+                      },
+                      "stateDistributions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "evaluationId",
+                            "estimator",
+                            "states"
+                          ],
+                          "properties": {
+                            "evaluationId": {
+                              "type": "string"
+                            },
+                            "horizon": {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "estimator": {
+                              "type": "string"
+                            },
+                            "estimateOrigin": {
+                              "anyOf": [
+                                {
+                                  "const": "event_table",
+                                  "type": "string"
+                                },
+                                {
+                                  "const": "fixed_time_horizon",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "stratum": {
+                              "type": "object",
+                              "required": [
+                                "type"
+                              ],
+                              "properties": {
+                                "type": {
+                                  "type": "string"
+                                },
+                                "lower": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "upper": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "includeLower": {
+                                  "type": "boolean"
+                                },
+                                "includeUpper": {
+                                  "type": "boolean"
+                                },
+                                "rankLower": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "rankUpper": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "operatingPointType": {
+                                  "type": "string"
+                                },
+                                "cutoff": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "value": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "realizedPpcr": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "region": {
+                              "type": "string"
+                            },
+                            "censoringHeuristic": {
+                              "type": "string"
+                            },
+                            "competingHeuristic": {
+                              "type": "string"
+                            },
+                            "states": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "stateId"
+                                ],
+                                "properties": {
+                                  "stateId": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "estimate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "mass": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "count": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "lower": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "upper": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "regimeId": {
+                              "type": "string"
+                            },
+                            "interventionId": {
+                              "type": "string"
+                            },
+                            "estimand": {
+                              "type": "string"
+                            },
+                            "contrastId": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "schemaVersion",
+                      "type",
+                      "evaluations",
+                      "stateDistributions"
+                    ],
+                    "properties": {
+                      "schemaVersion": {
+                        "const": "2.0",
+                        "type": "string"
+                      },
+                      "type": {
+                        "const": "outcome_distribution",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "evaluations": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "population"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "model": {
+                              "type": "string"
+                            },
+                            "population": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "stateDistributions": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "evaluationId",
+                            "estimator",
+                            "states"
+                          ],
+                          "properties": {
+                            "evaluationId": {
+                              "type": "string"
+                            },
+                            "horizon": {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "estimator": {
+                              "type": "string"
+                            },
+                            "estimateOrigin": {
+                              "anyOf": [
+                                {
+                                  "const": "event_table",
+                                  "type": "string"
+                                },
+                                {
+                                  "const": "fixed_time_horizon",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "stratum": {
+                              "type": "object",
+                              "required": [
+                                "type"
+                              ],
+                              "properties": {
+                                "type": {
+                                  "type": "string"
+                                },
+                                "lower": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "upper": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "includeLower": {
+                                  "type": "boolean"
+                                },
+                                "includeUpper": {
+                                  "type": "boolean"
+                                },
+                                "rankLower": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "rankUpper": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "operatingPointType": {
+                                  "type": "string"
+                                },
+                                "cutoff": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "value": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "realizedPpcr": {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "region": {
+                              "type": "string"
+                            },
+                            "censoringHeuristic": {
+                              "type": "string"
+                            },
+                            "competingHeuristic": {
+                              "type": "string"
+                            },
+                            "states": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "stateId"
+                                ],
+                                "properties": {
+                                  "stateId": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "estimate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "mass": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "count": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "lower": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "upper": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "regimeId": {
+                              "type": "string"
+                            },
+                            "interventionId": {
+                              "type": "string"
+                            },
+                            "estimand": {
+                              "type": "string"
+                            },
+                            "contrastId": {
+                              "type": "string"
                             }
                           }
                         }
@@ -12137,6 +12845,226 @@
                                           }
                                         }
                                       }
+                                    },
+                                    "stateDistributions": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "evaluationId",
+                                          "estimator",
+                                          "states"
+                                        ],
+                                        "properties": {
+                                          "evaluationId": {
+                                            "type": "string"
+                                          },
+                                          "horizon": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "estimator": {
+                                            "type": "string"
+                                          },
+                                          "estimateOrigin": {
+                                            "anyOf": [
+                                              {
+                                                "const": "event_table",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "const": "fixed_time_horizon",
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "stratum": {
+                                            "type": "object",
+                                            "required": [
+                                              "type"
+                                            ],
+                                            "properties": {
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "lower": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "upper": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "includeLower": {
+                                                "type": "boolean"
+                                              },
+                                              "includeUpper": {
+                                                "type": "boolean"
+                                              },
+                                              "rankLower": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "rankUpper": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "operatingPointType": {
+                                                "type": "string"
+                                              },
+                                              "cutoff": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "value": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "realizedPpcr": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "number"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          "region": {
+                                            "type": "string"
+                                          },
+                                          "censoringHeuristic": {
+                                            "type": "string"
+                                          },
+                                          "competingHeuristic": {
+                                            "type": "string"
+                                          },
+                                          "states": {
+                                            "minItems": 1,
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "stateId"
+                                              ],
+                                              "properties": {
+                                                "stateId": {
+                                                  "type": "string"
+                                                },
+                                                "label": {
+                                                  "type": "string"
+                                                },
+                                                "estimate": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "mass": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "count": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "integer"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "lower": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "upper": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "regimeId": {
+                                            "type": "string"
+                                          },
+                                          "interventionId": {
+                                            "type": "string"
+                                          },
+                                          "estimand": {
+                                            "type": "string"
+                                          },
+                                          "contrastId": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
                                     }
                                   }
                                 }
@@ -13081,6 +14009,494 @@
                                             }
                                           }
                                         }
+                                      }
+                                    }
+                                  }
+                                },
+                                "stateDistributions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "evaluationId",
+                                      "estimator",
+                                      "states"
+                                    ],
+                                    "properties": {
+                                      "evaluationId": {
+                                        "type": "string"
+                                      },
+                                      "horizon": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "estimator": {
+                                        "type": "string"
+                                      },
+                                      "estimateOrigin": {
+                                        "anyOf": [
+                                          {
+                                            "const": "event_table",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "const": "fixed_time_horizon",
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "stratum": {
+                                        "type": "object",
+                                        "required": [
+                                          "type"
+                                        ],
+                                        "properties": {
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "lower": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "upper": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "includeLower": {
+                                            "type": "boolean"
+                                          },
+                                          "includeUpper": {
+                                            "type": "boolean"
+                                          },
+                                          "rankLower": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "rankUpper": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "operatingPointType": {
+                                            "type": "string"
+                                          },
+                                          "cutoff": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "value": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "realizedPpcr": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "region": {
+                                        "type": "string"
+                                      },
+                                      "censoringHeuristic": {
+                                        "type": "string"
+                                      },
+                                      "competingHeuristic": {
+                                        "type": "string"
+                                      },
+                                      "states": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "stateId"
+                                          ],
+                                          "properties": {
+                                            "stateId": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            },
+                                            "estimate": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "mass": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "count": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "integer"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "lower": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "upper": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "regimeId": {
+                                        "type": "string"
+                                      },
+                                      "interventionId": {
+                                        "type": "string"
+                                      },
+                                      "estimand": {
+                                        "type": "string"
+                                      },
+                                      "contrastId": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "required": [
+                                "schemaVersion",
+                                "type",
+                                "evaluations",
+                                "stateDistributions"
+                              ],
+                              "properties": {
+                                "schemaVersion": {
+                                  "const": "2.0",
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "const": "outcome_distribution",
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "evaluations": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "population"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "model": {
+                                        "type": "string"
+                                      },
+                                      "population": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "stateDistributions": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "evaluationId",
+                                      "estimator",
+                                      "states"
+                                    ],
+                                    "properties": {
+                                      "evaluationId": {
+                                        "type": "string"
+                                      },
+                                      "horizon": {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "estimator": {
+                                        "type": "string"
+                                      },
+                                      "estimateOrigin": {
+                                        "anyOf": [
+                                          {
+                                            "const": "event_table",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "const": "fixed_time_horizon",
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "stratum": {
+                                        "type": "object",
+                                        "required": [
+                                          "type"
+                                        ],
+                                        "properties": {
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "lower": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "upper": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "includeLower": {
+                                            "type": "boolean"
+                                          },
+                                          "includeUpper": {
+                                            "type": "boolean"
+                                          },
+                                          "rankLower": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "rankUpper": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "operatingPointType": {
+                                            "type": "string"
+                                          },
+                                          "cutoff": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "value": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "realizedPpcr": {
+                                            "anyOf": [
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "region": {
+                                        "type": "string"
+                                      },
+                                      "censoringHeuristic": {
+                                        "type": "string"
+                                      },
+                                      "competingHeuristic": {
+                                        "type": "string"
+                                      },
+                                      "states": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "stateId"
+                                          ],
+                                          "properties": {
+                                            "stateId": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            },
+                                            "estimate": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "mass": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "count": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "integer"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "lower": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "upper": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "regimeId": {
+                                        "type": "string"
+                                      },
+                                      "interventionId": {
+                                        "type": "string"
+                                      },
+                                      "estimand": {
+                                        "type": "string"
+                                      },
+                                      "contrastId": {
+                                        "type": "string"
                                       }
                                     }
                                   }
@@ -18673,6 +20089,226 @@
                                                 }
                                               }
                                             }
+                                          },
+                                          "stateDistributions": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "evaluationId",
+                                                "estimator",
+                                                "states"
+                                              ],
+                                              "properties": {
+                                                "evaluationId": {
+                                                  "type": "string"
+                                                },
+                                                "horizon": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "estimator": {
+                                                  "type": "string"
+                                                },
+                                                "estimateOrigin": {
+                                                  "anyOf": [
+                                                    {
+                                                      "const": "event_table",
+                                                      "type": "string"
+                                                    },
+                                                    {
+                                                      "const": "fixed_time_horizon",
+                                                      "type": "string"
+                                                    }
+                                                  ]
+                                                },
+                                                "stratum": {
+                                                  "type": "object",
+                                                  "required": [
+                                                    "type"
+                                                  ],
+                                                  "properties": {
+                                                    "type": {
+                                                      "type": "string"
+                                                    },
+                                                    "lower": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "upper": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "includeLower": {
+                                                      "type": "boolean"
+                                                    },
+                                                    "includeUpper": {
+                                                      "type": "boolean"
+                                                    },
+                                                    "rankLower": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "rankUpper": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "operatingPointType": {
+                                                      "type": "string"
+                                                    },
+                                                    "cutoff": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "value": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    },
+                                                    "realizedPpcr": {
+                                                      "anyOf": [
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "null"
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                "region": {
+                                                  "type": "string"
+                                                },
+                                                "censoringHeuristic": {
+                                                  "type": "string"
+                                                },
+                                                "competingHeuristic": {
+                                                  "type": "string"
+                                                },
+                                                "states": {
+                                                  "minItems": 1,
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                      "stateId"
+                                                    ],
+                                                    "properties": {
+                                                      "stateId": {
+                                                        "type": "string"
+                                                      },
+                                                      "label": {
+                                                        "type": "string"
+                                                      },
+                                                      "estimate": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "number"
+                                                          },
+                                                          {
+                                                            "type": "null"
+                                                          }
+                                                        ]
+                                                      },
+                                                      "mass": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "number"
+                                                          },
+                                                          {
+                                                            "type": "null"
+                                                          }
+                                                        ]
+                                                      },
+                                                      "count": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "integer"
+                                                          },
+                                                          {
+                                                            "type": "null"
+                                                          }
+                                                        ]
+                                                      },
+                                                      "lower": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "number"
+                                                          },
+                                                          {
+                                                            "type": "null"
+                                                          }
+                                                        ]
+                                                      },
+                                                      "upper": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "number"
+                                                          },
+                                                          {
+                                                            "type": "null"
+                                                          }
+                                                        ]
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "regimeId": {
+                                                  "type": "string"
+                                                },
+                                                "interventionId": {
+                                                  "type": "string"
+                                                },
+                                                "estimand": {
+                                                  "type": "string"
+                                                },
+                                                "contrastId": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
                                           }
                                         }
                                       }
@@ -19617,6 +21253,494 @@
                                                   }
                                                 }
                                               }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "stateDistributions": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "evaluationId",
+                                            "estimator",
+                                            "states"
+                                          ],
+                                          "properties": {
+                                            "evaluationId": {
+                                              "type": "string"
+                                            },
+                                            "horizon": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "estimator": {
+                                              "type": "string"
+                                            },
+                                            "estimateOrigin": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "event_table",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "fixed_time_horizon",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            },
+                                            "stratum": {
+                                              "type": "object",
+                                              "required": [
+                                                "type"
+                                              ],
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string"
+                                                },
+                                                "lower": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "upper": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "includeLower": {
+                                                  "type": "boolean"
+                                                },
+                                                "includeUpper": {
+                                                  "type": "boolean"
+                                                },
+                                                "rankLower": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "rankUpper": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "operatingPointType": {
+                                                  "type": "string"
+                                                },
+                                                "cutoff": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "value": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "realizedPpcr": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "region": {
+                                              "type": "string"
+                                            },
+                                            "censoringHeuristic": {
+                                              "type": "string"
+                                            },
+                                            "competingHeuristic": {
+                                              "type": "string"
+                                            },
+                                            "states": {
+                                              "minItems": 1,
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "stateId"
+                                                ],
+                                                "properties": {
+                                                  "stateId": {
+                                                    "type": "string"
+                                                  },
+                                                  "label": {
+                                                    "type": "string"
+                                                  },
+                                                  "estimate": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "mass": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "count": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "integer"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "lower": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "upper": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "regimeId": {
+                                              "type": "string"
+                                            },
+                                            "interventionId": {
+                                              "type": "string"
+                                            },
+                                            "estimand": {
+                                              "type": "string"
+                                            },
+                                            "contrastId": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "required": [
+                                      "schemaVersion",
+                                      "type",
+                                      "evaluations",
+                                      "stateDistributions"
+                                    ],
+                                    "properties": {
+                                      "schemaVersion": {
+                                        "const": "2.0",
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "const": "outcome_distribution",
+                                        "type": "string"
+                                      },
+                                      "title": {
+                                        "type": "string"
+                                      },
+                                      "evaluations": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "id",
+                                            "population"
+                                          ],
+                                          "properties": {
+                                            "id": {
+                                              "type": "string"
+                                            },
+                                            "model": {
+                                              "type": "string"
+                                            },
+                                            "population": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "stateDistributions": {
+                                        "minItems": 1,
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "required": [
+                                            "evaluationId",
+                                            "estimator",
+                                            "states"
+                                          ],
+                                          "properties": {
+                                            "evaluationId": {
+                                              "type": "string"
+                                            },
+                                            "horizon": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            },
+                                            "estimator": {
+                                              "type": "string"
+                                            },
+                                            "estimateOrigin": {
+                                              "anyOf": [
+                                                {
+                                                  "const": "event_table",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "fixed_time_horizon",
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            },
+                                            "stratum": {
+                                              "type": "object",
+                                              "required": [
+                                                "type"
+                                              ],
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string"
+                                                },
+                                                "lower": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "upper": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "includeLower": {
+                                                  "type": "boolean"
+                                                },
+                                                "includeUpper": {
+                                                  "type": "boolean"
+                                                },
+                                                "rankLower": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "rankUpper": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "operatingPointType": {
+                                                  "type": "string"
+                                                },
+                                                "cutoff": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "value": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "realizedPpcr": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "number"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "region": {
+                                              "type": "string"
+                                            },
+                                            "censoringHeuristic": {
+                                              "type": "string"
+                                            },
+                                            "competingHeuristic": {
+                                              "type": "string"
+                                            },
+                                            "states": {
+                                              "minItems": 1,
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "stateId"
+                                                ],
+                                                "properties": {
+                                                  "stateId": {
+                                                    "type": "string"
+                                                  },
+                                                  "label": {
+                                                    "type": "string"
+                                                  },
+                                                  "estimate": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "mass": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "count": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "integer"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "lower": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "upper": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "number"
+                                                      },
+                                                      {
+                                                        "type": "null"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "regimeId": {
+                                              "type": "string"
+                                            },
+                                            "interventionId": {
+                                              "type": "string"
+                                            },
+                                            "estimand": {
+                                              "type": "string"
+                                            },
+                                            "contrastId": {
+                                              "type": "string"
                                             }
                                           }
                                         }
