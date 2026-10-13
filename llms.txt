@@ -242,6 +242,8 @@ Summarize model metrics into interactive or static tables and reports.
   : Performance Table
 - [`create_summary_report()`](https://uriahf.github.io/rtichoke/reference/create_summary_report.md)
   : Create a summary report
+- [`create_summary_report_times()`](https://uriahf.github.io/rtichoke/reference/create_summary_report_times.md)
+  : Create a minimal time-dependent summary report
 
 ## Example Datasets
 
