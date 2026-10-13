@@ -10,7 +10,10 @@
 #'
 #' @return A browsable htmltools tag list.
 #' @noRd
-render_rtichoke_viz_report_browser <- function(report_spec) {
+render_rtichoke_viz_report_browser <- function(
+  report_spec,
+  header_annotation_html = performance_metrics_cheat_sheet_html()
+) {
   id <- rtichoke_viz_browser_id()
   json <- jsonlite::toJSON(
     report_spec,
@@ -40,17 +43,34 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     collapse = "\n"
   )
 
-  cheat_sheet <- performance_metrics_cheat_sheet_html()
-  cheat_sheet_json <- jsonlite::toJSON(
-    cheat_sheet,
-    auto_unbox = TRUE,
-    null = "null"
-  )
-  cheat_sheet_json <- gsub("</", "<\\/", cheat_sheet_json, fixed = TRUE)
-
   fn_binding <- resolve_render_report_identifier(bundle)
   binding_line <- if (fn_binding != "renderReport") {
     paste0("const renderReport = ", fn_binding, ";\n")
+  } else {
+    ""
+  }
+
+  annotation_js <- if (
+    !is.null(header_annotation_html) && nzchar(header_annotation_html)
+  ) {
+    annotation_json <- jsonlite::toJSON(
+      header_annotation_html,
+      auto_unbox = TRUE,
+      null = "null"
+    )
+    annotation_json <- gsub("</", "<\\/", annotation_json, fixed = TRUE)
+    paste0(
+      "const cheatSheetWrapper = document.createElement('div');\n",
+      "cheatSheetWrapper.innerHTML = ",
+      annotation_json,
+      ";\n",
+      "const cheatSheetNode = cheatSheetWrapper.firstElementChild;\n",
+      "if (headerNode && headerNode.nextSibling) {\n",
+      "  reportNode.insertBefore(cheatSheetNode, headerNode.nextSibling);\n",
+      "} else {\n",
+      "  reportNode.appendChild(cheatSheetNode);\n",
+      "}\n"
+    )
   } else {
     ""
   }
@@ -62,16 +82,7 @@ render_rtichoke_viz_report_browser <- function(report_spec) {
     "-spec').textContent);\n",
     "const reportNode = renderReport(spec, { sectionGroupPresentation: 'tabs', groupPresentation: 'tabs', sectionComponentPresentation: 'tabs' });\n",
     "const headerNode = reportNode.querySelector('.rtichoke-report__header');\n",
-    "const cheatSheetWrapper = document.createElement('div');\n",
-    "cheatSheetWrapper.innerHTML = ",
-    cheat_sheet_json,
-    ";\n",
-    "const cheatSheetNode = cheatSheetWrapper.firstElementChild;\n",
-    "if (headerNode && headerNode.nextSibling) {\n",
-    "  reportNode.insertBefore(cheatSheetNode, headerNode.nextSibling);\n",
-    "} else {\n",
-    "  reportNode.appendChild(cheatSheetNode);\n",
-    "}\n",
+    annotation_js,
     "document.querySelector('#",
     id,
     "').append(reportNode);"
@@ -187,6 +198,23 @@ summary_report_density_css <- function() {
     "  padding: 0.35rem 0.65rem;\n",
     "  border-bottom: 1px solid #e5e7eb;\n",
     "}\n"
+  )
+}
+
+#' Generate Outcome Distribution Note HTML for browser summary reports
+#'
+#' @return A character string containing R-owned browser-native HTML for the
+#'   time-dependent Outcome Distribution explanatory note.
+#' @noRd
+time_dependent_outcome_distribution_note_html <- function() {
+  paste0(
+    "<details class=\"rtichoke-cheat-sheet\">\n",
+    "  <summary>Outcome Distribution Note</summary>\n",
+    "  <div class=\"rtichoke-cheat-sheet__content\">\n",
+    "    <p>Outcome Distribution shows raw observed outcome status over time. Each fixed horizon summarizes the observed counts and percentages of observations classified as Event, Competing event, Event-free, or Censored. Censored observations are shown as their own observed status; no Aalen-Johansen, IPCW, or other censoring adjustment is applied.</p>\n",
+    "    <p>This report does not yet include predicted probabilities, calibration, discrimination metrics, threshold-based metrics, or decision-curve analysis.</p>\n",
+    "  </div>\n",
+    "</details>"
   )
 }
 

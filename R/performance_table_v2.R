@@ -45,8 +45,7 @@ rtichoke_viz_performance_table_v2_spec <- function(
   }
 
   used_metadata <- evaluation_metadata[
-    evaluation_metadata$evaluation %in% unique(compatibility_group),
-    ,
+    evaluation_metadata$evaluation %in% unique(compatibility_group), ,
     drop = FALSE
   ]
   used_groups <- as.character(used_metadata$evaluation)

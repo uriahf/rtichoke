@@ -92,8 +92,7 @@ rtichoke_viz_calibration_v2_spec <- function(
   }
 
   used_metadata <- evaluation_metadata[
-    evaluation_metadata$evaluation %in% groups,
-    ,
+    evaluation_metadata$evaluation %in% groups, ,
     drop = FALSE
   ]
   used_groups <- as.character(used_metadata$evaluation)

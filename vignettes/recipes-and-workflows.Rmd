@@ -65,7 +65,7 @@ Compare multiple models evaluated on identical subjects and outcomes using a nam
 create_roc_curve(
   probs = list(
     "Model A (Good)" = example_dat$estimated_probabilities,
-    "Model B (Bad)"  = example_dat$bad_model,
+    "Model B (Bad)" = example_dat$bad_model,
     "Model C (Random)" = example_dat$random_guess
   ),
   reals = list(example_dat$outcome)
@@ -80,7 +80,7 @@ Compare one model across distinct cohorts (e.g., Train vs. Test split or demogra
 
 ```{r eval=FALSE}
 train_df <- example_dat[example_dat$type_of_set == "train", ]
-test_df  <- example_dat[example_dat$type_of_set == "test", ]
+test_df <- example_dat[example_dat$type_of_set == "test", ]
 
 create_roc_curve(
   probs = list(

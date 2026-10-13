@@ -130,8 +130,7 @@ create_table_for_auc <- function(
             }
             key_num <- as.character(key_num)
 
-            color <- switch(
-              as.character(key_num),
+            color <- switch(as.character(key_num),
               "1" = color_values[1],
               "2" = color_values[2],
               "3" = color_values[3],
