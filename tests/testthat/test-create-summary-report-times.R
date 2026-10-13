@@ -80,7 +80,11 @@ test_that("create_summary_report_times renders self-contained HTML report with s
   # Check embedded spec details
   expect_match(html_content, '"type":"outcome_distribution"', fixed = TRUE)
   expect_match(html_content, '"schemaVersion":"1.1"', fixed = TRUE)
-  expect_match(html_content, '"title":"Time-dependent Summary Report"', fixed = TRUE)
+  expect_match(
+    html_content,
+    '"title":"Time-dependent Summary Report"',
+    fixed = TRUE
+  )
 
   # Verify explanatory note is included
   expect_match(html_content, "Outcome Distribution Note", fixed = TRUE)

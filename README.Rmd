@@ -96,7 +96,7 @@ Compare performance across distinct cohorts (such as Train vs. Test sets):
 
 ```{r eval=FALSE}
 train_df <- example_dat[example_dat$type_of_set == "train", ]
-test_df <- example_dat[example_dat$type_of_set == "test", ]
+test_df  <- example_dat[example_dat$type_of_set == "test", ]
 
 create_roc_curve(
   probs = list(

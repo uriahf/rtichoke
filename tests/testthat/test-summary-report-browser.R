@@ -637,12 +637,12 @@ test_that("public browser renderer writes file-safe shared renderReport HTML", {
   expect_match(html, '"id":"performance-table-2"', fixed = TRUE)
   expect_false(grepl("import { renderReport } from", html, fixed = TRUE))
   expect_false(grepl(
-    "rtichoke-viz.js",
+    'rtichoke-viz.js',
     html,
     fixed = TRUE
   ))
   expect_false(grepl(
-    "rtichoke-viz.css",
+    'rtichoke-viz.css',
     html,
     fixed = TRUE
   ))
@@ -783,7 +783,7 @@ test_that("public browser report renders populated components from a local file"
   expect_match(dom, 'role="tab"', fixed = TRUE)
   expect_match(dom, 'role="tabpanel"', fixed = TRUE)
   expect_match(dom, 'aria-selected="true"', fixed = TRUE)
-  expect_match(dom, "aria-controls=", fixed = TRUE)
+  expect_match(dom, 'aria-controls=', fixed = TRUE)
 
   # Calibration tabs: Smooth and Discrete in correct order
   smooth_pos <- regexpr('id="tab-calibration-calibration-smooth"', dom)[[1]]

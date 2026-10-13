@@ -95,6 +95,7 @@ reference:
       - create_performance_table
       - render_performance_table
       - create_summary_report
+      - create_summary_report_times
 
   - title: "Example Datasets"
     desc: "Included benchmark dataset and prepared performance data objects."

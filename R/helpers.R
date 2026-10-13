@@ -600,7 +600,8 @@ create_rtichoke_curve_list <- function(
 #'   create_plotly_curve()
 #' }
 create_plotly_curve <- function(rtichoke_curve_list) {
-  size_height <- switch(is.null(rtichoke_curve_list$size[[1]]) + 1,
+  size_height <- switch(
+    is.null(rtichoke_curve_list$size[[1]]) + 1,
     rtichoke_curve_list$size[[1]] + 50,
     NULL
   )
@@ -1101,10 +1102,7 @@ create_reference_lines_for_plotly_new <- function(
   min_p_threshold,
   max_p_threshold
 ) {
-  size_height <- switch(is.null(size) + 1,
-    size + 50,
-    NULL
-  )
+  size_height <- switch(is.null(size) + 1, size + 50, NULL)
 
   plot_ly(
     x = ~x,

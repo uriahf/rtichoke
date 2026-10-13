@@ -512,7 +512,8 @@ rtichoke_viz_curve_v2_spec <- function(
 ) {
   operating_point <- match.arg(operating_point)
   type <- match.arg(type)
-  required_columns <- switch(type,
+  required_columns <- switch(
+    type,
     roc = c("probability_threshold", "sensitivity", "specificity"),
     precision_recall = c("probability_threshold", "sensitivity", "PPV"),
     gains = c("probability_threshold", "ppcr", "sensitivity"),
@@ -571,7 +572,8 @@ rtichoke_viz_curve_v2_spec <- function(
   }
 
   used_metadata <- evaluation_metadata[
-    evaluation_metadata$evaluation %in% unique(compatibility_group), ,
+    evaluation_metadata$evaluation %in% unique(compatibility_group),
+    ,
     drop = FALSE
   ]
   used_groups <- as.character(used_metadata$evaluation)

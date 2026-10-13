@@ -371,7 +371,8 @@ plot_decision_combined_curve <- function(
       suffix = c("_conventional", "_interventions_avoided")
     )
 
-  size_height <- switch(is.null(rtichoke_decision_combined_curve_list$size[[1]]) + 1,
+  size_height <- switch(
+    is.null(rtichoke_decision_combined_curve_list$size[[1]]) + 1,
     1.25 * rtichoke_decision_combined_curve_list$size[[1]] + 50,
     NULL
   )

@@ -89,7 +89,8 @@ prepare_probs_distribution_data <- function(
       }
       n_observations <- length(probabilities)
       current_evaluation_metadata <- evaluation_metadata[
-        evaluation_index, ,
+        evaluation_index,
+        ,
         drop = FALSE
       ]
 
