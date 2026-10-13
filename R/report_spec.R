@@ -28,7 +28,8 @@ expected_schema_version <- function(type) {
         "lift",
         "decision_curve",
         "interventions_avoided",
-        "prediction_distribution"
+        "prediction_distribution",
+        "outcome_distribution"
       )
   ) {
     "2.0"
