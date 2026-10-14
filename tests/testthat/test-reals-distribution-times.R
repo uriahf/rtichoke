@@ -22,7 +22,7 @@ test_that("create_reals_distribution_times public API works as expected for cano
   html <- as.character(res)
 
   expect_match(html, '"type":"outcome_distribution"', fixed = TRUE)
-  expect_match(html, "rtichoke-viz-0.23.1", fixed = TRUE)
+  expect_match(html, "rtichoke-viz-0.23.2", fixed = TRUE)
   expect_match(html, "renderOutcomeDistribution", fixed = TRUE)
 })
 

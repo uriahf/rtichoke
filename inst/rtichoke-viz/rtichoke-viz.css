@@ -1192,6 +1192,13 @@
   color: #0f172a;
 }
 
+.rtichoke-outcome-distribution__readout-cell {
+  position: relative;
+  z-index: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .rtichoke-outcome-distribution__readout-table tbody tr:last-child td {
   border-bottom: none;
 }
