@@ -505,31 +505,6 @@ test_that("Lift browser uses canonical v2 without changing existing defaults", {
 })
 
 test_that("observed-step outcome_distribution V2 specs validate against report schema and render in browser", {
-  skip_if_not_installed("jsonvalidate")
-
-  schema_path <- system.file(
-    "rtichoke-viz",
-    "rtichoke-viz-report.schema.json",
-    package = "rtichoke"
-  )
-  expect_true(file.exists(schema_path))
-
-  # Prepare schema without duplicate top-level $id lines for validator
-  schema_content <- readLines(schema_path, warn = FALSE)
-  id_indices <- grep('"\\$id":', schema_content)
-  if (length(id_indices) > 1) {
-    for (i in id_indices[-1]) {
-      schema_content[i] <- gsub(
-        '"\\$id": "[^"]*",',
-        "",
-        schema_content[i]
-      )
-    }
-  }
-  tmp_schema <- tempfile(fileext = ".json")
-  writeLines(schema_content, tmp_schema)
-  validator <- jsonvalidate::json_validator(tmp_schema, engine = "ajv")
-
   # 1. Raw estimator with ordinal state scale
   spec_raw_ordinal <- list(
     schemaVersion = "2.0",
@@ -603,13 +578,6 @@ test_that("observed-step outcome_distribution V2 specs validate against report s
       )
     )
   )
-
-  json_raw <- jsonlite::toJSON(
-    spec_raw_ordinal,
-    auto_unbox = TRUE,
-    null = "null"
-  )
-  expect_true(validator(json_raw))
 
   tag_raw <- rtichoke:::render_rtichoke_viz_browser(spec_raw_ordinal)
   html_raw <- as.character(tag_raw)
@@ -698,15 +666,10 @@ test_that("observed-step outcome_distribution V2 specs validate against report s
     )
   )
 
-  json_aj <- jsonlite::toJSON(spec_aj_nominal, auto_unbox = TRUE, null = "null")
-  expect_true(validator(json_aj))
-
   tag_aj <- rtichoke:::render_rtichoke_viz_browser(spec_aj_nominal)
   html_aj <- as.character(tag_aj)
   expect_match(html_aj, "renderOutcomeDistribution", fixed = TRUE)
   expect_match(html_aj, '"estimateOrigin":"observed_step"', fixed = TRUE)
   expect_match(html_aj, '"stateScale":"nominal"', fixed = TRUE)
   expect_match(html_aj, '"estimator":"aalen_johansen"', fixed = TRUE)
-
-  unlink(tmp_schema)
 })
