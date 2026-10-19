@@ -10,11 +10,21 @@ test_that("create_reals_distribution_steps returns shiny.tag.list for raw exclud
     id = rep(1:5, each = 3),
     step = rep(1:3, 5),
     reals = c(
-      "A", "A", "B",
-      "A", "B", "B",
-      "A", "A", "A",
-      "B", "B", "B",
-      "A", "A", "B"
+      "A",
+      "A",
+      "B",
+      "A",
+      "B",
+      "B",
+      "A",
+      "A",
+      "A",
+      "B",
+      "B",
+      "B",
+      "A",
+      "A",
+      "B"
     )
   )
 
@@ -41,11 +51,21 @@ test_that("create_reals_distribution_steps returns shiny.tag.list for adjusted A
     id = rep(1:5, each = 3),
     step = rep(1:3, 5),
     reals = c(
-      0, 0, 1,
-      0, 1, 1,
-      0, 0, 0,
-      1, 1, 1,
-      0, 0, 1
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1
     )
   )
 
@@ -293,13 +313,33 @@ test_that("Aalen-Johansen handles multi-state reversible transitions", {
 
   expect_equal(length(spec$stateDistributions), 3)
 
-  p1 <- vapply(spec$stateDistributions[[1]]$states, `[[`, numeric(1), "estimate")
-  names(p1) <- vapply(spec$stateDistributions[[1]]$states, `[[`, character(1), "stateId")
+  p1 <- vapply(
+    spec$stateDistributions[[1]]$states,
+    `[[`,
+    numeric(1),
+    "estimate"
+  )
+  names(p1) <- vapply(
+    spec$stateDistributions[[1]]$states,
+    `[[`,
+    character(1),
+    "stateId"
+  )
   expect_equal(p1[["A"]], 0.5)
   expect_equal(p1[["B"]], 0.5)
 
-  p2 <- vapply(spec$stateDistributions[[2]]$states, `[[`, numeric(1), "estimate")
-  names(p2) <- vapply(spec$stateDistributions[[2]]$states, `[[`, character(1), "stateId")
+  p2 <- vapply(
+    spec$stateDistributions[[2]]$states,
+    `[[`,
+    numeric(1),
+    "estimate"
+  )
+  names(p2) <- vapply(
+    spec$stateDistributions[[2]]$states,
+    `[[`,
+    character(1),
+    "stateId"
+  )
   expect_equal(p2[["A"]], 0.5)
   expect_equal(p2[["B"]], 0.5)
 })

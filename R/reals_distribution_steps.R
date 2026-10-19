@@ -300,7 +300,9 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
     for (sub_df in split_check) {
       valid_sub <- sub_df[!is.na(sub_df[[reals_col]]), , drop = FALSE]
       m <- nrow(valid_sub)
-      if (m == 0L) next
+      if (m == 0L) {
+        next
+      }
 
       sub_steps <- valid_sub[[step_col]]
       sub_reals <- as.character(valid_sub[[reals_col]])
@@ -317,7 +319,10 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
           tstop_vec <- c(tstop_vec, s_next)
           id_vec <- c(id_vec, sub_id)
           istate_vec <- c(istate_vec, r_curr)
-          event_vec <- c(event_vec, if (r_next == r_curr) censor_code else r_next)
+          event_vec <- c(
+            event_vec,
+            if (r_next == r_curr) censor_code else r_next
+          )
         }
       }
 
@@ -373,7 +378,10 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
           idx <- max(which(fit_times <= s))
           vals <- if (is.matrix(pstate)) pstate[idx, ] else pstate
           names(vals) <- fit_states
-          full_vals <- stats::setNames(numeric(length(all_categories)), all_categories)
+          full_vals <- stats::setNames(
+            numeric(length(all_categories)),
+            all_categories
+          )
           full_vals[names(vals)] <- vals
           estimates_by_step[[as.character(s)]] <- full_vals
         }
@@ -418,7 +426,11 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
       domain = c(min(all_steps), max(all_steps))
     ),
     yAxis = list(
-      label = if (censoring_heuristic == "adjusted") "Probability" else "Proportion",
+      label = if (censoring_heuristic == "adjusted") {
+        "Probability"
+      } else {
+        "Proportion"
+      },
       domain = c(0, 1)
     ),
     states = states_def,
