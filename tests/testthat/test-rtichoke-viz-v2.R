@@ -604,7 +604,11 @@ test_that("observed-step outcome_distribution V2 specs validate against report s
     )
   )
 
-  json_raw <- jsonlite::toJSON(spec_raw_ordinal, auto_unbox = TRUE, null = "null")
+  json_raw <- jsonlite::toJSON(
+    spec_raw_ordinal,
+    auto_unbox = TRUE,
+    null = "null"
+  )
   expect_true(validator(json_raw))
 
   tag_raw <- rtichoke:::render_rtichoke_viz_browser(spec_raw_ordinal)
