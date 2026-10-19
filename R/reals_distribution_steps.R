@@ -330,10 +330,11 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
       idx_last <- match(last_step, all_steps)
       if (!is.na(idx_last) && idx_last < length(all_steps)) {
         next_grid_step <- all_steps[idx_last + 1L]
+        censor_time <- (last_step + next_grid_step) / 2
         last_real <- sub_reals[m]
 
         tstart_vec <- c(tstart_vec, last_step)
-        tstop_vec <- c(tstop_vec, next_grid_step)
+        tstop_vec <- c(tstop_vec, censor_time)
         id_vec <- c(id_vec, sub_id)
         istate_vec <- c(istate_vec, last_real)
         event_vec <- c(event_vec, censor_code)

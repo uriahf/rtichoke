@@ -138,7 +138,10 @@ test_that("input validation catches invalid arguments and data structures", {
 
   # Invalid censoring heuristic
   expect_error(
-    create_reals_distribution_steps(data = df, censoring_heuristic = "invalid"),
+    create_reals_distribution_steps(
+      data = df,
+      censoring_heuristic = "invalid"
+    ),
     '`censoring_heuristic` must be either "excluded" or "adjusted"'
   )
 
@@ -237,7 +240,7 @@ test_that("excluded raw mode computes exact state counts and excludes NAs", {
   expect_equal(estimates2[["B"]], 0.5)
 })
 
-test_that("adjusted Aalen-Johansen mode includes baseline-only and terminal dropout subjects", {
+test_that("adjusted Aalen-Johansen mode handles terminal dropout at midpoint censoring", {
   # Subj 1: full panel (A->A->B)
   # Subj 2: baseline-only (A at step 1, drops out before step 2)
   # Subj 3: drops out after step 2 (B->B at step 1 and 2, drops out before step 3)
@@ -262,18 +265,20 @@ test_that("adjusted Aalen-Johansen mode includes baseline-only and terminal drop
   expect_equal(p1[["A"]], 0.75)
   expect_equal(p1[["B"]], 0.25)
 
-  # Step 2: risk set at t=2 is 4 subjects (Subj 1, 2, 3, 4).
-  # Subj 4 moves A->B (1 event out of 3 in A). Subj 2 is censored at t=2.
-  # P(A, t=2) = 0.75 * (2/3) = 0.50. P(B, t=2) = 0.25 + 0.75 * (1/3) = 0.50.
+  # Step 2: Subj 2 is censored at t=1.5 (midpoint between step 1 and 2).
+  # At step 2, risk set is 3 subjects (Subj 1 in A, Subj 3 in B, Subj 4 in A).
+  # Subj 4 moves A->B (1 event out of 2 in A -> P(A->B)=1/2).
+  # P(A, t=2) = 0.75 * (1/2) = 0.375.
+  # P(B, t=2) = 0.25 + 0.75 * (1/2) = 0.625.
   sd2 <- spec$stateDistributions[[2]]
   p2 <- vapply(sd2$states, `[[`, numeric(1), "estimate")
   names(p2) <- vapply(sd2$states, `[[`, character(1), "stateId")
-  expect_equal(p2[["A"]], 0.5)
-  expect_equal(p2[["B"]], 0.5)
+  expect_equal(p2[["A"]], 0.375)
+  expect_equal(p2[["B"]], 0.625)
 
-  # Step 3: Subj 2 was censored at t=2. Subj 3 was censored at t=2.
-  # Risk set at t=3 is 2 subjects (Subj 1 in A, Subj 4 in B).
-  # Subj 1 moves A->B (1 event out of 1 in A).
+  # Step 3: Subj 3 is censored at t=2.5 (midpoint between step 2 and 3).
+  # At step 3, risk set is 2 subjects (Subj 1 in A, Subj 4 in B).
+  # Subj 1 moves A->B (1 event out of 1 in A -> P(A->B)=1.0).
   # P(A, t=3) = 0, P(B, t=3) = 1.0.
   sd3 <- spec$stateDistributions[[3]]
   p3 <- vapply(sd3$states, `[[`, numeric(1), "estimate")
@@ -282,8 +287,79 @@ test_that("adjusted Aalen-Johansen mode includes baseline-only and terminal drop
   expect_equal(p3[["B"]], 1.0)
 })
 
-test_that("adjusted mode throws explicit error when subject observation gaps exist", {
-  # Subj 1 observed at step 1 and step 3 (missing step 2)
+test_that("adjusted mode handles irregular global step spacing with midpoint censoring", {
+  # Irregular global steps: c(1, 5, 10)
+  df_irreg <- data.frame(
+    id = c(1, 1, 1, 2, 3, 3),
+    step = c(1, 5, 10, 1, 1, 5),
+    reals = c("A", "A", "B", "A", "B", "B")
+  )
+
+  spec <- rtichoke:::rtichoke_viz_outcome_distribution_steps_v2_spec(
+    data = df_irreg,
+    censoring_heuristic = "adjusted"
+  )
+
+  expect_equal(length(spec$stateDistributions), 3)
+
+  # Independent survival::survfit calculation on exact counting-process intervals
+  all_categories <- c("A", "B")
+  all_steps <- c(1, 5, 10)
+  p0 <- c("A" = 2 / 3, "B" = 1 / 3)
+
+  cp_df <- data.frame(
+    id = c("1", "1", "2", "3", "3"),
+    tstart = c(1, 5, 1, 1, 5),
+    tstop = c(5, 10, 3.0, 5, 7.5),
+    istate = factor(c("A", "A", "A", "B", "B"), levels = all_categories),
+    event = factor(
+      c(
+        "censor_no_event",
+        "B",
+        "censor_no_event",
+        "censor_no_event",
+        "censor_no_event"
+      ),
+      levels = c("censor_no_event", all_categories)
+    )
+  )
+
+  fit <- survival::survfit(
+    survival::Surv(tstart, tstop, event) ~ 1,
+    data = cp_df,
+    id = id,
+    istate = istate,
+    p0 = p0
+  )
+  fit_sum <- summary(fit)
+
+  for (i in seq_along(all_steps)) {
+    s <- all_steps[i]
+    sd <- spec$stateDistributions[[i]]
+    expect_equal(sd$horizon, s)
+
+    p_spec <- vapply(sd$states, `[[`, numeric(1), "estimate")
+    names(p_spec) <- vapply(sd$states, `[[`, character(1), "stateId")
+
+    prior_times <- fit_sum$time[fit_sum$time <= s]
+    if (length(prior_times) == 0L) {
+      expect_equal(p_spec[["A"]], unname(p0["A"]))
+      expect_equal(p_spec[["B"]], unname(p0["B"]))
+    } else {
+      idx <- max(which(fit_sum$time <= s))
+      vals <- if (is.matrix(fit_sum$pstate)) {
+        fit_sum$pstate[idx, ]
+      } else {
+        fit_sum$pstate
+      }
+      names(vals) <- fit$states
+      expect_equal(p_spec[["A"]], unname(vals["A"]))
+      expect_equal(p_spec[["B"]], unname(vals["B"]))
+    }
+  }
+})
+
+test_that("adjusted mode throws explicit error when subject observation gaps or NA intermediate rows exist", {
   df_gap <- data.frame(
     id = c(1, 1, 2, 2, 2),
     step = c(1, 3, 1, 2, 3),
@@ -293,6 +369,20 @@ test_that("adjusted mode throws explicit error when subject observation gaps exi
   expect_error(
     create_reals_distribution_steps(
       data = df_gap,
+      censoring_heuristic = "adjusted"
+    ),
+    "Observation gaps or missing intermediate steps per subject are not supported in adjusted mode"
+  )
+
+  df_na_middle <- data.frame(
+    id = c(1, 1, 1, 2, 2, 2),
+    step = c(1, 2, 3, 1, 2, 3),
+    reals = c("A", NA, "B", "A", "A", "B")
+  )
+
+  expect_error(
+    create_reals_distribution_steps(
+      data = df_na_middle,
       censoring_heuristic = "adjusted"
     ),
     "Observation gaps or missing intermediate steps per subject are not supported in adjusted mode"
