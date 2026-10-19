@@ -217,11 +217,15 @@ test_that("excluded raw mode computes exact state counts and excludes NAs", {
   expect_equal(estimates2[["B"]], 0.5)
 })
 
-test_that("adjusted Aalen-Johansen mode matches direct survival::survfit calculation", {
+test_that("adjusted Aalen-Johansen mode includes baseline-only and terminal dropout subjects", {
+  # Subj 1: full panel (A->A->B)
+  # Subj 2: baseline-only (A at step 1, drops out before step 2)
+  # Subj 3: drops out after step 2 (B->B at step 1 and 2, drops out before step 3)
+  # Subj 4: full panel (A->B->B)
   df <- data.frame(
-    id = c(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4),
-    step = c(1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3),
-    reals = c("A", "A", "B", "A", "B", "B", "B", "B", "A", "A", "A")
+    id = c(1, 1, 1, 2, 3, 3, 4, 4, 4),
+    step = c(1, 2, 3, 1, 1, 2, 1, 2, 3),
+    reals = c("A", "A", "B", "A", "B", "B", "A", "B", "B")
   )
 
   spec <- rtichoke:::rtichoke_viz_outcome_distribution_steps_v2_spec(
@@ -229,38 +233,50 @@ test_that("adjusted Aalen-Johansen mode matches direct survival::survfit calcula
     censoring_heuristic = "adjusted"
   )
 
-  expect_equal(length(spec$stateDistributions), 3) # steps 1, 2, 3
+  expect_equal(length(spec$stateDistributions), 3)
 
-  # Step 1 baseline distribution: 3 in A, 1 in B -> p(A)=0.75, p(B)=0.25
+  # Baseline p0: 3 in A, 1 in B -> p(A)=0.75, p(B)=0.25
   sd1 <- spec$stateDistributions[[1]]
   p1 <- vapply(sd1$states, `[[`, numeric(1), "estimate")
   names(p1) <- vapply(sd1$states, `[[`, character(1), "stateId")
   expect_equal(p1[["A"]], 0.75)
   expect_equal(p1[["B"]], 0.25)
 
-  # Step 2: transitions from 1->2
-  # Baseline 3 in A, 1 in B.
-  # Subj 1: A->A, Subj 2: A->B, Subj 3: B->B, Subj 4: A->A.
-  # From A: 1 transitioned to B out of 3 -> P(A->B)=1/3.
-  # So at step 2: P(A) = 0.75 * (2/3) = 0.50. P(B) = 0.25 + 0.75 * (1/3) = 0.50.
+  # Step 2: risk set at t=2 is 4 subjects (Subj 1, 2, 3, 4).
+  # Subj 4 moves A->B (1 event out of 3 in A). Subj 2 is censored at t=2.
+  # P(A, t=2) = 0.75 * (2/3) = 0.50. P(B, t=2) = 0.25 + 0.75 * (1/3) = 0.50.
   sd2 <- spec$stateDistributions[[2]]
   p2 <- vapply(sd2$states, `[[`, numeric(1), "estimate")
   names(p2) <- vapply(sd2$states, `[[`, character(1), "stateId")
   expect_equal(p2[["A"]], 0.5)
   expect_equal(p2[["B"]], 0.5)
 
-  # Step 3: transitions from 2->3
-  # Risk set at step 2:
-  # Subj 1 in A (A->B), Subj 2 in B (B->B), Subj 3 censored after step 2 (dropout), Subj 4 in A (A->A).
-  # At step 2, 2 subjects in A (Subj 1 & Subj 4).
-  # Subj 1 moves A->B, Subj 4 stays A->A. P(A->B at step 3) = 1/2.
-  # So at step 3: P(A) = P(A, step 2) * (1/2) = 0.5 * 0.5 = 0.25.
-  # P(B) = P(B, step 2) + P(A, step 2) * 0.5 = 0.5 + 0.25 = 0.75.
+  # Step 3: Subj 2 was censored at t=2. Subj 3 was censored at t=2.
+  # Risk set at t=3 is 2 subjects (Subj 1 in A, Subj 4 in B).
+  # Subj 1 moves A->B (1 event out of 1 in A).
+  # P(A, t=3) = 0, P(B, t=3) = 1.0.
   sd3 <- spec$stateDistributions[[3]]
   p3 <- vapply(sd3$states, `[[`, numeric(1), "estimate")
   names(p3) <- vapply(sd3$states, `[[`, character(1), "stateId")
-  expect_equal(p3[["A"]], 0.25)
-  expect_equal(p3[["B"]], 0.75)
+  expect_equal(p3[["A"]], 0.0)
+  expect_equal(p3[["B"]], 1.0)
+})
+
+test_that("adjusted mode throws explicit error when subject observation gaps exist", {
+  # Subj 1 observed at step 1 and step 3 (missing step 2)
+  df_gap <- data.frame(
+    id = c(1, 1, 2, 2, 2),
+    step = c(1, 3, 1, 2, 3),
+    reals = c("A", "B", "A", "A", "B")
+  )
+
+  expect_error(
+    create_reals_distribution_steps(
+      data = df_gap,
+      censoring_heuristic = "adjusted"
+    ),
+    "Observation gaps or missing intermediate steps per subject are not supported in adjusted mode"
+  )
 })
 
 test_that("Aalen-Johansen handles multi-state reversible transitions", {
@@ -277,16 +293,11 @@ test_that("Aalen-Johansen handles multi-state reversible transitions", {
 
   expect_equal(length(spec$stateDistributions), 3)
 
-  # Step 1: 1 in A, 1 in B -> 0.5, 0.5
   p1 <- vapply(spec$stateDistributions[[1]]$states, `[[`, numeric(1), "estimate")
   names(p1) <- vapply(spec$stateDistributions[[1]]$states, `[[`, character(1), "stateId")
   expect_equal(p1[["A"]], 0.5)
   expect_equal(p1[["B"]], 0.5)
 
-  # Step 2: Subj 1 A->B, Subj 2 B->A.
-  # From A (1 subj): moved to B (prob 1). From B (1 subj): moved to A (prob 1).
-  # P(A, t=2) = 0.5 * 0 + 0.5 * 1 = 0.5.
-  # P(B, t=2) = 0.5 * 1 + 0.5 * 0 = 0.5.
   p2 <- vapply(spec$stateDistributions[[2]]$states, `[[`, numeric(1), "estimate")
   names(p2) <- vapply(spec$stateDistributions[[2]]$states, `[[`, character(1), "stateId")
   expect_equal(p2[["A"]], 0.5)

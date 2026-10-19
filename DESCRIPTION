@@ -31,6 +31,7 @@ Imports:
     rlang,
     stats,
     stringr,
+    survival,
     tibble
 Suggests: 
     V8,

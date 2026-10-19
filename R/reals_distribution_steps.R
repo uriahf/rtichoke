@@ -252,8 +252,24 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
       ,
       drop = FALSE
     ]
-    min_step <- all_steps[1L]
 
+    # Reject observation gaps / missing intermediate steps per subject
+    split_check <- split(sorted_df, sorted_df[[id_col]])
+    for (sub_df in split_check) {
+      valid_sub <- sub_df[!is.na(sub_df[[reals_col]]), , drop = FALSE]
+      if (nrow(valid_sub) >= 2L) {
+        sub_steps <- valid_sub[[step_col]]
+        idx_sub <- match(sub_steps, all_steps)
+        if (any(diff(idx_sub) != 1L)) {
+          stop(
+            "Observation gaps or missing intermediate steps per subject are not supported in adjusted mode.",
+            call. = FALSE
+          )
+        }
+      }
+    }
+
+    min_step <- all_steps[1L]
     base_obs <- sorted_df[
       sorted_df[[step_col]] == min_step & !is.na(sorted_df[[reals_col]]),
       ,
@@ -272,8 +288,6 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
     p0 <- as.numeric(base_counts / sum(base_counts))
     names(p0) <- all_categories
 
-    split_df <- split(sorted_df, sorted_df[[id_col]])
-
     tstart_vec <- numeric(0)
     tstop_vec <- numeric(0)
     id_vec <- character(0)
@@ -283,24 +297,19 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
     censor_code <- "censor_no_event"
     event_levels <- c(censor_code, all_categories)
 
-    for (sub_df in split_df) {
+    for (sub_df in split_check) {
       valid_sub <- sub_df[!is.na(sub_df[[reals_col]]), , drop = FALSE]
-      if (nrow(valid_sub) < 2L) next
+      m <- nrow(valid_sub)
+      if (m == 0L) next
 
       sub_steps <- valid_sub[[step_col]]
       sub_reals <- as.character(valid_sub[[reals_col]])
       sub_id <- as.character(valid_sub[[id_col]][1L])
 
-      for (j in seq_len(nrow(valid_sub) - 1L)) {
-        s_curr <- sub_steps[j]
-        s_next <- sub_steps[j + 1L]
-
-        idx_curr <- match(s_curr, all_steps)
-        idx_next <- match(s_next, all_steps)
-
-        if (
-          !is.na(idx_curr) && !is.na(idx_next) && (idx_next == idx_curr + 1L)
-        ) {
+      if (m >= 2L) {
+        for (j in seq_len(m - 1L)) {
+          s_curr <- sub_steps[j]
+          s_next <- sub_steps[j + 1L]
           r_curr <- sub_reals[j]
           r_next <- sub_reals[j + 1L]
 
@@ -308,13 +317,21 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
           tstop_vec <- c(tstop_vec, s_next)
           id_vec <- c(id_vec, sub_id)
           istate_vec <- c(istate_vec, r_curr)
-
-          if (r_next == r_curr) {
-            event_vec <- c(event_vec, censor_code)
-          } else {
-            event_vec <- c(event_vec, r_next)
-          }
+          event_vec <- c(event_vec, if (r_next == r_curr) censor_code else r_next)
         }
+      }
+
+      last_step <- sub_steps[m]
+      idx_last <- match(last_step, all_steps)
+      if (!is.na(idx_last) && idx_last < length(all_steps)) {
+        next_grid_step <- all_steps[idx_last + 1L]
+        last_real <- sub_reals[m]
+
+        tstart_vec <- c(tstart_vec, last_step)
+        tstop_vec <- c(tstop_vec, next_grid_step)
+        id_vec <- c(id_vec, sub_id)
+        istate_vec <- c(istate_vec, last_real)
+        event_vec <- c(event_vec, censor_code)
       }
     }
 
