@@ -5615,6 +5615,10 @@
                                     {
                                       "const": "fixed_time_horizon",
                                       "type": "string"
+                                    },
+                                    {
+                                      "const": "observed_step",
+                                      "type": "string"
                                     }
                                   ]
                                 },
@@ -6782,6 +6786,10 @@
                                 {
                                   "const": "fixed_time_horizon",
                                   "type": "string"
+                                },
+                                {
+                                  "const": "observed_step",
+                                  "type": "string"
                                 }
                               ]
                             },
@@ -6989,6 +6997,18 @@
                       "title": {
                         "type": "string"
                       },
+                      "stateScale": {
+                        "anyOf": [
+                          {
+                            "const": "ordinal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "nominal",
+                            "type": "string"
+                          }
+                        ]
+                      },
                       "evaluations": {
                         "minItems": 1,
                         "type": "array",
@@ -7049,6 +7069,10 @@
                                 },
                                 {
                                   "const": "fixed_time_horizon",
+                                  "type": "string"
+                                },
+                                {
+                                  "const": "observed_step",
                                   "type": "string"
                                 }
                               ]
@@ -12881,6 +12905,10 @@
                                               {
                                                 "const": "fixed_time_horizon",
                                                 "type": "string"
+                                              },
+                                              {
+                                                "const": "observed_step",
+                                                "type": "string"
                                               }
                                             ]
                                           },
@@ -14048,6 +14076,10 @@
                                           {
                                             "const": "fixed_time_horizon",
                                             "type": "string"
+                                          },
+                                          {
+                                            "const": "observed_step",
+                                            "type": "string"
                                           }
                                         ]
                                       },
@@ -14255,6 +14287,18 @@
                                 "title": {
                                   "type": "string"
                                 },
+                                "stateScale": {
+                                  "anyOf": [
+                                    {
+                                      "const": "ordinal",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "const": "nominal",
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
                                 "evaluations": {
                                   "minItems": 1,
                                   "type": "array",
@@ -14315,6 +14359,10 @@
                                           },
                                           {
                                             "const": "fixed_time_horizon",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "const": "observed_step",
                                             "type": "string"
                                           }
                                         ]
@@ -20125,6 +20173,10 @@
                                                     {
                                                       "const": "fixed_time_horizon",
                                                       "type": "string"
+                                                    },
+                                                    {
+                                                      "const": "observed_step",
+                                                      "type": "string"
                                                     }
                                                   ]
                                                 },
@@ -21292,6 +21344,10 @@
                                                 {
                                                   "const": "fixed_time_horizon",
                                                   "type": "string"
+                                                },
+                                                {
+                                                  "const": "observed_step",
+                                                  "type": "string"
                                                 }
                                               ]
                                             },
@@ -21499,6 +21555,18 @@
                                       "title": {
                                         "type": "string"
                                       },
+                                      "stateScale": {
+                                        "anyOf": [
+                                          {
+                                            "const": "ordinal",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "const": "nominal",
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
                                       "evaluations": {
                                         "minItems": 1,
                                         "type": "array",
@@ -21559,6 +21627,10 @@
                                                 },
                                                 {
                                                   "const": "fixed_time_horizon",
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "const": "observed_step",
                                                   "type": "string"
                                                 }
                                               ]

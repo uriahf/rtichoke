@@ -503,3 +503,206 @@ test_that("Lift browser uses canonical v2 without changing existing defaults", {
   expect_match(html, '"x":"ppcr"', fixed = TRUE)
   expect_match(html, '"y":"lift"', fixed = TRUE)
 })
+
+test_that("observed-step outcome_distribution V2 specs validate against report schema and render in browser", {
+  skip_if_not_installed("jsonvalidate")
+
+  schema_path <- system.file(
+    "rtichoke-viz",
+    "rtichoke-viz-report.schema.json",
+    package = "rtichoke"
+  )
+  expect_true(file.exists(schema_path))
+
+  # Prepare schema without duplicate top-level $id lines for validator
+  schema_content <- readLines(schema_path, warn = FALSE)
+  id_indices <- grep('"\\$id":', schema_content)
+  if (length(id_indices) > 1) {
+    for (i in id_indices[-1]) {
+      schema_content[i] <- gsub(
+        '"\\$id": "[^"]*",',
+        "",
+        schema_content[i]
+      )
+    }
+  }
+  tmp_schema <- tempfile(fileext = ".json")
+  writeLines(schema_content, tmp_schema)
+  validator <- jsonvalidate::json_validator(tmp_schema, engine = "ajv")
+
+  # 1. Raw estimator with ordinal state scale
+  spec_raw_ordinal <- list(
+    schemaVersion = "2.0",
+    type = "outcome_distribution",
+    title = "Observed Steps Outcome Distribution (Raw, Ordinal)",
+    evaluations = list(
+      list(
+        id = "evaluation-1",
+        population = "Cohort 1"
+      )
+    ),
+    series = list(
+      list(
+        id = "series-1",
+        evaluationId = "evaluation-1",
+        display = list(
+          label = "Cohort 1",
+          group = "Cohort 1",
+          role = "population"
+        )
+      )
+    ),
+    xAxisKind = "step",
+    stateScale = "ordinal",
+    xAxis = list(
+      label = "Step",
+      domain = c(1, 3)
+    ),
+    yAxis = list(
+      label = "Proportion",
+      domain = c(0, 1)
+    ),
+    states = list(
+      list(id = "state-0", label = "State 0", color = "#440154"),
+      list(id = "state-1", label = "State 1", color = "#21918c"),
+      list(id = "state-2", label = "State 2", color = "#fde725")
+    ),
+    stateDistributions = list(
+      list(
+        evaluationId = "evaluation-1",
+        horizon = 1,
+        estimator = "raw",
+        estimateOrigin = "observed_step",
+        states = list(
+          list(stateId = "state-0", estimate = 0.7, count = 70L),
+          list(stateId = "state-1", estimate = 0.2, count = 20L),
+          list(stateId = "state-2", estimate = 0.1, count = 10L)
+        )
+      ),
+      list(
+        evaluationId = "evaluation-1",
+        horizon = 2,
+        estimator = "raw",
+        estimateOrigin = "observed_step",
+        states = list(
+          list(stateId = "state-0", estimate = 0.5, count = 50L),
+          list(stateId = "state-1", estimate = 0.3, count = 30L),
+          list(stateId = "state-2", estimate = 0.2, count = 20L)
+        )
+      ),
+      list(
+        evaluationId = "evaluation-1",
+        horizon = 3,
+        estimator = "raw",
+        estimateOrigin = "observed_step",
+        states = list(
+          list(stateId = "state-0", estimate = 0.3, count = 30L),
+          list(stateId = "state-1", estimate = 0.4, count = 40L),
+          list(stateId = "state-2", estimate = 0.3, count = 30L)
+        )
+      )
+    )
+  )
+
+  json_raw <- jsonlite::toJSON(spec_raw_ordinal, auto_unbox = TRUE, null = "null")
+  expect_true(validator(json_raw))
+
+  tag_raw <- rtichoke:::render_rtichoke_viz_browser(spec_raw_ordinal)
+  html_raw <- as.character(tag_raw)
+  expect_match(html_raw, "renderOutcomeDistribution", fixed = TRUE)
+  expect_match(html_raw, '"estimateOrigin":"observed_step"', fixed = TRUE)
+  expect_match(html_raw, '"stateScale":"ordinal"', fixed = TRUE)
+  expect_match(html_raw, '"estimator":"raw"', fixed = TRUE)
+
+  # 2. Aalen-Johansen estimator with nominal state scale
+  spec_aj_nominal <- list(
+    schemaVersion = "2.0",
+    type = "outcome_distribution",
+    title = "Observed Steps Outcome Distribution (Aalen-Johansen, Nominal)",
+    evaluations = list(
+      list(
+        id = "evaluation-1",
+        population = "Cohort A"
+      )
+    ),
+    series = list(
+      list(
+        id = "series-1",
+        evaluationId = "evaluation-1",
+        display = list(
+          label = "Cohort A",
+          group = "Cohort A",
+          role = "population"
+        )
+      )
+    ),
+    xAxisKind = "step",
+    stateScale = "nominal",
+    xAxis = list(
+      label = "Step",
+      domain = c(1, 2)
+    ),
+    yAxis = list(
+      label = "Probability",
+      domain = c(0, 1)
+    ),
+    states = list(
+      list(id = "remission", label = "Remission", color = "#1b9e77"),
+      list(id = "relapse", label = "Relapse", color = "#d95f02")
+    ),
+    stateDistributions = list(
+      list(
+        evaluationId = "evaluation-1",
+        horizon = 1,
+        estimator = "aalen_johansen",
+        estimateOrigin = "observed_step",
+        states = list(
+          list(
+            stateId = "remission",
+            estimate = 0.8,
+            lower = 0.72,
+            upper = 0.88
+          ),
+          list(
+            stateId = "relapse",
+            estimate = 0.2,
+            lower = 0.12,
+            upper = 0.28
+          )
+        )
+      ),
+      list(
+        evaluationId = "evaluation-1",
+        horizon = 2,
+        estimator = "aalen_johansen",
+        estimateOrigin = "observed_step",
+        states = list(
+          list(
+            stateId = "remission",
+            estimate = 0.6,
+            lower = 0.50,
+            upper = 0.70
+          ),
+          list(
+            stateId = "relapse",
+            estimate = 0.4,
+            lower = 0.30,
+            upper = 0.50
+          )
+        )
+      )
+    )
+  )
+
+  json_aj <- jsonlite::toJSON(spec_aj_nominal, auto_unbox = TRUE, null = "null")
+  expect_true(validator(json_aj))
+
+  tag_aj <- rtichoke:::render_rtichoke_viz_browser(spec_aj_nominal)
+  html_aj <- as.character(tag_aj)
+  expect_match(html_aj, "renderOutcomeDistribution", fixed = TRUE)
+  expect_match(html_aj, '"estimateOrigin":"observed_step"', fixed = TRUE)
+  expect_match(html_aj, '"stateScale":"nominal"', fixed = TRUE)
+  expect_match(html_aj, '"estimator":"aalen_johansen"', fixed = TRUE)
+
+  unlink(tmp_schema)
+})
