@@ -364,20 +364,28 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
         p0 = p0
       )
 
-      fit_sum <- summary(fit, times = all_steps)
+      fit_sum <- summary(fit, times = all_steps, rmean = "none")
+      fit_times <- fit_sum$time
       fit_states <- fit$states
       pstate <- fit_sum$pstate
 
-      for (i in seq_along(all_steps)) {
-        s <- all_steps[i]
-        vals <- if (is.matrix(pstate)) pstate[i, ] else pstate
-        names(vals) <- fit_states
-        full_vals <- stats::setNames(
-          numeric(length(all_categories)),
-          all_categories
-        )
-        full_vals[names(vals)] <- vals
-        estimates_by_step[[as.character(s)]] <- full_vals
+      estimates_by_step[[as.character(min_step)]] <- p0
+
+      for (s in all_steps[-1L]) {
+        prior_indices <- which(fit_times <= s)
+        if (length(prior_indices) == 0L) {
+          estimates_by_step[[as.character(s)]] <- p0
+        } else {
+          idx <- max(prior_indices)
+          vals <- if (is.matrix(pstate)) pstate[idx, ] else pstate
+          names(vals) <- fit_states
+          full_vals <- stats::setNames(
+            numeric(length(all_categories)),
+            all_categories
+          )
+          full_vals[names(vals)] <- vals
+          estimates_by_step[[as.character(s)]] <- full_vals
+        }
       }
     }
 
