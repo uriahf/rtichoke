@@ -24,17 +24,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' df <- data.frame(
-#'   id = rep(1:10, each = 3),
-#'   step = rep(1:3, 10),
-#'   reals = sample(c("A", "B", "C"), 30, replace = TRUE)
-#' )
-#'
 #' create_reals_distribution_steps(
-#'   data = df,
-#'   id_col = "id",
-#'   step_col = "step",
-#'   reals_col = "reals",
+#'   clinical_states_steps,
 #'   censoring_heuristic = "excluded"
 #' )
 #' }

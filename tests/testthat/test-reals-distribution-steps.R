@@ -528,3 +528,67 @@ test_that("only supplied steps are present and step 0 is not manufactured", {
   expect_equal(horizons, c(5, 10))
   expect_equal(spec$xAxis$domain, c(5, 10))
 })
+
+test_that("clinical_states_steps dataset meets exact contract and validation checks", {
+  data("clinical_states_steps", package = "rtichoke", envir = environment())
+
+  # Dimensions and subjects/days counts
+  expect_equal(nrow(clinical_states_steps), 16200L)
+  expect_equal(ncol(clinical_states_steps), 3L)
+  expect_equal(names(clinical_states_steps), c("id", "step", "reals"))
+
+  expect_equal(length(unique(clinical_states_steps$id)), 600L)
+  expect_equal(sort(unique(clinical_states_steps$id)), 1:600)
+
+  expect_equal(length(unique(clinical_states_steps$step)), 27L)
+  expect_equal(sort(unique(clinical_states_steps$step)), 1:27)
+
+  # Each id-step pair appears exactly once
+  expect_false(any(duplicated(clinical_states_steps[, c("id", "step")])))
+
+  # No missing values
+  expect_false(any(is.na(clinical_states_steps)))
+
+  # Factor structure
+  expect_true(is.ordered(clinical_states_steps$reals))
+  states_expected <- c("Home", "Hospital", "Vent/ARDS", "Dead")
+  expect_equal(levels(clinical_states_steps$reals), states_expected)
+
+  # Absorbing state check: no transitions out of Dead
+  df_ord <- clinical_states_steps[
+    order(clinical_states_steps$id, clinical_states_steps$step),
+  ]
+  dead_transitions <- FALSE
+  split_sub <- split(df_ord, df_ord$id)
+  for (sub in split_sub) {
+    r_vec <- as.character(sub$reals)
+    dead_idx <- which(r_vec == "Dead")
+    if (length(dead_idx) > 0L) {
+      first_dead <- min(dead_idx)
+      if (first_dead < length(r_vec)) {
+        subsequent <- r_vec[(first_dead + 1L):length(r_vec)]
+        if (any(subsequent != "Dead")) {
+          dead_transitions <- TRUE
+          break
+        }
+      }
+    }
+  }
+  expect_false(dead_transitions)
+
+  # Raw producer validation
+  spec_raw <- rtichoke:::rtichoke_viz_outcome_distribution_steps_v2_spec(
+    data = clinical_states_steps,
+    censoring_heuristic = "excluded"
+  )
+
+  expect_equal(length(spec_raw$stateDistributions), 27L)
+  expect_equal(spec_raw$stateScale, "ordinal")
+
+  # Per-day counts sum to 600 and each distribution has estimateOrigin = "observed_step"
+  for (sd in spec_raw$stateDistributions) {
+    expect_equal(sd$estimateOrigin, "observed_step")
+    day_counts <- vapply(sd$states, `[[`, integer(1), "count")
+    expect_equal(sum(day_counts), 600L)
+  }
+})
