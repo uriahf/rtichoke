@@ -159,7 +159,7 @@ rtichoke_viz_report_spec <- function(
 #'
 #' Validate and compose already-wrapped sections, groups, and complete
 #' standalone canonical component specifications. This helper is deliberately
-#' separate from [rtichoke_viz_report_spec()] so the v1.0 contract remains
+#' separate from `rtichoke_viz_report_spec()` so the v1.0 contract remains
 #' unchanged.
 #'
 #' @param ... Structured report sections.
