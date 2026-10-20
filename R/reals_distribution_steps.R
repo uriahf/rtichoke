@@ -342,12 +342,9 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
     }
 
     estimates_by_step <- list()
+    estimates_by_step[[as.character(min_step)]] <- p0
 
-    if (length(tstart_vec) == 0L) {
-      for (s in all_steps) {
-        estimates_by_step[[as.character(s)]] <- p0
-      }
-    } else {
+    if (length(tstart_vec) > 0L) {
       cp_df <- data.frame(
         id = id_vec,
         tstart = tstart_vec,
@@ -364,33 +361,44 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
         p0 = p0
       )
 
-      fit_sum <- summary(fit, times = all_steps, rmean = "none")
-      fit_times <- fit_sum$time
+      fit_times <- fit$time
       fit_states <- fit$states
-      pstate <- matrix(
-        fit_sum$pstate,
-        nrow = length(fit_times),
-        dimnames = list(NULL, fit_states)
-      )
+      fit_pstate <- fit$pstate
 
-      for (s in all_steps) {
-        if (s == min_step) {
-          full_vals <- p0
-        } else {
+      if (!is.null(fit_times) && length(fit_times) > 0L) {
+        if (!is.matrix(fit_pstate)) {
+          fit_pstate <- matrix(
+            fit_pstate,
+            nrow = length(fit_times),
+            ncol = length(fit_states),
+            byrow = FALSE
+          )
+        }
+        colnames(fit_pstate) <- fit_states
+
+        for (s in all_steps[-1L]) {
           prior_indices <- which(fit_times <= s)
           if (length(prior_indices) == 0L) {
             full_vals <- p0
           } else {
             row_idx <- max(prior_indices)
-            vals <- pstate[row_idx, ]
+            vals <- fit_pstate[row_idx, ]
             full_vals <- stats::setNames(
               numeric(length(all_categories)),
               all_categories
             )
-            full_vals[names(vals)] <- vals
+            full_vals[names(vals)] <- as.numeric(vals)
           }
+          estimates_by_step[[as.character(s)]] <- full_vals
         }
-        estimates_by_step[[as.character(s)]] <- full_vals
+      } else {
+        for (s in all_steps[-1L]) {
+          estimates_by_step[[as.character(s)]] <- p0
+        }
+      }
+    } else {
+      for (s in all_steps[-1L]) {
+        estimates_by_step[[as.character(s)]] <- p0
       }
     }
 
