@@ -331,7 +331,12 @@ test_that("adjusted mode handles irregular global step spacing with midpoint cen
     istate = istate,
     p0 = p0
   )
-  fit_sum <- summary(fit)
+  fit_sum <- summary(fit, times = all_steps, rmean = "none")
+  pmat <- matrix(
+    fit_sum$pstate,
+    nrow = length(fit_sum$time),
+    dimnames = list(NULL, fit$states)
+  )
 
   for (i in seq_along(all_steps)) {
     s <- all_steps[i]
@@ -341,21 +346,9 @@ test_that("adjusted mode handles irregular global step spacing with midpoint cen
     p_spec <- vapply(sd$states, `[[`, numeric(1), "estimate")
     names(p_spec) <- vapply(sd$states, `[[`, character(1), "stateId")
 
-    prior_times <- fit_sum$time[fit_sum$time <= s]
-    if (length(prior_times) == 0L) {
-      expect_equal(p_spec[["A"]], unname(p0["A"]))
-      expect_equal(p_spec[["B"]], unname(p0["B"]))
-    } else {
-      idx <- max(which(fit_sum$time <= s))
-      vals <- if (is.matrix(fit_sum$pstate)) {
-        fit_sum$pstate[idx, ]
-      } else {
-        fit_sum$pstate
-      }
-      names(vals) <- fit$states
-      expect_equal(p_spec[["A"]], unname(vals["A"]))
-      expect_equal(p_spec[["B"]], unname(vals["B"]))
-    }
+    vals <- pmat[i, ]
+    expect_equal(p_spec[["A"]], unname(vals["A"]))
+    expect_equal(p_spec[["B"]], unname(vals["B"]))
   }
 })
 
