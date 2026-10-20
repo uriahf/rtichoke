@@ -74,6 +74,8 @@ Summarize model metrics into interactive or static tables and reports.
 
 Included benchmark dataset and prepared performance data objects.
 
+- [`clinical_states_steps`](https://uriahf.github.io/rtichoke/reference/clinical_states_steps.md)
+  : Synthetic Longitudinal Clinical Outcome Data
 - [`example_dat`](https://uriahf.github.io/rtichoke/reference/example_dat.md)
   : Example Data Frame for rtichoke package
 - [`multiple_models`](https://uriahf.github.io/rtichoke/reference/multiple_models.md)
