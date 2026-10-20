@@ -287,6 +287,74 @@ test_that("adjusted Aalen-Johansen mode handles terminal dropout at midpoint cen
   expect_equal(p3[["B"]], 1.0)
 })
 
+test_that("adjusted mode handles heterogeneous baseline and terminal dropout regression fixture", {
+  # Exact dataset from review comment:
+  # id=c(1,1,1,2,2,2,3,3,4,4,4), step=c(1,2,3,1,2,3,1,2,1,2,3), reals=c('A','A','B','A','B','B','B','B','A','A','A')
+  df_regr <- data.frame(
+    id = c(1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4),
+    step = c(1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3),
+    reals = c("A", "A", "B", "A", "B", "B", "B", "B", "A", "A", "A")
+  )
+
+  spec <- rtichoke:::rtichoke_viz_outcome_distribution_steps_v2_spec(
+    data = df_regr,
+    censoring_heuristic = "adjusted"
+  )
+
+  expect_equal(length(spec$stateDistributions), 3)
+
+  # Step 1: 3 in A, 1 in B -> P(A)=0.75, P(B)=0.25
+  p1 <- vapply(
+    spec$stateDistributions[[1]]$states,
+    `[[`,
+    numeric(1),
+    "estimate"
+  )
+  names(p1) <- vapply(
+    spec$stateDistributions[[1]]$states,
+    `[[`,
+    character(1),
+    "stateId"
+  )
+  expect_equal(p1[["A"]], 0.75)
+  expect_equal(p1[["B"]], 0.25)
+  expect_equal(p1[["A"]] + p1[["B"]], 1.0)
+
+  # Step 2: Subj 2 moves A->B, Subj 3 is in B, Subj 1 & 4 in A -> P(A)=0.50, P(B)=0.50
+  p2 <- vapply(
+    spec$stateDistributions[[2]]$states,
+    `[[`,
+    numeric(1),
+    "estimate"
+  )
+  names(p2) <- vapply(
+    spec$stateDistributions[[2]]$states,
+    `[[`,
+    character(1),
+    "stateId"
+  )
+  expect_equal(p2[["A"]], 0.50)
+  expect_equal(p2[["B"]], 0.50)
+  expect_equal(p2[["A"]] + p2[["B"]], 1.0)
+
+  # Step 3: Subj 3 midpoint censored at 2.5. Subj 1 moves A->B, Subj 4 stays in A -> P(A)=0.25, P(B)=0.75
+  p3 <- vapply(
+    spec$stateDistributions[[3]]$states,
+    `[[`,
+    numeric(1),
+    "estimate"
+  )
+  names(p3) <- vapply(
+    spec$stateDistributions[[3]]$states,
+    `[[`,
+    character(1),
+    "stateId"
+  )
+  expect_equal(p3[["A"]], 0.25)
+  expect_equal(p3[["B"]], 0.75)
+  expect_equal(p3[["A"]] + p3[["B"]], 1.0)
+})
+
 test_that("adjusted mode handles irregular global step spacing with midpoint censoring", {
   # Irregular global steps: c(1, 5, 10)
   df_irreg <- data.frame(
@@ -305,6 +373,7 @@ test_that("adjusted mode handles irregular global step spacing with midpoint cen
   # Independent survival::survfit calculation on exact counting-process intervals
   all_categories <- c("A", "B")
   all_steps <- c(1, 5, 10)
+  min_step <- 1
   p0 <- c("A" = 2 / 3, "B" = 1 / 3)
 
   cp_df <- data.frame(
@@ -331,12 +400,20 @@ test_that("adjusted mode handles irregular global step spacing with midpoint cen
     istate = istate,
     p0 = p0
   )
-  fit_sum <- summary(fit, times = all_steps, rmean = "none")
-  pmat <- matrix(
-    fit_sum$pstate,
-    nrow = length(fit_sum$time),
-    dimnames = list(NULL, fit$states)
-  )
+
+  fit_times <- fit$time
+  fit_states <- fit$states
+  fit_pstate <- fit$pstate
+
+  if (!is.matrix(fit_pstate)) {
+    fit_pstate <- matrix(
+      fit_pstate,
+      nrow = length(fit_times),
+      ncol = length(fit_states),
+      byrow = FALSE
+    )
+  }
+  colnames(fit_pstate) <- fit_states
 
   for (i in seq_along(all_steps)) {
     s <- all_steps[i]
@@ -346,7 +423,18 @@ test_that("adjusted mode handles irregular global step spacing with midpoint cen
     p_spec <- vapply(sd$states, `[[`, numeric(1), "estimate")
     names(p_spec) <- vapply(sd$states, `[[`, character(1), "stateId")
 
-    vals <- pmat[i, ]
+    if (s == min_step) {
+      vals <- p0
+    } else {
+      prior_indices <- which(fit_times <= s)
+      if (length(prior_indices) == 0L) {
+        vals <- p0
+      } else {
+        row_idx <- max(prior_indices)
+        vals <- fit_pstate[row_idx, ]
+      }
+    }
+
     expect_equal(p_spec[["A"]], unname(vals["A"]))
     expect_equal(p_spec[["B"]], unname(vals["B"]))
   }
