@@ -91,6 +91,7 @@ reference:
     desc: "Summarize model metrics into interactive or static tables and reports."
     contents:
       - create_probs_histogram
+      - create_reals_distribution_steps
       - create_reals_distribution_times
       - create_performance_table
       - render_performance_table
@@ -100,6 +101,7 @@ reference:
   - title: "Example Datasets"
     desc: "Included benchmark dataset and prepared performance data objects."
     contents:
+      - clinical_states_steps
       - example_dat
       - multiple_models
       - multiple_models_by_ppcr

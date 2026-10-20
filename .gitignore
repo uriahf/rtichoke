@@ -15,3 +15,4 @@ node_modules/
 browser-acceptance/*.html
 browser-acceptance/*.png
 browser-acceptance/*.log
+.posit/assistant

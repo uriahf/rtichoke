@@ -6,7 +6,7 @@
 #' embedded component specifications.
 #'
 #' @param report_spec A complete canonical ReportSpec produced by
-#'   [rtichoke_viz_report_spec()].
+#'   `rtichoke_viz_report_spec()`.
 #'
 #' @return A browsable htmltools tag list.
 #' @noRd
