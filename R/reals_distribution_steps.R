@@ -522,7 +522,10 @@ prepare_continuous_reals_distribution_steps_data <- function(
   }
 
   if (any(is.infinite(r_vec), na.rm = TRUE)) {
-    stop("`reals_col` contains infinite values (`Inf` or `-Inf`).", call. = FALSE)
+    stop(
+      "`reals_col` contains infinite values (`Inf` or `-Inf`).",
+      call. = FALSE
+    )
   }
 
   valid_mask <- !is.na(r_vec)
@@ -533,7 +536,10 @@ prepare_continuous_reals_distribution_steps_data <- function(
   }
 
   if (!is.numeric(bins)) {
-    stop("`bins` must be a numeric bin count or a numeric vector of bin edges.", call. = FALSE)
+    stop(
+      "`bins` must be a numeric bin count or a numeric vector of bin edges.",
+      call. = FALSE
+    )
   }
 
   if (length(bins) == 1L) {
@@ -566,8 +572,14 @@ prepare_continuous_reals_distribution_steps_data <- function(
     bin_edges <- as.numeric(bins)
     K <- length(bin_edges) - 1L
 
-    if (min(valid_obs) < bin_edges[1L] || max(valid_obs) > bin_edges[length(bin_edges)]) {
-      stop("Observed outcomes fall outside the explicit `bins` range.", call. = FALSE)
+    if (
+      min(valid_obs) < bin_edges[1L] ||
+        max(valid_obs) > bin_edges[length(bin_edges)]
+    ) {
+      stop(
+        "Observed outcomes fall outside the explicit `bins` range.",
+        call. = FALSE
+      )
     }
   }
 

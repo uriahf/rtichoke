@@ -11,11 +11,21 @@ test_that("1. Complete longitudinal panel computes exact equal-width histogram c
     id = rep(1:5, each = 3),
     step = rep(1:3, 5),
     reals = c(
-      10.0, 12.0, 15.0, # subj 1
-      11.0, 13.0, 16.0, # subj 2
-      20.0, 22.0, 25.0, # subj 3
-      21.0, 23.0, 26.0, # subj 4
-      30.0, 32.0, 35.0  # subj 5
+      10.0,
+      12.0,
+      15.0, # subj 1
+      11.0,
+      13.0,
+      16.0, # subj 2
+      20.0,
+      22.0,
+      25.0, # subj 3
+      21.0,
+      23.0,
+      26.0, # subj 4
+      30.0,
+      32.0,
+      35.0 # subj 5
     )
   )
 
@@ -59,10 +69,14 @@ test_that("2. Missing outcome values are excluded from denominators and histogra
     id = rep(1:4, each = 2),
     step = rep(1:2, 4),
     reals = c(
-      10.0, 20.0,
-      12.0, NA,
-      14.0, 22.0,
-      NaN,  24.0
+      10.0,
+      20.0,
+      12.0,
+      NA,
+      14.0,
+      22.0,
+      NaN,
+      24.0
     )
   )
 
@@ -227,13 +241,19 @@ test_that("10. Input validation rejects duplicate subject-step, infinite outcome
 
   # Fractional scalar bins
   expect_error(
-    rtichoke:::prepare_continuous_reals_distribution_steps_data(df_valid, bins = 10.5),
+    rtichoke:::prepare_continuous_reals_distribution_steps_data(
+      df_valid,
+      bins = 10.5
+    ),
     "Scalar `bins` must be a single positive integer"
   )
 
   # Non-strictly increasing explicit edges
   expect_error(
-    rtichoke:::prepare_continuous_reals_distribution_steps_data(df_valid, bins = c(10, 10, 20)),
+    rtichoke:::prepare_continuous_reals_distribution_steps_data(
+      df_valid,
+      bins = c(10, 10, 20)
+    ),
     "`bins` vector must be strictly increasing"
   )
 
@@ -258,7 +278,10 @@ test_that("11. Out-of-range values with explicit edges are rejected", {
 
   # Range c(10, 20) excludes 5.0 and 25.0
   expect_error(
-    rtichoke:::prepare_continuous_reals_distribution_steps_data(df, bins = c(10.0, 20.0)),
+    rtichoke:::prepare_continuous_reals_distribution_steps_data(
+      df,
+      bins = c(10.0, 20.0)
+    ),
     "Observed outcomes fall outside the explicit `bins` range"
   )
 })
@@ -273,8 +296,14 @@ test_that("12. Row-order invariance: shuffling rows produces identical output", 
   set.seed(42)
   df2 <- df1[sample(nrow(df1)), ]
 
-  res1 <- rtichoke:::prepare_continuous_reals_distribution_steps_data(df1, bins = 3)
-  res2 <- rtichoke:::prepare_continuous_reals_distribution_steps_data(df2, bins = 3)
+  res1 <- rtichoke:::prepare_continuous_reals_distribution_steps_data(
+    df1,
+    bins = 3
+  )
+  res2 <- rtichoke:::prepare_continuous_reals_distribution_steps_data(
+    df2,
+    bins = 3
+  )
 
   expect_equal(res1, res2)
 })
@@ -297,7 +326,13 @@ test_that("Verification against base R histogram calculations with aligned bin e
   # Check each step against base R hist()
   for (s_val in 1:3) {
     step_obs <- df$reals[df$step == s_val]
-    h_base <- hist(step_obs, breaks = edges, plot = FALSE, include.lowest = TRUE, right = FALSE)
+    h_base <- hist(
+      step_obs,
+      breaks = edges,
+      plot = FALSE,
+      include.lowest = TRUE,
+      right = FALSE
+    )
 
     s_str <- as.character(s_val)
     expect_equal(as.numeric(res$counts[s_str, ]), as.numeric(h_base$counts))
