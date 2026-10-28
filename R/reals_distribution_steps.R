@@ -442,3 +442,182 @@ rtichoke_viz_outcome_distribution_steps_v2_spec <- function(
     stateDistributions = state_distributions
   )
 }
+
+#' Prepare continuous longitudinal outcome distribution data across discrete steps
+#'
+#' Pure numerical preparation helper for continuous outcomes measured at discrete
+#' longitudinal steps. Computes step x bin counts, observed denominators,
+#' unobserved subject counts, and per-bin proportions over shared equal-width
+#' or explicit bin boundaries.
+#'
+#' @param data A data.frame or tibble containing subject-step panel data.
+#' @param id_col Character string specifying the subject identifier column.
+#' @param step_col Character string specifying the discrete step column.
+#' @param reals_col Character string specifying the continuous outcome column.
+#' @param bins A single positive integer specifying the number of equal-width
+#'   bins, or a numeric vector of at least two strictly increasing, finite
+#'   bin edges.
+#'
+#' @return A named list containing:
+#'   \item{steps}{Numeric or integer vector of sorted unique steps present in \code{data}.}
+#'   \item{bin_edges}{Numeric vector of length K + 1 giving bin boundaries.}
+#'   \item{counts}{Integer matrix of size S x K containing observed counts per step x bin.}
+#'   \item{observed_denominators}{Integer vector of length S giving valid observed outcome counts at each step.}
+#'   \item{unobserved_counts}{Integer vector of length S giving unobserved subject counts at each step.}
+#'   \item{proportions}{Numeric matrix of size S x K giving per-bin proportions (NA_real_ if denominator is 0).}
+#'   \item{n_reference_subjects}{Integer scalar giving total unique subjects in \code{data}.}
+#'
+#' @noRd
+prepare_continuous_reals_distribution_steps_data <- function(
+  data,
+  id_col = "id",
+  step_col = "step",
+  reals_col = "reals",
+  bins = 10
+) {
+  if (!is.data.frame(data)) {
+    stop("`data` must be a data frame or tibble.", call. = FALSE)
+  }
+
+  required_cols <- c(id_col, step_col, reals_col)
+  missing_cols <- setdiff(required_cols, names(data))
+  if (length(missing_cols) > 0L) {
+    stop(
+      "`data` is missing required column(s): ",
+      paste(missing_cols, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  ids <- data[[id_col]]
+  if (any(is.na(ids))) {
+    stop("`id_col` contains missing values.", call. = FALSE)
+  }
+  n_reference_subjects <- length(unique(ids))
+
+  steps <- data[[step_col]]
+  if (
+    !is.numeric(steps) ||
+      any(is.na(steps)) ||
+      any(!is.finite(steps)) ||
+      any(steps < 0) ||
+      any(steps != floor(steps))
+  ) {
+    stop(
+      "`step_col` must contain non-missing, non-negative, finite integer values.",
+      call. = FALSE
+    )
+  }
+
+  if (any(duplicated(data[, c(id_col, step_col)]))) {
+    stop(
+      "Each subject-step combination in `data` must be unique.",
+      call. = FALSE
+    )
+  }
+
+  r_vec <- data[[reals_col]]
+  if (!is.numeric(r_vec) && !all(is.na(r_vec))) {
+    stop("`reals_col` must be numeric.", call. = FALSE)
+  }
+
+  if (any(is.infinite(r_vec), na.rm = TRUE)) {
+    stop("`reals_col` contains infinite values (`Inf` or `-Inf`).", call. = FALSE)
+  }
+
+  valid_mask <- !is.na(r_vec)
+  valid_obs <- r_vec[valid_mask]
+
+  if (length(valid_obs) == 0L) {
+    stop("All outcomes in `data` are missing.", call. = FALSE)
+  }
+
+  if (!is.numeric(bins)) {
+    stop("`bins` must be a numeric bin count or a numeric vector of bin edges.", call. = FALSE)
+  }
+
+  if (length(bins) == 1L) {
+    if (is.na(bins) || !is.finite(bins) || bins <= 0 || bins != floor(bins)) {
+      stop("Scalar `bins` must be a single positive integer.", call. = FALSE)
+    }
+    K <- as.integer(bins)
+
+    min_val <- min(valid_obs)
+    max_val <- max(valid_obs)
+
+    if (min_val == max_val) {
+      lower_b <- min_val - 0.5
+      upper_b <- max_val + 0.5
+      bin_edges <- seq(lower_b, upper_b, length.out = K + 1L)
+    } else {
+      bin_edges <- seq(min_val, max_val, length.out = K + 1L)
+    }
+  } else {
+    if (any(is.na(bins)) || any(!is.finite(bins))) {
+      stop("`bins` vector contains NA or infinite values.", call. = FALSE)
+    }
+    if (length(bins) < 2L) {
+      stop("`bins` vector must contain at least two bin edges.", call. = FALSE)
+    }
+    if (any(diff(bins) <= 0)) {
+      stop("`bins` vector must be strictly increasing.", call. = FALSE)
+    }
+
+    bin_edges <- as.numeric(bins)
+    K <- length(bin_edges) - 1L
+
+    if (min(valid_obs) < bin_edges[1L] || max(valid_obs) > bin_edges[length(bin_edges)]) {
+      stop("Observed outcomes fall outside the explicit `bins` range.", call. = FALSE)
+    }
+  }
+
+  all_steps <- sort(unique(steps))
+  S <- length(all_steps)
+
+  counts <- matrix(0L, nrow = S, ncol = K)
+  rownames(counts) <- as.character(all_steps)
+  colnames(counts) <- paste0("bin_", seq_len(K))
+
+  proportions <- matrix(NA_real_, nrow = S, ncol = K)
+  rownames(proportions) <- as.character(all_steps)
+  colnames(proportions) <- paste0("bin_", seq_len(K))
+
+  observed_denominators <- integer(S)
+  names(observed_denominators) <- as.character(all_steps)
+
+  unobserved_counts <- integer(S)
+  names(unobserved_counts) <- as.character(all_steps)
+
+  for (i in seq_along(all_steps)) {
+    s <- all_steps[i]
+    step_data <- data[data[[step_col]] == s, , drop = FALSE]
+    obs_s <- step_data[[reals_col]][!is.na(step_data[[reals_col]])]
+    n_obs <- length(obs_s)
+
+    observed_denominators[i] <- as.integer(n_obs)
+    unobserved_counts[i] <- as.integer(n_reference_subjects - n_obs)
+
+    if (n_obs > 0L) {
+      bin_indices <- findInterval(
+        obs_s,
+        bin_edges,
+        rightmost.closed = TRUE,
+        left.open = FALSE
+      )
+      tab_counts <- table(factor(bin_indices, levels = seq_len(K)))
+      step_counts <- as.integer(tab_counts)
+      counts[i, ] <- step_counts
+      proportions[i, ] <- step_counts / n_obs
+    }
+  }
+
+  list(
+    steps = all_steps,
+    bin_edges = bin_edges,
+    counts = counts,
+    observed_denominators = observed_denominators,
+    unobserved_counts = unobserved_counts,
+    proportions = proportions,
+    n_reference_subjects = n_reference_subjects
+  )
+}
