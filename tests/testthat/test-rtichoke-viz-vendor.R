@@ -8,12 +8,12 @@ test_that("vendored rtichoke_viz v0.24.0 provenance and exports are intact", {
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.0.tar.gz")))
   expect_true(
-    "source_sha: 9ff8c40138c7b2d11332483e0ede900d8b50b935" %in% provenance
+    "source_sha: c415f509841fe8b624cdbca4f0bd75c4e76e6ed3" %in% provenance
   )
   expect_true(
     paste0(
       "archive_sha256: ",
-      "58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0"
+      "93ed1710ff2fbd3d294a6a4260a908f017f47e6c5cc29c9906c4e34024b3664c"
     ) %in%
       provenance
   )

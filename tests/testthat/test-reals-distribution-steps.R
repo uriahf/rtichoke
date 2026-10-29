@@ -618,10 +618,10 @@ test_that("create_reals_distribution_steps handles continuous outcomes with real
   expect_match(html, '"type":"continuous_outcome_distribution"', fixed = TRUE)
   expect_match(html, '"xAxisKind":"step"', fixed = TRUE)
   expect_match(html, '"estimator":"raw"', fixed = TRUE)
-  expect_match(html, "renderOutcomeDistribution", fixed = TRUE)
+  expect_match(html, "renderContinuousOutcomeDistribution", fixed = TRUE)
 })
 
-test_that("continuous outcome spec builder creates canonical V2 structure", {
+test_that("continuous outcome spec builder creates canonical V2 structure meeting exact referential integrity", {
   df <- data.frame(
     id = c(1, 1, 2, 2, 3, 3),
     step = c(1, 2, 1, 2, 1, 2),
@@ -636,21 +636,51 @@ test_that("continuous outcome spec builder creates canonical V2 structure", {
   expect_equal(spec$schemaVersion, "2.0")
   expect_equal(spec$type, "continuous_outcome_distribution")
   expect_equal(spec$xAxisKind, "step")
+  expect_equal(spec$estimator, "raw")
   expect_equal(length(spec$binEdges), 3L)
+  expect_equal(length(spec$evaluations), 1L)
   expect_equal(length(spec$distributions), 2L)
 
   d1 <- spec$distributions[[1]]
-  expect_equal(d1$step, 1)
-  expect_equal(d1$estimator, "raw")
-  expect_equal(d1$observedDenominator, 3L)
+  expect_equal(d1$evaluationId, "evaluation-1")
+  expect_equal(d1$step, 1L)
+  expect_equal(d1$referenceSampleSize, 3L)
+  expect_equal(d1$observedCount, 3L)
   expect_equal(d1$unobservedCount, 0L)
-  expect_equal(sum(d1$counts), 3L)
+  expect_equal(length(d1$binCounts), 2L)
+  expect_equal(sum(d1$binCounts), d1$observedCount)
+  expect_equal(d1$observedCount + d1$unobservedCount, d1$referenceSampleSize)
 
   d2 <- spec$distributions[[2]]
-  expect_equal(d2$step, 2)
-  expect_equal(d2$observedDenominator, 2L)
+  expect_equal(d2$evaluationId, "evaluation-1")
+  expect_equal(d2$step, 2L)
+  expect_equal(d2$referenceSampleSize, 3L)
+  expect_equal(d2$observedCount, 2L)
   expect_equal(d2$unobservedCount, 1L)
-  expect_equal(sum(d2$counts), 2L)
+  expect_equal(length(d2$binCounts), 2L)
+  expect_equal(sum(d2$binCounts), d2$observedCount)
+  expect_equal(d2$observedCount + d2$unobservedCount, d2$referenceSampleSize)
+})
+
+test_that("continuous outcome spec handles step with zero observed outcomes", {
+  df <- data.frame(
+    id = c(1, 1, 2, 2),
+    step = c(1, 2, 1, 2),
+    reals = c(10.0, NA, 12.0, NA)
+  )
+
+  spec <- rtichoke:::rtichoke_viz_continuous_outcome_distribution_steps_v2_spec(
+    data = df,
+    bins = 3
+  )
+
+  d2 <- spec$distributions[[2]]
+  expect_equal(d2$step, 2L)
+  expect_equal(d2$referenceSampleSize, 2L)
+  expect_equal(d2$observedCount, 0L)
+  expect_equal(d2$unobservedCount, 2L)
+  expect_equal(d2$binCounts, c(0L, 0L, 0L))
+  expect_equal(sum(d2$binCounts), 0L)
 })
 
 test_that("continuous outcomes reject adjusted censoring_heuristic", {

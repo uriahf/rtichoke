@@ -51,7 +51,7 @@ render_rtichoke_viz_browser <- function(spec) {
     decision_curve = "renderDecisionCurveV2",
     interventions_avoided = "renderInterventionsAvoidedV2",
     outcome_distribution = "renderOutcomeDistribution",
-    continuous_outcome_distribution = "renderOutcomeDistribution"
+    continuous_outcome_distribution = "renderContinuousOutcomeDistribution"
   )
   renderer <- if (spec$type %in% names(renderers)) {
     unname(renderers[[spec$type]])

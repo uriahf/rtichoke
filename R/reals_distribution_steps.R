@@ -112,32 +112,17 @@ rtichoke_viz_continuous_outcome_distribution_steps_v2_spec <- function(
     population = "population"
   ))
 
-  series <- list(list(
-    id = "series-1",
-    evaluationId = "evaluation-1",
-    display = list(
-      label = "population",
-      group = "population",
-      role = "population"
-    )
-  ))
-
   distributions <- lapply(seq_along(prep$steps), function(i) {
     step_val <- prep$steps[i]
     counts_vec <- as.integer(prep$counts[i, ])
-    props_vec <- prep$proportions[i, ]
-    props_list <- lapply(props_vec, function(p) {
-      if (is.na(p) || !is.finite(p)) NULL else as.numeric(p)
-    })
 
     list(
       evaluationId = "evaluation-1",
-      step = as.numeric(step_val),
-      estimator = "raw",
-      counts = counts_vec,
-      observedDenominator = as.integer(prep$observed_denominators[i]),
+      step = as.integer(step_val),
+      referenceSampleSize = as.integer(prep$n_reference_subjects),
+      observedCount = as.integer(prep$observed_denominators[i]),
       unobservedCount = as.integer(prep$unobserved_counts[i]),
-      proportions = props_list
+      binCounts = counts_vec
     )
   })
 
@@ -145,10 +130,10 @@ rtichoke_viz_continuous_outcome_distribution_steps_v2_spec <- function(
     schemaVersion = "2.0",
     type = "continuous_outcome_distribution",
     title = title,
-    evaluations = evaluations,
-    series = series,
     xAxisKind = "step",
+    estimator = "raw",
     binEdges = as.numeric(prep$bin_edges),
+    evaluations = evaluations,
     distributions = distributions
   )
 }
