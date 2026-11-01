@@ -11,22 +11,71 @@
 #' @param reals_order Vector specifying category ordering. If \code{NULL},
 #'   ordering defaults to factor levels or sorted observed categories.
 #' @param reals_scale Character string specifying the state scale (\code{"auto"},
-#'   \code{"nominal"}, or \code{"ordinal"}).
+#'   \code{"nominal"}, \code{"ordinal"}, or \code{"continuous"}).
 #' @param censoring_heuristic Character string specifying the estimation mode:
 #'   \code{"excluded"} (raw observed counts per step) or \code{"adjusted"}
 #'   (Aalen-Johansen state occupancy probabilities under right censoring).
 #' @param title Character string specifying the chart title.
 #' @param renderer Character string specifying the rendering engine. Currently,
 #'   only \code{"browser"} is supported.
+#' @param bins Single positive integer specifying number of equal-width bins or
+#'   numeric vector of bin boundaries (used when \code{reals_scale = "continuous"}).
+#'   Default is 10.
+#'
+#' @details
+#' The outcome variable scale can be specified via \code{reals_scale}:
+#' \describe{
+#'   \item{\code{"nominal"}}{Unordered discrete categories.}
+#'   \item{\code{"ordinal"}}{Ordered discrete categories.}
+#'   \item{\code{"continuous"}}{Continuous numeric outcomes discretized into histogram bins.}
+#'   \item{\code{"auto"}}{Automatically chooses \code{"ordinal"} if ordered/numeric, otherwise \code{"nominal"}.}
+#' }
+#' Numeric variables are not automatically interpreted as continuous; continuous mode
+#' must be explicitly requested using \code{reals_scale = "continuous"}.
+#'
+#' For continuous outcomes, \code{bins} specifies either the number of equal-width
+#' bins or explicit bin boundaries. Left-closed, right-open intervals
+#' \eqn{[e_k, e_{k+1})} are constructed, with the final bin right-closed \eqn{[e_K, e_{K+1}]}.
+#' The statistics represent empirical probability mass (proportions summing to 1 over
+#' observed cases) rather than probability density. Censoring adjustment is not supported
+#' for continuous outcomes, so \code{censoring_heuristic} must be \code{"excluded"}.
+#' Unobserved subjects (missing outcome or missing row at a step) are accounted for in
+#' \code{unobservedCount = referenceSampleSize - observedCount}.
 #'
 #' @return A browsable htmltools tag list rendering the Outcome Distribution chart.
 #' @export
 #'
 #' @examples
 #' \dontrun{
+#' # 1. Nominal outcomes
 #' create_reals_distribution_steps(
 #'   clinical_states_steps,
-#'   censoring_heuristic = "excluded"
+#'   reals_scale = "nominal"
+#' )
+#'
+#' # 2. Ordinal outcomes
+#' create_reals_distribution_steps(
+#'   clinical_states_steps,
+#'   reals_scale = "ordinal"
+#' )
+#'
+#' # 3. Continuous outcomes with equal-width bins
+#' cont_df <- data.frame(
+#'   id = rep(1:10, each = 3),
+#'   step = rep(1:3, 10),
+#'   reals = rnorm(30, mean = 50, sd = 10)
+#' )
+#' create_reals_distribution_steps(
+#'   cont_df,
+#'   reals_scale = "continuous",
+#'   bins = 5
+#' )
+#'
+#' # 4. Continuous outcomes with explicit bin boundaries
+#' create_reals_distribution_steps(
+#'   cont_df,
+#'   reals_scale = "continuous",
+#'   bins = c(20, 40, 60, 80)
 #' )
 #' }
 create_reals_distribution_steps <- function(
@@ -38,7 +87,8 @@ create_reals_distribution_steps <- function(
   reals_scale = "auto",
   censoring_heuristic = "excluded",
   title = "Outcome Distribution",
-  renderer = "browser"
+  renderer = "browser",
+  bins = 10
 ) {
   if (!identical(renderer, "browser")) {
     stop(
@@ -47,18 +97,97 @@ create_reals_distribution_steps <- function(
     )
   }
 
-  spec <- rtichoke_viz_outcome_distribution_steps_v2_spec(
+  spec <- if (identical(reals_scale, "continuous")) {
+    if (!is.null(reals_order)) {
+      stop(
+        "`reals_order` is not supported when `reals_scale = \"continuous\"`.",
+        call. = FALSE
+      )
+    }
+    rtichoke_viz_continuous_outcome_distribution_steps_v2_spec(
+      data = data,
+      id_col = id_col,
+      step_col = step_col,
+      reals_col = reals_col,
+      bins = bins,
+      censoring_heuristic = censoring_heuristic,
+      title = title
+    )
+  } else {
+    rtichoke_viz_outcome_distribution_steps_v2_spec(
+      data = data,
+      id_col = id_col,
+      step_col = step_col,
+      reals_col = reals_col,
+      reals_order = reals_order,
+      reals_scale = reals_scale,
+      censoring_heuristic = censoring_heuristic,
+      title = title
+    )
+  }
+
+  render_rtichoke_viz_browser(spec)
+}
+
+#' Build a canonical ContinuousOutcomeDistributionSpec v2 for observed steps
+#'
+#' Internal helper to prepare discrete step continuous outcome distribution data
+#' and serialize it into the canonical rtichoke_viz v2 contract.
+#'
+#' @noRd
+rtichoke_viz_continuous_outcome_distribution_steps_v2_spec <- function(
+  data,
+  id_col = "id",
+  step_col = "step",
+  reals_col = "reals",
+  bins = 10,
+  censoring_heuristic = "excluded",
+  title = "Outcome Distribution"
+) {
+  if (!identical(censoring_heuristic, "excluded")) {
+    stop(
+      "Adjusted censoring mode is not supported for continuous outcomes.",
+      call. = FALSE
+    )
+  }
+
+  prep <- prepare_continuous_reals_distribution_steps_data(
     data = data,
     id_col = id_col,
     step_col = step_col,
     reals_col = reals_col,
-    reals_order = reals_order,
-    reals_scale = reals_scale,
-    censoring_heuristic = censoring_heuristic,
-    title = title
+    bins = bins
   )
 
-  render_rtichoke_viz_browser(spec)
+  evaluations <- list(list(
+    id = "evaluation-1",
+    population = "population"
+  ))
+
+  distributions <- lapply(seq_along(prep$steps), function(i) {
+    step_val <- prep$steps[i]
+    counts_vec <- as.integer(prep$counts[i, ])
+
+    list(
+      evaluationId = "evaluation-1",
+      step = as.integer(step_val),
+      referenceSampleSize = as.integer(prep$n_reference_subjects),
+      observedCount = as.integer(prep$observed_denominators[i]),
+      unobservedCount = as.integer(prep$unobserved_counts[i]),
+      binCounts = counts_vec
+    )
+  })
+
+  list(
+    schemaVersion = "2.0",
+    type = "continuous_outcome_distribution",
+    title = title,
+    xAxisKind = "step",
+    estimator = "raw",
+    binEdges = as.numeric(prep$bin_edges),
+    evaluations = evaluations,
+    distributions = distributions
+  )
 }
 
 #' Build a canonical OutcomeDistributionSpec v2 for observed steps

@@ -592,3 +592,145 @@ test_that("clinical_states_steps dataset meets exact contract and validation che
     expect_equal(sum(day_counts), 600L)
   }
 })
+
+test_that("create_reals_distribution_steps handles continuous outcomes with reals_scale = 'continuous'", {
+  df <- data.frame(
+    id = rep(1:5, each = 3),
+    step = rep(1:3, 5),
+    reals = c(
+      10.0, 12.0, 15.0,
+      11.0, 13.0, 16.0,
+      20.0, 22.0, 25.0,
+      21.0, 23.0, 26.0,
+      30.0, 32.0, 35.0
+    )
+  )
+
+  res <- create_reals_distribution_steps(
+    data = df,
+    reals_scale = "continuous",
+    bins = 5
+  )
+
+  expect_s3_class(res, "shiny.tag.list")
+  html <- as.character(res)
+
+  expect_match(html, '"type":"continuous_outcome_distribution"', fixed = TRUE)
+  expect_match(html, '"xAxisKind":"step"', fixed = TRUE)
+  expect_match(html, '"estimator":"raw"', fixed = TRUE)
+  expect_match(html, "renderContinuousOutcomeDistribution", fixed = TRUE)
+})
+
+test_that("continuous outcome spec builder creates canonical V2 structure meeting exact referential integrity", {
+  df <- data.frame(
+    id = c(1, 1, 2, 2, 3, 3),
+    step = c(1, 2, 1, 2, 1, 2),
+    reals = c(10.0, 20.0, 12.0, NA, 14.0, 24.0)
+  )
+
+  spec <- rtichoke:::rtichoke_viz_continuous_outcome_distribution_steps_v2_spec(
+    data = df,
+    bins = 2
+  )
+
+  expect_equal(spec$schemaVersion, "2.0")
+  expect_equal(spec$type, "continuous_outcome_distribution")
+  expect_equal(spec$xAxisKind, "step")
+  expect_equal(spec$estimator, "raw")
+  expect_equal(length(spec$binEdges), 3L)
+  expect_equal(length(spec$evaluations), 1L)
+  expect_equal(length(spec$distributions), 2L)
+
+  d1 <- spec$distributions[[1]]
+  expect_equal(d1$evaluationId, "evaluation-1")
+  expect_equal(d1$step, 1L)
+  expect_equal(d1$referenceSampleSize, 3L)
+  expect_equal(d1$observedCount, 3L)
+  expect_equal(d1$unobservedCount, 0L)
+  expect_equal(length(d1$binCounts), 2L)
+  expect_equal(sum(d1$binCounts), d1$observedCount)
+  expect_equal(d1$observedCount + d1$unobservedCount, d1$referenceSampleSize)
+
+  d2 <- spec$distributions[[2]]
+  expect_equal(d2$evaluationId, "evaluation-1")
+  expect_equal(d2$step, 2L)
+  expect_equal(d2$referenceSampleSize, 3L)
+  expect_equal(d2$observedCount, 2L)
+  expect_equal(d2$unobservedCount, 1L)
+  expect_equal(length(d2$binCounts), 2L)
+  expect_equal(sum(d2$binCounts), d2$observedCount)
+  expect_equal(d2$observedCount + d2$unobservedCount, d2$referenceSampleSize)
+})
+
+test_that("continuous outcome spec handles step with zero observed outcomes", {
+  df <- data.frame(
+    id = c(1, 1, 2, 2),
+    step = c(1, 2, 1, 2),
+    reals = c(10.0, NA, 12.0, NA)
+  )
+
+  spec <- rtichoke:::rtichoke_viz_continuous_outcome_distribution_steps_v2_spec(
+    data = df,
+    bins = 3
+  )
+
+  d2 <- spec$distributions[[2]]
+  expect_equal(d2$step, 2L)
+  expect_equal(d2$referenceSampleSize, 2L)
+  expect_equal(d2$observedCount, 0L)
+  expect_equal(d2$unobservedCount, 2L)
+  expect_equal(d2$binCounts, c(0L, 0L, 0L))
+  expect_equal(sum(d2$binCounts), 0L)
+})
+
+test_that("continuous outcomes reject adjusted censoring_heuristic", {
+  df <- data.frame(
+    id = c(1, 2),
+    step = c(1, 1),
+    reals = c(10.0, 20.0)
+  )
+
+  expect_error(
+    create_reals_distribution_steps(
+      data = df,
+      reals_scale = "continuous",
+      censoring_heuristic = "adjusted"
+    ),
+    "Adjusted censoring mode is not supported for continuous outcomes"
+  )
+})
+
+test_that("continuous outcomes reject non-NULL reals_order", {
+  df <- data.frame(
+    id = c(1, 2),
+    step = c(1, 1),
+    reals = c(10.0, 20.0)
+  )
+
+  expect_error(
+    create_reals_distribution_steps(
+      data = df,
+      reals_scale = "continuous",
+      reals_order = c("a", "b")
+    ),
+    "`reals_order` is not supported when `reals_scale = \"continuous\"`"
+  )
+})
+
+test_that("continuous outcomes support explicit bin edge vectors", {
+  df <- data.frame(
+    id = 1:4,
+    step = rep(1, 4),
+    reals = c(10.0, 15.0, 20.0, 25.0)
+  )
+
+  res <- create_reals_distribution_steps(
+    data = df,
+    reals_scale = "continuous",
+    bins = c(10.0, 20.0, 30.0)
+  )
+
+  expect_s3_class(res, "shiny.tag.list")
+  html <- as.character(res)
+  expect_match(html, '"binEdges":[10,20,30]', fixed = TRUE)
+})

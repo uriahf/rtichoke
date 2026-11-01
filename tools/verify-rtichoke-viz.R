@@ -1,5 +1,5 @@
 archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.0.tar.gz"
-expected <- "58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0"
+expected <- "93ed1710ff2fbd3d294a6a4260a908f017f47e6c5cc29c9906c4e34024b3664c"
 sha256 <- system2("sha256sum", archive, stdout = TRUE)
 if (!length(sha256)) {
   stop("sha256sum did not return a digest", call. = FALSE)
@@ -26,7 +26,7 @@ release_dir <- file.path(extracted, root)
 manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
 stopifnot(
   "version=0.24.0" %in% manifest,
-  "commit=9ff8c40138c7b2d11332483e0ede900d8b50b935" %in% manifest
+  "commit=c415f509841fe8b624cdbca4f0bd75c4e76e6ed3" %in% manifest
 )
 
 read_raw <- function(path) {
@@ -53,6 +53,7 @@ stopifnot(
   grepl("renderPerformanceTable", js, fixed = TRUE),
   grepl("renderPredictionDistribution", js, fixed = TRUE),
   grepl("renderOutcomeDistribution", js, fixed = TRUE),
+  grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
   grepl("renderReport", js, fixed = TRUE),
   grepl("ReportSpecV1_1Schema", js, fixed = TRUE),
   grepl("SummaryMetricsSpecSchema", js, fixed = TRUE),

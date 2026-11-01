@@ -13,7 +13,8 @@ create_reals_distribution_steps(
   reals_scale = "auto",
   censoring_heuristic = "excluded",
   title = "Outcome Distribution",
-  renderer = "browser"
+  renderer = "browser",
+  bins = 10
 )
 }
 \arguments{
@@ -29,7 +30,7 @@ create_reals_distribution_steps(
 ordering defaults to factor levels or sorted observed categories.}
 
 \item{reals_scale}{Character string specifying the state scale (\code{"auto"},
-\code{"nominal"}, or \code{"ordinal"}).}
+\code{"nominal"}, \code{"ordinal"}, or \code{"continuous"}).}
 
 \item{censoring_heuristic}{Character string specifying the estimation mode:
 \code{"excluded"} (raw observed counts per step) or \code{"adjusted"}
@@ -39,6 +40,10 @@ ordering defaults to factor levels or sorted observed categories.}
 
 \item{renderer}{Character string specifying the rendering engine. Currently,
 only \code{"browser"} is supported.}
+
+\item{bins}{Single positive integer specifying number of equal-width bins or
+numeric vector of bin boundaries (used when \code{reals_scale = "continuous"}).
+Default is 10.}
 }
 \value{
 A browsable htmltools tag list rendering the Outcome Distribution chart.
@@ -48,11 +53,57 @@ Prepares observed state counts or censoring-adjusted (Aalen-Johansen) state
 occupancy probabilities across discrete steps and renders an interactive
 Outcome Distribution component in the browser using \code{rtichoke_viz}.
 }
+\details{
+The outcome variable scale can be specified via \code{reals_scale}:
+\describe{
+\item{\code{"nominal"}}{Unordered discrete categories.}
+\item{\code{"ordinal"}}{Ordered discrete categories.}
+\item{\code{"continuous"}}{Continuous numeric outcomes discretized into histogram bins.}
+\item{\code{"auto"}}{Automatically chooses \code{"ordinal"} if ordered/numeric, otherwise \code{"nominal"}.}
+}
+Numeric variables are not automatically interpreted as continuous; continuous mode
+must be explicitly requested using \code{reals_scale = "continuous"}.
+
+For continuous outcomes, \code{bins} specifies either the number of equal-width
+bins or explicit bin boundaries. Left-closed, right-open intervals
+\eqn{[e_k, e_{k+1})} are constructed, with the final bin right-closed \eqn{[e_K, e_{K+1}]}.
+The statistics represent empirical probability mass (proportions summing to 1 over
+observed cases) rather than probability density. Censoring adjustment is not supported
+for continuous outcomes, so \code{censoring_heuristic} must be \code{"excluded"}.
+Unobserved subjects (missing outcome or missing row at a step) are accounted for in
+\code{unobservedCount = referenceSampleSize - observedCount}.
+}
 \examples{
 \dontrun{
+# 1. Nominal outcomes
 create_reals_distribution_steps(
   clinical_states_steps,
-  censoring_heuristic = "excluded"
+  reals_scale = "nominal"
+)
+
+# 2. Ordinal outcomes
+create_reals_distribution_steps(
+  clinical_states_steps,
+  reals_scale = "ordinal"
+)
+
+# 3. Continuous outcomes with equal-width bins
+cont_df <- data.frame(
+  id = rep(1:10, each = 3),
+  step = rep(1:3, 10),
+  reals = rnorm(30, mean = 50, sd = 10)
+)
+create_reals_distribution_steps(
+  cont_df,
+  reals_scale = "continuous",
+  bins = 5
+)
+
+# 4. Continuous outcomes with explicit bin boundaries
+create_reals_distribution_steps(
+  cont_df,
+  reals_scale = "continuous",
+  bins = c(20, 40, 60, 80)
 )
 }
 }

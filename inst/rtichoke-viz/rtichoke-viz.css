@@ -678,6 +678,135 @@
   outline: none;
 }
 
+/* Report-Level Interactive Heuristic Controls Styling */
+.rtichoke-report__heuristics-controls {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.rtichoke-report__heuristics-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rtichoke-report__heuristics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.rtichoke-report__heuristics-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.rtichoke-report__heuristics-legend {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #475569;
+  padding: 0;
+  margin-bottom: 0.25rem;
+  float: left;
+}
+
+.rtichoke-report__heuristics-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  clear: both;
+}
+
+.rtichoke-report__heuristics-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #1e293b;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rtichoke-report__heuristics-option input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.rtichoke-report__heuristics-option input[type="radio"]:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.rtichoke-report__heuristics-option--disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.rtichoke-report__heuristics-option--disabled input[type="radio"] {
+  cursor: not-allowed;
+}
+
+/* Neutral Explicit Unavailable Placeholder Styling */
+.rtichoke-report__unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  color: #475569;
+  margin: 0.5rem 0;
+}
+
+.rtichoke-report__unavailable-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+  font-family: serif;
+}
+
+.rtichoke-report__unavailable-message {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #334155;
+  margin: 0 0 0.35rem 0;
+  max-width: 520px;
+}
+
+.rtichoke-report__unavailable-detail {
+  font-size: 0.825rem;
+  color: #64748b;
+  margin: 0;
+}
+
 @media (max-width: 640px) {
   .rtichoke-report__nav-list {
     flex-direction: column;
@@ -1205,6 +1334,37 @@
 
 .rtichoke-outcome-distribution__chart {
   overflow-x: auto;
+}
+
+.rtichoke-outcome-distribution__panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.rtichoke-outcome-distribution__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.rtichoke-outcome-distribution__panel-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.15rem 0;
+}
+
+.rtichoke-outcome-distribution__incomplete {
+  font-size: 13px;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
 }
 
 .rtichoke-outcome-distribution__empty {
