@@ -72,7 +72,7 @@ jobs:
           fs.writeFileSync(p,s);
           const t='tests/testthat/test-rtichoke-viz-vendor.R';
           let v=fs.readFileSync(t,'utf8');
-          v=v.replaceAll(/0\.24\.(?:0|1-dev)/g,'0.24.1').replaceAll('9ff8c40138c7b2d11332483e0ede900d8b50b935','c415f509841fe8b624cdbca4f0bd75c4e76e6ed3').replaceAll('58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0',digest);
+          v=v.replaceAll(/0\.24\.(?:0|1-dev)/g,'0.24.1').replaceAll('9ff8c40138c7b2d11332483e0ede900d8b50b935','c415f509841fe8b624cdbca4f0bd75c4e76e6ed3').replace(/(?:58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0|4e0187cc5029b8e466514b48f7801c16b87893edb5691e47c0ca51f3c7c8595e)/g,digest);
           v=v.replace('  expect_match(js, "renderOutcomeDistribution", fixed = TRUE)','  expect_match(js, "renderOutcomeDistribution", fixed = TRUE)\n  expect_match(js, "renderContinuousOutcomeDistribution", fixed = TRUE)');
           fs.writeFileSync(t,v);
           NODE
