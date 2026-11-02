@@ -89,7 +89,8 @@ render_rtichoke_viz_browser <- function(spec) {
         ))
     ) {
       stop(
-        "The bundled rtichoke_viz ", vendor_version,
+        "The bundled rtichoke_viz ",
+        vendor_version,
         " does not export renderContinuousOutcomeDistribution. ",
         "Vendor a released rtichoke_viz build containing this renderer ",
         "before displaying continuous outcomes.",

@@ -234,17 +234,27 @@ test_that("browser renderer uses the vendored manifest version in its import pat
   manifest <- readLines(file.path(vendor, "MANIFEST"), warn = FALSE)
   version <- sub("^version=", "", grep("^version=", manifest, value = TRUE))
   expect_length(version, 1L)
-  expect_match(html, paste0("rtichoke-viz-", version, "/rtichoke-viz.js"), fixed = TRUE)
+  expect_match(
+    html,
+    paste0("rtichoke-viz-", version, "/rtichoke-viz.js"),
+    fixed = TRUE
+  )
 })
 
 test_that("continuous renderer reports unsupported vendored export instead of a blank page", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
-  js <- paste(readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE), collapse = "\\n")
-  skip_if(grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
-          "Vendored renderer already supports continuous outcomes")
+  js <- paste(
+    readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE),
+    collapse = "\\n"
+  )
+  skip_if(
+    grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
+    "Vendored renderer already supports continuous outcomes"
+  )
   expect_error(
     rtichoke:::render_rtichoke_viz_browser(list(
-      type = "continuous_outcome_distribution", schemaVersion = "2.0"
+      type = "continuous_outcome_distribution",
+      schemaVersion = "2.0"
     )),
     "does not export renderContinuousOutcomeDistribution",
     fixed = TRUE
