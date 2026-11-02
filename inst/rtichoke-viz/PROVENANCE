@@ -1,5 +1,5 @@
-version: 0.24.1-dev
+version: 0.24.1
 source_sha: c415f509841fe8b624cdbca4f0bd75c4e76e6ed3
-archive: rtichoke-viz-0.24.1-dev.tar.gz
-archive_sha256: 4e0187cc5029b8e466514b48f7801c16b87893edb5691e47c0ca51f3c7c8595e
+archive: rtichoke-viz-0.24.1.tar.gz
+archive_sha256: 33221daee8f440e4f93754b900b8e36ead7d99f386aa705ffe801985c9f03699
 source: pinned rtichoke_viz main snapshot, not an immutable release

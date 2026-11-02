@@ -1,5 +1,5 @@
-archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.1-dev.tar.gz"
-expected <- "4e0187cc5029b8e466514b48f7801c16b87893edb5691e47c0ca51f3c7c8595e"
+archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.1.tar.gz"
+expected <- "33221daee8f440e4f93754b900b8e36ead7d99f386aa705ffe801985c9f03699"
 sha256 <- system2("sha256sum", archive, stdout = TRUE)
 if (!length(sha256)) {
   stop("sha256sum did not return a digest", call. = FALSE)
@@ -8,7 +8,7 @@ actual <- strsplit(sha256[[1]], "[[:space:]]+")[[1]][[1]]
 stopifnot(identical(actual, expected))
 
 files <- utils::untar(archive, list = TRUE)
-root <- "rtichoke-viz-0.24.1-dev"
+root <- "rtichoke-viz-0.24.1"
 payload <- c(
   "MANIFEST",
   "rtichoke-viz.js",
@@ -25,7 +25,7 @@ utils::untar(archive, exdir = extracted)
 release_dir <- file.path(extracted, root)
 manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
 stopifnot(
-  "version=0.24.1-dev" %in% manifest,
+  "version=0.24.1" %in% manifest,
   "commit=c415f509841fe8b624cdbca4f0bd75c4e76e6ed3" %in% manifest
 )
 
@@ -54,6 +54,7 @@ stopifnot(
   grepl("renderPredictionDistribution", js, fixed = TRUE),
   grepl("renderOutcomeDistribution", js, fixed = TRUE),
   grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
+  grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
   grepl("renderReport", js, fixed = TRUE),
   grepl("ReportSpecV1_1Schema", js, fixed = TRUE),
   grepl("SummaryMetricsSpecSchema", js, fixed = TRUE),
@@ -73,4 +74,4 @@ for (name in names(schemas)) {
   stopifnot(grepl(unname(schemas[[name]]), schema, fixed = TRUE))
 }
 unlink(extracted, recursive = TRUE)
-message("Verified rtichoke_viz v0.24.1-dev: ", actual)
+message("Verified rtichoke_viz v0.24.1: ", actual)
