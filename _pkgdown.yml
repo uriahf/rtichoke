@@ -102,6 +102,7 @@ reference:
     desc: "Included benchmark dataset and prepared performance data objects."
     contents:
       - clinical_states_steps
+      - continuous_outcomes_steps
       - example_dat
       - multiple_models
       - multiple_models_by_ppcr
