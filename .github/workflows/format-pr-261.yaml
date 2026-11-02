@@ -1,0 +1,35 @@
+name: Format PR 261 R files
+on:
+  push:
+    branches:
+      - fix/continuous-renderer-asset-compatibility
+    paths:
+      - .github/workflows/format-pr-261.yaml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: posit-dev/setup-air@v1
+        with:
+          version: "0.11.0"
+      - name: Apply exact Air formatter
+        run: |
+          air format R/rtichoke_viz_v2.R
+          air format tests/testthat/test-rtichoke-viz-vendor.R
+          air format tests/testthat/test-reals-distribution-times.R
+          air format R/rtichoke_viz_v2.R --check
+      - name: Push formatted source
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add R/rtichoke_viz_v2.R tests/testthat/test-rtichoke-viz-vendor.R tests/testthat/test-reals-distribution-times.R
+          if ! git diff --cached --quiet; then
+            git commit -m 'style: apply Air 0.11.0 formatting'
+            git push origin HEAD:fix/continuous-renderer-asset-compatibility
+          fi
