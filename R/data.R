@@ -149,3 +149,19 @@
 #'   \item{reals}{Observed clinical state (ordered factor with levels "Home" < "Hospital" < "Vent/ARDS" < "Dead")}
 #' }
 "clinical_states_steps"
+
+#' Continuous Longitudinal Outcomes Example
+#'
+#' Deterministic six-subject panel with measurements at steps 0, 1 and 3.
+#' The panel has 17 subject-step rows: one absent row at step 3 and
+#' two explicit missing (`NA`) outcomes.
+#'
+#' @format A data frame with 17 rows and 3 variables:
+#' \describe{
+#'   \item{id}{Subject identifier (1 to 6).}
+#'   \item{step}{Observed longitudinal step (0, 1 or 3).}
+#'   \item{reals}{Observed continuous outcome, possibly missing.}
+#' }
+#' @source Generated in `data-raw/continuous_outcomes_steps.R` using
+#'   `usethis::use_data()`.
+"continuous_outcomes_steps"
