@@ -1,19 +1,19 @@
-test_that("vendored rtichoke_viz v0.24.0 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.24.1 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version: 0.24.0" %in% provenance)
-  expect_true("archive: rtichoke-viz-0.24.0.tar.gz" %in% provenance)
+  expect_true("version: 0.24.1" %in% provenance)
+  expect_true("archive: rtichoke-viz-0.24.1.tar.gz" %in% provenance)
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.2.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.0.tar.gz")))
   expect_true(
-    "source_sha: 9ff8c40138c7b2d11332483e0ede900d8b50b935" %in% provenance
+    "source_sha: c415f509841fe8b624cdbca4f0bd75c4e76e6ed3" %in% provenance
   )
   expect_true(
     paste0(
       "archive_sha256: ",
-      "58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0"
+      "33221daee8f440e4f93754b900b8e36ead7d99f386aa705ffe801985c9f03699"
     ) %in%
       provenance
   )
@@ -30,6 +30,8 @@ test_that("vendored rtichoke_viz v0.24.0 provenance and exports are intact", {
   expect_match(js, "renderPerformanceTable", fixed = TRUE)
   expect_match(js, "renderPredictionDistribution", fixed = TRUE)
   expect_match(js, "renderOutcomeDistribution", fixed = TRUE)
+  expect_match(js, "renderContinuousOutcomeDistribution", fixed = TRUE)
+  expect_match(js, "renderContinuousOutcomeDistribution", fixed = TRUE)
   expect_match(js, "renderReport", fixed = TRUE)
   expect_match(js, "ReportSpecV1_1Schema", fixed = TRUE)
   expect_match(js, "SummaryMetricsSpecSchema", fixed = TRUE)
@@ -221,5 +223,42 @@ test_that("standalone v2 schema validates create_probs_histogram specs via jsonv
       "interventions_avoided",
       "prediction_distribution"
     )
+  )
+})
+
+
+test_that("browser renderer uses the vendored manifest version in its import path", {
+  spec <- rtichoke:::rtichoke_viz_outcome_distribution_steps_v2_spec(
+    data = data.frame(id = c(1, 2), step = c(0, 0), reals = c("A", "B"))
+  )
+  html <- as.character(rtichoke:::render_rtichoke_viz_browser(spec))
+  vendor <- system.file("rtichoke-viz", package = "rtichoke")
+  manifest <- readLines(file.path(vendor, "MANIFEST"), warn = FALSE)
+  version <- sub("^version=", "", grep("^version=", manifest, value = TRUE))
+  expect_length(version, 1L)
+  expect_match(
+    html,
+    paste0("rtichoke-viz-", version, "/rtichoke-viz.js"),
+    fixed = TRUE
+  )
+})
+
+test_that("continuous renderer reports unsupported vendored export instead of a blank page", {
+  vendor <- system.file("rtichoke-viz", package = "rtichoke")
+  js <- paste(
+    readLines(file.path(vendor, "rtichoke-viz.js"), warn = FALSE),
+    collapse = "\\n"
+  )
+  skip_if(
+    grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),
+    "Vendored renderer already supports continuous outcomes"
+  )
+  expect_error(
+    rtichoke:::render_rtichoke_viz_browser(list(
+      type = "continuous_outcome_distribution",
+      schemaVersion = "2.0"
+    )),
+    "does not export renderContinuousOutcomeDistribution",
+    fixed = TRUE
   )
 })
