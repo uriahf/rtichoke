@@ -1,0 +1,91 @@
+name: Vendor continuous renderer from pinned source
+on:
+  push:
+    branches:
+      - fix/continuous-renderer-asset-compatibility
+    paths:
+      - .github/workflows/vendor-continuous-temporary.yml
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: rtichoke
+      - uses: actions/checkout@v4
+        with:
+          repository: uriahf/rtichoke_viz
+          ref: c415f509841fe8b624cdbca4f0bd75c4e76e6ed3
+          path: rtichoke_viz
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: rtichoke_viz/package-lock.json
+      - name: Build pinned continuous visualization
+        working-directory: rtichoke_viz
+        run: |
+          npm ci
+          npm run typecheck
+          npm test -- --run
+          npm run build
+          npm run schema
+          grep -q 'renderContinuousOutcomeDistribution' dist/rtichoke-viz.js
+      - name: Vendor development snapshot and retain auditable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA=c415f509841fe8b624cdbca4f0bd75c4e76e6ed3
+          VERSION=0.24.1-dev
+          SOURCE_DATE_EPOCH="$(git -C rtichoke_viz show -s --format=%ct "$SOURCE_SHA")"
+          cd rtichoke
+          out="inst/rtichoke-viz"
+          rm -f "$out"/rtichoke-viz-*.tar.gz
+          cp ../rtichoke_viz/dist/rtichoke-viz.js "$out/"
+          cp ../rtichoke_viz/dist/rtichoke-viz.css "$out/"
+          cp ../rtichoke_viz/schemas/rtichoke-viz.schema.json "$out/"
+          cp ../rtichoke_viz/schemas/rtichoke-viz-v2.schema.json "$out/"
+          cp ../rtichoke_viz/schemas/rtichoke-viz-report.schema.json "$out/"
+          printf 'version=%s\ncommit=%s\n' "$VERSION" "$SOURCE_SHA" > "$out/MANIFEST"
+          temp="$(mktemp -d)"
+          dir="$temp/rtichoke-viz-$VERSION"
+          mkdir -p "$dir"
+          cp "$out"/{MANIFEST,rtichoke-viz.js,rtichoke-viz.css,rtichoke-viz.schema.json,rtichoke-viz-v2.schema.json,rtichoke-viz-report.schema.json} "$dir/"
+          tar --sort=name --mtime="@$SOURCE_DATE_EPOCH" --owner=0 --group=0 --numeric-owner --format=gnu -C "$temp" -cf - "rtichoke-viz-$VERSION" | gzip -n > "$out/rtichoke-viz-$VERSION.tar.gz"
+          sha="$(sha256sum "$out/rtichoke-viz-$VERSION.tar.gz" | cut -d' ' -f1)"
+          printf 'version: %s\nsource_sha: %s\narchive: rtichoke-viz-%s.tar.gz\narchive_sha256: %s\nsource: pinned rtichoke_viz main snapshot, not an immutable release\n' "$VERSION" "$SOURCE_SHA" "$VERSION" "$sha" > "$out/PROVENANCE"
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='tools/verify-rtichoke-viz.R';
+          let s=fs.readFileSync(p,'utf8');
+          s=s.replaceAll('0.24.0','0.24.1-dev').replaceAll('9ff8c40138c7b2d11332483e0ede900d8b50b935','c415f509841fe8b624cdbca4f0bd75c4e76e6ed3');
+          const digest=fs.readFileSync('inst/rtichoke-viz/PROVENANCE','utf8').match(/archive_sha256: (\w+)/)[1];
+          s=s.replaceAll('58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0',digest);
+          s=s.replace('  grepl("renderOutcomeDistribution", js, fixed = TRUE),','  grepl("renderOutcomeDistribution", js, fixed = TRUE),\n  grepl("renderContinuousOutcomeDistribution", js, fixed = TRUE),');
+          fs.writeFileSync(p,s);
+          const t='tests/testthat/test-rtichoke-viz-vendor.R';
+          let v=fs.readFileSync(t,'utf8');
+          v=v.replaceAll('0.24.0','0.24.1-dev').replaceAll('9ff8c40138c7b2d11332483e0ede900d8b50b935','c415f509841fe8b624cdbca4f0bd75c4e76e6ed3').replaceAll('58f153fbfb5aa57affbec983c4e4960fd0889c26e64ef1d25dbf982654fa90f0',digest);
+          v=v.replace('  expect_match(js, "renderOutcomeDistribution", fixed = TRUE)','  expect_match(js, "renderOutcomeDistribution", fixed = TRUE)\n  expect_match(js, "renderContinuousOutcomeDistribution", fixed = TRUE)');
+          fs.writeFileSync(t,v);
+          NODE
+      - uses: posit-dev/setup-air@v1
+        with:
+          version: '0.11.0'
+      - name: Format and check
+        working-directory: rtichoke
+        run: |
+          air format tests/testthat/test-rtichoke-viz-vendor.R
+          air format R/rtichoke_viz_v2.R --check
+          air format tests/testthat/test-reals-distribution-times.R --check
+          air format tests/testthat/test-rtichoke-viz-vendor.R --check
+      - name: Commit snapshot to PR branch
+        working-directory: rtichoke
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add inst/rtichoke-viz tests/testthat/test-rtichoke-viz-vendor.R tools/verify-rtichoke-viz.R
+          git commit -m 'fix: vendor pinned continuous-outcome browser renderer snapshot'
+          git push origin HEAD:fix/continuous-renderer-asset-compatibility
