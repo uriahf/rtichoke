@@ -80,9 +80,14 @@ render_rtichoke_viz_browser <- function(spec) {
 
   if (identical(spec$type, "continuous_outcome_distribution")) {
     bundle_path <- file.path(vendor_dir, "rtichoke-viz.js")
-    if (!file.exists(bundle_path) ||
-        !any(grepl("renderContinuousOutcomeDistribution",
-                   readLines(bundle_path, warn = FALSE), fixed = TRUE))) {
+    if (
+      !file.exists(bundle_path) ||
+        !any(grepl(
+          "renderContinuousOutcomeDistribution",
+          readLines(bundle_path, warn = FALSE),
+          fixed = TRUE
+        ))
+    ) {
       stop(
         "The bundled rtichoke_viz ", vendor_version,
         " does not export renderContinuousOutcomeDistribution. ",
@@ -106,7 +111,9 @@ render_rtichoke_viz_browser <- function(spec) {
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-", vendor_version, "/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-",
+    vendor_version,
+    "/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
