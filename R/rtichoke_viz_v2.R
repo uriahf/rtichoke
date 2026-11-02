@@ -66,20 +66,47 @@ render_rtichoke_viz_browser <- function(spec) {
     )
   }
 
+  vendor_dir <- system.file("rtichoke-viz", package = "rtichoke")
+  manifest_path <- file.path(vendor_dir, "MANIFEST")
+  if (!file.exists(manifest_path)) {
+    stop("Bundled rtichoke_viz MANIFEST is missing.", call. = FALSE)
+  }
+  manifest <- readLines(manifest_path, warn = FALSE)
+  version_line <- grep("^version=", manifest, value = TRUE)
+  if (length(version_line) != 1L) {
+    stop("Bundled rtichoke_viz version is missing or ambiguous.", call. = FALSE)
+  }
+  vendor_version <- sub("^version=", "", version_line)
+
+  if (identical(spec$type, "continuous_outcome_distribution")) {
+    bundle_path <- file.path(vendor_dir, "rtichoke-viz.js")
+    if (!file.exists(bundle_path) ||
+        !any(grepl("renderContinuousOutcomeDistribution",
+                   readLines(bundle_path, warn = FALSE), fixed = TRUE))) {
+      stop(
+        "The bundled rtichoke_viz ", vendor_version,
+        " does not export renderContinuousOutcomeDistribution. ",
+        "Vendor a released rtichoke_viz build containing this renderer ",
+        "before displaying continuous outcomes.",
+        call. = FALSE
+      )
+    }
+  }
+
   id <- rtichoke_viz_browser_id()
   json <- jsonlite::toJSON(spec, auto_unbox = TRUE, digits = NA)
   json <- gsub("</", "<\\/", json, fixed = TRUE)
   dependency <- htmltools::htmlDependency(
     name = "rtichoke-viz",
-    version = "0.23.2",
-    src = c(file = system.file("rtichoke-viz", package = "rtichoke")),
+    version = vendor_version,
+    src = c(file = vendor_dir),
     script = list(src = "rtichoke-viz.js", type = "module"),
     stylesheet = "rtichoke-viz.css"
   )
   script <- paste0(
     "import { ",
     renderer,
-    " } from './lib/rtichoke-viz-0.23.2/rtichoke-viz.js';\n",
+    " } from './lib/rtichoke-viz-", vendor_version, "/rtichoke-viz.js';\n",
     "const spec = JSON.parse(document.querySelector('#",
     id,
     "-spec').textContent);\n",
