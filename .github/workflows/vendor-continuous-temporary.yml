@@ -24,6 +24,11 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: rtichoke_viz/package-lock.json
+      - name: Fetch canonical main ref for protected-fixture tests
+        working-directory: rtichoke_viz
+        run: |
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+          git rev-parse --verify origin/main
       - name: Build pinned continuous visualization
         working-directory: rtichoke_viz
         run: |
