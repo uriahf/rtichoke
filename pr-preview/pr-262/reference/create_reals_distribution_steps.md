@@ -129,22 +129,17 @@ create_reals_distribution_steps(
 )
 
 # 3. Continuous outcomes with equal-width bins
-cont_df <- data.frame(
-  id = rep(1:10, each = 3),
-  step = rep(1:3, 10),
-  reals = rnorm(30, mean = 50, sd = 10)
-)
 create_reals_distribution_steps(
-  cont_df,
+  continuous_outcomes_steps,
   reals_scale = "continuous",
   bins = 5
 )
 
 # 4. Continuous outcomes with explicit bin boundaries
 create_reals_distribution_steps(
-  cont_df,
+  continuous_outcomes_steps,
   reals_scale = "continuous",
-  bins = c(20, 40, 60, 80)
+  bins = c(10, 20, 30, 40)
 )
 } # }
 ```
