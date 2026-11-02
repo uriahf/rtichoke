@@ -65,7 +65,8 @@ Outcome Distribution component in the browser using <code>rtichoke_viz</code>.</
 <span>  reals_scale <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  censoring_heuristic <span class="op">=</span> <span class="st">"excluded"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Outcome Distribution"</span>,</span>
-<span>  renderer <span class="op">=</span> <span class="st">"browser"</span></span>
+<span>  renderer <span class="op">=</span> <span class="st">"browser"</span>,</span>
+<span>  bins <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,7 +97,7 @@ ordering defaults to factor levels or sorted observed categories.</p></dd>
 
 <dt id="arg-reals-scale">reals_scale<a class="anchor" aria-label="anchor" href="#arg-reals-scale"></a></dt>
 <dd><p>Character string specifying the state scale (<code>"auto"</code>,
-<code>"nominal"</code>, or <code>"ordinal"</code>).</p></dd>
+<code>"nominal"</code>, <code>"ordinal"</code>, or <code>"continuous"</code>).</p></dd>
 
 
 <dt id="arg-censoring-heuristic">censoring_heuristic<a class="anchor" aria-label="anchor" href="#arg-censoring-heuristic"></a></dt>
@@ -113,18 +114,76 @@ ordering defaults to factor levels or sorted observed categories.</p></dd>
 <dd><p>Character string specifying the rendering engine. Currently,
 only <code>"browser"</code> is supported.</p></dd>
 
+
+<dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
+<dd><p>Single positive integer specifying number of equal-width bins or
+numeric vector of bin boundaries (used when <code>reals_scale = "continuous"</code>).
+Default is 10.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A browsable htmltools tag list rendering the Outcome Distribution chart.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The outcome variable scale can be specified via <code>reals_scale</code>:</p><dl><dt><code>"nominal"</code></dt>
+<dd><p>Unordered discrete categories.</p></dd>
+
+<dt><code>"ordinal"</code></dt>
+<dd><p>Ordered discrete categories.</p></dd>
+
+<dt><code>"continuous"</code></dt>
+<dd><p>Continuous numeric outcomes discretized into histogram bins.</p></dd>
+
+<dt><code>"auto"</code></dt>
+<dd><p>Automatically chooses <code>"ordinal"</code> if ordered/numeric, otherwise <code>"nominal"</code>.</p></dd>
+
+
+</dl><p>Numeric variables are not automatically interpreted as continuous; continuous mode
+must be explicitly requested using <code>reals_scale = "continuous"</code>.</p>
+<p>For continuous outcomes, <code>bins</code> specifies either the number of equal-width
+bins or explicit bin boundaries. Left-closed, right-open intervals
+\([e_k, e_{k+1})\) are constructed, with the final bin right-closed \([e_K, e_{K+1}]\).
+The statistics represent empirical probability mass (proportions summing to 1 over
+observed cases) rather than probability density. Censoring adjustment is not supported
+for continuous outcomes, so <code>censoring_heuristic</code> must be <code>"excluded"</code>.
+Unobserved subjects (missing outcome or missing row at a step) are accounted for in
+<code>unobservedCount = referenceSampleSize - observedCount</code>.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># 1. Nominal outcomes</span></span></span>
 <span class="r-in"><span><span class="fu">create_reals_distribution_steps</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">clinical_states_steps</span>,</span></span>
-<span class="r-in"><span>  censoring_heuristic <span class="op">=</span> <span class="st">"excluded"</span></span></span>
+<span class="r-in"><span>  reals_scale <span class="op">=</span> <span class="st">"nominal"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 2. Ordinal outcomes</span></span></span>
+<span class="r-in"><span><span class="fu">create_reals_distribution_steps</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">clinical_states_steps</span>,</span></span>
+<span class="r-in"><span>  reals_scale <span class="op">=</span> <span class="st">"ordinal"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 3. Continuous outcomes with equal-width bins</span></span></span>
+<span class="r-in"><span><span class="va">cont_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  reals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span>, mean <span class="op">=</span> <span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">create_reals_distribution_steps</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">cont_df</span>,</span></span>
+<span class="r-in"><span>  reals_scale <span class="op">=</span> <span class="st">"continuous"</span>,</span></span>
+<span class="r-in"><span>  bins <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># 4. Continuous outcomes with explicit bin boundaries</span></span></span>
+<span class="r-in"><span><span class="fu">create_reals_distribution_steps</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">cont_df</span>,</span></span>
+<span class="r-in"><span>  reals_scale <span class="op">=</span> <span class="st">"continuous"</span>,</span></span>
+<span class="r-in"><span>  bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">40</span>, <span class="fl">60</span>, <span class="fl">80</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
