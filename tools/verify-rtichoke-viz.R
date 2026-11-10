@@ -1,5 +1,5 @@
 archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.1.tar.gz"
-expected <- "33221daee8f440e4f93754b900b8e36ead7d99f386aa705ffe801985c9f03699"
+expected <- "739782aa3c210998058ae65c7cfc478dde811962cb44f2930cf972a81810c445"
 sha256 <- system2("sha256sum", archive, stdout = TRUE)
 if (!length(sha256)) {
   stop("sha256sum did not return a digest", call. = FALSE)
@@ -26,7 +26,7 @@ release_dir <- file.path(extracted, root)
 manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
 stopifnot(
   "version=0.24.1" %in% manifest,
-  "commit=c415f509841fe8b624cdbca4f0bd75c4e76e6ed3" %in% manifest
+  "commit=8b1743788edfcce4d076d89da9883d9203dcb35d" %in% manifest
 )
 
 read_raw <- function(path) {
