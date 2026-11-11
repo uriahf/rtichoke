@@ -1,0 +1,4773 @@
+{
+  "versions": {
+    "R": "4.6.1",
+    "survival": "3.8.12",
+    "cmprsk": "2.2.12",
+    "jsonlite": "2.0.0"
+  },
+  "contract": {
+    "events": "time <= horizon",
+    "censoring_exclusion": "original event == 0 and time < horizon",
+    "competing_exclusion": "original event == 2 and time <= horizon",
+    "zero": "ordinary right-continuous horizon, not synthetic pre-event baseline",
+    "empty": "undefined: null probabilities, never zero risk",
+    "beyond_support": "package plateau recorded and explicitly flagged; no claim of identified extrapolated risk"
+  },
+  "cases": {
+    "fixture_a": {
+      "data": [
+        {
+          "id": "A",
+          "time": 2,
+          "event": 1
+        },
+        {
+          "id": "B",
+          "time": 4,
+          "event": 2
+        },
+        {
+          "id": "C",
+          "time": 5,
+          "event": 0
+        },
+        {
+          "id": "D",
+          "time": 7,
+          "event": 0
+        },
+        {
+          "id": "E",
+          "time": 10,
+          "event": 2
+        },
+        {
+          "id": "F",
+          "time": 10,
+          "event": 1
+        },
+        {
+          "id": "G",
+          "time": 12,
+          "event": 0
+        },
+        {
+          "id": "H",
+          "time": 14,
+          "event": 1
+        }
+      ],
+      "horizons": [0, 1, 4, 5, 7, 10, 12, 14, 15],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.16666666666666663,
+              "event_free": 0.83333333333333337
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 4,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 4,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 3,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 3,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "event_free": 0.875
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "event_free": 0.875
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.375,
+              "event_free": 0.625
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.375,
+              "event_free": 0.625
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "competing": 0.125,
+              "event_free": 0.75
+            },
+            "cuminc": {
+              "primary": 0.125,
+              "competing": 0.125
+            }
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "competing": 0.125,
+              "event_free": 0.75
+            },
+            "cuminc": {
+              "primary": 0.125,
+              "competing": 0.125
+            }
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.14285714285714285,
+              "competing": 0.14285714285714285,
+              "event_free": 0.71428571428571441
+            },
+            "cuminc": {
+              "primary": 0.14285714285714285,
+              "competing": 0.14285714285714285
+            }
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "competing": 0.33333333333333337,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": {
+              "primary": 0.33333333333333337,
+              "competing": 0.33333333333333337
+            }
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "competing": 0.33333333333333337,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": {
+              "primary": 0.33333333333333337,
+              "competing": 0.33333333333333337
+            }
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.60000000000000009,
+              "competing": 0.40000000000000002,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.60000000000000009,
+              "competing": 0.40000000000000002
+            }
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.60000000000000009,
+              "competing": 0.40000000000000002,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.60000000000000009,
+              "competing": 0.40000000000000002
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.2857142857142857,
+              "event_free": 0.7142857142857143
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666663,
+              "event_free": 0.33333333333333337
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "E", "F", "G", "H"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666663,
+              "event_free": 0.33333333333333337
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "E", "F", "H"],
+            "censored_excluded_ids": ["C", "D", "G"],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 5,
+            "censored_excluded_count": 3,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 8,
+            "retained_n": 7,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.1428571428571429,
+              "event_free": 0.8571428571428571
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "C", "D", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.44444444444444442,
+              "event_free": 0.55555555555555558
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "C", "D", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.44444444444444442,
+              "event_free": 0.55555555555555558
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "C", "D", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "C", "D", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["B", "E"],
+            "original_n": 8,
+            "retained_n": 6,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "event_free": 0.875
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "event_free": 0.875
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "event_free": 0.875
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.34375,
+              "event_free": 0.65625
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.34375,
+              "event_free": 0.65625
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "competing": 0.125,
+              "event_free": 0.75
+            },
+            "cuminc": {
+              "primary": 0.125,
+              "competing": 0.125
+            }
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "competing": 0.125,
+              "event_free": 0.75
+            },
+            "cuminc": {
+              "primary": 0.125,
+              "competing": 0.125
+            }
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.125,
+              "competing": 0.125,
+              "event_free": 0.75
+            },
+            "cuminc": {
+              "primary": 0.125,
+              "competing": 0.125
+            }
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.3125,
+              "competing": 0.3125,
+              "event_free": 0.375
+            },
+            "cuminc": {
+              "primary": 0.3125,
+              "competing": 0.3125
+            }
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.3125,
+              "competing": 0.3125,
+              "event_free": 0.375
+            },
+            "cuminc": {
+              "primary": 0.3125,
+              "competing": 0.3125
+            }
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.6875,
+              "competing": 0.3125,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.6875,
+              "competing": 0.3125
+            }
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.6875,
+              "competing": 0.3125,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.6875,
+              "competing": 0.3125
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 5,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 7,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 10,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.625,
+              "event_free": 0.375
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 12,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.625,
+              "event_free": 0.375
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 14,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 15,
+            "retained_ids": ["A", "B", "C", "D", "E", "F", "G", "H"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 8,
+            "retained_n": 8,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "zero_ties": {
+      "data": [
+        {
+          "id": "A",
+          "time": 0,
+          "event": 1
+        },
+        {
+          "id": "B",
+          "time": 0,
+          "event": 2
+        },
+        {
+          "id": "C",
+          "time": 0,
+          "event": 0
+        },
+        {
+          "id": "D",
+          "time": 2,
+          "event": 0
+        }
+      ],
+      "horizons": [0, 1, 2, 3],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": "A",
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 1,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331,
+              "event_free": 0.33333333333333343
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331,
+              "event_free": 0.33333333333333343
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "competing": 0.5,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.5,
+              "competing": 0.5
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666674,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666674,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "all_censored": {
+      "data": [
+        {
+          "id": "A",
+          "time": 0,
+          "event": 0
+        },
+        {
+          "id": "B",
+          "time": 2,
+          "event": 0
+        }
+      ],
+      "horizons": [0, 1, 2, 3],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": [],
+            "censored_excluded_ids": ["A", "B"],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": [],
+            "censored_excluded_ids": ["A", "B"],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": [],
+            "censored_excluded_ids": ["A", "B"],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "competing": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": "B",
+            "censored_excluded_ids": "A",
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 1,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": [],
+            "censored_excluded_ids": ["A", "B"],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "composite": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "no_competing": {
+      "data": [
+        {
+          "id": "A",
+          "time": 1,
+          "event": 1
+        },
+        {
+          "id": "B",
+          "time": 2,
+          "event": 0
+        },
+        {
+          "id": "C",
+          "time": 3,
+          "event": 1
+        }
+      ],
+      "horizons": [0, 2, 3, 4],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0,
+              "event_free": 0.66666666666666674
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "competing": 0,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 1,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "competing": 0,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 1,
+              "competing": 0
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0,
+              "event_free": 0.66666666666666674
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "competing": 0,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 1,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "competing": 0,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 1,
+              "competing": 0
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "no_target": {
+      "data": [
+        {
+          "id": "A",
+          "time": 1,
+          "event": 2
+        },
+        {
+          "id": "B",
+          "time": 2,
+          "event": 0
+        },
+        {
+          "id": "C",
+          "time": 3,
+          "event": 2
+        }
+      ],
+      "horizons": [0, 2, 3, 4],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "A",
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": [],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": ["A", "C"],
+            "original_n": 3,
+            "retained_n": 0,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": [],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": ["A", "C"],
+            "original_n": 3,
+            "retained_n": 0,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0.33333333333333331,
+              "event_free": 0.66666666666666674
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C"],
+            "censored_excluded_ids": "B",
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "A",
+            "original_n": 3,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": "B",
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "C"],
+            "original_n": 3,
+            "retained_n": 1,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": "B",
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "C"],
+            "original_n": 3,
+            "retained_n": 1,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0.33333333333333331,
+              "event_free": 0.66666666666666674
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 3,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "all_competing": {
+      "data": [
+        {
+          "id": "A",
+          "time": 1,
+          "event": 2
+        },
+        {
+          "id": "B",
+          "time": 1,
+          "event": 2
+        }
+      ],
+      "horizons": [0, 1, 2],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": [],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "B"],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": [],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "B"],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": [],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "B"],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": [],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": ["A", "B"],
+            "original_n": 2,
+            "retained_n": 0,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 2,
+            "status": "undefined_empty_population",
+            "probabilities": {
+              "primary": null,
+              "event_free": null
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 1,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 1
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 2,
+            "retained_n": 2,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    },
+    "tied_events_censor": {
+      "data": [
+        {
+          "id": "A",
+          "time": 1,
+          "event": 1
+        },
+        {
+          "id": "B",
+          "time": 1,
+          "event": 2
+        },
+        {
+          "id": "C",
+          "time": 1,
+          "event": 0
+        },
+        {
+          "id": "D",
+          "time": 3,
+          "event": 0
+        }
+      ],
+      "horizons": [0, 1, 2, 3, 4],
+      "variants": {
+        "excluded:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": "A",
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 1,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          }
+        ],
+        "excluded:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331,
+              "event_free": 0.33333333333333343
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331,
+              "event_free": 0.33333333333333343
+            },
+            "cuminc": {
+              "primary": 0.33333333333333331,
+              "competing": 0.33333333333333331
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.5,
+              "competing": 0.5,
+              "event_free": 0
+            },
+            "cuminc": {
+              "primary": 0.5,
+              "competing": 0.5
+            }
+          }
+        ],
+        "excluded:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666674,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "D"],
+            "censored_excluded_ids": "C",
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 1,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.66666666666666674,
+              "event_free": 0.33333333333333331
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B"],
+            "censored_excluded_ids": ["C", "D"],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 2,
+            "censored_excluded_count": 2,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 1,
+              "event_free": 0
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:excluded": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": "B",
+            "original_n": 4,
+            "retained_n": 3,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 1,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.33333333333333337,
+              "event_free": 0.66666666666666663
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_censored": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.25,
+              "event_free": 0.75
+            },
+            "cuminc": null
+          }
+        ],
+        "adjusted:adjusted_as_negative": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0,
+              "competing": 0,
+              "event_free": 1
+            },
+            "cuminc": {
+              "primary": 0,
+              "competing": 0
+            }
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "primary": 0.25,
+              "competing": 0.25,
+              "event_free": 0.5
+            },
+            "cuminc": {
+              "primary": 0.25,
+              "competing": 0.25
+            }
+          }
+        ],
+        "adjusted:adjusted_as_composite": [
+          {
+            "horizon": 0,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0,
+              "event_free": 1
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 1,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 2,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 3,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "defined",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          },
+          {
+            "horizon": 4,
+            "retained_ids": ["A", "B", "C", "D"],
+            "censored_excluded_ids": [],
+            "competing_excluded_ids": [],
+            "original_n": 4,
+            "retained_n": 4,
+            "censored_excluded_count": 0,
+            "competing_excluded_count": 0,
+            "status": "beyond_support_plateau",
+            "probabilities": {
+              "composite": 0.5,
+              "event_free": 0.5
+            },
+            "cuminc": null
+          }
+        ]
+      }
+    }
+  }
+}
