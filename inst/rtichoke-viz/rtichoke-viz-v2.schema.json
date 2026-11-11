@@ -5565,6 +5565,22 @@
               "estimator": {
                 "type": "string"
               },
+              "estimateStatus": {
+                "anyOf": [
+                  {
+                    "const": "defined",
+                    "type": "string"
+                  },
+                  {
+                    "const": "undefined_empty_population",
+                    "type": "string"
+                  },
+                  {
+                    "const": "beyond_support_plateau",
+                    "type": "string"
+                  }
+                ]
+              },
               "estimateOrigin": {
                 "anyOf": [
                   {

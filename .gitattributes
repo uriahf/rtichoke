@@ -1,0 +1,2 @@
+# Preserve immutable release bytes on Windows as well as Unix checkouts.
+inst/rtichoke-viz/* -text

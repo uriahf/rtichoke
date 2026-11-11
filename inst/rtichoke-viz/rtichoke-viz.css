@@ -1373,3 +1373,13 @@
   font-style: italic;
   padding: 1rem;
 }
+
+.rtichoke-outcome-distribution__estimate-status {
+  padding: 0.6rem 0.75rem;
+  margin: 0.5rem 0;
+  border-left: 3px solid #64748b;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
