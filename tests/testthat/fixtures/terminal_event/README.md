@@ -94,9 +94,3 @@ used as a cohort denominator. CI regenerates and verifies the full artifact.
 Expected results are not adjusted to match these behaviors. No statistical
 differences were found in nonempty terminal-event numerical comparisons in the
 covered cases. Longitudinal multistate references remain separate and unchanged.
-
-## Reference Provenance
-
-- Upstream merge commit (#441): `e5ea71d2e86afb657a7c57a5e3a48fb49a2df288`
-- Upstream retrieval commit (#443): `d48864a126c77c753f9d3518d14a8607d9ec9c65`
-- The reference artifacts (`reference.json`, `generate_reference.R`, `README.md`) match the original reference fixtures at `e5ea71d2e86afb657a7c57a5e3a48fb49a2df288` exactly.

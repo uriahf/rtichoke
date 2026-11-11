@@ -5,7 +5,9 @@ indent-style = "space"
 line-ending = "auto"
 persistent-line-breaks = true
 assignment-style = "arrow"
-exclude = []
+exclude = [
+  "tests/testthat/fixtures/terminal_event/generate_reference.R"
+]
 default-exclude = true
 skip = []
 table = []

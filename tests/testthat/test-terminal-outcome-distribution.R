@@ -1,10 +1,5 @@
 test_that("terminal outcome preparation matches independent reference for all cases and rows", {
-  ref_path <- .resolve_terminal_event_ref()
-  skip_if(
-    !nzchar(ref_path) || !file.exists(ref_path),
-    "Reference artifact not found"
-  )
-
+  ref_path <- resolve_terminal_event_ref()
   ref <- jsonlite::fromJSON(ref_path)
 
   for (case_name in names(ref$cases)) {
@@ -296,24 +291,87 @@ test_that("canonical serialization produces valid structure and respects roundof
   expect_error(.canonical_probability(NULL), "must not be NULL")
 })
 
+test_that("serialization rejects duplicate, missing, or mismatched heuristic pair keys", {
+  d <- data.frame(id = 1:3, reals = c(0, 1, 2), times = c(1, 2, 3))
+  prepared <- prepare_terminal_outcome_distributions(
+    list(test_pop = d),
+    c(1, 2)
+  )
+
+  # 1. Total row count is smaller due to dropped pair
+  dropped <- prepared[-1]
+  expect_error(
+    rtichoke_viz_terminal_outcome_distribution_v2_spec(dropped),
+    "Serialization requires exactly eight pairs per population and horizon."
+  )
+
+  # 2. Total row count matches, but one pair replaces another (duplicate pair key)
+  duplicate_replacement <- prepared
+  duplicate_replacement[[2]] <- duplicate_replacement[[1]]
+  expect_error(
+    rtichoke_viz_terminal_outcome_distribution_v2_spec(duplicate_replacement),
+    "Serialization requires exactly eight pairs per population and horizon."
+  )
+})
+
 test_that("vendored v0.24.2 JS schema and referential integrity validations pass for all reference cases", {
   skip_if(
     Sys.which("node") == "",
     "Node.js is not available for vendored JS validation"
   )
 
-  ref_path <- .resolve_terminal_event_ref()
-  skip_if(
-    !nzchar(ref_path) || !file.exists(ref_path),
-    "Reference artifact not found"
+  ref_path <- resolve_terminal_event_ref()
+  ref <- jsonlite::fromJSON(ref_path)
+  vendor_js <- resolve_rtichoke_viz_js()
+
+  # Extract exported schemas from vendored bundle via Node
+  extract_script <- sprintf(
+    '
+import * as viz from %s;
+console.log(JSON.stringify({
+  outcomeSchema: viz.OutcomeDistributionSpecSchema,
+  reportSchema: viz.ReportSpecV1_1Schema
+}));
+',
+    jsonlite::toJSON(vendor_js, auto_unbox = TRUE)
+  )
+  temp_extract_mjs <- tempfile(fileext = ".mjs")
+  writeLines(extract_script, temp_extract_mjs)
+  out_raw <- system2("node", args = c(temp_extract_mjs), stdout = TRUE)
+  unlink(temp_extract_mjs)
+
+  schemas <- jsonlite::fromJSON(
+    paste(out_raw, collapse = "\n"),
+    simplifyVector = FALSE
   )
 
-  ref <- jsonlite::fromJSON(ref_path)
-  vendor_js <- .resolve_rtichoke_viz_js()
-  skip_if(
-    !nzchar(vendor_js) || !file.exists(vendor_js),
-    "rtichoke-viz.js not found"
+  # Compile OutcomeDistributionSpecSchema validator using jsonvalidate (AJV engine)
+  outcome_schema_file <- tempfile(fileext = ".json")
+  writeLines(
+    jsonlite::toJSON(schemas$outcomeSchema, auto_unbox = TRUE),
+    outcome_schema_file
   )
+  val_outcome <- jsonvalidate::json_validator(
+    outcome_schema_file,
+    engine = "ajv"
+  )
+
+  # Compile ReportSpecV1_1Schema validator using jsonvalidate
+  strip_id <- function(x) {
+    if (is.list(x)) {
+      x[["$id"]] <- NULL
+      lapply(x, strip_id)
+    } else {
+      x
+    }
+  }
+  clean_report_schema <- strip_id(schemas$reportSchema)
+  report_schema_file <- tempfile(fileext = ".json")
+  writeLines(
+    jsonlite::toJSON(clean_report_schema, auto_unbox = TRUE),
+    report_schema_file
+  )
+  val_report <- jsonvalidate::json_validator(report_schema_file, engine = "ajv")
 
   for (case_name in names(ref$cases)) {
     case <- ref$cases[[case_name]]
@@ -337,64 +395,131 @@ test_that("vendored v0.24.2 JS schema and referential integrity validations pass
       null = "null",
       digits = 16
     )
+
+    # 1. Validate spec against OutcomeDistributionSpecSchema
+    expect_true(val_outcome(spec_json))
+
+    # Structural negative controls proving schema rejects invalid payloads
+    bad_type <- spec
+    bad_type$type <- "invalid_type"
+    expect_false(val_outcome(jsonlite::toJSON(
+      bad_type,
+      auto_unbox = TRUE,
+      null = "null"
+    )))
+
+    bad_ver <- spec
+    bad_ver$schemaVersion <- "1.0"
+    expect_false(val_outcome(jsonlite::toJSON(
+      bad_ver,
+      auto_unbox = TRUE,
+      null = "null"
+    )))
+
+    bad_eval <- spec
+    bad_eval$evaluations <- list()
+    expect_false(val_outcome(jsonlite::toJSON(
+      bad_eval,
+      auto_unbox = TRUE,
+      null = "null"
+    )))
+
+    # 2. Validate report embedding against ReportSpecV1_1Schema
+    report <- list(
+      schemaVersion = "1.1",
+      type = "report",
+      heuristics = list(
+        active = "adjusted:adjusted_as_negative",
+        available = as.list(names(spec$variants))
+      ),
+      sections = list(
+        list(
+          id = "outcome-distribution-section",
+          title = "Outcome Distribution",
+          items = list(
+            list(
+              type = "component",
+              id = "outcome-dist-comp",
+              spec = spec
+            )
+          )
+        )
+      )
+    )
+    report_json <- jsonlite::toJSON(
+      report,
+      auto_unbox = TRUE,
+      null = "null",
+      digits = 16
+    )
+    expect_true(val_report(report_json))
+
+    # Report schema negative controls
+    bad_report_ver <- report
+    bad_report_ver$schemaVersion <- "2.0"
+    expect_false(val_report(jsonlite::toJSON(
+      bad_report_ver,
+      auto_unbox = TRUE,
+      null = "null"
+    )))
+
+    bad_report_sec <- report
+    bad_report_sec$sections <- list()
+    expect_false(val_report(jsonlite::toJSON(
+      bad_report_sec,
+      auto_unbox = TRUE,
+      null = "null"
+    )))
+
+    # 3. Validate referential integrity exports via Node.js
     temp_json_file <- tempfile(fileext = ".json")
     writeLines(spec_json, temp_json_file)
+
+    temp_report_file <- tempfile(fileext = ".json")
+    writeLines(report_json, temp_report_file)
 
     node_script <- sprintf(
       '
 import * as viz from %s;
 import fs from "fs";
 
-const raw = fs.readFileSync(%s, "utf8");
-const spec = JSON.parse(raw);
+const spec = JSON.parse(fs.readFileSync(%s, "utf8"));
+const report = JSON.parse(fs.readFileSync(%s, "utf8"));
 
-// 1. Verify schema export existence
-if (!viz.OutcomeDistributionSpecSchema) {
-  throw new Error("Missing OutcomeDistributionSpecSchema export");
-}
-
-// 2. Validate referential integrity
+// 1. Assert OutcomeDistribution referential integrity
 viz.assertOutcomeDistributionReferentialIntegrity(spec);
 
-// 3. Test report integration referential integrity
-const report = {
-  schemaVersion: "1.1",
-  type: "report",
-  heuristics: {
-    active: "adjusted:adjusted_as_negative",
-    available: Object.keys(spec.variants)
-  },
-  sections: [
-    {
-      id: "outcome-distribution-section",
-      title: "Outcome Distribution",
-      items: [
-        {
-          type: "component",
-          id: "outcome-dist-comp",
-          spec: spec
-        }
-      ]
-    }
-  ]
-};
+// Referential integrity negative control: duplicate evaluationId
+const badIntegritySpec = JSON.parse(JSON.stringify(spec));
+badIntegritySpec.evaluations.push(badIntegritySpec.evaluations[0]);
+let rejected = false;
+try {
+  viz.assertOutcomeDistributionReferentialIntegrity(badIntegritySpec);
+} catch (e) {
+  rejected = true;
+}
+if (!rejected) {
+  throw new Error("assertOutcomeDistributionReferentialIntegrity did not reject duplicate evaluation ID");
+}
 
+// 2. Assert Report referential integrity
 viz.assertReportReferentialIntegrity(report);
 ',
       jsonlite::toJSON(vendor_js, auto_unbox = TRUE),
-      jsonlite::toJSON(temp_json_file, auto_unbox = TRUE)
+      jsonlite::toJSON(temp_json_file, auto_unbox = TRUE),
+      jsonlite::toJSON(temp_report_file, auto_unbox = TRUE)
     )
 
     temp_script <- tempfile(fileext = ".mjs")
     writeLines(node_script, temp_script)
 
     res <- system2("node", args = c(temp_script), stdout = TRUE, stderr = TRUE)
-    unlink(c(temp_json_file, temp_script))
+    unlink(c(temp_json_file, temp_report_file, temp_script))
 
     status <- attr(res, "status")
     if (!is.null(status) && status != 0) {
       fail(paste(
-        "Node validation failed for case",
+        "Node referential integrity failed for case",
         case_name,
         ":",
         paste(res, collapse = "\n")
@@ -402,6 +527,8 @@ viz.assertReportReferentialIntegrity(report);
     }
     expect_true(is.null(status) || status == 0)
   }
+
+  unlink(c(outcome_schema_file, report_schema_file))
 })
 
 test_that("canonical spec validates state distributions using assertStateDistributionValid", {
@@ -410,11 +537,7 @@ test_that("canonical spec validates state distributions using assertStateDistrib
     "Node.js is not available for vendored JS validation"
   )
 
-  vendor_js <- .resolve_rtichoke_viz_js()
-  skip_if(
-    !nzchar(vendor_js) || !file.exists(vendor_js),
-    "rtichoke-viz.js not found"
-  )
+  vendor_js <- resolve_rtichoke_viz_js()
 
   d <- data.frame(id = 1:3, reals = c(0, 1, 2), times = c(1, 2, 3))
   prepared <- prepare_terminal_outcome_distributions(

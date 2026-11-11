@@ -1,0 +1,54 @@
+name: Terminal Outcome browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'R/terminal_outcome_distribution.R'
+      - 'inst/**'
+      - 'browser-acceptance/test_terminal_outcome_acceptance.py'
+      - '.github/workflows/terminal-outcome-browser-acceptance.yaml'
+      - 'DESCRIPTION'
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  terminal-outcome-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          pak-version: stable
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Run Terminal Outcome browser acceptance suite
+        run: python3 browser-acceptance/test_terminal_outcome_acceptance.py

@@ -339,12 +339,24 @@ rtichoke_viz_terminal_outcome_distribution_v2_spec <- function(prepared) {
   }
   evaluations <- unname(eval_map)
 
-  # Check that we have exactly 8 pairs per context (evaluation_id, horizon)
-  contexts <- unique(lapply(prepared, function(r) {
-    list(evaluation_id = r$evaluation_id, horizon = r$horizon)
+  # Validate all eight unique keys against the complete expected Cartesian product
+  row_keys <- sapply(prepared, function(r) {
+    paste(r$evaluation_id, r$horizon, r$censoring, r$competing, sep = "::")
+  })
+  unique_row_keys <- unique(row_keys)
+  contexts <- unique(sapply(prepared, function(r) {
+    paste(r$evaluation_id, r$horizon, sep = "::")
   }))
-  expected_count <- length(contexts) * 8L
-  if (length(prepared) != expected_count) {
+  expected_keys <- unlist(lapply(contexts, function(ctx) {
+    sapply(.TERMINAL_HEURISTIC_PAIRS, function(pair) {
+      paste(ctx, pair[[1]], pair[[2]], sep = "::")
+    })
+  }))
+
+  if (
+    length(unique_row_keys) != length(prepared) ||
+      !setequal(unique_row_keys, expected_keys)
+  ) {
     stop(
       "Serialization requires exactly eight pairs per population and horizon.",
       call. = FALSE
