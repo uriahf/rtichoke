@@ -167,7 +167,11 @@ rtichoke_viz_report_spec <- function(
 #'
 #' @return A nested list representing a canonical ReportSpec v1.1.
 #' @noRd
-rtichoke_viz_report_spec_v1_1 <- function(..., title = NULL) {
+rtichoke_viz_report_spec_v1_1 <- function(
+  ...,
+  title = NULL,
+  heuristics = NULL
+) {
   sections <- list(...)
   if (length(sections) == 0L) {
     stop("ReportSpec v1.1 requires at least one section", call. = FALSE)
@@ -294,6 +298,28 @@ rtichoke_viz_report_spec_v1_1 <- function(..., title = NULL) {
       stop("Report title must be NULL or a single string", call. = FALSE)
     }
     report$title <- title
+  }
+  if (!is.null(heuristics)) {
+    if (!is.list(heuristics)) {
+      stop("Report heuristics must be a list", call. = FALSE)
+    }
+    if (!is_string(heuristics$active)) {
+      stop("Report heuristics active must be a single string", call. = FALSE)
+    }
+    if (
+      is.null(heuristics$available) ||
+        length(heuristics$available) == 0L ||
+        !all(vapply(heuristics$available, is_string, logical(1)))
+    ) {
+      stop(
+        "Report heuristics available must be a non-empty character vector or list of strings",
+        call. = FALSE
+      )
+    }
+    report$heuristics <- list(
+      active = heuristics$active,
+      available = as.list(unname(heuristics$available))
+    )
   }
   report
 }
