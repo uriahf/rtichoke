@@ -1,26 +1,32 @@
-test_that("vendored rtichoke_viz v0.24.1 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.24.2 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version: 0.24.1" %in% provenance)
+  expect_true("version: 0.24.2" %in% provenance)
   expect_true(
-    "tag_commit: 798bc17e0fda9bb413c07ddc07e783de1d64092f" %in% provenance
+    "tag_commit: 26e603cf2c3664ce063b4f020e17aab4243addf6" %in% provenance
   )
   expect_true(
-    "source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.1" %in%
+    "source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.2" %in%
       provenance
   )
-  expect_true("archive: rtichoke-viz-0.24.1.tar.gz" %in% provenance)
+  expect_true("archive: rtichoke-viz-0.24.2.tar.gz" %in% provenance)
+  expect_true(file.exists(file.path(vendor, "rtichoke-viz-0.24.2.tar.gz")))
+  expect_true(file.exists(file.path(
+    vendor,
+    "rtichoke-viz-0.24.2.tar.gz.sha256"
+  )))
+  expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.24.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.2.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.0.tar.gz")))
   expect_true(
-    "source_sha: 8b1743788edfcce4d076d89da9883d9203dcb35d" %in% provenance
+    "source_sha: bb5dc5ed4f4d32e85df4df3d737661a74a3a862d" %in% provenance
   )
   expect_true(
     paste0(
       "archive_sha256: ",
-      "739782aa3c210998058ae65c7cfc478dde811962cb44f2930cf972a81810c445"
+      "de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8"
     ) %in%
       provenance
   )
@@ -43,6 +49,38 @@ test_that("vendored rtichoke_viz v0.24.1 provenance and exports are intact", {
   expect_match(js, "ReportSpecV1_1Schema", fixed = TRUE)
   expect_match(js, "SummaryMetricsSpecSchema", fixed = TRUE)
   expect_match(js, "sectionComponentPresentation", fixed = TRUE)
+})
+
+test_that("vendored release payload matches the immutable archive byte for byte", {
+  vendor <- system.file("rtichoke-viz", package = "rtichoke")
+  archive <- file.path(vendor, "rtichoke-viz-0.24.2.tar.gz")
+  checksum <- strsplit(
+    readLines(paste0(archive, ".sha256"), warn = FALSE)[[1]],
+    "[[:space:]]+"
+  )[[1]][[1]]
+  expect_identical(
+    checksum,
+    "de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8"
+  )
+  extracted <- tempfile("rtichoke-viz-test-")
+  dir.create(extracted)
+  on.exit(unlink(extracted, recursive = TRUE))
+  utils::untar(archive, exdir = extracted)
+  payload <- file.path(extracted, "rtichoke-viz-0.24.2")
+  expect_identical(
+    readLines(file.path(payload, "MANIFEST"), warn = FALSE),
+    c("version=0.24.2", "commit=bb5dc5ed4f4d32e85df4df3d737661a74a3a862d")
+  )
+  for (name in list.files(payload)) {
+    read_raw <- function(path) {
+      readBin(path, what = "raw", n = file.info(path)$size)
+    }
+    expect_identical(
+      read_raw(file.path(vendor, name)),
+      read_raw(file.path(payload, name)),
+      info = name
+    )
+  }
 })
 
 test_that("vendored rtichoke_viz schemas preserve canonical ids", {
@@ -71,6 +109,11 @@ test_that("vendored rtichoke_viz schemas preserve canonical ids", {
     fixed = TRUE
   )
   expect_match(report, '"const": "1.1"', fixed = TRUE)
+  for (schema in c(v2, report)) {
+    expect_match(schema, '"estimateStatus"', fixed = TRUE)
+    expect_match(schema, '"undefined_empty_population"', fixed = TRUE)
+    expect_match(schema, '"beyond_support_plateau"', fixed = TRUE)
+  }
 })
 
 test_that("standalone v2 schema validates create_probs_histogram specs via jsonvalidate", {
