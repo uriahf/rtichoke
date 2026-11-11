@@ -10,7 +10,8 @@ create_summary_report_times(
   fixed_time_horizons,
   output_file = "summary_report_times.html",
   output_dir = getwd(),
-  renderer = "browser"
+  renderer = "browser",
+  heuristics = FALSE
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ Defaults to the current working directory.}
 
 \item{renderer}{Character string specifying the rendering engine. Currently,
 only \code{"browser"} is supported.}
+
+\item{heuristics}{A logical value indicating whether to enable analysis
+heuristic controls (censoring and competing events). Defaults to \code{FALSE}.}
 }
 \description{
 Prepares observed outcome status over time horizons and creates a self-contained
