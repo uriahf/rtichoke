@@ -17,7 +17,7 @@ def test_terminal_outcome_acceptance():
         import subprocess
         r_cmd = """
 source("R/terminal_outcome_distribution.R")
-ref <- jsonlite::fromJSON("tests/fixtures/terminal_event/reference.json")
+ref <- jsonlite::fromJSON("tests/testthat/fixtures/terminal_event/reference.json")
 df_a <- as.data.frame(ref$cases$fixture_a$data)
 names(df_a) <- c("id", "times", "reals")
 df_a <- df_a[, c("id", "reals", "times")]

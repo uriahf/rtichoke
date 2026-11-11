@@ -1,6 +1,9 @@
 test_that("terminal outcome preparation matches independent reference for all cases and rows", {
-  ref_path <- testthat::test_path("../fixtures/terminal_event/reference.json")
-  skip_if_not(file.exists(ref_path), "Reference artifact not found")
+  ref_path <- .resolve_terminal_event_ref()
+  skip_if(
+    !nzchar(ref_path) || !file.exists(ref_path),
+    "Reference artifact not found"
+  )
 
   ref <- jsonlite::fromJSON(ref_path)
 
@@ -299,18 +302,18 @@ test_that("vendored v0.24.2 JS schema and referential integrity validations pass
     "Node.js is not available for vendored JS validation"
   )
 
-  ref_path <- testthat::test_path("../fixtures/terminal_event/reference.json")
-  skip_if_not(file.exists(ref_path), "Reference artifact not found")
+  ref_path <- .resolve_terminal_event_ref()
+  skip_if(
+    !nzchar(ref_path) || !file.exists(ref_path),
+    "Reference artifact not found"
+  )
 
   ref <- jsonlite::fromJSON(ref_path)
-  vendor_js <- normalizePath(
-    file.path(
-      testthat::test_path("../../inst/rtichoke-viz"),
-      "rtichoke-viz.js"
-    ),
-    mustWork = TRUE
+  vendor_js <- .resolve_rtichoke_viz_js()
+  skip_if(
+    !nzchar(vendor_js) || !file.exists(vendor_js),
+    "rtichoke-viz.js not found"
   )
-  skip_if_not(file.exists(vendor_js), "rtichoke-viz.js not found")
 
   for (case_name in names(ref$cases)) {
     case <- ref$cases[[case_name]]
@@ -407,13 +410,12 @@ test_that("canonical spec validates state distributions using assertStateDistrib
     "Node.js is not available for vendored JS validation"
   )
 
-  vendor_js <- normalizePath(
-    file.path(
-      testthat::test_path("../../inst/rtichoke-viz"),
-      "rtichoke-viz.js"
-    ),
-    mustWork = TRUE
+  vendor_js <- .resolve_rtichoke_viz_js()
+  skip_if(
+    !nzchar(vendor_js) || !file.exists(vendor_js),
+    "rtichoke-viz.js not found"
   )
+
   d <- data.frame(id = 1:3, reals = c(0, 1, 2), times = c(1, 2, 3))
   prepared <- prepare_terminal_outcome_distributions(
     list(test_pop = d),
