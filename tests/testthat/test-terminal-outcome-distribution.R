@@ -314,7 +314,7 @@ test_that("serialization rejects duplicate, missing, or mismatched heuristic pai
   )
 })
 
-test_that("vendored v0.24.2 JS schema and referential integrity validations pass for all reference cases", {
+test_that("vendored v0.24.3 JS schema and referential integrity validations pass for all reference cases", {
   skip_if(
     Sys.which("node") == "",
     "Node.js is not available for vendored JS validation"
