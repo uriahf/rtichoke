@@ -71,6 +71,19 @@ create_summary_report_times <- function(
   }
 
   if (isTRUE(heuristics)) {
+    if (
+      !is.numeric(fixed_time_horizons) ||
+        length(fixed_time_horizons) == 0L ||
+        any(!is.finite(fixed_time_horizons)) ||
+        any(fixed_time_horizons < 0)
+    ) {
+      stop(
+        "`fixed_time_horizons` must be a non-empty sequence of finite non-negative numbers.",
+        call. = FALSE
+      )
+    }
+    fixed_time_horizons <- sort(unique(c(0, fixed_time_horizons)))
+
     # Normalize list inputs vs atomic vector inputs
     if (is.list(reals) || is.list(times)) {
       if (!is.list(reals) || !is.list(times)) {

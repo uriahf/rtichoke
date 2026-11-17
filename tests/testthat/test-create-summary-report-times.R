@@ -280,6 +280,10 @@ test_that("create_summary_report_times with heuristics = TRUE serializes 8 varia
   expect_equal(component_spec$schemaVersion, "2.0")
   expect_equal(length(component_spec$variants), 8)
   expect_setequal(names(component_spec$variants), expected_pairs)
+  for (variant in component_spec$variants) {
+    horizons <- vapply(variant$stateDistributions, function(x) x$horizon, numeric(1))
+    expect_equal(horizons, c(0, fixed_time_horizons))
+  }
 
   # Check evaluations
   expect_equal(length(component_spec$evaluations), 1)
@@ -482,7 +486,6 @@ test_that("create_summary_report_times with multiple unnamed populations assigns
   expect_equal(od_spec$evaluations[[2]]$population, "evaluation-2")
 })
 
-
 test_that("heuristic reports reject mismatched subject vectors before recycling", {
   for (as_population_list in c(FALSE, TRUE)) {
     for (sizes in list(c(2L, 1L), c(1L, 2L))) {
@@ -503,5 +506,20 @@ test_that("heuristic reports reject mismatched subject vectors before recycling"
         fixed = TRUE
       )
     }
+  }
+})
+
+test_that("heuristic reports reject invalid horizons before adding zero", {
+  for (horizons in list(numeric(), "5", NA_real_, NaN, Inf, -1)) {
+    expect_error(
+      create_summary_report_times(
+        reals = c(1, 0),
+        times = c(2, 5),
+        fixed_time_horizons = horizons,
+        heuristics = TRUE
+      ),
+      "`fixed_time_horizons` must be a non-empty sequence of finite non-negative numbers.",
+      fixed = TRUE
+    )
   }
 })
