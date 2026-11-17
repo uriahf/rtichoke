@@ -281,7 +281,11 @@ test_that("create_summary_report_times with heuristics = TRUE serializes 8 varia
   expect_equal(length(component_spec$variants), 8)
   expect_setequal(names(component_spec$variants), expected_pairs)
   for (variant in component_spec$variants) {
-    horizons <- vapply(variant$stateDistributions, function(x) x$horizon, numeric(1))
+    horizons <- vapply(
+      variant$stateDistributions,
+      function(x) x$horizon,
+      numeric(1)
+    )
     expect_equal(horizons, c(0, fixed_time_horizons))
   }
 
