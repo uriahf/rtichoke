@@ -1,5 +1,5 @@
-archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.2.tar.gz"
-expected <- "de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8"
+archive <- "inst/rtichoke-viz/rtichoke-viz-0.24.3.tar.gz"
+expected <- "47e6c12d57c0e064a8275f01e54e015e4c627c9847db155873156b6cb04c800f"
 sha256 <- system2("sha256sum", archive, stdout = TRUE)
 if (!length(sha256)) {
   stop("sha256sum did not return a digest", call. = FALSE)
@@ -13,7 +13,7 @@ published_checksum <- strsplit(
 stopifnot(identical(actual, published_checksum))
 
 files <- utils::untar(archive, list = TRUE)
-root <- "rtichoke-viz-0.24.2"
+root <- "rtichoke-viz-0.24.3"
 payload <- c(
   "MANIFEST",
   "rtichoke-viz.js",
@@ -30,8 +30,8 @@ utils::untar(archive, exdir = extracted)
 release_dir <- file.path(extracted, root)
 manifest <- readLines(file.path(release_dir, "MANIFEST"), warn = FALSE)
 stopifnot(
-  "version=0.24.2" %in% manifest,
-  "commit=bb5dc5ed4f4d32e85df4df3d737661a74a3a862d" %in% manifest
+  "version=0.24.3" %in% manifest,
+  "commit=a0735b04db2ed84532f82d667b27fa4b7035da73" %in% manifest
 )
 
 read_raw <- function(path) {
@@ -86,4 +86,4 @@ for (name in names(schemas)) {
   }
 }
 unlink(extracted, recursive = TRUE)
-message("Verified rtichoke_viz v0.24.2: ", actual)
+message("Verified rtichoke_viz v0.24.3: ", actual)

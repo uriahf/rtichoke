@@ -172,6 +172,7 @@ create_summary_report_times(
                         setHorizon(1);
                         choose('input[name$="-censoring"][value="' + (c === 'excluded' ? 'adjusted' : 'excluded') + '"]');
                         check(readout().textContent.includes('Time = 1.000'), 'heuristic change lost horizon');
+                        check(root.querySelector('input[value="evaluation-2"]').checked, 'heuristic change lost population');
                     }
 
                     const ids = [...document.querySelectorAll('[id]')].map(e => e.id);

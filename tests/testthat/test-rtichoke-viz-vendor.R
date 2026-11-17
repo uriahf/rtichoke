@@ -1,32 +1,32 @@
-test_that("vendored rtichoke_viz v0.24.2 provenance and exports are intact", {
+test_that("vendored rtichoke_viz v0.24.3 provenance and exports are intact", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
   provenance <- readLines(file.path(vendor, "PROVENANCE"), warn = FALSE)
 
-  expect_true("version: 0.24.2" %in% provenance)
+  expect_true("version: 0.24.3" %in% provenance)
   expect_true(
-    "tag_commit: 26e603cf2c3664ce063b4f020e17aab4243addf6" %in% provenance
+    "tag_commit: ac357f94d5badbc5743698540cec6c7a4349d8c2" %in% provenance
   )
   expect_true(
-    "source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.2" %in%
+    "source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.3" %in%
       provenance
   )
-  expect_true("archive: rtichoke-viz-0.24.2.tar.gz" %in% provenance)
-  expect_true(file.exists(file.path(vendor, "rtichoke-viz-0.24.2.tar.gz")))
+  expect_true("archive: rtichoke-viz-0.24.3.tar.gz" %in% provenance)
+  expect_true(file.exists(file.path(vendor, "rtichoke-viz-0.24.3.tar.gz")))
   expect_true(file.exists(file.path(
     vendor,
-    "rtichoke-viz-0.24.2.tar.gz.sha256"
+    "rtichoke-viz-0.24.3.tar.gz.sha256"
   )))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.24.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.2.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.1.tar.gz")))
   expect_false(file.exists(file.path(vendor, "rtichoke-viz-0.23.0.tar.gz")))
   expect_true(
-    "source_sha: bb5dc5ed4f4d32e85df4df3d737661a74a3a862d" %in% provenance
+    "source_sha: a0735b04db2ed84532f82d667b27fa4b7035da73" %in% provenance
   )
   expect_true(
     paste0(
       "archive_sha256: ",
-      "de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8"
+      "47e6c12d57c0e064a8275f01e54e015e4c627c9847db155873156b6cb04c800f"
     ) %in%
       provenance
   )
@@ -53,23 +53,23 @@ test_that("vendored rtichoke_viz v0.24.2 provenance and exports are intact", {
 
 test_that("vendored release payload matches the immutable archive byte for byte", {
   vendor <- system.file("rtichoke-viz", package = "rtichoke")
-  archive <- file.path(vendor, "rtichoke-viz-0.24.2.tar.gz")
+  archive <- file.path(vendor, "rtichoke-viz-0.24.3.tar.gz")
   checksum <- strsplit(
     readLines(paste0(archive, ".sha256"), warn = FALSE)[[1]],
     "[[:space:]]+"
   )[[1]][[1]]
   expect_identical(
     checksum,
-    "de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8"
+    "47e6c12d57c0e064a8275f01e54e015e4c627c9847db155873156b6cb04c800f"
   )
   extracted <- tempfile("rtichoke-viz-test-")
   dir.create(extracted)
   on.exit(unlink(extracted, recursive = TRUE))
   utils::untar(archive, exdir = extracted)
-  payload <- file.path(extracted, "rtichoke-viz-0.24.2")
+  payload <- file.path(extracted, "rtichoke-viz-0.24.3")
   expect_identical(
     readLines(file.path(payload, "MANIFEST"), warn = FALSE),
-    c("version=0.24.2", "commit=bb5dc5ed4f4d32e85df4df3d737661a74a3a862d")
+    c("version=0.24.3", "commit=a0735b04db2ed84532f82d667b27fa4b7035da73")
   )
   for (name in list.files(payload)) {
     read_raw <- function(path) {

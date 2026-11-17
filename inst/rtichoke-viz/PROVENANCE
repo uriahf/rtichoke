@@ -1,6 +1,6 @@
-version: 0.24.2
-source_sha: bb5dc5ed4f4d32e85df4df3d737661a74a3a862d
-archive: rtichoke-viz-0.24.2.tar.gz
-archive_sha256: de0d658406ea7d7725b02d24a58ff306992b7d30afd592d49c5d223b2793aee8
-source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.2
-tag_commit: 26e603cf2c3664ce063b4f020e17aab4243addf6
+version: 0.24.3
+source_sha: a0735b04db2ed84532f82d667b27fa4b7035da73
+archive: rtichoke-viz-0.24.3.tar.gz
+archive_sha256: 47e6c12d57c0e064a8275f01e54e015e4c627c9847db155873156b6cb04c800f
+source: https://github.com/uriahf/rtichoke_viz/releases/tag/v0.24.3
+tag_commit: ac357f94d5badbc5743698540cec6c7a4349d8c2
