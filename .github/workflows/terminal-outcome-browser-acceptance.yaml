@@ -4,9 +4,14 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'R/create_summary_report_times.R'
+      - 'R/report_browser.R'
+      - 'R/report_spec.R'
       - 'R/terminal_outcome_distribution.R'
       - 'inst/**'
       - 'browser-acceptance/test_terminal_outcome_acceptance.py'
+      - 'tests/testthat/test-create-summary-report-times.R'
+      - 'tests/testthat/test-terminal-outcome-distribution.R'
       - '.github/workflows/terminal-outcome-browser-acceptance.yaml'
       - 'DESCRIPTION'
 

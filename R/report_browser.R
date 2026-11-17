@@ -218,6 +218,22 @@ time_dependent_outcome_distribution_note_html <- function() {
   )
 }
 
+#' Generate Outcome Distribution Explanatory Note HTML for heuristic-mode time-dependent summary reports
+#'
+#' @return A character string containing R-owned browser-native HTML for the
+#'   heuristic-mode time-dependent Outcome Distribution explanatory note.
+#' @noRd
+time_dependent_outcome_distribution_heuristics_note_html <- function() {
+  paste0(
+    "<details class=\"rtichoke-cheat-sheet\">\n",
+    "  <summary>Outcome Distribution Note</summary>\n",
+    "  <div class=\"rtichoke-cheat-sheet__content\">\n",
+    "    <p>Outcome estimates reflect the selected treatment of censoring and competing events. Exclusions define a retained population separately at each horizon; exclusion percentages use the original population size. When exclusions are selected, estimates describe that retained population. Empty retained populations have unavailable estimates, not zero probabilities. Beyond observed follow-up support, displayed values retain the estimator\u2019s last plateau and do not establish subsequent outcomes. Censoring-adjusted estimates rely on the relevant independent-censoring assumptions.</p>\n",
+    "  </div>\n",
+    "</details>"
+  )
+}
+
 #' Generate Performance Metrics Cheat Sheet HTML for browser summary reports
 #'
 #' @return A character string containing R-owned browser-native HTML for the
