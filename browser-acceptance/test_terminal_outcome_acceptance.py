@@ -20,7 +20,7 @@ def test_terminal_outcome_acceptance():
     try:
         # Prepare reports via public create_summary_report_times entry point
         r_cmd = """
-devtools::load_all()
+library(rtichoke)
 source("tests/testthat/helper-terminal-paths.R")
 ref <- jsonlite::fromJSON(resolve_terminal_event_ref())
 
