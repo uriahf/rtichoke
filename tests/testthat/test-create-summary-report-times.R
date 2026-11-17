@@ -355,7 +355,8 @@ test_that("create_summary_report_times with heuristics = TRUE serializes 8 varia
     sprintf(
       '
 import * as fs from "fs";
-import * as viz from %s;
+import { pathToFileURL } from "node:url";
+const viz = await import(pathToFileURL(%s).href);
 
 const spec = JSON.parse(fs.readFileSync(%s, "utf8"));
 viz.assertReportReferentialIntegrity(spec);
@@ -369,7 +370,12 @@ console.log("VALID");
   )
   on.exit(unlink(c(tf, script_file)), add = TRUE)
 
-  res <- system2("node", args = c(script_file), stdout = TRUE, stderr = TRUE)
+  res <- system2(
+    "node",
+    args = shQuote(script_file),
+    stdout = TRUE,
+    stderr = TRUE
+  )
   expect_equal(tail(res, 1), "VALID")
 })
 
@@ -428,7 +434,8 @@ test_that("create_summary_report_times with multiple populations preserves disti
     sprintf(
       '
 import * as fs from "fs";
-import * as viz from %s;
+import { pathToFileURL } from "node:url";
+const viz = await import(pathToFileURL(%s).href);
 
 const spec = JSON.parse(fs.readFileSync(%s, "utf8"));
 viz.assertReportReferentialIntegrity(spec);
@@ -442,7 +449,12 @@ console.log("MULTI_VALID");
   )
   on.exit(unlink(c(tf, script_file)), add = TRUE)
 
-  res <- system2("node", args = c(script_file), stdout = TRUE, stderr = TRUE)
+  res <- system2(
+    "node",
+    args = shQuote(script_file),
+    stdout = TRUE,
+    stderr = TRUE
+  )
   expect_equal(tail(res, 1), "MULTI_VALID")
 })
 

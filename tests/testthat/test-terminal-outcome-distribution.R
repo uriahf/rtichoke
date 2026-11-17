@@ -327,7 +327,8 @@ test_that("vendored v0.24.3 JS schema and referential integrity validations pass
   # Extract exported schemas from vendored bundle via Node
   extract_script <- sprintf(
     '
-import * as viz from %s;
+import { pathToFileURL } from "node:url";
+const viz = await import(pathToFileURL(%s).href);
 console.log(JSON.stringify({
   outcomeSchema: viz.OutcomeDistributionSpecSchema,
   reportSchema: viz.ReportSpecV1_1Schema
@@ -337,7 +338,7 @@ console.log(JSON.stringify({
   )
   temp_extract_mjs <- tempfile(fileext = ".mjs")
   writeLines(extract_script, temp_extract_mjs)
-  out_raw <- system2("node", args = c(temp_extract_mjs), stdout = TRUE)
+  out_raw <- system2("node", args = shQuote(temp_extract_mjs), stdout = TRUE)
   unlink(temp_extract_mjs)
 
   schemas <- jsonlite::fromJSON(
@@ -480,7 +481,8 @@ console.log(JSON.stringify({
 
     node_script <- sprintf(
       '
-import * as viz from %s;
+import { pathToFileURL } from "node:url";
+const viz = await import(pathToFileURL(%s).href);
 import fs from "fs";
 
 const spec = JSON.parse(fs.readFileSync(%s, "utf8"));
@@ -513,7 +515,12 @@ viz.assertReportReferentialIntegrity(report);
     temp_script <- tempfile(fileext = ".mjs")
     writeLines(node_script, temp_script)
 
-    res <- system2("node", args = c(temp_script), stdout = TRUE, stderr = TRUE)
+    res <- system2(
+      "node",
+      args = shQuote(temp_script),
+      stdout = TRUE,
+      stderr = TRUE
+    )
     unlink(c(temp_json_file, temp_report_file, temp_script))
 
     status <- attr(res, "status")
@@ -557,7 +564,8 @@ test_that("canonical spec validates state distributions using assertStateDistrib
 
   node_script <- sprintf(
     '
-import * as viz from %s;
+import { pathToFileURL } from "node:url";
+const viz = await import(pathToFileURL(%s).href);
 import fs from "fs";
 
 const raw = fs.readFileSync(%s, "utf8");
@@ -579,7 +587,12 @@ for (const variant of Object.values(spec.variants)) {
   temp_script <- tempfile(fileext = ".mjs")
   writeLines(node_script, temp_script)
 
-  res <- system2("node", args = c(temp_script), stdout = TRUE, stderr = TRUE)
+  res <- system2(
+    "node",
+    args = shQuote(temp_script),
+    stdout = TRUE,
+    stderr = TRUE
+  )
   unlink(c(temp_json_file, temp_script))
 
   status <- attr(res, "status")

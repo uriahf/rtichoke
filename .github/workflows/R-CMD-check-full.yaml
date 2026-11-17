@@ -3,6 +3,12 @@
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - "tests/testthat/test-create-summary-report-times.R"
+      - "tests/testthat/test-terminal-outcome-distribution.R"
+      - ".github/workflows/R-CMD-check-full.yaml"
   workflow_dispatch:
 
 name: R-CMD-check-full
