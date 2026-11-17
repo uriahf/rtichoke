@@ -1,15 +1,22 @@
 #' Create a minimal time-dependent summary report
 #'
-#' Prepares observed outcome status over time horizons and creates a self-contained
-#' HTML report containing raw observed outcome accounting (target events,
+#' Creates a self-contained HTML report of outcome distributions over time
+#' horizons. By default, displays raw observed outcome accounting (target events,
 #' competing events, censored, and non-events).
 #'
-#' Censored observations are displayed as their own observed status. No
-#' Aalen-Johansen (AJ), Inverse Probability of Censoring Weighting (IPCW), or
-#' other censoring adjustment is applied. This report contains only raw observed
-#' outcome status over time and does not include predicted probabilities,
-#' calibration, discrimination metrics, threshold-based metrics, or decision-curve
-#' analysis.
+#' With \code{heuristics = FALSE}, censored observations are displayed as their
+#' own observed status and no censoring adjustment is applied.
+#'
+#' With \code{heuristics = TRUE}, report controls select among eight combinations
+#' of censoring and competing-event treatment, using Kaplan-Meier or
+#' Aalen-Johansen estimates. Exclusions define a retained population separately
+#' at each horizon; exclusion percentages use the original population size.
+#' Empty retained populations have unavailable estimates. Beyond observed
+#' follow-up support, displayed estimates retain the estimator's last plateau.
+#' Censoring adjustment relies on the relevant independent-censoring assumptions.
+#'
+#' The report does not include predicted probabilities, calibration,
+#' discrimination metrics, threshold-based metrics, or decision-curve analysis.
 #'
 #' @inheritParams create_reals_distribution_times
 #' @param output_file The name of the output HTML file. Defaults to
@@ -109,6 +116,12 @@ create_summary_report_times <- function(
       lapply(seq_along(reals_list), function(i) {
         r <- reals_list[[i]]
         t <- times_list[[i]]
+        if (length(r) != length(t)) {
+          stop(
+            "`reals` and `times` vectors must have identical lengths.",
+            call. = FALSE
+          )
+        }
         data.frame(
           id = seq_along(r),
           reals = r,

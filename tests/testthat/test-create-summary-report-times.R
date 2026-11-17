@@ -481,3 +481,27 @@ test_that("create_summary_report_times with multiple unnamed populations assigns
   expect_equal(od_spec$evaluations[[2]]$id, "evaluation-2")
   expect_equal(od_spec$evaluations[[2]]$population, "evaluation-2")
 })
+
+
+test_that("heuristic reports reject mismatched subject vectors before recycling", {
+  for (as_population_list in c(FALSE, TRUE)) {
+    for (sizes in list(c(2L, 1L), c(1L, 2L))) {
+      reals <- rep(1, sizes[[1]])
+      times <- rep(5, sizes[[2]])
+      if (as_population_list) {
+        reals <- list(Cohort = reals)
+        times <- list(Cohort = times)
+      }
+      expect_error(
+        create_summary_report_times(
+          reals = reals,
+          times = times,
+          fixed_time_horizons = 5,
+          heuristics = TRUE
+        ),
+        "`reals` and `times` vectors must have identical lengths.",
+        fixed = TRUE
+      )
+    }
+  }
+})

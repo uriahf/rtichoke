@@ -38,17 +38,24 @@ only \code{"browser"} is supported.}
 heuristic controls (censoring and competing events). Defaults to \code{FALSE}.}
 }
 \description{
-Prepares observed outcome status over time horizons and creates a self-contained
-HTML report containing raw observed outcome accounting (target events,
+Creates a self-contained HTML report of outcome distributions over time
+horizons. By default, displays raw observed outcome accounting (target events,
 competing events, censored, and non-events).
 }
 \details{
-Censored observations are displayed as their own observed status. No
-Aalen-Johansen (AJ), Inverse Probability of Censoring Weighting (IPCW), or
-other censoring adjustment is applied. This report contains only raw observed
-outcome status over time and does not include predicted probabilities,
-calibration, discrimination metrics, threshold-based metrics, or decision-curve
-analysis.
+With \code{heuristics = FALSE}, censored observations are displayed as their
+own observed status and no censoring adjustment is applied.
+
+With \code{heuristics = TRUE}, report controls select among eight combinations
+of censoring and competing-event treatment, using Kaplan-Meier or
+Aalen-Johansen estimates. Exclusions define a retained population separately
+at each horizon; exclusion percentages use the original population size.
+Empty retained populations have unavailable estimates. Beyond observed
+follow-up support, displayed estimates retain the estimator's last plateau.
+Censoring adjustment relies on the relevant independent-censoring assumptions.
+
+The report does not include predicted probabilities, calibration,
+discrimination metrics, threshold-based metrics, or decision-curve analysis.
 }
 \examples{
 \dontrun{
