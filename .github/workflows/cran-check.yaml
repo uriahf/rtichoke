@@ -31,7 +31,7 @@ jobs:
       - name: Install manual validation tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texinfo tidy
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texinfo tidy
 
       - name: Build source package
         shell: Rscript {0}
