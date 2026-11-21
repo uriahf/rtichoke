@@ -11,7 +11,7 @@ status](https://www.r-pkg.org/badges/version/rtichoke)](https://CRAN.R-project.o
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
-coverage](https://codecov.io/gh/uriahf/rtichoke/branch/main/graph/badge.svg)](https://codecov.io/gh/uriahf/rtichoke?branch=main)
+coverage](https://codecov.io/gh/uriahf/rtichoke/branch/main/graph/badge.svg)](https://app.codecov.io/gh/uriahf/rtichoke?branch=main)
 <!-- badges: end -->
 
 **`rtichoke`** provides interactive and static visualizations for
