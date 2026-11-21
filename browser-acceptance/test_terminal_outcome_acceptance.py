@@ -27,13 +27,13 @@ ref <- jsonlite::fromJSON(resolve_terminal_event_ref())
 df_censored <- as.data.frame(ref$cases$all_censored$data)
 names(df_censored) <- c("id", "times", "reals")
 
-df_ties <- as.data.frame(ref$cases$zero_ties$data)
+df_ties <- as.data.frame(ref$cases$tied_events_censor$data)
 names(df_ties) <- c("id", "times", "reals")
 
-# 1. Main heuristic report with 2 populations (censored and zero ties) across horizons 0, 1, 2, 3
+# 1. Main heuristic report with 2 populations (censored and tied events) across horizons 0, 1, 2, 3
 create_summary_report_times(
-  reals = list("censored" = df_censored$reals, "zero ties" = df_ties$reals),
-  times = list("censored" = df_censored$times, "zero ties" = df_ties$times),
+  reals = list("censored" = df_censored$reals, "tied events" = df_ties$reals),
+  times = list("censored" = df_censored$times, "tied events" = df_ties$times),
   fixed_time_horizons = c(0, 1, 2, 3),
   output_file = "terminal-outcome-acceptance.html",
   output_dir = "browser-acceptance",
@@ -42,8 +42,8 @@ create_summary_report_times(
 
 # 2. Raw report with same data and heuristics = FALSE
 create_summary_report_times(
-  reals = list("censored" = df_censored$reals, "zero ties" = df_ties$reals),
-  times = list("censored" = df_censored$times, "zero ties" = df_ties$times),
+  reals = list("censored" = df_censored$reals, "tied events" = df_ties$reals),
+  times = list("censored" = df_censored$times, "tied events" = df_ties$times),
   fixed_time_horizons = c(0, 1, 2, 3),
   output_file = "terminal-outcome-raw.html",
   output_dir = "browser-acceptance",

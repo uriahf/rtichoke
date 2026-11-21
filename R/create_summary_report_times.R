@@ -135,6 +135,7 @@ create_summary_report_times <- function(
             call. = FALSE
           )
         }
+        validate_outcome_event_times(r, t)
         data.frame(
           id = seq_along(r),
           reals = r,
