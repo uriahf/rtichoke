@@ -148,7 +148,7 @@ test_that("create_summary_report_times renders self-contained HTML report with s
   )
 })
 
-test_that("create_summary_report_times propagates fixed time horizons correctly", {
+test_that("raw time reports preserve both horizon grids and use shared labels", {
   times <- c(10, 20, 30)
   reals <- c(1, 0, 2)
   fixed_time_horizons <- c(15, 25)
@@ -212,6 +212,26 @@ test_that("create_summary_report_times propagates fixed time horizons correctly"
   )
   horizons <- vapply(fixed_sds, function(x) x$horizon, numeric(1))
   expect_equal(horizons, c(0, 15, 25))
+
+  event_sds <- Filter(
+    function(x) identical(x$estimateOrigin, "event_table"),
+    component_spec$stateDistributions
+  )
+  expect_equal(
+    vapply(event_sds, function(x) x$horizon, numeric(1)),
+    c(0, 10, 20, 30)
+  )
+  expected_labels <- c(
+    real_positive = "Event",
+    real_competing = "Competing event",
+    real_negative = "Event-free",
+    real_censored = "Censored"
+  )
+  for (row in component_spec$stateDistributions) {
+    ids <- vapply(row$states, function(x) x$stateId, character(1))
+    labels <- vapply(row$states, function(x) x$label, character(1))
+    expect_identical(stats::setNames(labels, ids), expected_labels)
+  }
 })
 
 test_that("create_summary_report_times with heuristics = TRUE serializes 8 variants and report heuristic controls", {

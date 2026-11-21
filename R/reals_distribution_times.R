@@ -60,13 +60,15 @@ create_reals_distribution_times <- function(
 #' @param reals A numeric vector or list of numeric vectors containing outcome labels (0, 1, or 2).
 #' @param times A numeric vector or list of numeric vectors containing follow-up times.
 #' @param fixed_time_horizons A numeric vector of evaluation time horizons.
+#' @param state_labels Named character vector of display labels to override by state ID.
 #'
 #' @return A nested list representing a canonical OutcomeDistributionSpec v2.
 #' @noRd
 rtichoke_viz_outcome_distribution_v2_spec <- function(
   reals,
   times,
-  fixed_time_horizons
+  fixed_time_horizons,
+  state_labels = NULL
 ) {
   # Normalize list inputs vs atomic vector inputs
   if (is.list(reals) || is.list(times)) {
@@ -199,7 +201,11 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     states <- lapply(fixed_state_definitions, function(st_def) {
       list(
         stateId = st_def$stateId,
-        label = st_def$label,
+        label = if (st_def$stateId %in% names(state_labels)) {
+          state_labels[[st_def$stateId]]
+        } else {
+          st_def$label
+        },
         count = unname(counts[[st_def$stateId]])
       )
     })

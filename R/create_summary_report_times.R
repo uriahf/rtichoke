@@ -179,7 +179,13 @@ create_summary_report_times <- function(
     outcome_dist_spec <- rtichoke_viz_outcome_distribution_v2_spec(
       reals = reals,
       times = times,
-      fixed_time_horizons = fixed_time_horizons
+      fixed_time_horizons = fixed_time_horizons,
+      state_labels = c(
+        real_positive = "Event",
+        real_competing = "Competing event",
+        real_negative = "Event-free",
+        real_censored = "Censored"
+      )
     )
 
     report_spec <- rtichoke_viz_report_spec_v1_1(
