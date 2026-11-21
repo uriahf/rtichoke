@@ -8,7 +8,8 @@
 #'   or multi-state outcome labels (0 = censored/no event, 1 = target event,
 #'   2 = competing outcome).
 #' @param times A numeric vector (or list of numeric vectors) containing
-#'   follow-up times corresponding to \code{reals}.
+#'   follow-up times corresponding to \code{reals}. Target and competing
+#'   events require positive times. Censoring may occur at time zero.
 #' @param fixed_time_horizons A numeric vector of fixed evaluation time
 #'   horizons at which to display state distributions.
 #' @param renderer Character string specifying the rendering engine. Currently,
@@ -133,6 +134,7 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     if (any(is.na(t_vec)) || any(!is.finite(t_vec)) || any(t_vec < 0)) {
       stop("`times` must contain finite non-negative numbers.", call. = FALSE)
     }
+    validate_outcome_event_times(r_vec, t_vec)
   }
 
   # Validate fixed_time_horizons
@@ -259,4 +261,17 @@ rtichoke_viz_outcome_distribution_v2_spec <- function(
     evaluations = evaluations,
     stateDistributions = state_distributions
   )
+}
+
+validate_outcome_event_times <- function(reals, times) {
+  if (
+    is.numeric(reals) &&
+      is.numeric(times) &&
+      any(reals %in% c(1, 2) & times %in% 0)
+  ) {
+    stop(
+      "Target and competing events must occur after time zero.",
+      call. = FALSE
+    )
+  }
 }

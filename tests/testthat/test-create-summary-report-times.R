@@ -559,3 +559,20 @@ test_that("heuristic reports reject invalid horizons before adding zero", {
     )
   }
 })
+
+test_that("terminal reports require positive event times in both modes", {
+  for (heuristics in c(FALSE, TRUE)) {
+    for (event in c(1, 2)) {
+      expect_error(
+        create_summary_report_times(
+          reals = c(event, 0),
+          times = c(0, 0),
+          fixed_time_horizons = 1,
+          heuristics = heuristics
+        ),
+        "events must occur after time zero",
+        fixed = TRUE
+      )
+    }
+  }
+})

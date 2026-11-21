@@ -17,7 +17,8 @@ or multi-state outcome labels (0 = censored/no event, 1 = target event,
 2 = competing outcome).}
 
 \item{times}{A numeric vector (or list of numeric vectors) containing
-follow-up times corresponding to \code{reals}.}
+follow-up times corresponding to \code{reals}. Target and competing
+events require positive times. Censoring may occur at time zero.}
 
 \item{fixed_time_horizons}{A numeric vector of fixed evaluation time
 horizons at which to display state distributions.}
