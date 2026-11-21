@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">rtichoke</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,14 @@
       <small>Source: <a href="https://github.com/uriahf/rtichoke/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8" id="rtichoke-008">rtichoke 0.0.8<a class="anchor" aria-label="anchor" href="#rtichoke-008"></a></h2>
+<ul><li>Introduce the browser-rendered summary report and prediction distribution for binary prediction, including probability-threshold and predicted-positive-rate views.</li>
+<li>Add <code><a href="../reference/create_summary_report_times.html">create_summary_report_times()</a></code> and <code><a href="../reference/create_reals_distribution_times.html">create_reals_distribution_times()</a></code> for observed outcomes over follow-up. The HTML report supports eight optional combinations for handling censoring and competing events.</li>
+<li>Require positive follow-up times for target and competing events in the time-dependent chart and report. Horizon zero and censoring at zero remain valid.</li>
+<li>Add <code><a href="../reference/create_reals_distribution_steps.html">create_reals_distribution_steps()</a></code> for categorical and continuous outcomes observed at discrete steps.</li>
+<li>Bundle rtichoke_viz v0.24.3 for offline rendering.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.7" id="rtichoke-007">rtichoke 0.0.7<a class="anchor" aria-label="anchor" href="#rtichoke-007"></a></h2>
 <ul><li>Fix Lift Curve ranges <a href="https://github.com/uriahf/rtichoke/issues/110" class="external-link">#110</a>

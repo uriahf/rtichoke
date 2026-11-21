@@ -1,5 +1,24 @@
 # Changelog
 
+## rtichoke 0.0.8
+
+- Introduce the browser-rendered summary report and prediction
+  distribution for binary prediction, including probability-threshold
+  and predicted-positive-rate views.
+- Add
+  [`create_summary_report_times()`](https://uriahf.github.io/rtichoke/reference/create_summary_report_times.md)
+  and
+  [`create_reals_distribution_times()`](https://uriahf.github.io/rtichoke/reference/create_reals_distribution_times.md)
+  for observed outcomes over follow-up. The HTML report supports eight
+  optional combinations for handling censoring and competing events.
+- Require positive follow-up times for target and competing events in
+  the time-dependent chart and report. Horizon zero and censoring at
+  zero remain valid.
+- Add
+  [`create_reals_distribution_steps()`](https://uriahf.github.io/rtichoke/reference/create_reals_distribution_steps.md)
+  for categorical and continuous outcomes observed at discrete steps.
+- Bundle rtichoke_viz v0.24.3 for offline rendering.
+
 ## rtichoke 0.0.7
 
 - Fix Lift Curve ranges
