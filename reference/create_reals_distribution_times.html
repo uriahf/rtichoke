@@ -76,7 +76,8 @@ or multi-state outcome labels (0 = censored/no event, 1 = target event,
 
 <dt id="arg-times">times<a class="anchor" aria-label="anchor" href="#arg-times"></a></dt>
 <dd><p>A numeric vector (or list of numeric vectors) containing
-follow-up times corresponding to <code>reals</code>.</p></dd>
+follow-up times corresponding to <code>reals</code>. Target and competing
+events require positive times. Censoring may occur at time zero.</p></dd>
 
 
 <dt id="arg-fixed-time-horizons">fixed_time_horizons<a class="anchor" aria-label="anchor" href="#arg-fixed-time-horizons"></a></dt>

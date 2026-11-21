@@ -29,7 +29,8 @@ create_summary_report_times(
 - times:
 
   A numeric vector (or list of numeric vectors) containing follow-up
-  times corresponding to `reals`.
+  times corresponding to `reals`. Target and competing events require
+  positive times. Censoring may occur at time zero.
 
 - fixed_time_horizons:
 
