@@ -1,6 +1,6 @@
 Package: rtichoke
 Title: Interactive Visualization of Binary Prediction Model Performance
-Version: 0.0.7
+Version: 0.0.8
 Authors@R: 
     person("Uriah", "Finkel", , "ufinkel@gmail.com", role = c("cre", "aut"))
 Description: Tools for exploring the performance of prediction models with
