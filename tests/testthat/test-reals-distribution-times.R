@@ -314,8 +314,3 @@ test_that("multi-evaluation named list inputs work correctly", {
 test_that("existing summary report functions remain unchanged", {
   expect_true(exists("create_summary_report"))
 })
-
-test_that("package version is unchanged", {
-  pkg_ver <- as.character(utils::packageVersion("rtichoke"))
-  expect_equal(pkg_ver, "0.0.7")
-})
