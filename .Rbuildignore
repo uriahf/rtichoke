@@ -20,3 +20,6 @@ $run_dev.*
 ^Makefile$
 ^\.pre-commit-config\.yaml$
 ^\.posit/assistant$
+^data/\.\.rda$
+^(AGENTS|CONTRIBUTING|PARITY|SEMANTICS)\.md$
+^(browser-acceptance|lib|scripts|tatus)$

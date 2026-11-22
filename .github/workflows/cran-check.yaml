@@ -2,6 +2,10 @@ name: CRAN validation
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/cran-check.yaml'
+      - '.Rbuildignore'
 
 permissions:
   contents: read
@@ -24,6 +28,11 @@ jobs:
           needs: check
           pak-version: stable
 
+      - name: Install manual validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texinfo tidy
+
       - name: Build source package
         shell: Rscript {0}
         run: |
@@ -38,7 +47,7 @@ jobs:
           rcmdcheck::rcmdcheck(
             path = pkg,
             args = "--as-cran",
-            error_on = "never",
+            error_on = "warning",
             check_dir = "cran-artifacts/check"
           )
 
