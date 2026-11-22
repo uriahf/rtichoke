@@ -576,3 +576,34 @@ test_that("terminal reports require positive event times in both modes", {
     }
   }
 })
+
+test_that("calibration preserves tied scores and rejects mismatched prediction grids", {
+  calibration <- prepare_time_report_calibration(
+    matrix(rep(0.25, 4), ncol = 1),
+    c(1, 2, 0, 0),
+    c(2, 2, 0.5, 5),
+    c(0, 2)
+  )
+  items <- calibration$section$items
+  expect_length(items, 1)
+  expect_identical(items[[1]]$title, "Horizon 2")
+  expect_equal(
+    items[[1]]$spec$data,
+    list(list(
+      seriesId = "calibration-model",
+      method = "discrete",
+      predicted = 0.25,
+      observed = 1 / 3,
+      total = 4L
+    ))
+  )
+  expect_error(
+    create_summary_report_times(
+      c(1, 0),
+      c(1, 2),
+      c(1, 2),
+      probs = matrix(c(0.2, 0.3), ncol = 1)
+    ),
+    "probability matrix"
+  )
+})

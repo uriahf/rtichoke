@@ -15,8 +15,9 @@
 #' follow-up support, displayed estimates retain the estimator's last plateau.
 #' Censoring adjustment relies on the relevant independent-censoring assumptions.
 #'
-#' The report does not include predicted probabilities, calibration,
-#' discrimination metrics, threshold-based metrics, or decision-curve analysis.
+#' Supply \code{probs} to add target-event calibration. The calibration tabs
+#' use Aalen-Johansen estimates within prediction quantile groups, independently
+#' of the outcome-distribution controls.
 #'
 #' @inheritParams create_reals_distribution_times
 #' @param output_file The name of the output HTML file. Defaults to
@@ -27,6 +28,11 @@
 #'   only \code{"browser"} is supported.
 #' @param heuristics A logical value indicating whether to enable analysis
 #'   heuristic controls (censoring and competing events). Defaults to \code{FALSE}.
+#'
+#' @param probs Optional numeric matrix for one model and one population. Rows
+#'   match \code{reals} and columns match the sorted, distinct positive
+#'   \code{fixed_time_horizons}. Values are predicted target-event cumulative
+#'   incidence probabilities.
 #'
 #' @export
 #'
@@ -50,7 +56,8 @@ create_summary_report_times <- function(
   output_file = "summary_report_times.html",
   output_dir = getwd(),
   renderer = "browser",
-  heuristics = FALSE
+  heuristics = FALSE,
+  probs = NULL
 ) {
   if (!identical(renderer, "browser")) {
     stop(
@@ -155,24 +162,9 @@ create_summary_report_times <- function(
       prepared
     )
 
-    report_spec <- rtichoke_viz_report_spec_v1_1(
-      list(
-        id = "time-dependent-outcomes",
-        title = "Time-dependent outcomes",
-        items = list(
-          list(
-            type = "component",
-            id = "outcome-distribution",
-            title = "Outcome Distribution",
-            spec = outcome_dist_spec
-          )
-        )
-      ),
-      title = "Time-dependent Summary Report",
-      heuristics = list(
-        active = "adjusted:adjusted_as_negative",
-        available = as.list(names(outcome_dist_spec$variants))
-      )
+    report_heuristics <- list(
+      active = "adjusted:adjusted_as_negative",
+      available = as.list(names(outcome_dist_spec$variants))
     )
 
     header_note <- time_dependent_outcome_distribution_heuristics_note_html()
@@ -189,24 +181,40 @@ create_summary_report_times <- function(
       )
     )
 
-    report_spec <- rtichoke_viz_report_spec_v1_1(
-      list(
-        id = "time-dependent-outcomes",
-        title = "Time-dependent outcomes",
-        items = list(
-          list(
-            type = "component",
-            id = "outcome-distribution",
-            title = "Outcome Distribution",
-            spec = outcome_dist_spec
-          )
-        )
-      ),
-      title = "Time-dependent Summary Report"
-    )
-
+    report_heuristics <- NULL
     header_note <- time_dependent_outcome_distribution_note_html()
   }
+
+  sections <- list(list(
+    id = "time-dependent-outcomes",
+    title = "Time-dependent outcomes",
+    items = list(list(
+      type = "component",
+      id = "outcome-distribution",
+      title = "Outcome Distribution",
+      spec = outcome_dist_spec
+    ))
+  ))
+  if (!is.null(probs)) {
+    calibration <- prepare_time_report_calibration(
+      probs,
+      reals,
+      times,
+      fixed_time_horizons
+    )
+    sections <- c(sections, list(calibration$section))
+    header_note <- paste(header_note, calibration$note, sep = "\n")
+  }
+  report_spec <- do.call(
+    rtichoke_viz_report_spec_v1_1,
+    c(
+      sections,
+      list(
+        title = "Time-dependent Summary Report",
+        heuristics = report_heuristics
+      )
+    )
+  )
 
   report <- render_rtichoke_viz_report_browser(
     report_spec,

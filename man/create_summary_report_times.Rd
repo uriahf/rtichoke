@@ -11,7 +11,8 @@ create_summary_report_times(
   output_file = "summary_report_times.html",
   output_dir = getwd(),
   renderer = "browser",
-  heuristics = FALSE
+  heuristics = FALSE,
+  probs = NULL
 )
 }
 \arguments{
@@ -37,6 +38,11 @@ only \code{"browser"} is supported.}
 
 \item{heuristics}{A logical value indicating whether to enable analysis
 heuristic controls (censoring and competing events). Defaults to \code{FALSE}.}
+
+\item{probs}{Optional numeric matrix for one model and one population. Rows
+match \code{reals} and columns match the sorted, distinct positive
+\code{fixed_time_horizons}. Values are predicted target-event cumulative
+incidence probabilities.}
 }
 \description{
 Creates a self-contained HTML report of outcome distributions over time
@@ -55,8 +61,9 @@ Empty retained populations have unavailable estimates. Beyond observed
 follow-up support, displayed estimates retain the estimator's last plateau.
 Censoring adjustment relies on the relevant independent-censoring assumptions.
 
-The report does not include predicted probabilities, calibration,
-discrimination metrics, threshold-based metrics, or decision-curve analysis.
+Supply \code{probs} to add target-event calibration. The calibration tabs
+use Aalen-Johansen estimates within prediction quantile groups, independently
+of the outcome-distribution controls.
 }
 \examples{
 \dontrun{
