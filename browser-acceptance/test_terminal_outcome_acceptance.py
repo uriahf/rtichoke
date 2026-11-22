@@ -245,7 +245,7 @@ for (model in c("true", "inflated")) {
                 for path in calibration_paths:
                     page.goto(path.as_uri(), wait_until="load")
                     page.get_by_text("Calibration method and group sizes").click()
-                    assert page.get_by_text("Horizon 1: 1000, 1000, 1000, 1000, 1000").is_visible()
+                    page.get_by_text(re.compile(r"Horizon 1\s*:\s*1000, 1000, 1000, 1000, 1000")).wait_for(state="visible")
                     items = page.evaluate("""() => JSON.parse(
                         document.querySelector('script[id$="-spec"]').textContent
                     ).sections.find(section => section.id === 'calibration').items""")
