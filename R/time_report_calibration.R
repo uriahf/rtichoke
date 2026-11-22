@@ -53,6 +53,7 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
       spec = list(
         schemaVersion = "2.0",
         type = "calibration",
+        heuristicPolicy = "independent",
         evaluations = list(list(
           id = "calibration-evaluation",
           model = "Model",
