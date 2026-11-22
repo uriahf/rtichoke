@@ -607,3 +607,24 @@ test_that("calibration preserves tied scores and rejects mismatched prediction g
     "probability matrix"
   )
 })
+
+test_that("named prediction columns match horizons regardless of column order", {
+  probs <- cbind(c(0.1, 0.2), c(0.3, 0.4))
+  expected <- prepare_time_report_calibration(probs, c(1, 0), c(1, 3), 1:2)
+  colnames(probs) <- c("1", "2")
+  actual <- prepare_time_report_calibration(
+    probs[, 2:1],
+    c(1, 0),
+    c(1, 3),
+    c(2, 0, 1)
+  )
+  expect_identical(actual, expected)
+
+  for (labels in list(c("1", "1"), c("1", "3"), c("1", "late"))) {
+    colnames(probs) <- labels
+    expect_error(
+      prepare_time_report_calibration(probs, c(1, 0), c(1, 3), 1:2),
+      "match each distinct positive horizon exactly once"
+    )
+  }
+})

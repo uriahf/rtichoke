@@ -19,6 +19,18 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     )
   }
 
+  if (!is.null(colnames(probs))) {
+    prediction_horizons <- suppressWarnings(as.numeric(colnames(probs)))
+    column_order <- match(horizons, prediction_horizons)
+    if (anyNA(column_order)) {
+      stop(
+        "Named `probs` columns must match each distinct positive horizon exactly once.",
+        call. = FALSE
+      )
+    }
+    probs <- probs[, column_order, drop = FALSE]
+  }
+
   cohort <- data.frame(id = seq_along(reals), reals = reals, times = times)
   components <- lapply(seq_along(horizons), function(i) {
     horizon <- horizons[[i]]

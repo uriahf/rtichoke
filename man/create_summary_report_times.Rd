@@ -40,9 +40,10 @@ only \code{"browser"} is supported.}
 heuristic controls (censoring and competing events). Defaults to \code{FALSE}.}
 
 \item{probs}{Optional numeric matrix for one model and one population. Rows
-match \code{reals} and columns match the sorted, distinct positive
-\code{fixed_time_horizons}. Values are predicted target-event cumulative
-incidence probabilities.}
+match \code{reals}. Use numeric horizon values as column names to match
+the distinct positive \code{fixed_time_horizons} in any order. Unnamed
+columns follow ascending horizon order. Values are predicted target-event
+cumulative incidence probabilities.}
 }
 \description{
 Creates a self-contained HTML report of outcome distributions over time
