@@ -690,7 +690,12 @@ test_that("time calibration compares models in the same population", {
     }
   }
   expect_error(
-    prepare_time_report_calibration(list(Same = first, Same = second), reals, times, 1:2),
+    prepare_time_report_calibration(
+      list(Same = first, Same = second),
+      reals,
+      times,
+      1:2
+    ),
     "unique, non-empty model names"
   )
 })
