@@ -63,7 +63,8 @@ competing events, censored, and non-events).</p>
 <span>  output_file <span class="op">=</span> <span class="st">"summary_report_times.html"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  renderer <span class="op">=</span> <span class="st">"browser"</span>,</span>
-<span>  heuristics <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  heuristics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  probs <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -107,6 +108,14 @@ only <code>"browser"</code> is supported.</p></dd>
 <dd><p>A logical value indicating whether to enable analysis
 heuristic controls (censoring and competing events). Defaults to <code>FALSE</code>.</p></dd>
 
+
+<dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
+<dd><p>Optional numeric matrix for one model and one population. Rows
+match <code>reals</code>. Use numeric horizon values as column names to match
+the distinct positive <code>fixed_time_horizons</code> in any order. Unnamed
+columns follow ascending horizon order. Values are predicted target-event
+cumulative incidence probabilities.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -119,8 +128,9 @@ at each horizon; exclusion percentages use the original population size.
 Empty retained populations have unavailable estimates. Beyond observed
 follow-up support, displayed estimates retain the estimator's last plateau.
 Censoring adjustment relies on the relevant independent-censoring assumptions.</p>
-<p>The report does not include predicted probabilities, calibration,
-discrimination metrics, threshold-based metrics, or decision-curve analysis.</p>
+<p>Supply <code>probs</code> to add target-event calibration. The calibration tabs
+use Aalen-Johansen estimates within prediction quantile groups, independently
+of the outcome-distribution controls.</p>
     </div>
 
     <div class="section level2">
