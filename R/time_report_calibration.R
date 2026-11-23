@@ -1,77 +1,107 @@
 # Build one canonical calibration component per positive report horizon.
 prepare_time_report_calibration <- function(probs, reals, times, horizons) {
   horizons <- sort(unique(horizons[horizons > 0]))
+  if (!is.numeric(reals) || !is.numeric(times) || !length(reals)) {
+    stop("Calibration requires numeric outcomes and times for one population.", call. = FALSE)
+  }
+  if (is.matrix(probs)) {
+    probs <- list(Model = probs)
+  }
+  models <- names(probs)
   if (
-    !is.numeric(reals) ||
-      !is.numeric(times) ||
-      length(reals) == 0L ||
-      !is.matrix(probs) ||
-      !is.numeric(probs) ||
-      nrow(probs) != length(reals) ||
-      length(horizons) == 0L ||
-      ncol(probs) != length(horizons) ||
-      any(!is.finite(probs)) ||
-      any(probs < 0 | probs > 1)
+    !is.list(probs) || !length(probs) || is.null(models) ||
+      anyNA(models) || any(!nzchar(trimws(models))) || anyDuplicated(models)
   ) {
     stop(
-      "`probs` must be a probability matrix for one population, with one row per subject and one column per sorted, distinct positive horizon.",
+      "`probs` must be a probability matrix or a list with unique, non-empty model names.",
       call. = FALSE
     )
   }
-
-  if (!is.null(colnames(probs))) {
-    prediction_horizons <- suppressWarnings(as.numeric(colnames(probs)))
-    column_order <- match(horizons, prediction_horizons)
-    if (anyNA(column_order)) {
-      stop(
-        "Named `probs` columns must match each distinct positive horizon exactly once.",
-        call. = FALSE
-      )
-    }
-    probs <- probs[, column_order, drop = FALSE]
+  probs <- lapply(
+    probs,
+    normalize_time_calibration_probs,
+    reals = reals,
+    horizons = horizons
+  )
+  model_ids <- if (length(models) == 1L) {
+    "calibration-model"
+  } else {
+    paste0("calibration-model-", seq_along(models))
   }
+  evaluation_ids <- if (length(models) == 1L) {
+    "calibration-evaluation"
+  } else {
+    paste0("calibration-evaluation-", seq_along(models))
+  }
+  evaluations <- lapply(seq_along(models), function(index) {
+    list(
+      id = evaluation_ids[[index]],
+      model = models[[index]],
+      population = "evaluation"
+    )
+  })
+  series <- lapply(seq_along(models), function(index) {
+    model <- models[[index]]
+    list(
+      id = model_ids[[index]],
+      evaluationId = evaluation_ids[[index]],
+      display = list(label = model, group = model, role = "model")
+    )
+  })
 
   cohort <- data.frame(id = seq_along(reals), reals = reals, times = times)
   calibration <- lapply(seq_along(horizons), function(i) {
     horizon <- horizons[[i]]
-    scores <- probs[, i]
-    groups <- split(
-      cohort,
-      assign_probability_quantile_strata(scores, by = 0.2),
-      drop = TRUE
-    )
-    rows <- prepare_terminal_outcome_distributions(groups, horizon)
-    rows <- Filter(
-      function(row) {
-        row$censoring == "adjusted" && row$competing == "adjusted_as_negative"
-      },
-      rows
-    )
-
-    points <- lapply(rows, function(row) {
-      group <- groups[[row$population]]
-      list(
-        seriesId = "calibration-model",
-        method = "discrete",
-        predicted = mean(scores[group$id]),
-        observed = .canonical_probability(row$probabilities$primary),
-        total = nrow(group)
+    model_calibration <- lapply(seq_along(models), function(index) {
+      scores <- probs[[index]][, i]
+      model <- models[[index]]
+      series_id <- model_ids[[index]]
+      groups <- split(
+        cohort,
+        assign_probability_quantile_strata(scores, by = 0.2),
+        drop = TRUE
       )
-    })
-    support_notes <- lapply(seq_along(rows), function(j) {
-      row <- rows[[j]]
-      if (row$status == "beyond_support_plateau") {
-        htmltools::tags$li(sprintf(
-          paste(
-            "Horizon %s, risk group %d (mean predicted risk %s%%).",
-            "Follow-up ends at time %s. Last estimate carried forward."
-          ),
-          format(horizon, digits = 15, trim = TRUE),
-          j,
-          format(100 * points[[j]]$predicted, digits = 4, trim = TRUE),
-          format(max(groups[[row$population]]$times), digits = 15, trim = TRUE)
-        ))
-      }
+      rows <- prepare_terminal_outcome_distributions(groups, horizon)
+      rows <- Filter(
+        function(row) {
+          row$censoring == "adjusted" && row$competing == "adjusted_as_negative"
+        },
+        rows
+      )
+
+      points <- lapply(rows, function(row) {
+        group <- groups[[row$population]]
+        list(
+          seriesId = series_id,
+          method = "discrete",
+          predicted = mean(scores[group$id]),
+          observed = .canonical_probability(row$probabilities$primary),
+          total = nrow(group)
+        )
+      })
+      support_notes <- lapply(seq_along(rows), function(j) {
+        row <- rows[[j]]
+        if (row$status == "beyond_support_plateau") {
+          message <- sprintf(
+            paste(
+              "Horizon %s, risk group %d (mean predicted risk %s%%).",
+              "Follow-up ends at time %s. Last estimate carried forward."
+            ),
+            format(horizon, digits = 15, trim = TRUE),
+            j,
+            format(100 * points[[j]]$predicted, digits = 4, trim = TRUE),
+            format(max(groups[[row$population]]$times), digits = 15, trim = TRUE)
+          )
+          if (length(models) > 1L) {
+            message <- paste(model, message, sep = ": ")
+          }
+          htmltools::tags$li(message)
+        }
+      })
+      list(
+        points = points,
+        support_notes = Filter(Negate(is.null), support_notes)
+      )
     })
     component <- list(
       type = "component",
@@ -81,17 +111,9 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
         schemaVersion = "2.0",
         type = "calibration",
         heuristicPolicy = "independent",
-        evaluations = list(list(
-          id = "calibration-evaluation",
-          model = "Model",
-          population = "evaluation"
-        )),
-        series = list(list(
-          id = "calibration-model",
-          evaluationId = "calibration-evaluation",
-          display = list(label = "Model", group = "Model", role = "model")
-        )),
-        data = points,
+        evaluations = evaluations,
+        series = series,
+        data = unlist(lapply(model_calibration, `[[`, "points"), recursive = FALSE),
         x = "predicted",
         y = "observed",
         xAxis = list(
@@ -107,7 +129,10 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     )
     list(
       component = component,
-      support_notes = Filter(Negate(is.null), support_notes)
+      support_notes = unlist(
+        lapply(model_calibration, `[[`, "support_notes"),
+        recursive = FALSE
+      )
     )
   })
   components <- lapply(calibration, `[[`, "component")
@@ -117,8 +142,19 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
   )
 
   size_rows <- lapply(components, function(component) {
-    counts <- vapply(component$spec$data, function(point) point$total, 0L)
-    htmltools::tags$li(component$title, ": ", paste(counts, collapse = ", "))
+    lapply(seq_along(models), function(index) {
+      points <- Filter(
+        function(point) point$seriesId == model_ids[[index]],
+        component$spec$data
+      )
+      counts <- vapply(points, function(point) point$total, 0L)
+      label <- if (length(models) > 1L) {
+        paste(component$title, models[[index]], sep = " / ")
+      } else {
+        component$title
+      }
+      htmltools::tags$li(label, ": ", paste(counts, collapse = ", "))
+    })
   })
   note <- htmltools::tags$details(
     class = "rtichoke-cheat-sheet",
@@ -129,7 +165,7 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
       "Choose the horizon in Calibration. Outcome Distribution controls affect that chart only."
     ),
     htmltools::tags$p(
-      "Group sizes are listed from lowest to highest predicted risk. Equal scores stay together."
+      "Each model defines its own risk groups. Group sizes are listed from lowest to highest predicted risk. Equal scores stay together."
     ),
     htmltools::tags$ul(size_rows)
   )
@@ -153,4 +189,35 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     ),
     note = as.character(note)
   )
+}
+
+normalize_time_calibration_probs <- function(probs, reals, horizons) {
+  if (
+    !is.matrix(probs) ||
+      !is.numeric(probs) ||
+      nrow(probs) != length(reals) ||
+      length(horizons) == 0L ||
+      ncol(probs) != length(horizons) ||
+      any(!is.finite(probs)) ||
+      any(probs < 0 | probs > 1)
+  ) {
+    stop(
+      "`probs` must be a probability matrix for one population, with one row per subject and one column per distinct positive horizon.",
+      call. = FALSE
+    )
+  }
+
+  if (!is.null(colnames(probs))) {
+    prediction_horizons <- suppressWarnings(as.numeric(colnames(probs)))
+    column_order <- match(horizons, prediction_horizons)
+    if (anyNA(column_order)) {
+      stop(
+        "Named `probs` columns must match each distinct positive horizon exactly once.",
+        call. = FALSE
+      )
+    }
+    probs <- probs[, column_order, drop = FALSE]
+  }
+
+  probs
 }
