@@ -2,15 +2,22 @@
 prepare_time_report_calibration <- function(probs, reals, times, horizons) {
   horizons <- sort(unique(horizons[horizons > 0]))
   if (!is.numeric(reals) || !is.numeric(times) || !length(reals)) {
-    stop("Calibration requires numeric outcomes and times for one population.", call. = FALSE)
+    stop(
+      "Calibration requires numeric outcomes and times for one population.",
+      call. = FALSE
+    )
   }
   if (is.matrix(probs)) {
     probs <- list(Model = probs)
   }
   models <- names(probs)
   if (
-    !is.list(probs) || !length(probs) || is.null(models) ||
-      anyNA(models) || any(!nzchar(trimws(models))) || anyDuplicated(models)
+    !is.list(probs) ||
+      !length(probs) ||
+      is.null(models) ||
+      anyNA(models) ||
+      any(!nzchar(trimws(models))) ||
+      anyDuplicated(models)
   ) {
     stop(
       "`probs` must be a probability matrix or a list with unique, non-empty model names.",
@@ -113,7 +120,10 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
         heuristicPolicy = "independent",
         evaluations = evaluations,
         series = series,
-        data = unlist(lapply(model_calibration, `[[`, "points"), recursive = FALSE),
+        data = unlist(
+          lapply(model_calibration, `[[`, "points"),
+          recursive = FALSE
+        ),
         x = "predicted",
         y = "observed",
         xAxis = list(
