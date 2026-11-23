@@ -17,6 +17,8 @@ def test_terminal_outcome_acceptance():
     raw_html = Path(__file__).parent / "terminal-outcome-raw.html"
     multi_html = Path(__file__).parent / "terminal-outcome-multi.html"
 
+    calibration_paths = [Path(__file__).parent / f"terminal-calibration-{model}.html" for model in ("true", "inflated")]
+
     try:
         # Prepare reports via public create_summary_report_times entry point
         r_cmd = """
@@ -59,6 +61,32 @@ create_summary_report_times(
   output_dir = "browser-acceptance",
   heuristics = TRUE
 )
+
+# The same simulated subjects and ranking are used for both prediction sets.
+set.seed(20261122)
+n <- 5000L
+horizons <- c(1, 3, 5)
+target_rate <- 0.10 * exp(0.8 * rnorm(n))
+competing_rate <- 0.06
+target <- rexp(n, target_rate)
+competing <- rexp(n, competing_rate)
+censored <- pmin(rexp(n, 0.09), 6)
+times <- pmin(target, competing, censored)
+reals <- ifelse(times == target, 1L, ifelse(times == competing, 2L, 0L))
+total_rate <- target_rate + competing_rate
+true <- vapply(horizons, function(h) {
+  target_rate / total_rate * -expm1(-total_rate * h)
+}, numeric(n))
+inflated <- plogis(qlogis(true) + log(1.75))
+for (model in c("true", "inflated")) {
+  create_summary_report_times(
+    reals, times, c(5, 1, 0, 3, 1),
+    output_file = paste0("terminal-calibration-", model, ".html"),
+    output_dir = "browser-acceptance",
+    heuristics = TRUE,
+    probs = get(model)
+  )
+}
 """
         subprocess.run(["Rscript", "-e", r_cmd], check=True, cwd=root_dir)
 
@@ -213,13 +241,45 @@ create_summary_report_times(
                 page.wait_for_selector(".rtichoke-report__heuristics-controls", timeout=5000)
                 print("✓ File:// offline loading passed without error")
 
+                calibration_data = []
+                for path in calibration_paths:
+                    page.goto(path.as_uri(), wait_until="load")
+                    page.get_by_text("Calibration method and group sizes").click()
+                    page.get_by_text(re.compile(r"Horizon 1\s*:\s*1000, 1000, 1000, 1000, 1000")).wait_for(state="visible")
+                    items = page.evaluate("""() => JSON.parse(
+                        document.querySelector('script[id$="-spec"]').textContent
+                    ).sections.find(section => section.id === 'calibration').items""")
+                    calibration_data.append([item["spec"]["data"] for item in items])
+                    for index, horizon in enumerate((1, 3, 5)):
+                        tab = page.get_by_role("tab", name=f"Horizon {horizon}", exact=True)
+                        tab.click()
+                        assert tab.get_attribute("aria-selected") == "true"
+                        panel = page.locator(f'[data-component-id="calibration-horizon-{index + 1}"]')
+                        assert panel.is_visible()
+                        assert "Estimated target-event risk" in panel.locator("svg").first.text_content()
+                        assert panel.locator("svg circle").count() >= 5
+
+                true_data, inflated_data = calibration_data
+                for truth, inflated in zip(true_data, inflated_data, strict=True):
+                    assert len(truth) == len(inflated) == 5
+                    for true_point, inflated_point in zip(truth, inflated, strict=True):
+                        assert true_point["total"] == inflated_point["total"] == 1000
+                        assert true_point["observed"] == inflated_point["observed"]
+                        assert inflated_point["predicted"] > inflated_point["observed"]
+                    true_error = sum(abs(p["predicted"] - p["observed"]) for p in truth)
+                    inflated_error = sum(abs(p["predicted"] - p["observed"]) for p in inflated)
+                    assert true_error < inflated_error
+                assert [rows[2]["observed"] for rows in true_data] == sorted(
+                    {rows[2]["observed"] for rows in true_data}
+                )
+
                 assert len(console_errors) == 0, f"Console errors: {console_errors}"
                 assert len(page_errors) == 0, f"Page errors: {page_errors}"
 
                 browser.close()
                 print("ALL TERMINAL OUTCOME ACCEPTANCE CHECKS PASSED SUCCESSFULLY!")
     finally:
-        for pth in [acceptance_html, raw_html, multi_html]:
+        for pth in [acceptance_html, raw_html, multi_html, *calibration_paths]:
             if pth.exists():
                 pth.unlink()
 

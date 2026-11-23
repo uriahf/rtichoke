@@ -64,11 +64,11 @@ render_rtichoke_viz_report_browser <- function(
       "cheatSheetWrapper.innerHTML = ",
       annotation_json,
       ";\n",
-      "const cheatSheetNode = cheatSheetWrapper.firstElementChild;\n",
+      "const cheatSheetNodes = [...cheatSheetWrapper.children];\n",
       "if (headerNode && headerNode.nextSibling) {\n",
-      "  reportNode.insertBefore(cheatSheetNode, headerNode.nextSibling);\n",
+      "  headerNode.after(...cheatSheetNodes);\n",
       "} else {\n",
-      "  reportNode.appendChild(cheatSheetNode);\n",
+      "  reportNode.append(...cheatSheetNodes);\n",
       "}\n"
     )
   } else {

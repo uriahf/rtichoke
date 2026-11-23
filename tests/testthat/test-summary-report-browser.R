@@ -1114,7 +1114,7 @@ test_that("browser summary report includes the Performance Metrics Cheat Sheet",
   # DOM placement relative ordering
   expect_match(
     html,
-    "insertBefore(cheatSheetNode, headerNode.nextSibling)",
+    "headerNode.after(...cheatSheetNodes)",
     fixed = TRUE
   )
 

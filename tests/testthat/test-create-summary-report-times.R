@@ -576,3 +576,75 @@ test_that("terminal reports require positive event times in both modes", {
     }
   }
 })
+
+test_that("calibration preserves tied scores and rejects mismatched prediction grids", {
+  calibration <- prepare_time_report_calibration(
+    matrix(rep(0.25, 4), ncol = 1),
+    c(1, 2, 0, 0),
+    c(2, 2, 0.5, 5),
+    c(0, 2)
+  )
+  items <- calibration$section$items
+  expect_length(items, 1)
+  expect_identical(items[[1]]$title, "Horizon 2")
+  expect_equal(
+    items[[1]]$spec$data,
+    list(list(
+      seriesId = "calibration-model",
+      method = "discrete",
+      predicted = 0.25,
+      observed = 1 / 3,
+      total = 4L
+    ))
+  )
+  expect_error(
+    create_summary_report_times(
+      c(1, 0),
+      c(1, 2),
+      c(1, 2),
+      probs = matrix(c(0.2, 0.3), ncol = 1)
+    ),
+    "probability matrix"
+  )
+})
+
+test_that("named prediction columns match horizons regardless of column order", {
+  probs <- cbind(c(0.1, 0.2), c(0.3, 0.4))
+  expected <- prepare_time_report_calibration(probs, c(1, 0), c(1, 3), 1:2)
+  colnames(probs) <- c("1", "2")
+  actual <- prepare_time_report_calibration(
+    probs[, 2:1],
+    c(1, 0),
+    c(1, 3),
+    c(2, 0, 1)
+  )
+  expect_identical(actual, expected)
+
+  for (labels in list(c("1", "1"), c("1", "3"), c("1", "late"))) {
+    colnames(probs) <- labels
+    expect_error(
+      prepare_time_report_calibration(probs, c(1, 0), c(1, 3), 1:2),
+      "match each distinct positive horizon exactly once"
+    )
+  }
+})
+
+test_that("calibration flags only groups with a carried-forward estimate", {
+  calibration <- prepare_time_report_calibration(
+    matrix(rep(c(0.1, 0.4), each = 3), ncol = 1),
+    c(1, 0, 0, 1, 0, 0),
+    c(1, 2, 3, 1, 4, 5),
+    5
+  )
+  expect_match(
+    calibration$note,
+    paste(
+      "Horizon 5, risk group 1 (mean predicted risk 10%).",
+      "Follow-up ends at time 3. Last estimate carried forward."
+    ),
+    fixed = TRUE
+  )
+  expect_false(grepl("risk group 2", calibration$note, fixed = TRUE))
+  points <- calibration$section$items[[1]]$spec$data
+  expect_equal(vapply(points, function(point) point$observed, 0), rep(1 / 3, 2))
+})
