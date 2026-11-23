@@ -110,8 +110,8 @@ heuristic controls (censoring and competing events). Defaults to <code>FALSE</co
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
-<dd><p>Optional numeric matrix for one model and one population. Rows
-match <code>reals</code>. Use numeric horizon values as column names to match
+<dd><p>Optional numeric matrix or named list of matrices, one per
+model in the same population. Rows match <code>reals</code>. Use numeric horizon values as column names to match
 the distinct positive <code>fixed_time_horizons</code> in any order. Unnamed
 columns follow ascending horizon order. Values are predicted target-event
 cumulative incidence probabilities.</p></dd>

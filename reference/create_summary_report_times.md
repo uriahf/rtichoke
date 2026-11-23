@@ -60,11 +60,11 @@ create_summary_report_times(
 
 - probs:
 
-  Optional numeric matrix for one model and one population. Rows match
-  `reals`. Use numeric horizon values as column names to match the
-  distinct positive `fixed_time_horizons` in any order. Unnamed columns
-  follow ascending horizon order. Values are predicted target-event
-  cumulative incidence probabilities.
+  Optional numeric matrix or named list of matrices, one per model in
+  the same population. Rows match `reals`. Use numeric horizon values as
+  column names to match the distinct positive `fixed_time_horizons` in
+  any order. Unnamed columns follow ascending horizon order. Values are
+  predicted target-event cumulative incidence probabilities.
 
 ## Details
 
