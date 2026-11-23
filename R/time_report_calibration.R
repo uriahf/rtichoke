@@ -97,7 +97,11 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
             format(horizon, digits = 15, trim = TRUE),
             j,
             format(100 * points[[j]]$predicted, digits = 4, trim = TRUE),
-            format(max(groups[[row$population]]$times), digits = 15, trim = TRUE)
+            format(
+              max(groups[[row$population]]$times),
+              digits = 15,
+              trim = TRUE
+            )
           )
           if (length(models) > 1L) {
             message <- paste(model, message, sep = ": ")

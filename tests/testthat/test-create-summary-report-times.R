@@ -684,8 +684,12 @@ test_that("time calibration compares models in the same population", {
       )
       expected <- single$section$items[[index]]$spec$data
       expect_equal(
-        lapply(points, function(point) point[c("predicted", "observed", "total")]),
-        lapply(expected, function(point) point[c("predicted", "observed", "total")])
+        lapply(points, function(point) {
+          point[c("predicted", "observed", "total")]
+        }),
+        lapply(expected, function(point) {
+          point[c("predicted", "observed", "total")]
+        })
       )
     }
   }
