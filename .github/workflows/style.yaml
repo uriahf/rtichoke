@@ -48,3 +48,9 @@ jobs:
           while IFS= read -r file; do
             air format "$file" --check
           done < changed-r-files.txt
+
+      - name: Show formatter diff for failed style check
+        if: failure()
+        run: |
+          air format R/time_report_calibration.R tests/testthat/test-create-summary-report-times.R
+          git diff -- R/time_report_calibration.R tests/testthat/test-create-summary-report-times.R
