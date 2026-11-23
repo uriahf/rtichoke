@@ -19,6 +19,8 @@ def test_terminal_outcome_acceptance():
 
     calibration_paths = [Path(__file__).parent / f"terminal-calibration-{model}.html" for model in ("true", "inflated")]
 
+    comparison_html = Path(__file__).parent / "terminal-calibration-comparison.html"
+
     try:
         # Prepare reports via public create_summary_report_times entry point
         r_cmd = """
@@ -87,6 +89,13 @@ for (model in c("true", "inflated")) {
     probs = get(model)
   )
 }
+create_summary_report_times(
+  reals, times, horizons,
+  output_file = "terminal-calibration-comparison.html",
+  output_dir = "browser-acceptance",
+  heuristics = TRUE,
+  probs = list("True risk" = true, "Inflated risk" = inflated)
+)
 """
         subprocess.run(["Rscript", "-e", r_cmd], check=True, cwd=root_dir)
 
@@ -273,13 +282,21 @@ for (model in c("true", "inflated")) {
                     {rows[2]["observed"] for rows in true_data}
                 )
 
+                page.goto(comparison_html.as_uri(), wait_until="load")
+                for index, horizon in enumerate((1, 3, 5)):
+                    page.get_by_role("tab", name=f"Horizon {horizon}", exact=True).click()
+                    panel = page.locator(f'[data-component-id="calibration-horizon-{index + 1}"]')
+                    assert panel.get_by_text("True risk", exact=True).first.is_visible()
+                    assert panel.get_by_text("Inflated risk", exact=True).first.is_visible()
+                    assert panel.locator("svg circle").count() >= 10
+
                 assert len(console_errors) == 0, f"Console errors: {console_errors}"
                 assert len(page_errors) == 0, f"Page errors: {page_errors}"
 
                 browser.close()
                 print("ALL TERMINAL OUTCOME ACCEPTANCE CHECKS PASSED SUCCESSFULLY!")
     finally:
-        for pth in [acceptance_html, raw_html, multi_html, *calibration_paths]:
+        for pth in [acceptance_html, raw_html, multi_html, *calibration_paths, comparison_html]:
             if pth.exists():
                 pth.unlink()
 

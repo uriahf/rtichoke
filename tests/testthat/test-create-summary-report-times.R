@@ -648,3 +648,58 @@ test_that("calibration flags only groups with a carried-forward estimate", {
   points <- calibration$section$items[[1]]$spec$data
   expect_equal(vapply(points, function(point) point$observed, 0), rep(1 / 3, 2))
 })
+
+test_that("time calibration compares models in the same population", {
+  first <- cbind(c(0.1, 0.2, 0.3), c(0.2, 0.4, 0.6))
+  second <- first[3:1, ]
+  colnames(second) <- c("1", "2")
+  reals <- c(1, 2, 0)
+  times <- c(1, 2, 3)
+  result <- prepare_time_report_calibration(
+    list(Age = first, Labs = second[, 2:1]),
+    reals,
+    times,
+    1:2
+  )
+  for (index in 1:2) {
+    spec <- result$section$items[[index]]$spec
+    expect_identical(
+      vapply(spec$evaluations, function(x) x$model, ""),
+      c("Age", "Labs")
+    )
+    expect_identical(
+      vapply(spec$evaluations, function(x) x$population, ""),
+      rep("evaluation", 2)
+    )
+    for (model_index in 1:2) {
+      points <- Filter(
+        function(point) point$seriesId == spec$series[[model_index]]$id,
+        spec$data
+      )
+      single <- prepare_time_report_calibration(
+        list(first, second)[[model_index]],
+        reals,
+        times,
+        1:2
+      )
+      expected <- single$section$items[[index]]$spec$data
+      expect_equal(
+        lapply(points, function(point) {
+          point[c("predicted", "observed", "total")]
+        }),
+        lapply(expected, function(point) {
+          point[c("predicted", "observed", "total")]
+        })
+      )
+    }
+  }
+  expect_error(
+    prepare_time_report_calibration(
+      list(Same = first, Same = second),
+      reals,
+      times,
+      1:2
+    ),
+    "unique, non-empty model names"
+  )
+})
