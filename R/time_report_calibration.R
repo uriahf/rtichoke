@@ -111,7 +111,10 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     )
   })
   components <- lapply(calibration, `[[`, "component")
-  support_notes <- unlist(lapply(calibration, `[[`, "support_notes"), recursive = FALSE)
+  support_notes <- unlist(
+    lapply(calibration, `[[`, "support_notes"),
+    recursive = FALSE
+  )
 
   size_rows <- lapply(components, function(component) {
     counts <- vapply(component$spec$data, function(point) point$total, 0L)
