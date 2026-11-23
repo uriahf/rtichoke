@@ -32,7 +32,7 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
   }
 
   cohort <- data.frame(id = seq_along(reals), reals = reals, times = times)
-  components <- lapply(seq_along(horizons), function(i) {
+  calibration <- lapply(seq_along(horizons), function(i) {
     horizon <- horizons[[i]]
     scores <- probs[, i]
     groups <- split(
@@ -58,7 +58,22 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
         total = nrow(group)
       )
     })
-    list(
+    support_notes <- lapply(seq_along(rows), function(j) {
+      row <- rows[[j]]
+      if (row$status == "beyond_support_plateau") {
+        htmltools::tags$li(sprintf(
+          paste(
+            "Horizon %s, risk group %d (mean predicted risk %s%%).",
+            "Follow-up ends at time %s. Last estimate carried forward."
+          ),
+          format(horizon, digits = 15, trim = TRUE),
+          j,
+          format(100 * points[[j]]$predicted, digits = 4, trim = TRUE),
+          format(max(groups[[row$population]]$times), digits = 15, trim = TRUE)
+        ))
+      }
+    })
+    component <- list(
       type = "component",
       id = paste0("calibration-horizon-", i),
       title = paste("Horizon", format(horizon, digits = 15, trim = TRUE)),
@@ -90,7 +105,13 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
         references = list(list(type = "identity", scope = "global"))
       )
     )
+    list(
+      component = component,
+      support_notes = Filter(Negate(is.null), support_notes)
+    )
   })
+  components <- lapply(calibration, `[[`, "component")
+  support_notes <- unlist(lapply(calibration, `[[`, "support_notes"), recursive = FALSE)
 
   size_rows <- lapply(components, function(component) {
     counts <- vapply(component$spec$data, function(point) point$total, 0L)
@@ -102,7 +123,6 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     htmltools::tags$p(
       "Observed risks use Aalen-Johansen estimates with competing events.",
       "Estimates assume independent censoring within each risk group.",
-      "Beyond observed follow-up, the estimate stays at its last value.",
       "Choose the horizon in Calibration. Outcome Distribution controls affect that chart only."
     ),
     htmltools::tags$p(
@@ -110,6 +130,17 @@ prepare_time_report_calibration <- function(probs, reals, times, horizons) {
     ),
     htmltools::tags$ul(size_rows)
   )
+
+  if (length(support_notes)) {
+    note <- htmltools::tagList(
+      note,
+      htmltools::tags$aside(
+        class = "rtichoke-cheat-sheet",
+        htmltools::tags$strong("Calibration follow-up limits"),
+        htmltools::tags$ul(support_notes)
+      )
+    )
+  }
 
   list(
     section = list(

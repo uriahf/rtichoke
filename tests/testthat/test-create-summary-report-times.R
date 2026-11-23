@@ -628,3 +628,23 @@ test_that("named prediction columns match horizons regardless of column order", 
     )
   }
 })
+
+test_that("calibration flags only groups with a carried-forward estimate", {
+  calibration <- prepare_time_report_calibration(
+    matrix(rep(c(0.1, 0.4), each = 3), ncol = 1),
+    c(1, 0, 0, 1, 0, 0),
+    c(1, 2, 3, 1, 4, 5),
+    5
+  )
+  expect_match(
+    calibration$note,
+    paste(
+      "Horizon 5, risk group 1 (mean predicted risk 10%).",
+      "Follow-up ends at time 3. Last estimate carried forward."
+    ),
+    fixed = TRUE
+  )
+  expect_false(grepl("risk group 2", calibration$note, fixed = TRUE))
+  points <- calibration$section$items[[1]]$spec$data
+  expect_equal(vapply(points, function(point) point$observed, 0), rep(1 / 3, 2))
+})
